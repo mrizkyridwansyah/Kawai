@@ -15,8 +15,8 @@ public static class EntityExtension
         using var connection = new SqlConnection(connectionString);
         connection.Open();
 
-        string projectSqlPath = Path.GetFullPath(Path.Combine(env.ContentRootPath, "..", "..", "..", "..", "Kawai.Data", "Sql"));
-        string runtimeSqlPath = Path.Combine(AppContext.BaseDirectory, "Sql");
+        string projectSqlPath = Path.GetFullPath(Path.Combine(env.ContentRootPath, "..", "..", "..", "..", "Kawai.Data", "Sql", "Db"));
+        string runtimeSqlPath = Path.Combine(AppContext.BaseDirectory, "Sql", "Db");
 
 
         if (env.IsDevelopment())

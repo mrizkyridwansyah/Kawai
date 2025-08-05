@@ -1,7 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
-using System.Windows.Input;
-using System;
 
 namespace Kawai.Api;
 
@@ -24,8 +22,10 @@ public static class ApplicationExtension
         services.AddFileStorage(config);
         services.Configure<MailSettings>(config.GetSection("Mailer:Smtp"));
         services.AddMailer(config);
+        services.AddKawaiHangfire();
         services.AddRazorPages();
         services.AddSwagger();
+        services.AddCronJobs();
         services.AddHealthChecks();
     }
 
@@ -66,6 +66,8 @@ public static class ApplicationExtension
     public static void UseApplication(this WebApplication app)
     {
         app.UseKawaiEntity();
+        app.UseKawaiHangfire();
+        app.UseCronJobs();
         app.UseHealthChecks("/check");
     }
 
