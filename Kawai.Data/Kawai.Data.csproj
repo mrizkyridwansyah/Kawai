@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DapperExtension.cs" />
+    <Compile Remove="SqlConnections\AppDbConnection.cs" />
+    <Compile Remove="SqlConnections\DataService.cs" />
+    <Compile Remove="SqlConnections\LogDbConnection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kawai.Domain\Kawai.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Sql\Functions\" />
+    <Folder Include="Sql\Indexs\" />
+    <Folder Include="Sql\StoreProcedures\" />
+    <Folder Include="Sql\Views\" />
+  </ItemGroup>
+
+</Project>

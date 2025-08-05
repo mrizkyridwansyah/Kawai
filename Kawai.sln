@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kawai.Api", "Kawai.Api\Kawai.Api.csproj", "{A2202045-A7A5-42A4-83FD-13915D4B1DC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kawai.Domain", "Kawai.Domain\Kawai.Domain.csproj", "{544AD2FF-466C-481B-8E65-685A208E1E58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kawai.Data", "Kawai.Data\Kawai.Data.csproj", "{85EDE4E6-085F-4640-A4FC-D99E72E13FAB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2202045-A7A5-42A4-83FD-13915D4B1DC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2202045-A7A5-42A4-83FD-13915D4B1DC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2202045-A7A5-42A4-83FD-13915D4B1DC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2202045-A7A5-42A4-83FD-13915D4B1DC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{544AD2FF-466C-481B-8E65-685A208E1E58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{544AD2FF-466C-481B-8E65-685A208E1E58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{544AD2FF-466C-481B-8E65-685A208E1E58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{544AD2FF-466C-481B-8E65-685A208E1E58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85EDE4E6-085F-4640-A4FC-D99E72E13FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85EDE4E6-085F-4640-A4FC-D99E72E13FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85EDE4E6-085F-4640-A4FC-D99E72E13FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85EDE4E6-085F-4640-A4FC-D99E72E13FAB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

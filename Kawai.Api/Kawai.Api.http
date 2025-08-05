@@ -1,0 +1,6 @@
+@Kawai.Api_HostAddress = http://localhost:5056
+
+GET {{Kawai.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
