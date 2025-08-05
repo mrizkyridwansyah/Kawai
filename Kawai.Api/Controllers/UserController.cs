@@ -80,15 +80,18 @@ public class UserController : HahaController
 
         if (!String.IsNullOrEmpty(result.ImageName))
         {
-            Stream image = FileStorage.GetFromImages(result.ImageName);
+            Stream? image = FileStorage.GetFromImages(result.ImageName);
             byte[] imageByte = null;
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            if (image != null)
             {
-                image.CopyTo(memoryStream);
-                imageByte = memoryStream.ToArray();
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    image.CopyTo(memoryStream);
+                    imageByte = memoryStream.ToArray();
+                }
+                image.Dispose();
             }
-            image.Dispose();
 
             result.ImageBase64 = imageByte;
         }
@@ -100,11 +103,14 @@ public class UserController : HahaController
     public async Task<IActionResult> Create([FromForm] User model)
     {
         model.Password = model.Password.Encrypt(model.UserID.ToUpper());
-        model.ImageName = Guid.NewGuid().UniqueId(30);
+
+        if (model.ImageAttachment != null)
+        {
+            model.ImageName = Guid.NewGuid().UniqueId(30);
+            FileStorage.SaveToImages(model.ImageName, model.ImageAttachment);
+        }
 
         await _userRepository.Create(model, Auth.User.UserID);
-
-        FileStorage.SaveToImages(model.ImageName, model.ImageAttachment);
 
         var after = await _userRepository.Capture(model.UserID);
         await _logger.SaveDataLog(new DataLogDto

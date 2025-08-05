@@ -1,10 +1,6 @@
 ﻿using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Kawai.Api.Controllers;
 
@@ -37,22 +33,26 @@ public class AuthController : HahaController
             SameSite = SameSiteMode.Strict // Set SameSite
         });
 
-        Stream image = FileStorage.GetFromImages(results.ImageName);
         byte[] imageByte = null;
-        string imageBase64 = "";
-        using (MemoryStream memoryStream = new MemoryStream())
+        if (!String.IsNullOrEmpty(results.ImageName))
         {
-            image.CopyTo(memoryStream);
-            imageByte = memoryStream.ToArray();
-            //imageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+            Stream? image = FileStorage.GetFromImages(results.ImageName);
+            if (image != null)
+            {
+                string imageBase64 = "";
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    image.CopyTo(memoryStream);
+                    imageByte = memoryStream.ToArray();
+                }
+                image.Dispose();
+            }
         }
-        image.Dispose();
 
         return Success(new
         {
             AccessToken = session.Token,
             UserPhoto = imageByte,
-            //UserPhoto64 = imageBase64,
             ExpiryDate = session.Session.ExpiryDate.Value,
         });
     }
