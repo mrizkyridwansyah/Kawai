@@ -39,7 +39,7 @@ public class UserController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.UserID)).ToList();
+            results = results.Where(x => idList.Contains(x.UserID)).ToList();
         }
 
         return Success(results);
@@ -52,7 +52,7 @@ public class UserController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.JobPositionCode)).ToList();
+            results = results.Where(x => idList.Contains(x.JobPositionCode)).ToList();
         }
 
         return Success(results);

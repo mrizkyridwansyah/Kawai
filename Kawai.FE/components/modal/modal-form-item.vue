@@ -144,7 +144,7 @@ export default {
       this.ds
         .create(this.model)
         .then((datas) => {
-          toastSuccess("Anying........ nge-sep!");
+          toastSuccess("Data saved successfully!");
           this.$emit("submitted");
         })
         .catch((err) => {
@@ -156,7 +156,7 @@ export default {
       this.ds
         .update(this.model)
         .then((datas) => {
-          toastSuccess("Anying........ nge-sep!");
+          toastSuccess("Data saved successfully!");
           this.$emit("submitted");
         })
         .catch((err) => {

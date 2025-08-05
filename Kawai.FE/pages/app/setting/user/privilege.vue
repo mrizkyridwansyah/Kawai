@@ -238,7 +238,7 @@ export default {
       this.dsMenu
         .submitPrivilege(model)
         .then((datas) => {
-          toastSuccess("Anying........ nge-sep!");
+          toastSuccess("Data saved successfully!");
         })
         .catch((err) => {
           this.errors = err?.Errors;

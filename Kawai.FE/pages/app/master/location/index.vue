@@ -209,7 +209,7 @@ export default {
               .remove(item.LocationCode)
               .then((_) => {
                 this.search();
-                toastSuccess("Delete Data Success!");
+                toastSuccess("Data deleted successfully!!");
                 resolve();
               })
               .catch((err) => {
