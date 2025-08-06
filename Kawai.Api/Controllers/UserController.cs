@@ -1,5 +1,4 @@
 ﻿using Kawai.Api.Models;
-using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -127,18 +126,21 @@ public class UserController : HahaController
     }
 
     [HttpPatch("update")]
-    public async Task<IActionResult> Update(string id, [FromForm] User model)
+    public async Task<IActionResult> Update([FromForm] User model)
     {
-        var before = await _userRepository.Capture(id);
+        var before = await _userRepository.Capture(model.UserID);
 
         model.Password = model.Password.Encrypt(model.UserID.ToUpper());
 
-        await _userRepository.Update(id, model, Auth.User.UserID);
-
         if (model.ImageAttachment != null)
+        {
+            model.ImageName = String.IsNullOrEmpty(model.ImageName) ? Guid.NewGuid().UniqueId(30) : model.ImageName;
             FileStorage.SaveToImages(model.ImageName, model.ImageAttachment);
+        }
 
-        var after = await _userRepository.Capture(id);
+        await _userRepository.Update(model.UserID, model, Auth.User.UserID);
+
+        var after = await _userRepository.Capture(model.UserID);
 
         await _logger.SaveDataLog(new DataLogDto
         {

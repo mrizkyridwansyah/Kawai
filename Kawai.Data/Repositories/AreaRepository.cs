@@ -41,6 +41,7 @@ public class AreaRepository : IAreaRepository
 
     public async Task Create(Area area, string userId)
     {
+        area.AreaCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Area_GenerateCode", new { area.WarehouseCode, area.LocationCode });
         string sql = @"sp_Wms_Area_Create";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {

@@ -22,7 +22,7 @@ public class LocationRepository : ILocationRepository
     }
 
     public async Task<LocationDto> GetData(string locationCode)
-    {
+    {        
         string sp = "sp_Wms_Location_GetDetail";
         return await _dbExecutor.QueryFirstOrDefaultAsync<LocationDto>(sp, new { LocationCode = locationCode });
     }
@@ -41,6 +41,7 @@ public class LocationRepository : ILocationRepository
 
     public async Task Create(Location location, string userId)
     {
+        location.LocationCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Location_GenerateCode", new { location.WarehouseCode });
         string sql = @"sp_Wms_Location_Create";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {

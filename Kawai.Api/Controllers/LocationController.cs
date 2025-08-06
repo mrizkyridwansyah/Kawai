@@ -63,7 +63,7 @@ public class LocationController : HahaController
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] Kawai.Domain.Models.Location model)
+    public async Task<IActionResult> Create([FromBody] Domain.Models.Location model)
     {
         await _locationRepository.Create(model, Auth.User.UserID);
 
@@ -82,7 +82,7 @@ public class LocationController : HahaController
     }
 
     [HttpPatch("update")]
-    public async Task<IActionResult> Update([FromBody] Kawai.Domain.Models.Location model)
+    public async Task<IActionResult> Update([FromBody] Domain.Models.Location model)
     {
         var before = await _locationRepository.Capture(model.LocationCode);
         await _locationRepository.Update(model, Auth.User.UserID);

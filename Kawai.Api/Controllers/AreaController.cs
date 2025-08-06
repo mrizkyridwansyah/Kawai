@@ -68,12 +68,12 @@ public class AreaController : HahaController
     {
         await _areaRepository.Create(model, Auth.User.UserID);
 
-        var after = await _areaRepository.Capture(model.LocationCode);
+        var after = await _areaRepository.Capture(model.AreaCode);
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Master Area",
-            EntityId = model.LocationCode,
-            ReferenceId = model.LocationCode,
+            EntityId = model.AreaCode,
+            ReferenceId = model.AreaCode,
             Before = null,
             After = after,
             Action = DataLogAction.Create
@@ -85,15 +85,15 @@ public class AreaController : HahaController
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] Area model)
     {
-        var before = await _areaRepository.Capture(model.LocationCode);
+        var before = await _areaRepository.Capture(model.AreaCode);
         await _areaRepository.Update(model, Auth.User.UserID);
-        var after = await _areaRepository.Capture(model.LocationCode);
+        var after = await _areaRepository.Capture(model.AreaCode);
 
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Master Area",
-            EntityId = model.LocationCode,
-            ReferenceId = model.LocationCode,
+            EntityId = model.AreaCode,
+            ReferenceId = model.AreaCode,
             Action = DataLogAction.Update,
             Before = before,
             After = after
