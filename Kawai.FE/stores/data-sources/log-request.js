@@ -1,6 +1,6 @@
 var app = useNuxtApp();
 
-export const useSharedLogData = defineStore('SharedLogData', {
+export const useLogRequest = defineStore('LogRequest', {
   state: () => ({
     isLoading: false,
     isCreating: false,
@@ -9,7 +9,6 @@ export const useSharedLogData = defineStore('SharedLogData', {
     isServerError: false,
     isNetworkError: false,
     isLoadingDetail: false,
-    documentType: null,
     detail: {},
     data: {
       Items: [],
@@ -32,7 +31,7 @@ export const useSharedLogData = defineStore('SharedLogData', {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/shared/log/data/list?documentType=${this.documentType}`, this.filter)
+        app.$http.post(`/logging/request/list`, this.filter)
           .then(({data}) => {
             this.data = data.Data;
 
@@ -53,7 +52,7 @@ export const useSharedLogData = defineStore('SharedLogData', {
     loadDetail: function(id) {
       this.isLoadingDetail = true;
       return new Promise((resolve, reject) => {
-        app.$http.get(`/shared/log/data/detail?id=${id}&documentType=${this.documentType}`)
+        app.$http.get(`/logging/request/detail?id=${id}`)
           .then(({data}) => {
             this.detail = data.Data;
 
@@ -87,12 +86,9 @@ export const useSharedLogData = defineStore('SharedLogData', {
       this.filter.Length = v;
       this.load();
     },
-    setDocumentType: function(v){
-      this.documentType = v;
-    }
   },
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useSharedLogData, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useLogRequest, import.meta.hot));
 }

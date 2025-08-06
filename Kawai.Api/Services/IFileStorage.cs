@@ -48,26 +48,26 @@ public interface IFileStorage
 {
     void SaveToImports(string key, IFormFile file);
     void SaveToImports(string key, Stream stream);
-    Stream GetFromImports(string key);
+    Stream? GetFromImports(string key);
     void RemoveFromImports(string key);
     bool ImportsExists(string key);
 
     void SaveToExports(string key, IFormFile file);
     void SaveToExports(string key, Stream stream);
-    Stream GetFromExports(string key);
+    Stream? GetFromExports(string key);
     void RemoveFromExports(string key);
     bool ExportsExists(string key);
 
     void SaveToAttachments(string key, IFormFile file);
     void SaveToAttachments(string key, Stream stream);
-    Stream GetFromAttachments(string key);
+    Stream? GetFromAttachments(string key);
     void RemoveFromAttachments(string key);
     bool AttachmentsExists(string key);
 
     void SaveToImages(string key, IFormFile file);
     void SaveToImages(string key, Stream stream);
-    Stream GetFromImages(string key);
-    Stream GetFromImagesThumbnail(string key);
+    Stream? GetFromImages(string key);
+    Stream? GetFromImagesThumbnail(string key);
     void RemoveFromImages(string key);
     bool ImagesExists(string key);
 
@@ -100,7 +100,7 @@ public class LocalFileStorage : IFileStorage
         return File.Exists(filePath);
     }
 
-    public Stream GetFromAttachments(string id)
+    public Stream? GetFromAttachments(string id)
     {
         var location = Path.Combine(BaseDirectory, "attachments");
         if (!Directory.Exists(location))
@@ -111,7 +111,7 @@ public class LocalFileStorage : IFileStorage
         return new FileStream(filePath, FileMode.Open, FileAccess.Read);
     }
 
-    public Stream GetFromExports(string id)
+    public Stream? GetFromExports(string id)
     {
         var location = Path.Combine(BaseDirectory, "exports");
         if (!Directory.Exists(location))
@@ -123,7 +123,7 @@ public class LocalFileStorage : IFileStorage
         return fileStream;
     }
 
-    public Stream GetFromImages(string id)
+    public Stream? GetFromImages(string id)
     {
         var location = Path.Combine(BaseDirectory, "images");
         if (!Directory.Exists(location))
@@ -135,12 +135,12 @@ public class LocalFileStorage : IFileStorage
         return fileStream;
     }
 
-    public Stream GetFromImagesThumbnail(string key)
+    public Stream? GetFromImagesThumbnail(string key)
     {
         throw new NotImplementedException();
     }
 
-    public Stream GetFromImagesThumnail(string id)
+    public Stream? GetFromImagesThumnail(string id)
     {
         var location = Path.Combine(BaseDirectory, "images", "thumbnail");
         if (!Directory.Exists(location))
@@ -152,7 +152,7 @@ public class LocalFileStorage : IFileStorage
         return fileStream;
     }
 
-    public Stream GetFromImports(string id)
+    public Stream? GetFromImports(string id)
     {
         var location = Path.Combine(BaseDirectory, "imports");
         if (!Directory.Exists(location))
@@ -393,35 +393,35 @@ public class GoogleFileStorage : IFileStorage
         await Client.DeleteObjectAsync(bucketName, key);
     }
 
-    public Stream GetFromAttachments(string key)
+    public Stream? GetFromAttachments(string key)
     {
         var stream = new MemoryStream();
         _ = Client.DownloadObject(BucketName, $"attachments/{key.Sha256Hex()}", stream);
         return stream;
     }
 
-    public Stream GetFromExports(string key)
+    public Stream? GetFromExports(string key)
     {
         var stream = new MemoryStream();
         _ = Client.DownloadObjectAsync(BucketName, $"exports/{key.Sha256Hex()}", stream).Result;
         return stream;
     }
 
-    public Stream GetFromImages(string key)
+    public Stream? GetFromImages(string key)
     {
         var stream = new MemoryStream();
         _ = Client.DownloadObjectAsync(BucketName, $"images/{key.Sha256Hex()}", stream).Result;
         return stream;
     }
 
-    public Stream GetFromImagesThumnail(string key)
+    public Stream? GetFromImagesThumnail(string key)
     {
         var stream = new MemoryStream();
         _ = Client.DownloadObjectAsync(BucketName, $"images/thumbnails/{key.Sha256Hex()}", stream).Result;
         return stream;
     }
 
-    public Stream GetFromImports(string key)
+    public Stream? GetFromImports(string key)
     {
         var stream = new MemoryStream();
         _ = Client.DownloadObjectAsync(BucketName, $"imports/{key.Sha256Hex()}", stream).Result;
@@ -483,7 +483,7 @@ public class GoogleFileStorage : IFileStorage
         DeleteFileFromBucket($"attachments/{key.Sha256Hex()}").Wait();
     }
 
-    public Stream GetFromImagesThumbnail(string key)
+    public Stream? GetFromImagesThumbnail(string key)
     {
         throw new NotImplementedException();
     }
@@ -694,27 +694,27 @@ public class AwsS3FileStorage(IAmazonS3 client, IConfiguration configuration) : 
         return Client.GetPreSignedURL(urlRequest);
     }
 
-    public Stream GetFromAttachments(string key)
+    public Stream? GetFromAttachments(string key)
     {
         return Client.GetObjectAsync(BucketName, $"attachments/{key.Sha256Hex()}").Result.ResponseStream;
     }
 
-    public Stream GetFromExports(string key)
+    public Stream? GetFromExports(string key)
     {
         return Client.GetObjectAsync(BucketName, $"exports/{key.Sha256Hex()}").Result.ResponseStream;
     }
 
-    public Stream GetFromImages(string key)
+    public Stream? GetFromImages(string key)
     {
         return Client.GetObjectAsync(BucketName, $"images/{key.Sha256Hex()}").Result.ResponseStream;
     }
 
-    public Stream GetFromImagesThumnail(string key)
+    public Stream? GetFromImagesThumnail(string key)
     {
         return Client.GetObjectAsync(BucketName, $"images/thumbnails/{key.Sha256Hex()}").Result.ResponseStream;
     }
 
-    public Stream GetFromImports(string key)
+    public Stream? GetFromImports(string key)
     {
         return Client.GetObjectAsync(BucketName, $"imports/{key.Sha256Hex()}").Result.ResponseStream;
     }
@@ -774,7 +774,7 @@ public class AwsS3FileStorage(IAmazonS3 client, IConfiguration configuration) : 
         DeleteFileFromBucket($"attachments/{key.Sha256Hex()}").Wait();
     }
 
-    public Stream GetFromImagesThumbnail(string key)
+    public Stream? GetFromImagesThumbnail(string key)
     {
         throw new NotImplementedException();
     }

@@ -1,5 +1,4 @@
 ﻿using Kawai.Api.Models;
-using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -39,7 +38,7 @@ public class UserController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.UserID)).ToList();
+            results = results.Where(x => idList.Contains(x.UserID)).ToList();
         }
 
         return Success(results);
@@ -52,7 +51,7 @@ public class UserController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.JobPositionCode)).ToList();
+            results = results.Where(x => idList.Contains(x.JobPositionCode)).ToList();
         }
 
         return Success(results);
@@ -80,15 +79,18 @@ public class UserController : HahaController
 
         if (!String.IsNullOrEmpty(result.ImageName))
         {
-            Stream image = FileStorage.GetFromImages(result.ImageName);
+            Stream? image = FileStorage.GetFromImages(result.ImageName);
             byte[] imageByte = null;
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            if (image != null)
             {
-                image.CopyTo(memoryStream);
-                imageByte = memoryStream.ToArray();
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    image.CopyTo(memoryStream);
+                    imageByte = memoryStream.ToArray();
+                }
+                image.Dispose();
             }
-            image.Dispose();
 
             result.ImageBase64 = imageByte;
         }
@@ -100,11 +102,14 @@ public class UserController : HahaController
     public async Task<IActionResult> Create([FromForm] User model)
     {
         model.Password = model.Password.Encrypt(model.UserID.ToUpper());
-        model.ImageName = Guid.NewGuid().UniqueId(30);
+
+        if (model.ImageAttachment != null)
+        {
+            model.ImageName = Guid.NewGuid().UniqueId(30);
+            FileStorage.SaveToImages(model.ImageName, model.ImageAttachment);
+        }
 
         await _userRepository.Create(model, Auth.User.UserID);
-
-        FileStorage.SaveToImages(model.ImageName, model.ImageAttachment);
 
         var after = await _userRepository.Capture(model.UserID);
         await _logger.SaveDataLog(new DataLogDto
@@ -121,18 +126,21 @@ public class UserController : HahaController
     }
 
     [HttpPatch("update")]
-    public async Task<IActionResult> Update(string id, [FromForm] User model)
+    public async Task<IActionResult> Update([FromForm] User model)
     {
-        var before = await _userRepository.Capture(id);
+        var before = await _userRepository.Capture(model.UserID);
 
         model.Password = model.Password.Encrypt(model.UserID.ToUpper());
 
-        await _userRepository.Update(id, model, Auth.User.UserID);
-
         if (model.ImageAttachment != null)
+        {
+            model.ImageName = String.IsNullOrEmpty(model.ImageName) ? Guid.NewGuid().UniqueId(30) : model.ImageName;
             FileStorage.SaveToImages(model.ImageName, model.ImageAttachment);
+        }
 
-        var after = await _userRepository.Capture(id);
+        await _userRepository.Update(model.UserID, model, Auth.User.UserID);
+
+        var after = await _userRepository.Capture(model.UserID);
 
         await _logger.SaveDataLog(new DataLogDto
         {

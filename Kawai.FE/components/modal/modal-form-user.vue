@@ -174,7 +174,7 @@ export default {
       this.ds
         .update(data)
         .then((datas) => {
-          toastSuccess("Anying........ nge-sep!");
+          toastSuccess("Data saved successfully!");
           this.$emit("submitted");
         })
         .catch((err) => {

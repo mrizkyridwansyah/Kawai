@@ -2,7 +2,6 @@
 using Kawai.Api.Services;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
-using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,47 +9,47 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kawai.Api.Controllers;
 
 [Authorize]
-[Route("api/warehouse")]
+[Route("api/location")]
 [ApiController]
-public class WarehouseController : HahaController
+public class LocationController : HahaController
 {
-    private readonly IWarehouseRepository _warehouseRepository;
+    private readonly ILocationRepository _locationRepository;
     private readonly DataLogger _logger;
 
-    public WarehouseController(IWarehouseRepository warehouseRepository, DataLogger logger)
+    public LocationController(ILocationRepository locationRepository, DataLogger logger)
     {
-        _warehouseRepository = warehouseRepository;
+        _locationRepository = locationRepository;
         _logger = logger;
     }
 
     [HttpPost("list")]
     public async Task<IActionResult> List([FromBody] RequestParameter parameter)
     {
-        var results = await _warehouseRepository.GetAll(parameter);
+        var results = await _locationRepository.GetAll(parameter);
         return DataTableResult(parameter, results);
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string warehouseCode, string ids)
     {
-        var results = await _warehouseRepository.GetDDL(keyword);
+        var results = await _locationRepository.GetDDL(keyword, warehouseCode);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+            results = results.Where(x => idList.Contains(x.LocationCode)).ToList();
         }
 
         return Success(results);
     }
 
-    [HttpGet("ddl-warehouse-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string item, string ids)
+    [HttpGet("ddl-location-search-by-stock")]
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string item, string ids)
     {
-        var results = await _warehouseRepository.DDLSearchByStock(keyword, item);
+        var results = await _locationRepository.DDLSearchByStock(keyword, warehouse, item);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+            results = results.Where(x => idList.Contains(x.LocationCode)).ToList();
         }
 
         return Success(results);
@@ -59,21 +58,21 @@ public class WarehouseController : HahaController
     [HttpGet("detail")]
     public async Task<IActionResult> Get(string id)
     {
-        var result = await _warehouseRepository.GetData(id);
+        var result = await _locationRepository.GetData(id);
         return Success(result);
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] Warehouse model)
+    public async Task<IActionResult> Create([FromBody] Domain.Models.Location model)
     {
-        await _warehouseRepository.Create(model, Auth.User.UserID);
+        await _locationRepository.Create(model, Auth.User.UserID);
 
-        var after = await _warehouseRepository.Capture(model.WarehouseCode);
+        var after = await _locationRepository.Capture(model.LocationCode);
         await _logger.SaveDataLog(new DataLogDto
         {
-            DocumentType = "Master Warehouse",
-            EntityId = model.WarehouseCode,
-            ReferenceId = model.WarehouseCode,
+            DocumentType = "Master Location",
+            EntityId = model.LocationCode,
+            ReferenceId = model.LocationCode,
             Before = null,
             After = after,
             Action = DataLogAction.Create
@@ -83,17 +82,17 @@ public class WarehouseController : HahaController
     }
 
     [HttpPatch("update")]
-    public async Task<IActionResult> Update([FromBody] Warehouse model)
+    public async Task<IActionResult> Update([FromBody] Domain.Models.Location model)
     {
-        var before = await _warehouseRepository.Capture(model.WarehouseCode);
-        await _warehouseRepository.Update(model, Auth.User.UserID);
-        var after = await _warehouseRepository.Capture(model.WarehouseCode);
+        var before = await _locationRepository.Capture(model.LocationCode);
+        await _locationRepository.Update(model, Auth.User.UserID);
+        var after = await _locationRepository.Capture(model.LocationCode);
 
         await _logger.SaveDataLog(new DataLogDto
         {
-            DocumentType = "Master Warehouse",
-            EntityId = model.WarehouseCode,
-            ReferenceId = model.WarehouseCode,
+            DocumentType = "Master Location",
+            EntityId = model.LocationCode,
+            ReferenceId = model.LocationCode,
             Action = DataLogAction.Update,
             Before = before,
             After = after
@@ -104,11 +103,11 @@ public class WarehouseController : HahaController
     [HttpDelete("remove")]
     public async Task<IActionResult> Remove(string id)
     {
-        var before = await _warehouseRepository.Capture(id);
-        await _warehouseRepository.Remove(id, Auth.User.UserID);
+        var before = await _locationRepository.Capture(id);
+        await _locationRepository.Remove(id, Auth.User.UserID);
         await _logger.SaveDataLog(new DataLogDto
         {
-            DocumentType = "Master Warehouse",
+            DocumentType = "Master Location",
             EntityId = id,
             ReferenceId = id,
             Action = DataLogAction.Delete,
@@ -126,10 +125,10 @@ public class WarehouseController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["Warehouse Code", "Warehouse Name", "Last Update", "Last User"];
+        List<string> headers = ["Warehouse Code", "Warehouse Name", "Location Code", "Location Name", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
-        var results = await _warehouseRepository.GetAll(parameter);
+        var results = await _locationRepository.GetAll(parameter);
 
         foreach (var result in results)
         {
@@ -141,9 +140,13 @@ public class WarehouseController : HahaController
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.WarehouseName);
             colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.LocationCode);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.LocationName);
+            colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Lastuser);
+            ExcelHelper.SetCell(row, colIdx, result.LastUser);
         }
 
         ExcelHelper.AutofitColumns(ws, 1, headers.Count);

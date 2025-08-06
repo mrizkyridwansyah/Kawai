@@ -38,7 +38,7 @@
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle" style="width: max-content;"
+        class="table table-striped mb-0 align-middle" style="width: 100%;"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>
@@ -235,7 +235,7 @@ export default {
               .remove(item.AreaCode)
               .then((_) => {
                 this.search();
-                toastSuccess("Delete Data Success!");
+                toastSuccess("Data deleted successfully!!");
                 resolve();
               })
               .catch((err) => {

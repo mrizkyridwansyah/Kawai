@@ -51,7 +51,7 @@ public class Auth(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryC
             if (data == null)
             {
                 var session = _db.QueryFirstOrDefaultAsync<Session>(@"SELECT TOP 1 * FROM Sessions WHERE Token = @Token", new { Token }, CommandType.Text);
-                if (session == null) return default;
+                if (session.Result == null) return default;
 
                 var user = _db.QueryFirstOrDefaultAsync<User>(@"SELECT TOP 1 * FROM SS_UserSetup WHERE UserID = @UserId", new { session.Result.UserId }, CommandType.Text);
                 if (user == null) return default;

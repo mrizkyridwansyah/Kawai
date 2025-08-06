@@ -6,6 +6,7 @@
     :body-class="bodyClass || ''"
     class="zoom"
     top
+    :fullscreen="fullscreen"
     hide-footer
     no-close-on-esc
     no-close-on-backdrop
@@ -13,7 +14,7 @@
     v-model="isShow"
   >
     <template #header>
-      <h5 class="modal-title">{{title}}</h5>
+      <h4 class="modal-title">{{title}}</h4>
       <button type="button" class="btn-close" 
         data-bs-dismiss="modal" 
         aria-label="Close"
@@ -40,7 +41,7 @@
 <script>
 
 export default {
-  props: ['id', 'title', 'errors', 'error', 'loading', 'size', 'bodyClass', 'disableClose', 'scrollable'],
+  props: ['id', 'title', 'errors', 'error', 'loading', 'size', 'bodyClass', 'disableClose', 'scrollable', 'fullscreen'],
   emits: ['shown', 'hidden', 'hide', 'show'],
   data: () => ({
     isShow: false,
