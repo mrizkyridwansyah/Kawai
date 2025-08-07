@@ -46,6 +46,10 @@ public class WarehouseRepository : IWarehouseRepository
         {
             warehouse.WarehouseName,
             warehouse.WarehouseCode,
+            warehouse.AdmGroup,
+            warehouse.StockControlCls,
+            warehouse.UseEndDate,
+            warehouse.NGCls,
             RegisterBy = userId
         });
     }
@@ -57,6 +61,10 @@ public class WarehouseRepository : IWarehouseRepository
         {
             warehouse.WarehouseName,
             warehouse.WarehouseCode,
+            warehouse.AdmGroup,
+            warehouse.StockControlCls,
+            warehouse.UseEndDate,
+            warehouse.NGCls,
             UpdateBy = userId
         });
     }

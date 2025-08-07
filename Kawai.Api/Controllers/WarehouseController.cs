@@ -1,11 +1,15 @@
 ﻿using ClosedXML.Excel;
+using Kawai.Api.Hub;
 using Kawai.Api.Services;
+using Kawai.Api.Shared.Extension;
+using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Kawai.Api.Controllers;
 
@@ -15,12 +19,16 @@ namespace Kawai.Api.Controllers;
 public class WarehouseController : HahaController
 {
     private readonly IWarehouseRepository _warehouseRepository;
+    private readonly INotificationRepository _notificationRepository;
     private readonly DataLogger _logger;
+    private readonly NotificationService<NotifApprovalHub> _notificationService;
 
-    public WarehouseController(IWarehouseRepository warehouseRepository, DataLogger logger)
+    public WarehouseController(IWarehouseRepository warehouseRepository, INotificationRepository notificationRepository, DataLogger logger, NotificationService<NotifApprovalHub> notificationService)
     {
         _warehouseRepository = warehouseRepository;
+        _notificationRepository = notificationRepository;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     [HttpPost("list")]
@@ -79,6 +87,29 @@ public class WarehouseController : HahaController
             Action = DataLogAction.Create
         });
 
+
+        /*
+         *  INI CONTOH KALO MAU PAKE NOTIF SETELAH API BIKIN SESUATU
+
+            List<string> receivers = ["ossas"];
+            Notification notification = new Notification
+            {
+                Title = "Master Warehouse Created",
+                Description = $"Warehouse {model.WarehouseCode} - {model.WarehouseName} has been created.",
+                NotifType = "INFO",
+                Priority = "LOW",
+                Sender = Auth.User.UserID
+            };
+
+            foreach (var reciver in receivers)
+            {
+                notification.Receiver = reciver;
+                await _notificationRepository.SaveNotification(notification);
+            }
+
+            await _notificationService.BroadCastOnlyTo(receivers, "NewNotification", new { Count = 1 });         
+         */
+
         return Success(after);
     }
 
@@ -126,7 +157,7 @@ public class WarehouseController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["Warehouse Code", "Warehouse Name", "Last Update", "Last User"];
+        List<string> headers = ["Warehouse Code", "Warehouse Name", "Adm Group", "Adm Group Name", "Stock Cls", "NG Cls", "Use End Date", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
         var results = await _warehouseRepository.GetAll(parameter);
@@ -140,6 +171,16 @@ public class WarehouseController : HahaController
             ExcelHelper.SetCell(row, colIdx, result.WarehouseCode);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.WarehouseName);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.AdmGroup);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.AdmGroupName);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.StockControlCls == "01" ? "YES" : "NO");
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.NGCls == "01" ? "YES" : "NO");
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.UseEndDate.ToString("dd MMM yyyy"));
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
             colIdx++;

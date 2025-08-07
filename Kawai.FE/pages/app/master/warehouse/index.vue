@@ -20,6 +20,11 @@
             <th class="text-center">Action</th>
             <th class="text-center">Warehouse Code</th>
             <th class="text-center">Warehouse Name</th>
+            <th class="text-center">Adm Group</th>
+            <th class="text-center">Adm Name</th>
+            <th class="text-center">Stock Cls</th>
+            <th class="text-center">NG Cls</th>
+            <th class="text-center">Use End Date</th>
             <th class="text-center">Last Update</th>
             <th class="text-center">Last User</th>
           </tr>
@@ -48,8 +53,15 @@
             </td>
             <td>{{ item.WarehouseCode }}</td>
             <td>{{ item.WarehouseName }}</td>
+            <td>{{ item.AdmGroup }}</td>
+            <td>{{ item.AdmGroupName }}</td>
+            <td v-if="item.StockControlCls == '01'">YES</td>
+            <td v-else-if="item.StockControlCls == '02'">NO</td>
+            <td v-if="item.NGCls == '01'">YES</td>
+            <td v-else-if="item.NGCls == '02'">NO</td>
+            <td>{{ $func.formatDateTime(item.UseEndDate) }}</td>
             <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
+            <td>{{ item.Lastuser }}</td>
           </tr>
         </tbody>
       </table>

@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Kawai.Api.Services;
+using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 namespace Kawai.Api;
@@ -19,6 +20,8 @@ public static class ApplicationExtension
         services.AddScoped<Auth>();
         services.AddScoped<Smtp>();
         services.AddScoped<SessionManager>();
+        services.AddScoped<ISessionManager, SessionManager>();
+        services.AddScoped(typeof(NotificationService<>));
         services.AddFileStorage(config);
         services.Configure<MailSettings>(config.GetSection("Mailer:Smtp"));
         services.AddMailer(config);

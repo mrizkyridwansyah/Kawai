@@ -1,11 +1,15 @@
 using AspNetCore.Scalar;
+using Dapper;
 using Kawai.Api;
+using Kawai.Api.Hub;
+using Kawai.Api.Services;
 using Kawai.Api.Shared;
 using Kawai.Api.Shared.Extensions;
 using Kawai.Api.Shared.Middleware;
 using Kawai.Data.Repositories;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Interfaces;
+using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
 
 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
@@ -17,11 +21,23 @@ builder.Logging.AddFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log
 var config = builder.Configuration;
 
 // CORS
-builder.Services.AddCors(confg =>
-                confg.AddPolicy("AllowAll",
-                    p => p.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                    .AllowAnyHeader()));
+// tadi nya pake ini, tapi signalr nya error
+//builder.Services.AddCors(confg =>
+//                confg.AddPolicy("AllowAll",
+//                    p => p.AllowAnyOrigin()
+//                        .AllowAnyMethod()
+//                    .AllowAnyHeader()));
+
+// akhir nya pake ini
+var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>();
+
+builder.Services.AddCors(config =>
+    config.AddPolicy("AllowSpecificOrigin", policy =>
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials()
+    ));
 
 
 builder.Services.AddSingleton<IConnectionFactory, ConnectionFactory>();
@@ -41,6 +57,9 @@ builder.Services
 builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
 
+//ini tambah signalr buat notif
+builder.Services.AddSignalR();
+
 builder.Services.AddControllers(options =>
 {
     // global filter validasi parameter body disini
@@ -55,8 +74,18 @@ builder.Services.AddControllers(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
+// init buat trim leading & trailing spasi dan tab di STRING, karna di DB BANYAK pake tipe data CHAR.
+SqlMapper.AddTypeHandler(typeof(string), new TrimString());
+
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var sessionManager = scope.ServiceProvider.GetRequiredService<ISessionManager>();
+    SessionManagerAccessor.Instance = sessionManager;
+}
+
+app.UseSwagger();
 app.UseScalar(options =>
 {
     options.UseTheme(Theme.Default);
@@ -69,10 +98,13 @@ app.UseApplication();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseWebSockets();
 app.MapControllers();
+
+app.MapHub<NotifApprovalHub>("/notifapprovalhub");
+
 app.MapRazorPages();
 app.Run();
