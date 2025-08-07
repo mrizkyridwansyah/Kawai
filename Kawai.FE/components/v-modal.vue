@@ -64,3 +64,20 @@ export default {
   }
 }
 </script>
+
+<style>
+  .modal-header {
+    max-height: fit-content !important;
+  }
+  
+  .submit-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+  }
+</style>
