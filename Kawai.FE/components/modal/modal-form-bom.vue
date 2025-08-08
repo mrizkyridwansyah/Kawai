@@ -1,7 +1,8 @@
 <template>
   <div class="mb-3">
     <label class="form-label">Item Cls</label>
-    <input-item-cls
+    <input-cls
+    type-data="ItemFinishGoodCls"
       placeholder="Item Cls"
       v-model="model.ItemCls"
       :errors="errors?.ItemCls"

@@ -7,11 +7,11 @@
     :clear-on-select="false"
       :preserve-search="true" 
       open-direction="bottom" 
-      :placeholder="placeholder || `Search Unit Classification`"
+      :placeholder="placeholder || `Search Trade`"
       :searchable="true" 
-      label="UnitClassificationName" 
-      track-by="UnitClassificationCode" 
-      trackBy="UnitClassificationCode" 
+      label="Trade_Name" 
+      track-by="Trade_Code" 
+      trackBy="Trade_Code" 
       :hide-selected="true"
       :internal-search="false"
        :loading="isLoading" 
@@ -91,10 +91,10 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/unitclassification/ddlsearch?keyword=${q || ''}&ids=${d || ''}`)
+        this.$http.get(`/trade/ddlsearch?keyword=${q || ''}&ids=${d || ''}`)
           .then(p => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.UnitClassificationCode;
+              this.tempValue = p.data.Data[0]?.Trade_Code;
             }
             this.list = p.data.Data;
           })

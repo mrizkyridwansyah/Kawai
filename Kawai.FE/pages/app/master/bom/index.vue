@@ -4,7 +4,7 @@
     <div class="d-flex flex-fill">
       <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
         <div class="mr-1" style="width: 100%">
-          <input-item-cls class="form-control" v-model="filter.itemCls" />
+          <input-cls type-data="ItemFinishGoodCls" class="form-control" v-model="filter.itemCls" />
         </div>
       </div>
       <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">

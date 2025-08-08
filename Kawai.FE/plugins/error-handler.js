@@ -19,14 +19,14 @@ export default defineNuxtPlugin(nuxtApp => {
         return;
       }
       // Do something with response error
-      var payload = {
-        Url: error.request.responseURL,
-        Method: error.config.method,
-        ContentType: error.config.headers['Content-Type'],
-        RequestBody: error.config.data,
-        ResponseBody: error.request.responseText
-      }
-      nuxtApp.$http.post(`/logging/network-error/create`, payload)
+      // var payload = {
+      //   Url: error.request.responseURL,
+      //   Method: error.config.method,
+      //   ContentType: error.config.headers['Content-Type'],
+      //   RequestBody: error.config.data,
+      //   ResponseBody: error.request.responseText
+      // }
+      // nuxtApp.$http.post(`/logging/network-error/create`, payload)
       // console.log('hoho', nuxtApp)
       return Promise.reject(error);
     }

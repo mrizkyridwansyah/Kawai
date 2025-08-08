@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Epte Cls`"
+      :placeholder="placeholder || `Search Cls`"
       :searchable="true"
       label="Description"
       track-by="ClsCode"
@@ -42,7 +42,7 @@ export default {
   emits: ["update:modelValue"],
   props: [
     "modelValue",
-    "type",
+    "typeData",
     "label",
     "col",
     "description",
@@ -100,7 +100,9 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/cls/ddlsearch?keyword=${q || ""}&typedata=Epte_Cls&ids=${d || ""}`
+            `/cls/ddlsearch?keyword=${q || ""}&typedata=${this.typeData}&ids=${
+              d || ""
+            }`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

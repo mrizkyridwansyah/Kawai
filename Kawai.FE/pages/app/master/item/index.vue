@@ -22,12 +22,9 @@
               <th class="text-center">Action</th>
               <th class="text-center">Item Code</th>
               <th class="text-center">Item Name</th>
-              <th class="text-center">Item Group</th>
-              <th class="text-center">Item Cls</th>
-              <th class="text-center">Item Type</th>
-              <th class="text-center">Brand</th>
-              <th class="text-center">Unit Classification</th>
-              <th class="text-center">Stock Control Cls</th>
+              <th class="text-center">Finish Good Part Cls</th>
+              <th class="text-center">Drawing Number</th>
+              <th class="text-center">Warehouse</th>
               <th class="text-center">Last Update</th>
               <th class="text-center">Last User</th>
             </tr>
@@ -48,15 +45,9 @@
               </td>
               <td>{{ item.ItemCode }}</td>
               <td>{{ item.ItemName }}</td>
-              <td>{{ item.ItemGroupName }}</td>
-              <td>{{ item.ItemClsName }}</td>
-              <td>{{ item.ItemTypeName }}</td>
-              <td>{{ item.BrandName }}</td>
-              <td>{{ item.UnitClassificationName }}</td>
-              <td v-if="item.StockControlCls">
-                <span class="text-green">YES</span>
-              </td>
-              <td v-else><span class="text-danger">NO</span></td>
+              <td>{{ item.FinishGoodPartClsDesc }}</td>
+              <td>{{ item.DrawingNumber }}</td>
+              <td>{{ item.WarehouseName }}</td>
               <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
               <td>{{ item.LastUser }}</td>
             </tr>
@@ -69,7 +60,8 @@
     ref="modalItem"
     id="modal-form-item"
     :title="title"
-    size="800"
+    :fullscreen="true"
+    size="lg"
     @hidden="
       () => {
         this.$refs.formItem.resetForm();
@@ -108,19 +100,19 @@ export default {
       keyword: null,
       keywordKey: "ItemCode",
       sorts: {
-        ItemName: "asc",
+        Item_Name: "asc",
       },
       sortItems: [
         {
           label: "Item Name",
-          value: "ItemName",
-          selected: false,
+          value: "Item_Name",
+          selected: true,
           direction: "asc",
         },
         {
           label: "Item Code",
           value: "ItemCode",
-          selected: true,
+          selected: false,
           direction: "desc",
         },
       ],

@@ -7,11 +7,11 @@
     :clear-on-select="false"
       :preserve-search="true" 
       open-direction="bottom" 
-      :placeholder="placeholder || `Search Item Cls`"
+      :placeholder="placeholder || `Search Warehouse Item`"
       :searchable="true" 
-      label="ItemClsName" 
-      track-by="ItemClsCode" 
-      trackBy="ItemClsCode" 
+      label="WarehouseName" 
+      track-by="WarehouseCode" 
+      trackBy="WarehouseCode" 
       :hide-selected="true"
       :internal-search="false"
        :loading="isLoading" 
@@ -91,10 +91,10 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/item/item-cls-ddl-search?keyword=${q || ''}&ids=${d || ''}`)
+        this.$http.get(`/item/warehouse-ddlsearch?keyword=${q || ''}&ids=${d || ''}`)
           .then(p => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.ItemClsCode;
+              this.tempValue = p.data.Data[0]?.WarehouseCode;
             }
             this.list = p.data.Data;
           })

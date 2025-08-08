@@ -52,7 +52,12 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Trade Cls</label>
-            <input-trade-cls class="form-control" v-model="model.Trade_Cls" />
+            <input-cls
+              type-data="Trade_Cls"
+              placeholder="Search Trade Cls"
+              class="form-control"
+              v-model="model.Trade_Cls"
+            />
           </div>
         </div>
         <div class="col-12 col-md-6">
@@ -152,7 +157,9 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Country Cls</label>
-            <input-country-cls
+            <input-cls
+              type-data="Country_Cls"
+              placeholder="Search Country Cls"
               class="form-control"
               v-model="model.Country_Cls"
             />
@@ -184,13 +191,22 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Region Cls</label>
-            <input-region-cls class="form-control" />
+            <input-cls
+              class="form-control"
+              type-data="Region_Cls"
+              placeholder="Search Region Cls"
+            />
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">EPTE Cls</label>
-            <input-epte-cls class="form-control" v-model="model.Epte_Cls" />
+            <input-cls
+              class="form-control"
+              type-data="Epte_Cls"
+              placeholder="Search Epte Cls"
+              v-model="model.Epte_Cls"
+            />
           </div>
         </div>
       </div>
@@ -239,7 +255,9 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">Insurance Covered</label>
-            <input-insurance-cls
+            <input-cls
+              type-data="Insurance_Cls"
+              placeholder="Search Insurance Cls"
               class="form-control"
               v-model="model.Insurance_Cls"
             />
@@ -248,20 +266,32 @@
         <div class="col-12 col-md-1">
           <div class="mb-3">
             <label class="form-label">PO Cls</label>
-            <input-po-cls class="form-control" v-model="model.PO_Cls" />
+            <input-cls
+              class="form-control"
+              v-model="model.PO_Cls"
+              type-data="PO_Cls"
+              placeholder="Search PO Cls"
+            />
           </div>
         </div>
         <div class="col-12 col-md-1">
           <div class="mb-3">
             <label class="form-label">NG Cls</label>
-            <input-ng-cls class="form-control" v-model="model.NG_Cls" />
+            <input-cls
+              class="form-control"
+              v-model="model.NG_Cls"
+              type-data="NG_Cls"
+              placeholder="Search NG Cls"
+            />
           </div>
         </div>
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">Affiliate Cls</label>
-            <input-affiliate-cls
+            <input-cls
               class="form-control"
+              type-data="Affiliate_Cls"
+              placeholder="Search Affiliate Cls"
               v-model="model.Affiliate_Cls"
             />
           </div>

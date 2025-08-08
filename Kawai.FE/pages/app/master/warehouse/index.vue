@@ -71,6 +71,7 @@
   <v-modal
     ref="modalWarehouse"
     id="modal-form-warehouse"
+    :fullscreen="true"
     :title="title"
     size="800"
     @hidden="

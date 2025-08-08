@@ -71,9 +71,9 @@
             {{ errors?.Password }}
           </div>
           <div class="text-right mb-30px">
-            <v-app-link to="/auth/forgot-password"
+            <!-- <v-app-link to="/auth/forgot-password"
               >Forgot Password ?</v-app-link
-            >
+            > -->
           </div>
           <div class="mb-15px">
             <button

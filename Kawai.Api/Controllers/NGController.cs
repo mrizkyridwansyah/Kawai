@@ -38,7 +38,7 @@ public class NGController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.NGCode)).ToList();
+            results = results.Where(x => idList.Contains(x.NGCode)).ToList();
         }
 
         return Success(results);

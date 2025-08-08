@@ -15,7 +15,7 @@
             <th class="text-center">Method</th>
             <th class="text-center">Url</th>
             <th class="text-center">Remote Addr.</th>
-            <th class="text-center">Elapsed Time</th>
+            <th class="text-center">Elapsed Time (Ms)</th>
             <th class="text-center" style="width: 20px">&nbsp;</th>
           </tr>
         </thead>
