@@ -385,8 +385,10 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Payment Terms</label>
-            <input-paymentterm-cls
+            <input-cls
               class="form-control"
+              type-data="PaymentTerm_Cls"
+              placeholder="Search Payment Terms"
               v-model="model.POPayment_Terms"
             />
           </div>
@@ -394,7 +396,9 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Transportation Cls</label>
-            <input-transportation-cls
+            <input-cls
+              type-data="Transportation_Cls"
+              placeholder="Search Transportation Cls"
               class="form-control"
               v-model="model.Transportation_Cls"
             />
@@ -537,7 +541,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">BC Type</label>
-            <input-bctype-cls class="form-control" v-model="model.Type_BC" />
+            <input-cls class="form-control" v-model="model.Type_BC" type-data="BCType_Cls" placeholder="Search BC Type Cls" />
           </div>
         </div>
         <div class="col-12 col-md-2">
