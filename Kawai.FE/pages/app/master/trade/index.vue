@@ -78,15 +78,7 @@
             <td>{{ item.NPWP_Name }}</td>
             <td>{{ item.NPWP_Address }}</td>
             <td>{{ item.NPWP_City }}</td>
-            <td style="font-align: center">
-              <font-awesome-icon
-                icon="eye"
-                class="mr-2 text-info"
-                @click="
-                  () => this.$router.push(`trade/detail?id=${item.Trade_Code}`)
-                "
-              />
-            </td>
+            <td style="font-align: center"></td>
           </tr>
         </tbody>
       </table>
