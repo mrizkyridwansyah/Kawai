@@ -100,7 +100,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/cls/ddlsearch?keyword=${q || ""}&typedata="Country_Cls"&ids=${
+            `/cls/ddlsearch?keyword=${q || ""}&typedata=Country_Cls&ids=${
               d || ""
             }`
           )

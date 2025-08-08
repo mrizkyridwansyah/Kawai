@@ -102,7 +102,7 @@ export default {
           .get(
             `/cls/ddlsearch?keyword=${
               q || ""
-            }&typedata="Transportation_Cls"&ids=${d || ""}`
+            }&typedata=Transportation_Cls&ids=${d || ""}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

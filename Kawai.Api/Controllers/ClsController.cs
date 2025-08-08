@@ -33,7 +33,7 @@ public class ClsController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.ClsCode)).ToList();
+            results = results.Where(x => idList.Contains(x.ClsCode)).ToList();
         }
 
         return Success(results);
