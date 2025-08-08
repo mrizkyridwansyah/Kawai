@@ -38,7 +38,7 @@ public class TradeController : HahaController
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => !idList.Contains(x.Trade_Code)).ToList();
+            results = results.Where(x => idList.Contains(x.Trade_Code)).ToList();
         }
 
         return Success(results);
