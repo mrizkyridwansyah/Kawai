@@ -57,6 +57,17 @@ export const useNotification = defineStore('Notification', {
           .finally(_ => this.isLoading = false);
       })
     },
+    updateSeen: function (id) {
+      this.isEditing = true;
+      return new Promise((resolve, reject) => {
+        app.$http.patch(`/notification/update-seen?id=${id}`)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isEditing = false);
+      })
+    },
   },
 });
 

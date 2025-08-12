@@ -31,9 +31,9 @@ public class AreaController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string warehouse, string location, string ids)
     {
-        var results = await _areaRepository.GetDDL(keyword);
+        var results = await _areaRepository.GetDDL(keyword, warehouse, location);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -44,9 +44,9 @@ public class AreaController : HahaController
     }
 
     [HttpGet("ddl-area-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string item, string ids)
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string location, string item, string ids)
     {
-        var results = await _areaRepository.DDLSearchByStock(keyword, item);
+        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, location, item);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -121,6 +121,9 @@ public class AreaController : HahaController
     [HttpPost("export/excel")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
+        var results = await _areaRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 
@@ -129,8 +132,6 @@ public class AreaController : HahaController
         List<string> headers = ["Warehouse Code", "Warehouse Name", "Location Code", "Location Name",
                 "Area Code", "Area Name", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
-
-        var results = await _areaRepository.GetAll(parameter);
 
         foreach (var result in results)
         {

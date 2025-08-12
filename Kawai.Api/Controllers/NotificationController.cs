@@ -27,4 +27,11 @@ public class NotificationController : HahaController
         return Success(results);
     }
 
+    [HttpPatch("update-seen")]
+    public async Task<IActionResult> UpdateSeenNotification(long id)
+    {
+        await _notificationReporitory.UpdateSeenNotification(id);
+        return Success();
+    }
+
 }

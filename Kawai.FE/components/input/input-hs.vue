@@ -9,7 +9,7 @@
       open-direction="bottom" 
       :placeholder="placeholder || `Search HS`"
       :searchable="true" 
-      label="HSName" 
+      label="HSCode" 
       track-by="HSCode" 
       trackBy="HSCode" 
       :hide-selected="true"

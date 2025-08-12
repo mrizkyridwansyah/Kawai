@@ -88,27 +88,32 @@ public class WarehouseController : HahaController
         });
 
 
-        /*
-         *  INI CONTOH KALO MAU PAKE NOTIF SETELAH API BIKIN SESUATU
 
-            List<string> receivers = ["ossas"];
-            Notification notification = new Notification
-            {
-                Title = "Master Warehouse Created",
-                Description = $"Warehouse {model.WarehouseCode} - {model.WarehouseName} has been created.",
-                NotifType = "INFO",
-                Priority = "LOW",
-                Sender = Auth.User.UserID
-            };
+        List<string> receivers = ["hisyam", "admin"];
+        List<Notification> notifications = new List<Notification>();
+        Notification notification = new Notification
+        {
+            Title = "Master Warehouse Created",
+            Description = $"Warehouse {model.WarehouseCode} - {model.WarehouseName} has been created.",
+            NotifType = "INFO",
+            Priority = "LOW",
+            Sender = Auth.User.UserID,
+            UrlRedirect = "/app/notif/warehouse?id=" + model.WarehouseCode
+        };
 
-            foreach (var reciver in receivers)
-            {
-                notification.Receiver = reciver;
-                await _notificationRepository.SaveNotification(notification);
-            }
+        notifications.Add(notification);
 
-            await _notificationService.BroadCastOnlyTo(receivers, "NewNotification", new { Count = 1 });         
-         */
+        foreach (var reciver in receivers)
+        {
+            notification.Receiver = reciver;
+            await _notificationRepository.SaveNotification(notification);
+        }
+
+        await _notificationService.BroadCastOnlyTo(receivers, "NewNotification", new
+        {
+            notifications.Count,
+            Notifications = notifications
+        });
 
         return Success(after);
     }
@@ -152,6 +157,9 @@ public class WarehouseController : HahaController
     [HttpPost("export/excel")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
+        var results = await _warehouseRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 
@@ -159,8 +167,6 @@ public class WarehouseController : HahaController
 
         List<string> headers = ["Warehouse Code", "Warehouse Name", "Adm Group", "Adm Group Name", "Stock Cls", "NG Cls", "Use End Date", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
-
-        var results = await _warehouseRepository.GetAll(parameter);
 
         foreach (var result in results)
         {
@@ -180,7 +186,7 @@ public class WarehouseController : HahaController
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.NGCls == "01" ? "YES" : "NO");
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.UseEndDate.ToString("dd MMM yyyy"));
+            ExcelHelper.SetCell(row, colIdx, result.UseEndDate.HasValue ? result.UseEndDate.Value.ToString("dd MMM yyyy") : "");
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
             colIdx++;

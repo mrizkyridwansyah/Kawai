@@ -20,8 +20,8 @@ public class Item
     [AllowedValues(["01", "02"])]    
     public string FinishGoodPartCls { get; set; }
 
-    public string PartNumber { get; set; }
-    public string DrawingCode { get; set; }
+    [MaxLength(100, ErrorMessage = "Drawing Number tidak boleh lebih dari 100 karakter")]
+    public string DrawingNumber{ get; set; }
 
     [Required(ErrorMessage = "Warehouse Code tidak boleh kosong")]
     [MaxLength(15, ErrorMessage = "Warehouse Code tidak boleh lebih dari 15 karakter")]
@@ -56,6 +56,9 @@ public class Item
     public bool ProvisionCls { get; set; }
     public bool ProductionCls { get; set; }
 
+    [Required(ErrorMessage = "Stock Control Cls tidak boleh kosong")]
+    public bool StockControlCls { get; set; }
+
 
     [MaxLength(2, ErrorMessage = "Material Cls tidak boleh lebih dari 2 karakter")]
     public string MaterialCls { get; set; }
@@ -69,8 +72,8 @@ public class Item
     [MaxLength(2, ErrorMessage = "Sheet Coil Cls tidak boleh lebih dari 2 karakter")]
     public string SheetCoilCls { get; set; }
     public double? Pitch { get; set; }
-    public double? Number_Producible { get; set; }
-    public double? Scrap_Weight { get; set; }
+    public double? NumberProducible { get; set; }
+    public double? ScrapWeight { get; set; }
 
     [MaxLength(2, ErrorMessage = "Drawing Material Cls tidak boleh lebih dari 2 karakter")]
     public string DrawingMaterialCls { get; set; }
@@ -130,6 +133,7 @@ public class Item
     [MaxLength(2, ErrorMessage = "Packing Style Cls tidak boleh lebih dari 2 karakter")]
     public string PackingStyleMaterialCls { get; set; }
 
+    [MaxLength(7, ErrorMessage = "Accounting Code tidak boleh lebih dari 7 karakter")]
     public string AccountingCode { get; set; }
 
     [Required(ErrorMessage = "Explosion Cls tidak boleh kosong")]
@@ -138,10 +142,6 @@ public class Item
 
     [MaxLength(2, ErrorMessage = "Person In Charge Cls tidak boleh lebih dari 2 karakter")]
     public string PersonInChargeCls { get; set; }
-
-    [Required(ErrorMessage = "Stock Control Cls tidak boleh kosong")]
-    [MaxLength(2, ErrorMessage = "Stock Control Cls tidak boleh lebih dari 2 karakter")]
-    public string StockControlCls { get; set; }
 
     [MaxLength(2, ErrorMessage = "Supply Issue Cls tidak boleh lebih dari 2 karakter")]
     public string SupplyIssueCls { get; set; }

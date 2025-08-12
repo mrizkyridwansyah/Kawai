@@ -16,6 +16,8 @@
           />
         </div>
       </div>
+      <br>
+
     </div>
   </div>
   <div class="d-flex mt-3">
@@ -139,6 +141,7 @@ export default {
     filter: {
       warehouse: null,
       location: null,
+      area: null,
       keyword: null,
       sorts: {
         AreaName: "asc",
@@ -268,7 +271,8 @@ export default {
           LocationCode: this.filter.location,
         },
       ];
-      new Promise((resolve, reject) => {
+
+      return new Promise((resolve, reject) => {
         this.ds
           .exportExcel(filters)
           .then((_) => {

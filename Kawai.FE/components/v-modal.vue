@@ -76,7 +76,7 @@ export default {
     left: 0;
     width: 100%;
     background-color: white;
-    padding: 1rem;
+    padding: .5em;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
     z-index: 10;
   }

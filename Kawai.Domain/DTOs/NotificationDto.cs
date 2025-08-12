@@ -10,5 +10,6 @@ public class NotificationDto
     public string Receiver { get; set; }
     public string Sender { get; set; }
     public bool HasSeen { get; set; }
+    public string UrlRedirect { get; set; }
     public string TimeAgo { get; set; }
 }

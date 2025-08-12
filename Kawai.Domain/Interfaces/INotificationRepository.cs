@@ -8,4 +8,6 @@ public interface INotificationRepository
     Task<int> UnreadNotifByReceiver(string receiver);
     Task<List<NotificationDto>> GetAllNotifByUser(string receiver);
     Task SaveNotification(Notification notification);
+    Task SaveNotificationToAll(Notification notification);
+    Task UpdateSeenNotification(long id);
 }

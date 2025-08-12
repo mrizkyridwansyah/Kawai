@@ -60,6 +60,22 @@ public class HahaController : ControllerBase
         };
     }
 
+    protected ContentResult NoContent()
+    {
+        return new ContentResult
+        {
+            StatusCode = 200,
+            ContentType = "application/json",
+            Content = JsonConvert.SerializeObject(new
+            {
+                Code = 204,
+                Status = "Success",
+                Message = "No data available!",
+                Data = ""
+            })
+        };
+    }
+
     protected ContentResult Success(object data = null, string message = null, string code = null)
     {
         return new ContentResult

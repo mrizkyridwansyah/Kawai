@@ -5,11 +5,11 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Location Code</label>
-        <input-text placeholder="#AUTO" disabled="true" v-model="model.LocationCode" :errors="errors.LocationCode" />
+        <input-text placeholder="#AUTO" disabled="true" v-model="model.LocationCode" :errors="errors?.LocationCode" />
     </div>
     <div class="mb-3">
         <label class="form-label">Location Name</label>
-        <input-text placeholder="Location Name" v-model="model.LocationName" :errors="errors.LocationName" />
+        <input-text placeholder="Location Name" v-model="model.LocationName" :errors="errors?.LocationName" />
     </div>
     <div class="mt-4 mb-3">
         <v-button-submit :submit="submit" :disabled="(btnDisabled !== undefined && btnDisabled !== false)"

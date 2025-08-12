@@ -111,6 +111,9 @@ public class NGController : HahaController
     [HttpPost("export/excel")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
+        var results = await _ngRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 
@@ -118,8 +121,6 @@ public class NGController : HahaController
 
         List<string> headers = ["NG Code", "Description", "Common", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
-
-        var results = await _ngRepository.GetAll(parameter);
 
         foreach (var result in results)
         {

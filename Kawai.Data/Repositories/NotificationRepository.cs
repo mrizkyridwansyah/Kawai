@@ -26,9 +26,21 @@ public class NotificationRepository : INotificationRepository
         return (await _dbExecutor.QueryListAsync<NotificationDto>(sp, new { Receiver = receiver })).ToList();
     }
 
+    public async Task UpdateSeenNotification(long id)
+    {
+        string sql = @"sp_Wms_Notifications_UpdateSeen";
+        int i = await _dbExecutor.ExecuteAsync(sql, new { Id = id});
+    }
+
     public async Task SaveNotification(Notification notification)
     {
-        string sql = @"sp_Wms_Notifications_Save";
+        string sql = @"sp_Wms_Notifications_SaveToUser";
+        int i = await _dbExecutor.ExecuteAsync(sql, notification);
+    }
+
+    public async Task SaveNotificationToAll(Notification notification)
+    {
+        string sql = @"sp_Wms_Notifications_SaveToAll";
         int i = await _dbExecutor.ExecuteAsync(sql, notification);
     }
 }

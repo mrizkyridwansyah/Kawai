@@ -18,6 +18,7 @@
           v-for="(notif, index) in notifications"
           :key="index"
           href="javascript:;"
+          @click="updateSeen(notif)"
           class="dropdown-item media"
         >
           <div class="media-left">
@@ -124,13 +125,15 @@ export default {
   },
   mounted: async function () {
     this.auth.load().then((dt) => {
-        this.userData = dt.data.Data
-        this.notif.loadCountUnread(this.userData.UserId).then((dt3) => this.unreadCount = dt3.Data);
+      this.userData = dt.data.Data;
+      this.notif
+        .loadCountUnread(this.userData.UserId)
+        .then((dt3) => (this.unreadCount = dt3.Data));
     });
     this.image = localStorage.getItem("UserPhoto");
 
     const nuxtApp = useNuxtApp();
-    const signalr = await nuxtApp.$createSignalR('/notifapprovalhub');
+    const signalr = await nuxtApp.$createSignalR("/notifapprovalhub");
 
     if (!signalr) {
       console.warn("SignalR connection not found!");
@@ -141,6 +144,11 @@ export default {
     signalr.on("NewNotification", (data) => {
       this.hasNewNotification = true;
       this.unreadCount += data?.Count || 1;
+
+      data?.notifications.forEach((notif) => {
+        console.log(notif);
+        toastNotif(notif);
+      });
     });
 
     const notifToggle = this.$refs.notifToggle;
@@ -167,6 +175,15 @@ export default {
       this.hasNewNotification = false;
       this.openNotif = true;
       console.log(this.openNotif, "openNotif");
+    },
+    updateSeen: function (notif) {
+      this.notif
+        .updateSeen(notif.Id)
+        .then((datas) => {
+          this.$router.push(notif.UrlRedirect);
+        })
+        .catch((err) => {
+        });
     },
     onOver: function () {
       this.$refs["header-menu-user-info"].visible = this.showBackdrop = true;

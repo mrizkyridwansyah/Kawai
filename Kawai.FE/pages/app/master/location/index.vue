@@ -232,7 +232,7 @@ export default {
       }
 
       let filters = [{ WarehouseCode: this.filter.warehouse }];
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         this.ds
           .exportExcel(filters)
           .then((_) => {

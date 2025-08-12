@@ -85,9 +85,9 @@ public class IItemController : HahaController
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] Item model)
     {
-        var before = await _itemRepository.Capture(model.WarehouseCode);
+        var before = await _itemRepository.Capture(model.ItemCode);
         await _itemRepository.Update(model, Auth.User.UserID);
-        var after = await _itemRepository.Capture(model.WarehouseCode);
+        var after = await _itemRepository.Capture(model.ItemCode);
 
         await _logger.SaveDataLog(new DataLogDto
         {
@@ -182,6 +182,9 @@ public class IItemController : HahaController
     [HttpPost("export/excel")]
     public async Task<IActionResult> ExportExcelOld([FromBody] RequestParameter parameter)
     {
+        var results = await _itemRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 
@@ -198,64 +201,66 @@ public class IItemController : HahaController
         ];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
-        var results = await _itemRepository.GetAll(parameter);
+        ws.Cell(2, 1).InsertData(results.Select(r => new {
+            r.ItemCode,
+            r.ItemName,
+            r.WarehouseCode,
+            r.WarehouseName,
+            r.SupplierCode,
+            r.SupplierName,
+            r.ManufactureCode,
+            r.ManufactureName,
+            r.FinishGoodPartClsDesc,
+            r.PartClsDesc,
+            r.ReserveClsDesc,
+            r.SupplyClsDesc,
+            r.ProvisionClsDesc,
+            r.MaterialClsDesc,
+            r.ProductionClsDesc,
+            r.PackingStyleClsDesc,
+            r.UnitClsDesc,
+            r.StockControlClsDesc,
+            UseEndDay = r.UseEndDay.HasValue ? r.UseEndDay.Value.ToString("dd MMM yyyy") : "",
+            LastUpdate = r.LastUpdate.HasValue ? r.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "",
+            r.LastUser
+        }));
 
-        foreach (var result in results)
-        {
-            rowIdx++;
-            var row = ws.Row(rowIdx);
-            int colIdx = 1;
+        //foreach (var result in results)
+        //{
+        //    rowIdx++;
+        //    var row = ws.Row(rowIdx);
+        //    int colIdx = 1;
 
-            ExcelHelper.SetCell(row, colIdx, result.ItemCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ItemName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.WarehouseCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.WarehouseName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.SupplierCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.SupplierName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ManufactureCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ManufactureName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.FinishGoodPartClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.PartClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ReserveClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.SupplyClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ProvisionClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.MaterialClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ProductionClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.PackingStyleClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.UnitClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.StockControlClsDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.UseEndDay.HasValue ? result.UseEndDay.Value.ToString("dd MMM yyyy") : "");
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LastUser);
-        }
+        //    ExcelHelper.SetCell(row, colIdx, result.ItemCode);
+        //    ExcelHelper.SetCell(row, colIdx++, result.ItemName);
+        //    ExcelHelper.SetCell(row, colIdx++, result.WarehouseCode);
+        //    ExcelHelper.SetCell(row, colIdx++, result.WarehouseName);
+        //    ExcelHelper.SetCell(row, colIdx++, result.SupplierCode);
+        //    ExcelHelper.SetCell(row, colIdx++, result.SupplierName);
+        //    ExcelHelper.SetCell(row, colIdx++, result.ManufactureCode);
+        //    ExcelHelper.SetCell(row, colIdx++, result.ManufactureName);
+        //    ExcelHelper.SetCell(row, colIdx++, result.FinishGoodPartClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.PartClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.ReserveClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.SupplyClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.ProvisionClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.MaterialClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.ProductionClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.PackingStyleClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.UnitClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.StockControlClsDesc);
+        //    ExcelHelper.SetCell(row, colIdx++, result.UseEndDay.HasValue ? result.UseEndDay.Value.ToString("dd MMM yyyy") : "");
+        //    ExcelHelper.SetCell(row, colIdx++, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
+        //    ExcelHelper.SetCell(row, colIdx++, result.LastUser);
+        //}
 
-        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
+        //ExcelHelper.AutofitColumns(ws, 1, headers.Count);
 
         var range = ws.Range(1, 1, rowIdx, headers.Count);
         ExcelHelper.SetBorders(range);
 
         using var ms = new MemoryStream();
-        workbook.SaveAs(ms);
+        workbook.SaveAs(ms, false);
         var fileBytes = ms.ToArray();
         var base64File = Convert.ToBase64String(fileBytes);
 

@@ -83,7 +83,7 @@ public class SessionManager(Auth auth,
             {
                 UserId = user.UserID,
                 Date = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                ExpiryDate = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeMilliseconds(),// LIFETIME NYA INI
+                ExpiryDate = DateTimeOffset.UtcNow.AddHours(12).ToUnixTimeMilliseconds(),// LIFETIME NYA INI
                 UserAgent = UserAgent,
                 RemoteAddr = RemoteAddr,
                 Token = Guid.NewGuid().UniqueId(100),

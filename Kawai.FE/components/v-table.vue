@@ -22,9 +22,15 @@
         <button
           v-if="this.exportExcel"
           class="btn btn-sm btn-green btn-elevate"
-          @click="this.exportExcelAction"
+          :disabled="isExporting"
+          @click="handleExport"
         >
-          <font-awesome-icon icon="file-excel" style="font-size: 1.25em" />
+          <span v-if="!isExporting">
+            <font-awesome-icon icon="file-excel" style="font-size: 1.25em" />
+          </span>
+          <span v-else>
+            <i class="fa fa-spinner fa-spin"></i>
+          </span>
         </button>
       </div>
       <!-- END panel-header -->
@@ -81,6 +87,9 @@
 
 <script>
 export default {
+  data: () => ({
+    isExporting: false,
+  }),
   props: {
     filter: Object,
     keywordKeys: Array,
@@ -109,6 +118,18 @@ export default {
     window.removeEventListener("resize", this.waitForDOMThenFreeze);
   },
   methods: {
+    handleExport: async function () {
+      this.isExporting = true;
+      try {
+        console.log(this.isExporting, "try");
+        await this.exportExcelAction();
+      } catch (e) {
+        console.error("Export error:", e);
+      } finally {
+        console.log(this.isExporting, "finally");
+        this.isExporting = false;
+      }
+    },
     setFrozenColumns: function (columnIndexes = []) {
       const table = this.$refs.tableContainer?.querySelector("table");
       if (!table) return;

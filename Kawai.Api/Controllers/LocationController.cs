@@ -120,6 +120,9 @@ public class LocationController : HahaController
     [HttpPost("export/excel")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
+        var results = await _locationRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 
@@ -128,7 +131,6 @@ public class LocationController : HahaController
         List<string> headers = ["Warehouse Code", "Warehouse Name", "Location Code", "Location Name", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
-        var results = await _locationRepository.GetAll(parameter);
 
         foreach (var result in results)
         {
@@ -165,6 +167,8 @@ public class LocationController : HahaController
     [HttpPost("export/qrcode")]
     public async Task<IActionResult> ExportQRCode([FromBody] List<Dictionary<string, object>> rows)
     {
+        if (!rows.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 

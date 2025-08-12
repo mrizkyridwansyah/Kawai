@@ -174,8 +174,10 @@ export const useUser = defineStore('User', {
               link.click();
               document.body.removeChild(link);
               URL.revokeObjectURL(url);
+
+              resolve();
             } else {
-              alert(data.Message || 'Export gagal');
+              reject(data);
             }
           })
           .catch(async (err) => {

@@ -182,7 +182,7 @@ export default {
       this.ds.load();
     },
     exportExcel: function () {
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         this.ds
           .exportExcel()
           .then((_) => {

@@ -3,14 +3,13 @@ using Dapper;
 using Kawai.Api;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
-using Kawai.Api.Shared;
 using Kawai.Api.Shared.Extensions;
 using Kawai.Api.Shared.Middleware;
-using Kawai.Data.Repositories;
 using Kawai.Data.SqlConnections;
-using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
+using System.Text;
+using System.Threading.RateLimiting;
 
 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -53,6 +52,44 @@ builder.Services
     .AddAuthentication("Bearer")
     .AddScheme<AuthenticationSchemeOptions, BearerAuthenticationHandler>("Bearer", null);
 //.AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", options => { });
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("PerUserTokenPolicy", context =>
+    {
+
+        var authHeader = context.Request.Headers.Authorization.ToString();
+        var token = authHeader.StartsWith("Bearer ")
+            ? authHeader["Bearer ".Length..]
+            : authHeader;
+
+        if (string.IsNullOrEmpty(token))
+        {
+            // Fallback ke shared token (atau bisa ditolak)
+            token = "anonymous";
+        }
+
+        token = Cryptography.SHA256Hash(token);
+
+        // Limit: 5 request per 10 detik per token
+        return RateLimitPartition.GetTokenBucketLimiter(token, key => new TokenBucketRateLimiterOptions
+        {
+            TokenLimit = 5,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0,
+            ReplenishmentPeriod = TimeSpan.FromSeconds(10),
+            TokensPerPeriod = 5,
+            AutoReplenishment = true
+        });
+    });
+
+    // Optional: custom response kalau limit terlewati
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        await context.HttpContext.Response.WriteAsync("Terlalu banyak permintaan. Coba lagi sebentar.", token);
+    };
+});
 
 builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
@@ -101,6 +138,7 @@ app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.UseWebSockets();
 app.MapControllers();
 

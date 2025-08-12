@@ -148,8 +148,10 @@ export const useLocation = defineStore('Location', {
               link.click();
               document.body.removeChild(link);
               URL.revokeObjectURL(url);
+
+              resolve();
             } else {
-              alert(data.Message || 'Export gagal');
+              reject(data);
             }
           })
           .catch(async (err) => {
@@ -184,11 +186,11 @@ export const useLocation = defineStore('Location', {
 
               resolve();
             } else {
-              alert(data.Message || 'Export gagal');
+              reject(data);
             }
           })
           .catch(async (err) => {
-              reject(err?.response?.data);
+            reject(err?.response?.data);
           })
           .finally(() => {
             this.isLoading = false;

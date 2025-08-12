@@ -108,6 +108,8 @@ public class LocalFileStorage : IFileStorage
             Directory.CreateDirectory(location);
         }
         var filePath = Path.Combine(location, Cryptography.SHA256Hash(id).ToLower() + ".bin");
+        if (!File.Exists(filePath)) return null;
+
         return new FileStream(filePath, FileMode.Open, FileAccess.Read);
     }
 
@@ -119,6 +121,8 @@ public class LocalFileStorage : IFileStorage
             Directory.CreateDirectory(location);
         }
         var filePath = Path.Combine(location, Cryptography.SHA256Hash(id).ToLower() + ".bin");
+        if (!File.Exists(filePath)) return null;
+
         var fileStream = new FileStream(filePath, FileMode.Open);
         return fileStream;
     }
@@ -131,6 +135,9 @@ public class LocalFileStorage : IFileStorage
             Directory.CreateDirectory(location);
         }
         var filePath = Path.Combine(location, Cryptography.SHA256Hash(id).ToLower() + ".bin");
+
+        if (!File.Exists(filePath)) return null;
+
         var fileStream = new FileStream(filePath, FileMode.Open);
         return fileStream;
     }
@@ -148,6 +155,8 @@ public class LocalFileStorage : IFileStorage
             Directory.CreateDirectory(location);
         }
         var filePath = Path.Combine(location, Cryptography.SHA256Hash(id).ToLower() + ".bin");
+        if (!File.Exists(filePath)) return null;
+
         var fileStream = new FileStream(filePath, FileMode.Open);
         return fileStream;
     }
@@ -160,6 +169,8 @@ public class LocalFileStorage : IFileStorage
             Directory.CreateDirectory(location);
         }
         var filePath = Path.Combine(location, Cryptography.SHA256Hash(id).ToLower() + ".bin");
+        if (!File.Exists(filePath)) return null;
+
         var fileStream = new FileStream(filePath, FileMode.Open);
         return fileStream;
     }

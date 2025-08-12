@@ -59,7 +59,7 @@
             <td v-else-if="item.StockControlCls == '02'">NO</td>
             <td v-if="item.NGCls == '01'">YES</td>
             <td v-else-if="item.NGCls == '02'">NO</td>
-            <td>{{ $func.formatDateTime(item.UseEndDate) }}</td>
+            <td>{{ $func.formatDate(item.UseEndDate) }}</td>
             <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
             <td>{{ item.Lastuser }}</td>
           </tr>
@@ -71,9 +71,8 @@
   <v-modal
     ref="modalWarehouse"
     id="modal-form-warehouse"
-    :fullscreen="true"
     :title="title"
-    size="800"
+    size="sm"
     @hidden="
       () => {
         this.$refs.formWarehouse.resetForm();
@@ -203,7 +202,7 @@ export default {
       this.ds.load();
     },
     exportExcel: function () {
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         this.ds
           .exportExcel()
           .then((_) => {

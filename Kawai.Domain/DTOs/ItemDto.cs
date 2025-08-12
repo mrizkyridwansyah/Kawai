@@ -92,7 +92,7 @@ public class ItemDto : DataTableDto
     public string ExplosionClsDesc { get; set; }
     public string PersonInChargeCls { get; set; }
     public string PersonInChargeClsDesc { get; set; }
-    public string StockControlCls { get; set; }
+    public bool StockControlCls { get; set; }
     public string StockControlClsDesc { get; set; }
     public string SupplyIssueCls { get; set; }
     public string SupplyIssueClsDesc { get; set; }

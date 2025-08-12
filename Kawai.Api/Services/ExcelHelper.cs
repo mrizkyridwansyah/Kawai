@@ -37,6 +37,30 @@ public static class ExcelHelper
         return style;
     }
 
+    public static IXLStyle ApplyHeaderStyle(IXLWorksheet ws, int startRow, int endRow, int startCol, int endCol,
+        bool bold = false, bool italic = false,
+        int fontSize = 12, XLAlignmentHorizontalValues hAlign = XLAlignmentHorizontalValues.Center,
+        XLAlignmentVerticalValues vAlign = XLAlignmentVerticalValues.Center,
+        XLColor? background = null)
+    {
+        var range = ws.Range(startRow, startCol, endRow, endCol);
+        var style = range.Style;
+        style.Font.Bold = bold;
+        style.Font.Italic = italic;
+        style.Font.FontSize = fontSize;
+        style.Alignment.Horizontal = hAlign;
+        style.Alignment.Vertical = vAlign;
+        style.Font.FontColor = XLColor.White;
+        style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+        if (background != null)
+        {
+            style.Fill.BackgroundColor = background;
+        }
+
+        return style;
+    }
+
     public static void SetHeader(IXLWorksheet ws, int row, List<string> headers)
     {
         var headerRow = ws.Row(row);
@@ -44,18 +68,71 @@ public static class ExcelHelper
         {
             var cell = headerRow.Cell(i + 1);
             cell.Value = headers[i];
-            ApplyCellStyle(cell, bold: true, background: XLColor.RoyalBlue);
-            cell.Style.Font.FontColor = XLColor.White;
-            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
         }
+
+        ApplyHeaderStyle(ws, row, row, 1, headers.Count, bold: true, background: XLColor.RoyalBlue);
     }
 
-    public static void SetCell(IXLRow row, int colIdx, object value, Action<IXLCell>? styling = null)
+    public static void SetCell(IXLRow row, int colIdx, object? value, Action<IXLCell>? styling = null)
     {
         var cell = row.Cell(colIdx);
-        cell.Value = value?.ToString() ?? "";
-        styling?.Invoke(cell);
+
+        // Langsung assign value as-is biar tipe data tetap (angka tetap angka, DateTime tetap DateTime)
+        switch (value)
+        {
+            case null:
+                cell.Value = "";
+                break;
+            case string s:
+                cell.Value = s;
+                break;
+            case int i:
+                cell.Value = i;
+                break;
+            case long l:
+                cell.Value = l;
+                break;
+            case double d:
+                cell.Value = d;
+                break;
+            case float f:
+                cell.Value = Convert.ToDouble(f);
+                break;
+            case decimal dec:
+                cell.Value = Convert.ToDouble(dec); // ClosedXML tidak support decimal langsung
+                break;
+            case DateTime dt:
+                cell.Value = dt;
+                break;
+            case bool b:
+                cell.Value = b;
+                break;
+            case Enum e:
+                cell.Value = e.ToString();
+                break;
+            default:
+                cell.Value = value.ToString()!;
+                break;
+        }
+
+        //cell.Value = (XLCellValue)(value ?? "");
+
+        // Kalau memang pakai styling, baru panggil
+        if (styling != null)
+            styling(cell);
     }
+    public static void SetCell(IXLRow row, int colIdx, object? value)
+    {
+        SetCell(row, colIdx, value, null);
+        //row.Cell(colIdx).Value = (XLCellValue)(value ?? "");
+    }
+
+    //public static void SetCell(IXLRow row, int colIdx, object value, Action<IXLCell>? styling = null)
+    //{
+    //    var cell = row.Cell(colIdx);
+    //    cell.Value = value?.ToString() ?? "";
+    //    styling?.Invoke(cell);
+    //}
 
     public static void MergeCells(IXLWorksheet ws, int firstRow, int lastRow, int firstCol, int lastCol)
     {

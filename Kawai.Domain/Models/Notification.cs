@@ -16,4 +16,5 @@ public class Notification
 
     public string Receiver { get; set; }
     public string Sender { get; set; }
+    public string UrlRedirect { get; set; }
 }

@@ -7,18 +7,18 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Area`"
+      :placeholder="placeholder || `Search Manufacture`"
       :searchable="true"
-      label="AreaName"
-      track-by="AreaCode"
-      trackBy="AreaCode"
+      label="ManufactureName"
+      track-by="ManufactureCode"
+      trackBy="ManufactureCode"
       :hide-selected="true"
       :internal-search="false"
       :loading="isLoading"
       @search-change="search"
       @open="open"
       :select="change"
-      :class="cClass || 'input-wrapper'"
+      :class="cClass || 'input-factory-wrapper'"
       :multiple="multiple !== undefined || false"
       :disabled="disabled !== undefined || false"
       select-label=""
@@ -41,7 +41,7 @@ export default {
   props: [
     'modelValue', 'type', 'label', 'col', 'description', 
     'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class', 'warehouse', 'location'
+    , 'disabled', 'multiple', 'class'
   ],
   data: () => ({
     isLoading: false,
@@ -60,14 +60,6 @@ export default {
         this.tempValue = null;
         
       this.load('', after);
-    },
-    warehouse: function(after) {
-      this.tempValue = null;
-      this.load('', this.modelValue);
-    },
-    location: function(after) {
-      this.tempValue = null;
-      this.load('', this.modelValue);
     },
     tempValue: function(after) {
       if(!after)
@@ -97,10 +89,10 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/area/ddlsearch?keyword=${q || ''}&ids=${d || ''}&warehouse=${this.warehouse || 'ALL'}&location=${this.location || 'ALL'}`)
+        this.$http.get(`/manufactureline/ddl-manufacture-search?keyword=${q || ''}&ids=${d || ''}`)
           .then(p => {
-            if(d && p.data.length > 0) {
-              this.tempValue = p.data.Data[0]?.AreaCode;
+            if(d && p.data.Data.length > 0) {
+              this.tempValue = p.data.Data[0]?.ManufactureCode;
             }
             this.list = p.data.Data;
           })
@@ -114,7 +106,7 @@ export default {
 </script>
 
 <style>
-.input-wrapper {
+.input-factory-wrapper {
   min-width: 10em;
   width: 100%;
 }

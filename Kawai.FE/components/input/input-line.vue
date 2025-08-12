@@ -7,11 +7,11 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Factory`"
+      :placeholder="placeholder || `Search Line`"
       :searchable="true"
-      label="FactoryName"
-      track-by="FactoryCode"
-      trackBy="FactoryCode"
+      label="LineName"
+      track-by="LineCode"
+      trackBy="LineCode"
       :hide-selected="true"
       :internal-search="false"
       :loading="isLoading"
@@ -41,7 +41,7 @@ export default {
   props: [
     'modelValue', 'type', 'label', 'col', 'description', 
     'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class'
+    , 'disabled', 'multiple', 'class', 'manufacture'
   ],
   data: () => ({
     isLoading: false,
@@ -89,12 +89,12 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/vue/factory/ddlsearch?keyword=${q || ''}&selectedVal=${d || ''}`)
+        this.$http.get(`/manufactureline/ddl-line-search?keyword=${q || ''}&manufactureCode=${this.manufacture}&ids=${d || ''}`)
           .then(p => {
-            if(d && p.data.length > 0) {
-              this.tempValue = p.data[0]?.FactoryCode;
+            if(d && p.data.Data.length > 0) {
+              this.tempValue = p.data.Data[0]?.LineCode;
             }
-            this.list = p.data;
+            this.list = p.data.Data;
           })
           .finally(() => this.isLoading = false);
           
