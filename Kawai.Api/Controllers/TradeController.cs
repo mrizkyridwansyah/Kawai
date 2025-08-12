@@ -116,7 +116,7 @@ public class TradeController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["NG Code", "Description", "Common", "Last Update", "Last User"];
+        List<string> headers = ["Trade_Code", "Trade_Cls", "Trade_Cls_Descs", "Trade_Name", "Trade_Abbr", "Contact_Person", "Address1", "Address2", "City", "Country", "Country_Cls", "Country_Cls_Descs", "Epte_Cls", "Epte_Cls_Descs", "Region_Cls", "Region_Cls_Descs", "Postal_Code", "Telephone", "Fax", "Closing_Day", "Pay_Day", "InvoicePay_Days", "Affiliate_Cls", "Affiliate_Cls_Descs", "Insurance_Cls", "Insurance_Cls_Descs", "NPWP_No", "NPWP_Name", "NPWP_Address", "NPWP_City", "NPPKP_No", "Invoice_To", "PO_Cls", "PO_Cls_Descs", "Price_Condition", "Price_Condition_Descs", "POPayment_Day", "POPayment_Terms", "Transportation_Cls", "Transportation_Cls_Descs", "POCaseMark1", "POCaseMark2", "POCaseMark3", "POCaseMark4", "POCaseMark5", "POMarking1", "POMarking2", "POMarking3", "POMarking4", "POMarking5", "POMarking6", "Subcon_WH_Code", "Subcon_WH_Descs", "NG_Cls", "NG_Cls_Descs", "SAP_Code", "Type_BC", "Type_BC_Descs", "No_Izin", "CODE_KPPBC", "NoIzin_Date", "NITKU"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
         var results = await _tradeRepository.GetAll(parameter);

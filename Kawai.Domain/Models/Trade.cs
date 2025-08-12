@@ -54,4 +54,5 @@ public class Trade
     public string CODE_KPPBC { get; set; }
     public DateTime? NoIzin_Date { get; set; }
     public string NITKU { get; set; }
+ 
 }

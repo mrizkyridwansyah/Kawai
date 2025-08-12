@@ -43,7 +43,7 @@
             <td v-if="item.IsCommon">Yes</td>
             <td v-else>No</td>
             <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
+            <td>{{ item.Lastuser }}</td>
           </tr>
         </tbody>
       </table>
@@ -76,7 +76,7 @@ export default {
   data: () => ({
     breadcrumbs: [
       { title: "Master", active: false, to: "" },
-      { title: "Group Master", active: false, to: "" },
+      { title: "Group 2", active: false, to: "" },
       { title: "Master NG", active: true, to: "/master/ng" },
     ],
     keywordKeys: [

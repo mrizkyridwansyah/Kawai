@@ -6,6 +6,7 @@
     :export-excel="true"
     :export-excel-action="exportExcel"
     :data-items="ds.data.Items"
+    :frozen-column-left="4"
     :ds="ds"
   >
     <template #table-content>
@@ -78,7 +79,18 @@
             <td>{{ item.NPWP_Name }}</td>
             <td>{{ item.NPWP_Address }}</td>
             <td>{{ item.NPWP_City }}</td>
-            <td style="font-align: center"></td>
+            <td class="text-center">
+              <font-awesome-icon
+                icon="eye"
+                class="mr-2 text-info"
+                @click="
+                  () =>
+                    this.$router.push(
+                      `trade/detail?trade_code=${item.Trade_Code}`
+                    )
+                "
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -112,7 +124,8 @@ export default {
   data: () => ({
     title: "",
     breadcrumbs: [
-      { title: "Setting", active: false, to: "" },
+      { title: "Master", active: false, to: "" },
+      { title: "Group 2", active: false, to: "" },
       { title: "Trade Master", active: true, to: "" },
     ],
     filter: {

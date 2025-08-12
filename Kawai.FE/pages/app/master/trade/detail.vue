@@ -13,13 +13,7 @@
     style="margin-left: 10px"
   />
 
-  <v-table
-    :filter="filter"
-    :keyword-keys="keywordKeys"
-    :export-excel="true"
-    :export-excel-action="exportExcel"
-    :ds="ds"
-  >
+  <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
     <template #table-content>
       <table
         class="table table-striped mb-0 align-middle"
@@ -53,8 +47,8 @@
             <td>{{ item.Trade_Code }}</td>
             <td>{{ item.Location_Code }}</td>
             <td>{{ item.Location_Name }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.Lastuser }}</td>
+            <td>{{ $func.formatDateTime(item.Last_Update) }}</td>
+            <td>{{ item.Last_User }}</td>
           </tr>
         </tbody>
       </table>
@@ -114,8 +108,6 @@ export default {
     title: "",
     modalMode: "",
     debounce: null,
-    selectedPrint: [],
-    isLoadingPrint: false,
   }),
   computed: {
     ds: function () {
@@ -141,10 +133,10 @@ export default {
       },
     },
   },
+
   mounted: function () {
-    alert(this.$route.query.id);
     this.ds.setSort(this.filter.sorts);
-    this.ds.setFilter([{ itemcode: this.$route.query.id }]);
+    this.ds.setFilter([{ trade_code: this.$route.query.trade_code }]);
     this.ds.load();
   },
   methods: {
@@ -165,7 +157,7 @@ export default {
         () =>
           new Promise((resolve, reject) => {
             this.ds
-              .remove(item.Location_Code)
+              .remove(this.$route.query.trade_code, item.Location_Code)
               .then((_) => {
                 this.ds.load();
                 toastSuccess("Success");
@@ -177,7 +169,7 @@ export default {
               });
           }),
         null,
-        item.WarehouseName
+        item.Location_Name
       );
     },
     close: function () {
