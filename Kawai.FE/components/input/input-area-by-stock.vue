@@ -53,7 +53,6 @@ export default {
     "multiple",
     "class",
     "warehouseCode",
-    "locationCode",
     "itemCode",
     "showOptionAll",
   ],
@@ -78,10 +77,6 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    locationCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
     itemCode: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
@@ -103,7 +98,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", null);
+      this.load("", this.modelValue);
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -113,11 +108,11 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/area/ddl-area-search-by-stock?keyword=${q || ""}&ids=${
-              d || ""
-            }&warehouse=${this.warehouseCode}&location=${
-              this.locationCode
-            }&item=${this.itemCode}`
+            `/area/ddl-area-search-by-stock?keyword=${
+              q || ""
+            }&selectedVal=${d || ""}&warehouse=${this.warehouseCode}&item=${
+              this.itemCode
+            }`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

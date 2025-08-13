@@ -1,6 +1,6 @@
 var app = useNuxtApp();
 
-export const useLocation = defineStore('Location', {
+export const useAddress = defineStore('Address', {
   state: () => ({
     isLoading: false,
     isCreating: false,
@@ -31,7 +31,7 @@ export const useLocation = defineStore('Location', {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/location/list`, this.filter)
+        app.$http.post(`/address/list`, this.filter)
           .then(({ data }) => {
             this.data = data.Data;
 
@@ -52,7 +52,7 @@ export const useLocation = defineStore('Location', {
     loadDetail: function (id) {
       this.isLoadingDetail = true;
       return new Promise((resolve, reject) => {
-        app.$http.get(`/location/detail?id=${id}`)
+        app.$http.get(`/address/detail?id=${id}`)
           .then(({ data }) => {
             this.detail = data.Data;
 
@@ -89,7 +89,7 @@ export const useLocation = defineStore('Location', {
     create: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/location/create`, data)
+        app.$http.post(`/address/create`, data)
           .then(({ data }) => {
             resolve(data);
           })
@@ -100,7 +100,7 @@ export const useLocation = defineStore('Location', {
     update: function (data) {
       this.isEditing = true;
       return new Promise((resolve, reject) => {
-        app.$http.patch(`/location/update`, data)
+        app.$http.patch(`/address/update`, data)
           .then(({ data }) => {
             resolve(data);
           })
@@ -111,7 +111,7 @@ export const useLocation = defineStore('Location', {
     remove: function (id) {
       this.isRemoving = true;
       return new Promise((resolve, reject) => {
-        app.$http.delete(`/location/remove?id=${id}`)
+        app.$http.delete(`/address/remove?id=${id}`)
           .then(({ data }) => {
             resolve(data);
           })
@@ -129,7 +129,7 @@ export const useLocation = defineStore('Location', {
           Sorts: {},
         };
 
-        app.$http.post(`/location/export/excel`, filterExport)
+        app.$http.post(`/address/export/excel`, filterExport)
           .then(({ data }) => {
             if (data.Data) {
               const byteCharacters = atob(data.Data); // decode base64
@@ -143,7 +143,7 @@ export const useLocation = defineStore('Location', {
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.setAttribute('download', 'List_Location.xlsx');
+              link.setAttribute('download', 'List_Address.xlsx');
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -164,7 +164,7 @@ export const useLocation = defineStore('Location', {
     },
     exportQR: function (selectedPrint) {
       return new Promise((resolve, reject) => {
-        app.$http.post(`/location/export/qrcode`, selectedPrint)
+        app.$http.post(`/address/export/qrcode`, selectedPrint)
           .then(({ data }) => {
             if (data.Data) {
               const byteCharacters = atob(data.Data); // decode base64
@@ -178,7 +178,7 @@ export const useLocation = defineStore('Location', {
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.setAttribute('download', 'QRCode_Location.xlsx');
+              link.setAttribute('download', 'QRCode_Address.xlsx');
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -190,7 +190,7 @@ export const useLocation = defineStore('Location', {
             }
           })
           .catch(async (err) => {
-            reject(err?.response?.data);
+              reject(err?.response?.data);
           })
           .finally(() => {
             this.isLoading = false;
@@ -201,5 +201,5 @@ export const useLocation = defineStore('Location', {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useLocation, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useAddress, import.meta.hot));
 }

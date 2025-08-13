@@ -69,11 +69,10 @@
   </v-table>
 
   <v-modal
-    class="modal-xl"
     ref="modalUser"
     id="modal-form-user"
     :title="title"
-    :fullscreen="true"
+    size="lg"
     @hidden="
       () => {
         this.$refs.formUser.resetForm();

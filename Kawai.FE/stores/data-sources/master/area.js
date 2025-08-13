@@ -190,7 +190,7 @@ export const useArea = defineStore('Area', {
             }
           })
           .catch(async (err) => {
-              reject(err?.response?.data);
+            reject(err?.response?.data);
           })
           .finally(() => {
             this.isLoading = false;

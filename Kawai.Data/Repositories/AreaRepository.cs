@@ -22,31 +22,30 @@ public class AreaRepository : IAreaRepository
     }
 
     public async Task<AreaDto> GetData(string areaCode)
-    {
+    {        
         string sp = "sp_Wms_Area_GetDetail";
         return await _dbExecutor.QueryFirstOrDefaultAsync<AreaDto>(sp, new { AreaCode = areaCode });
     }
 
-    public async Task<List<AreaDto>> GetDDL(string keyword, string warehouse, string location)
+    public async Task<List<AreaDto>> GetDDL(string keyword, string warehouseCode)
     {
         string sp = "sp_Wms_Area_DDL";
-        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, LocationCode = location })).ToList();
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode })).ToList();
     }
 
-    public async Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouse, string location, string item)
+    public async Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouseCode, string item)
     {
         string sp = "sp_Wms_StockInquiry_DDLArea";
-        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, LocationCode = location, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
     }
 
     public async Task Create(Area area, string userId)
     {
-        area.AreaCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Area_GenerateCode", new { area.WarehouseCode, area.LocationCode });
+        area.AreaCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Area_GenerateCode", new { area.WarehouseCode });
         string sql = @"sp_Wms_Area_Create";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
             area.WarehouseCode,
-            area.LocationCode,
             area.AreaCode,
             area.AreaName,
             RegisterBy = userId
@@ -59,7 +58,6 @@ public class AreaRepository : IAreaRepository
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
             area.WarehouseCode,
-            area.LocationCode,
             area.AreaCode,
             area.AreaName,
             UpdateBy = userId

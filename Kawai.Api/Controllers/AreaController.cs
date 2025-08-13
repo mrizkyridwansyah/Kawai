@@ -31,26 +31,26 @@ public class AreaController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string warehouse, string location, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string warehouseCode, string ids)
     {
-        var results = await _areaRepository.GetDDL(keyword, warehouse, location);
+        var results = await _areaRepository.GetDDL(keyword, warehouseCode);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => idList.Contains(x.LocationCode)).ToList();
+            results = results.Where(x => idList.Contains(x.AreaCode)).ToList();
         }
 
         return Success(results);
     }
 
     [HttpGet("ddl-area-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string location, string item, string ids)
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string item, string ids)
     {
-        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, location, item);
+        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, item);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => idList.Contains(x.LocationCode)).ToList();
+            results = results.Where(x => idList.Contains(x.AreaCode)).ToList();
         }
 
         return Success(results);
@@ -129,9 +129,9 @@ public class AreaController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["Warehouse Code", "Warehouse Name", "Location Code", "Location Name",
-                "Area Code", "Area Name", "Last Update", "Last User"];
+        List<string> headers = ["Warehouse Code", "Warehouse Name", "Area Code", "Area Name", "Last Update", "Last User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
+
 
         foreach (var result in results)
         {
@@ -142,10 +142,6 @@ public class AreaController : HahaController
             ExcelHelper.SetCell(row, colIdx, result.WarehouseCode);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.WarehouseName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LocationCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LocationName);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.AreaCode);
             colIdx++;
@@ -172,6 +168,8 @@ public class AreaController : HahaController
     [HttpPost("export/qrcode")]
     public async Task<IActionResult> ExportQRCode([FromBody] List<Dictionary<string, object>> rows)
     {
+        if (!rows.Any()) return NoContent();
+
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
 

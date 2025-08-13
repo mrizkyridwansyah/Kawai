@@ -34,7 +34,7 @@ public class MenuRepository : IMenuRepository
             UserID = privileges.UserId
         }, CommandType.StoredProcedure));
 
-        foreach (var menuPriv in privileges.MenuPrivileges)
+        foreach (var menuPriv in privileges.MenuPrivileges.Where(p => (p.AllowAccess.HasValue && p.AllowAccess.Value) || (p.AllowUpdate.HasValue && p.AllowUpdate.Value) || (p.AllowPrice.HasValue && p.AllowPrice.Value)))
         {
             commands.Add(("sp_WMS_UserSetup_UserPrivilegeUpd", new
             {
@@ -46,7 +46,7 @@ public class MenuRepository : IMenuRepository
             }, CommandType.StoredProcedure));
         }
 
-        foreach (var warehousePriv in privileges.WarehousePrivileges)
+        foreach (var warehousePriv in privileges.WarehousePrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value))
         {
             commands.Add(("sp_WMS_UserSetup_UserPrivilegeWarehouseUpd", new
             {

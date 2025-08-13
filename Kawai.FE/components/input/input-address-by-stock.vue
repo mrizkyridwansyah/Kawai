@@ -7,11 +7,11 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Location`"
+      :placeholder="placeholder || `Search Address`"
       :searchable="true"
-      label="LocationName"
-      track-by="LocationCode"
-      trackBy="LocationCode"
+      label="AddressName"
+      track-by="AddressCode"
+      trackBy="AddressCode"
       :hide-selected="true"
       :internal-search="false"
       :loading="isLoading"
@@ -52,7 +52,10 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "warehouse",
+    "warehouseCode",
+    "areaCode",
+    "itemCode",
+    "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -71,9 +74,17 @@ export default {
 
       this.load("", after);
     },
-    warehouse: function(after) {
+    warehouseCode: function (after) {
       this.tempValue = null;
-      this.load('', this.modelValue);
+      this.load("", this.modelValue);
+    },
+    locationCode: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    itemCode: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
@@ -92,7 +103,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -102,15 +113,27 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/location/ddlsearch?keyword=${q || ""}&selectedVal=${
+            `/address/ddl-address-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouseCode=${this.warehouse || "ALL"}`
+            }&warehouse=${this.warehouseCode}&area=${
+              this.areaCode
+            }&item=${this.itemCode}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.LocationCode;
+              this.tempValue = p.data.Data[0]?.AreaCode;
             }
-            this.list = p.data.Data;
+
+            this.list =
+              (this.showOptionAll || false) && (q || "") == "" && p.data.Data.length > 0
+                ? [
+                    {
+                      AreaCode: "ALL",
+                      AreaName: "ALL",
+                    },
+                    ...p.data.Data,
+                  ]
+                : p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 

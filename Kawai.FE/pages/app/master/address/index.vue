@@ -1,34 +1,46 @@
 <template>
-  <header-menu title="Location" :breadcrumbs="this.breadcrumbs" />
+  <header-menu title="Address" :breadcrumbs="this.breadcrumbs" />
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
-      <div class="col-lg-6 col-md-6 col-sm-8 col-8">
+      <div class="col-lg-6 col-md-6 col-sm-6 col-6 mr-1">
         <div class="mr-1" style="width: 100%">
           <input-warehouse class="form-control" v-model="filter.warehouse" />
         </div>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-4 col-4 ml-3">
-        <div class="mr-1" style="width: 100%">
-          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+      <div class="col-lg-6 col-md-6 col-sm-6 col-6">
+        <div class="" style="width: 100%">
+          <input-area
+            class="form-control"
+            v-model="filter.area"
+            :warehouse="filter.warehouse"
+          />
         </div>
       </div>
+      <br>
+
     </div>
   </div>
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
       <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print :print="print" :is-loading="isLoadingPrint" />
+      <v-button-print
+        :print="print"
+        cClass="mr-1"
+        :is-loading="isLoadingPrint"
+      />
+      <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
     </div>
   </div>
   <v-table
     :filter="filter"
+    :keyword-keys="keywordKeys"
     :export-excel="true"
     :export-excel-action="exportExcel"
     :ds="ds"
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle"
+        class="table table-striped mb-0 align-middle" style="width: 100%;"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>
@@ -37,8 +49,10 @@
             <th class="text-center">Action</th>
             <th class="text-center">Warehouse Code</th>
             <th class="text-center">Warehouse Name</th>
-            <th class="text-center">Location Code</th>
-            <th class="text-center">Location Name</th>
+            <th class="text-center">Area Code</th>
+            <th class="text-center">Area Name</th>
+            <th class="text-center">Address Code</th>
+            <th class="text-center">Address Name</th>
             <th class="text-center">Register Date</th>
             <th class="text-center">Register User</th>
             <th class="text-center">Last Update</th>
@@ -50,7 +64,7 @@
             <td>
               <div style="justify-items: center">
                 <input-checkbox
-                  :modelValue="isChecked(item.LocationCode)"
+                  :modelValue="isChecked(item.AddressCode)"
                   @update:modelValue="(checked) => check(checked, item)"
                 />
               </div>
@@ -69,8 +83,10 @@
             </td>
             <td>{{ item.WarehouseCode }}</td>
             <td>{{ item.WarehouseName }}</td>
-            <td>{{ item.LocationCode }}</td>
-            <td>{{ item.LocationName }}</td>
+            <td>{{ item.AreaCode }}</td>
+            <td>{{ item.AreaName }}</td>
+            <td>{{ item.AddressCode }}</td>
+            <td>{{ item.AddressName }}</td>
             <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
             <td>{{ item.RegisterUser }}</td>
             <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
@@ -82,22 +98,23 @@
   </v-table>
 
   <v-modal
-    ref="modalLocation"
-    id="modal-form-location"
+    ref="modalAddress"
+    id="modal-form-address"
     :title="title"
     size="800"
     @hidden="
       () => {
-        this.$refs.formLocation.resetForm();
+        this.$refs.formAddress.resetForm();
         modalMode = '';
       }
     "
   >
-    <modal-form-location
-      ref="formLocation"
+    <modal-form-address
+      ref="formAddress"
       :id="idSelected"
       :mode="modalMode"
       :warehouse="filter.warehouse"
+      :area="filter.area"
       @submitted="close"
     />
   </v-modal>
@@ -109,34 +126,36 @@ export default {
     breadcrumbs: [
       { title: "Master", active: false, to: "" },
       { title: "Group 2", active: false, to: "" },
-      { title: "Location", active: true, to: "/app/master/location" },
+      { title: "Address", active: true, to: "/app/master/address" },
     ],
     keywordKeys: [
       {
-        Id: "LocationCode",
-        Name: "Location Code",
+        Id: "AddressCode",
+        Name: "Address Code",
       },
       {
-        Id: "LocationName",
-        Name: "Location Name",
+        Id: "AddressName",
+        Name: "Address Name",
       },
     ],
     filter: {
-      keyword: null,
       warehouse: null,
+      area: null,
+      address: null,
+      keyword: null,
       sorts: {
-        LocationName: "asc",
+        AddressName: "asc",
       },
       sortItems: [
         {
-          label: "Location Name",
-          value: "LocationName",
+          label: "Address Name",
+          value: "AddressName",
           selected: false,
           direction: "asc",
         },
         {
-          label: "Location Code",
-          value: "LocationCode",
+          label: "Address Code",
+          value: "AddressCode",
           selected: true,
           direction: "desc",
         },
@@ -150,12 +169,14 @@ export default {
   }),
   computed: {
     ds: function () {
-      return useLocation();
+      return useAddress();
     },
   },
   watch: {
     "filter.warehouse": function () {
-      this.selectedPrint = [];
+      this.ds.data.Items = [];
+    },
+    "filter.area": function () {
       this.ds.data.Items = [];
     },
     "filter.keyword": function () {
@@ -175,6 +196,7 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           WarehouseCode: this.filter.warehouse || "",
+          AreaCode: this.filter.area || "",
         },
       ];
 
@@ -183,30 +205,37 @@ export default {
     },
     reset: function () {
       this.filter.warehouse = null;
+      this.filter.area = null;
       this.search();
     },
     add: function () {
-      if (this.filter.warehouse) {
-        this.title = "Add Location";
-        this.modalMode = "add";
-        this.idSelected = null; // Reset ID for Add mode
-        this.$bvModal.show("modal-form-location");
-      } else {
+      if (!this.filter.warehouse) {
         toastWarning("Please choose warehouse!");
+        return;
       }
+
+      if (!this.filter.area) {
+        toastWarning("Please choose area!");
+        return;
+      }
+
+      this.title = "Add Address";
+      this.modalMode = "add";
+      this.idSelected = null; // Reset ID for Add mode
+      this.$bvModal.show("modal-form-address");
     },
     edit: function (dt) {
-      this.title = "Edit Location";
+      this.title = "Edit Address";
       this.modalMode = "edit";
-      this.idSelected = dt.LocationCode;
-      this.$bvModal.show("modal-form-location");
+      this.idSelected = dt.AddressCode;
+      this.$bvModal.show("modal-form-address");
     },
     remove: function (item) {
       confirmRemove(
         () =>
           new Promise((resolve, reject) => {
             this.ds
-              .remove(item.LocationCode)
+              .remove(item.AddressCode)
               .then((_) => {
                 this.search();
                 toastSuccess("Data deleted successfully!!");
@@ -218,11 +247,11 @@ export default {
               });
           }),
         null,
-        item.LocationName
+        item.AddressName
       );
     },
     close: function () {
-      this.$bvModal.hide("modal-form-location");
+      this.$bvModal.hide("modal-form-address");
       this.search();
     },
     exportExcel: function () {
@@ -231,7 +260,18 @@ export default {
         return;
       }
 
-      let filters = [{ WarehouseCode: this.filter.warehouse }];
+      if (!this.filter.area) {
+        toastWarning("Please choose area!");
+        return;
+      }
+
+      let filters = [
+        {
+          WarehouseCode: this.filter.warehouse,
+          AreaCode: this.filter.area,
+        },
+      ];
+
       return new Promise((resolve, reject) => {
         this.ds
           .exportExcel(filters)
@@ -246,12 +286,12 @@ export default {
     },
     check: function (checked, item) {
       const existingIndex = this.selectedPrint.findIndex(
-        (p) => p.Key === item.LocationCode
+        (p) => p.Key === item.AddressCode
       );
       if (checked && existingIndex === -1) {
         this.selectedPrint.push({
-          Key: item.LocationCode,
-          Value: item.LocationName,
+          Key: item.AddressCode,
+          Value: item.AddressName,
         });
       } else if (!checked && existingIndex !== -1) {
         this.selectedPrint.splice(existingIndex, 1);
@@ -263,7 +303,7 @@ export default {
     print: function () {
       this.isLoadingPrint = true;
       if (this.selectedPrint.length === 0) {
-        toastWarning("Please choose location");
+        toastWarning("Please choose address");
         this.isLoadingPrint = false;
         return;
       }

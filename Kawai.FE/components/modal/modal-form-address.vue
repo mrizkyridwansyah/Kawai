@@ -4,12 +4,16 @@
         <input-warehouse class="form-control" v-model="model.WarehouseCode" disabled="true" />
     </div>
     <div class="mb-3">
-        <label class="form-label">Location Code</label>
-        <input-text placeholder="#AUTO" disabled="true" v-model="model.LocationCode" :errors="errors?.LocationCode" />
+        <label class="form-label">Area Code</label>
+        <input-area class="form-control" v-model="model.AreaCode" :warehouse="model.WarehouseCode" disabled="true" />
     </div>
     <div class="mb-3">
-        <label class="form-label">Location Name</label>
-        <input-text placeholder="Location Name" v-model="model.LocationName" :errors="errors?.LocationName" />
+        <label class="form-label">Address Code</label>
+        <input-text placeholder="#AUTO" disabled="true" v-model="model.AddressCode" :errors="errors.AddressCode" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Address Name</label>
+        <input-text placeholder="Address Name" v-model="model.AddressName" :errors="errors.AddressName" />
     </div>
     <div class="mt-4 mb-3">
         <v-button-submit :submit="submit" :disabled="(btnDisabled !== undefined && btnDisabled !== false)"
@@ -18,20 +22,20 @@
 </template>
 <script>
 export default {
-    props: ['id', 'warehouse', 'btnDisabled', "mode"],
+    props: ['id', 'warehouse', 'area', 'btnDisabled', "mode"],
     data: () => ({
         isLoading: false,
         model: {
             WarehouseCode: "",
-            LocationCode: "",
-            LocationName: ""
+            AreaCode: "",
+            AreaName: ""
         },
         errorResponse: {},
         errors: {},
     }),
     computed: {
         ds: function () {
-            return useLocation();
+            return useAddress();
         }
     },
     mounted: function () {
@@ -44,6 +48,9 @@ export default {
     watch: {
         warehouse: function (val) {
             this.model.WarehouseCode = val;
+        },
+        area: function (val) {
+            this.model.AreaCode = val;
         },
         mode: function (val) {
             if (val === "edit") {
@@ -59,20 +66,21 @@ export default {
         },
         resetForm: function () {
             if (this.mode === "edit") {
-                this.model.LocationCode = this.model.LocationCode; // Jangan reset LocationCode di Edit
+                this.model.AreaCode = this.model.AreaCode; // Jangan reset AreaCode di Edit
             } else {
                 // Kosongkan form untuk mode Add
                 this.model = {
                     WarehouseCode: this.warehouse || "",
-                    LocationCode: "", // Kosongkan LocationCode
-                    LocationName: "",
+                    AreaCode: this.area || "",
+                    AreaName: "", 
                 };
             }
             this.errors = {}; // Reset errors
         },
         submit: function () {
             this.model.WarehouseCode = this.warehouse;
-            this.model.LocationCode = this.mode === "edit" ? this.id : "#AUTO";
+            this.model.AreaCode = this.area;
+            this.model.AddressCode = this.mode === "edit" ? this.id : "#AUTO";
 
             if (this.mode === "add") this.create();
             else this.update();

@@ -2,45 +2,33 @@
   <header-menu title="Area" :breadcrumbs="this.breadcrumbs" />
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
-      <div class="col-lg-6 col-md-6 col-sm-6 col-6 mr-1">
+      <div class="col-lg-6 col-md-6 col-sm-8 col-8">
         <div class="mr-1" style="width: 100%">
           <input-warehouse class="form-control" v-model="filter.warehouse" />
         </div>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-6 col-6">
-        <div class="" style="width: 100%">
-          <input-location
-            class="form-control"
-            v-model="filter.location"
-            :warehouse="filter.warehouse"
-          />
+      <div class="col-lg-6 col-md-6 col-sm-4 col-4 ml-3">
+        <div class="mr-1" style="width: 100%">
+          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
       </div>
-      <br>
-
     </div>
   </div>
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
       <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print
-        :print="print"
-        cClass="mr-1"
-        :is-loading="isLoadingPrint"
-      />
-      <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+      <v-button-print :print="print" :is-loading="isLoadingPrint" />
     </div>
   </div>
   <v-table
     :filter="filter"
-    :keyword-keys="keywordKeys"
     :export-excel="true"
     :export-excel-action="exportExcel"
     :ds="ds"
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle" style="width: 100%;"
+        class="table table-striped mb-0 align-middle"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>
@@ -49,8 +37,6 @@
             <th class="text-center">Action</th>
             <th class="text-center">Warehouse Code</th>
             <th class="text-center">Warehouse Name</th>
-            <th class="text-center">Location Code</th>
-            <th class="text-center">Location Name</th>
             <th class="text-center">Area Code</th>
             <th class="text-center">Area Name</th>
             <th class="text-center">Register Date</th>
@@ -83,8 +69,6 @@
             </td>
             <td>{{ item.WarehouseCode }}</td>
             <td>{{ item.WarehouseName }}</td>
-            <td>{{ item.LocationCode }}</td>
-            <td>{{ item.LocationName }}</td>
             <td>{{ item.AreaCode }}</td>
             <td>{{ item.AreaName }}</td>
             <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
@@ -114,7 +98,6 @@
       :id="idSelected"
       :mode="modalMode"
       :warehouse="filter.warehouse"
-      :location="filter.location"
       @submitted="close"
     />
   </v-modal>
@@ -139,10 +122,8 @@ export default {
       },
     ],
     filter: {
-      warehouse: null,
-      location: null,
-      area: null,
       keyword: null,
+      warehouse: null,
       sorts: {
         AreaName: "asc",
       },
@@ -174,9 +155,7 @@ export default {
   },
   watch: {
     "filter.warehouse": function () {
-      this.ds.data.Items = [];
-    },
-    "filter.location": function () {
+      this.selectedPrint = [];
       this.ds.data.Items = [];
     },
     "filter.keyword": function () {
@@ -196,7 +175,6 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           WarehouseCode: this.filter.warehouse || "",
-          LocationCode: this.filter.location || "",
         },
       ];
 
@@ -205,24 +183,17 @@ export default {
     },
     reset: function () {
       this.filter.warehouse = null;
-      this.filter.location = null;
       this.search();
     },
     add: function () {
-      if (!this.filter.warehouse) {
+      if (this.filter.warehouse) {
+        this.title = "Add Area";
+        this.modalMode = "add";
+        this.idSelected = null; // Reset ID for Add mode
+        this.$bvModal.show("modal-form-area");
+      } else {
         toastWarning("Please choose warehouse!");
-        return;
       }
-
-      if (!this.filter.location) {
-        toastWarning("Please choose location!");
-        return;
-      }
-
-      this.title = "Add Location";
-      this.modalMode = "add";
-      this.idSelected = null; // Reset ID for Add mode
-      this.$bvModal.show("modal-form-area");
     },
     edit: function (dt) {
       this.title = "Edit Area";
@@ -260,18 +231,7 @@ export default {
         return;
       }
 
-      if (!this.filter.location) {
-        toastWarning("Please choose location!");
-        return;
-      }
-
-      let filters = [
-        {
-          WarehouseCode: this.filter.warehouse,
-          LocationCode: this.filter.location,
-        },
-      ];
-
+      let filters = [{ WarehouseCode: this.filter.warehouse }];
       return new Promise((resolve, reject) => {
         this.ds
           .exportExcel(filters)

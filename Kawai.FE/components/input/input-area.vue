@@ -27,21 +27,32 @@
     <div class="invalid-feedback d-block" v-if="errors">
       {{ errors[0] }}
     </div>
-    <small class="form-text text-muted" v-if="description">{{description}}</small>
+    <small class="form-text text-muted" v-if="description">{{
+      description
+    }}</small>
   </div>
 </template>
 
 <script>
 export default {
   model: {
-    prop: 'modelValue',
-    event: 'update',
+    prop: "modelValue",
+    event: "update",
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   props: [
-    'modelValue', 'type', 'label', 'col', 'description', 
-    'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class', 'warehouse', 'location'
+    "modelValue",
+    "type",
+    "label",
+    "col",
+    "description",
+    "placeholder",
+    "onSelect",
+    "errors",
+    "disabled",
+    "multiple",
+    "class",
+    "warehouse",
   ],
   data: () => ({
     isLoading: false,
@@ -50,67 +61,64 @@ export default {
     debounce: null,
   }),
   computed: {
-    cClass: function() {
-      return (this['class'] ?? '') + (this.errors ? 'is-invalid' : '');
-    }
+    cClass: function () {
+      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+    },
   },
   watch: {
-    modelValue: function(after, before) {
-      if(!after)
-        this.tempValue = null;
-        
-      this.load('', after);
+    modelValue: function (after, before) {
+      if (!after) this.tempValue = null;
+
+      this.load("", after);
     },
     warehouse: function(after) {
       this.tempValue = null;
       this.load('', this.modelValue);
     },
-    location: function(after) {
-      this.tempValue = null;
-      this.load('', this.modelValue);
-    },
-    tempValue: function(after) {
-      if(!after)
-        this.$emit("update:modelValue", null);
+    tempValue: function (after) {
+      if (!after) this.$emit("update:modelValue", null);
     },
   },
-  mounted: function() {
-    this.load('', this.modelValue);
+  mounted: function () {
+    this.load("", this.modelValue);
   },
   methods: {
-    change: function(v) {
-      if(this.onSelect)
-        this.onSelect(v);
+    change: function (v) {
+      if (this.onSelect) this.onSelect(v);
 
       this.$emit("update:modelValue", v);
     },
-    search: function(q) {
+    search: function (q) {
       this.load(q, null);
     },
-    open: function() {
-      this.load('', null);
+    open: function () {
+      this.load("", this.modelValue);
     },
-    load: function(q = '', d = '') {
+    load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
-      if(this.debounce != null)
-        clearTimeout(this.debounce);
+      if (this.debounce != null) clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/area/ddlsearch?keyword=${q || ''}&ids=${d || ''}&warehouse=${this.warehouse || 'ALL'}&location=${this.location || 'ALL'}`)
-          .then(p => {
-            if(d && p.data.length > 0) {
+        this.$http
+          .get(
+            `/area/ddlsearch?keyword=${q || ""}&selectedVal=${
+              d || ""
+            }&warehouseCode=${this.warehouse || "ALL"}`
+          )
+          .then((p) => {
+            if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.AreaCode;
             }
             this.list = p.data.Data;
           })
-          .finally(() => this.isLoading = false);
-          
+          .finally(() => (this.isLoading = false));
+
         clearTimeout(this.debounce);
-      }, 200)
-    }
-  }
-}
+      }, 200);
+    },
+  },
+};
 </script>
 
 <style>
@@ -118,5 +126,4 @@ export default {
   min-width: 10em;
   width: 100%;
 }
-
 </style>
