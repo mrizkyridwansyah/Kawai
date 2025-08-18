@@ -32,9 +32,9 @@ public class TradeController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword,string tradecls, string ids)
     {
-        var results = await _tradeRepository.GetDDL(keyword);
+        var results = await _tradeRepository.GetDDL(keyword,tradecls);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
