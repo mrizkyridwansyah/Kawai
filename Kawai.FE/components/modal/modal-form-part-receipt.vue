@@ -126,6 +126,7 @@
                   v-model="item.PONumber"
                   :disabled="mode === 'view'"
                   :errors="errors?.[`Details[${i}].PONumber`]"
+                  
                   show-suffix
                 />
               </div>

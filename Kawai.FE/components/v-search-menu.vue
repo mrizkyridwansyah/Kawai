@@ -1,5 +1,6 @@
 <template>
-  <div class="search-menu-wrapper" @click.outside="hideSuggestions">
+  <div class="search-menu-wrapper">
+  <!-- <div class="search-menu-wrapper" @click.outside="hideSuggestions"> -->
     <input
       type="text"
       class="form-control"

@@ -1,0 +1,8 @@
+{
+    "baseUrl": "http://localhost:8800/api",
+    "baseUrlDev": "http://localhost:5056",
+    "baseUrlDevAttachment": "http://localhost:5119",
+    "baseWSUrl": "ws://localhost:8800/api",
+    "baseWSUrlDev": "ws://localhost:9090"
+  }
+  
