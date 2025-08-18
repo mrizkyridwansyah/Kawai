@@ -38,17 +38,18 @@
           <div class="media-body">
             <h6 class="media-heading">
               {{ notif.Title }}
-              <i
-                v-if="notif.Priority == 'LOW'"
-                class="fa fa-info-circle text-info"
-              ></i>
-              <i
-                v-else-if="notif.Priority == 'MIDDLE'"
-                class="fa fa-warning text-warning"
-              ></i>
+              <i v-if="notif.Priority == 'LOW'" class="fa"></i>
+              <i v-else-if="notif.Priority == 'MIDDLE'" class="fa"></i>
               <i
                 v-else-if="notif.Priority == 'TOP'"
-                class="fa fa-warning text-danger"
+                class="fa"
+                :class="{
+                  'fa-info-circle': notif.NotifType == 'INFO',
+                  'fa-warning': notif.NotifType != 'INFO',
+                  'text-info': notif.NotifType == 'INFO',
+                  'text-warning': notif.NotifType == 'WARNING',
+                  'text-danger': notif.NotifType == 'ERROR',
+                }"
               ></i>
             </h6>
             <div>{{ notif.Description }}</div>
@@ -148,6 +149,7 @@ export default {
       data?.notifications.forEach((notif) => {
         console.log(notif);
         toastNotif(notif);
+        this.notif.setNewNotif();
       });
     });
 
@@ -182,8 +184,7 @@ export default {
         .then((datas) => {
           this.$router.push(notif.UrlRedirect);
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
     },
     onOver: function () {
       this.$refs["header-menu-user-info"].visible = this.showBackdrop = true;

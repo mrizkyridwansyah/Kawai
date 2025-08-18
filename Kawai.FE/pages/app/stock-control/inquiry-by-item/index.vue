@@ -8,11 +8,9 @@
             class="form-control"
             placeholder="Search Item"
             v-model="filter.item"
-            warehouse-code="ALL"
-            location-code="ALL"
-            area-code="ALL"
-            item-type-code="ALL"
-            brand-code="ALL"
+            warehouse="ALL"
+            area="ALL"
+            address="ALL"
             :show-option-all="false"
           />
         </div>
@@ -30,12 +28,12 @@
       </div>
       <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
         <div class="mr-1" style="width: 100%">
-          <input-location-by-stock
+          <input-area-by-stock
             class="form-control"
-            placeholder="Search Location"
-            v-model="filter.location"
-            :warehouse-code="filter.warehouse"
-            :item-code="filter.item"
+            placeholder="Search Area"
+            v-model="filter.area"
+            :warehouse="filter.warehouse"
+            :item="filter.item"
             :show-option-all="true"
           />
         </div>
@@ -46,12 +44,10 @@
             class="form-control"
             placeholder="Search Lot No"
             v-model="filter.lotno"
-            :warehouse-code="filter.warehouse"
-            :location-code="filter.location"
-            area-code="ALL"
-            item-type-code="ALL"
-            brand-code="ALL"
-            :item-code="filter.item"
+            :warehouse="filter.warehouse"
+            :area="filter.area"
+            address="ALL"
+            :item="filter.item"
             :show-option-all="true"
           />
         </div>
@@ -72,6 +68,7 @@
     :is-loading="ds.isLoading"
     :is-server-error="ds.isServerError"
     :is-network-error="ds.isNetworkError"
+    :refresh="search"
   >
     <template #paging-tree>
       <v-table-pagination
@@ -92,7 +89,8 @@
   <v-modal title="Detail Stock" class="modal-lg" id="modal-detail">
     <shared-stock-detail-list
       :warehouse="this.detail.warehouse"
-      :location="this.detail.location"
+      :area="this.detail.area"
+      :address="this.detail.address"
       :item="this.detail.item"
       :lotno="this.detail.lotno"
     />
@@ -113,13 +111,14 @@ export default {
     filter: {
       item: null,
       warehouse: null,
-      location: null,
+      area: null,
       lotno: null,
     },
     detail: {
       warehouse: null,
       item: null,
-      location: null,
+      area: null,
+      address: null,
       lotno: null,
     },
     columns: [],
@@ -127,7 +126,8 @@ export default {
     groupByFields: [
       ["ItemCode", ["ItemCode", "ItemName"]],
       ["WarehouseName", ["WarehouseCode", "WarehouseName"]],
-      ["LocationName", ["LocationCode", "LocationName"]],
+      ["AreaName", ["AreaCode", "AreaName"]],
+      ["AddressName", ["AddressCode", "AddressName"]],
       ["LotNo", ["LotNo"]],
     ],
     sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
@@ -166,7 +166,8 @@ export default {
         },
         { text: "Item Name", dataField: "ItemName", width: "200px" },
         { text: "Warehouse", dataField: "WarehouseName", width: "200px" },
-        { text: "Location", dataField: "LocationName", width: "200px" },
+        { text: "Area", dataField: "AreaName", width: "200px" },
+        { text: "Address", dataField: "AddressName", width: "200px" },
         { text: "Lot No", dataField: "LotNo", width: "200px" },
         {
           text: "Begin",
@@ -219,7 +220,7 @@ export default {
           Keyword: this.filter.keyword || "",
           ItemCode: this.filter.item || "",
           WarehouseCode: this.filter.warehouse || "",
-          LocationCode: this.filter.location || "",
+          AreaCode: this.filter.area || "",
           LotNo: this.filter.lotno || "",
         },
       ];
@@ -232,7 +233,7 @@ export default {
     },
     reset: function () {
       this.filter.warehouse = null;
-      this.filter.location = null;
+      this.filter.area = null;
       this.filter.item = null;
       this.filter.lotno = null;
       this.search();
@@ -289,7 +290,8 @@ export default {
     },
     openModal(row) {
       this.detail.warehouse = row.children[0].WarehouseCode;
-      this.detail.location = row.children[0].LocationCode;
+      this.detail.area = row.children[0].AreaCode;
+      this.detail.address = row.children[0].AddressCode;
       this.detail.item = row.children[0].ItemCode;
       this.detail.lotno = row.children[0].LotNo;
       this.$bvModal.show("modal-detail");

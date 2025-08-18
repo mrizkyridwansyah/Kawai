@@ -52,8 +52,8 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "warehouseCode",
-    "itemCode",
+    "warehouse",
+    "item",
     "showOptionAll",
   ],
   data: () => ({
@@ -73,11 +73,11 @@ export default {
 
       this.load("", after);
     },
-    warehouseCode: function (after) {
+    warehouse: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    itemCode: function (after) {
+    item: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
@@ -108,19 +108,15 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/area/ddl-area-search-by-stock?keyword=${
-              q || ""
-            }&selectedVal=${d || ""}&warehouse=${this.warehouseCode}&item=${
-              this.itemCode
-            }`
+            `/area/ddl-area-search-by-stock?keyword=${q || ""}&selectedVal=${
+              d || ""
+            }&warehouse=${this.warehouse || ""}&item=${this.item}`
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.AreaCode;
-            }
-
             this.list =
-              (this.showOptionAll || false) && (q || "") == "" && p.data.Data.length > 0
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
                 ? [
                     {
                       AreaCode: "ALL",
@@ -129,6 +125,10 @@ export default {
                     ...p.data.Data,
                   ]
                 : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.AreaCode;
+            }
           })
           .finally(() => (this.isLoading = false));
 

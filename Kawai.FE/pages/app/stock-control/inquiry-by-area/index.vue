@@ -1,8 +1,5 @@
 <template>
-  <header-menu
-    title="Stock Inquiry By Location"
-    :breadcrumbs="this.breadcrumbs"
-  />
+  <header-menu title="Stock Inquiry By Area" :breadcrumbs="this.breadcrumbs" />
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
       <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
@@ -18,12 +15,12 @@
       </div>
       <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
         <div class="mr-1" style="width: 100%">
-          <input-location-by-stock
+          <input-area-by-stock
             class="form-control"
-            placeholder="Search Location"
-            v-model="filter.location"
-            :warehouse-code="filter.warehouse"
-            item-code="ALL"
+            placeholder="Search Area"
+            v-model="filter.area"
+            :warehouse="filter.warehouse"
+            item="ALL"
             :show-option-all="true"
           />
         </div>
@@ -34,11 +31,9 @@
             class="form-control"
             placeholder="Search Item"
             v-model="filter.item"
-            :warehouse-code="filter.warehouse"
-            :location-code="filter.location"
-            area-code="ALL"
-            item-type-code="ALL"
-            brand-code="ALL"
+            :warehouse="filter.warehouse"
+            :area="filter.area"
+            address="ALL"
             :show-option-all="true"
           />
         </div>
@@ -49,28 +44,14 @@
             class="form-control"
             placeholder="Search Lot No"
             v-model="filter.lotno"
-            :warehouse-code="filter.warehouse"
-            :location-code="filter.location"
-            area-code="ALL"
-            item-type-code="ALL"
-            brand-code="ALL"
-            item-code="ALL"
+            :warehouse="filter.warehouse"
+            :area="filter.area"
+            address="ALL"
+            :item="filter.item"
             :show-option-all="true"
           />
         </div>
       </div>
-      <!-- <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-        <div class="" style="width: 100%">
-          <input-item
-            class="form-control"
-            placeholder="Search Lot No"
-            v-model="filter.parentItem"
-            brand="ALL"
-            item-type="ALL"
-            :item-cls="filter.itemCls"
-          />
-        </div>
-      </div> -->
     </div>
   </div>
   <div class="d-flex mt-3">
@@ -87,6 +68,7 @@
     :is-loading="ds.isLoading"
     :is-server-error="ds.isServerError"
     :is-network-error="ds.isNetworkError"
+    :refresh="search"
   >
     <template #paging-tree>
       <v-table-pagination
@@ -107,7 +89,8 @@
   <v-modal title="Detail Stock" class="modal-lg" id="modal-detail">
     <shared-stock-detail-list
       :warehouse="this.detail.warehouse"
-      :location="this.detail.location"
+      :area="this.detail.area"
+      :address="this.detail.address"
       :item="this.detail.item"
       :lotno="this.detail.lotno"
     />
@@ -120,21 +103,21 @@ export default {
     breadcrumbs: [
       { title: "Report", active: false, to: "" },
       {
-        title: "Stock Inquiry By Location",
+        title: "Stock Inquiry By Area",
         active: true,
-        to: "/stock-control/inquiry-by-location",
+        to: "/stock-control/inquiry-by-area",
       },
     ],
     filter: {
-      warehouse: 0,
-      location: null,
+      warehouse: null,
+      area: null,
       item: null,
       lotno: null,
     },
     detail: {
       warehouse: null,
       item: null,
-      location: null,
+      area: null,
       lotno: null,
     },
     columns: [],
@@ -142,7 +125,8 @@ export default {
     groupByFields: [
       ["WarehouseName", ["WarehouseCode", "WarehouseName"]],
       ["ItemName", ["ItemCode", "ItemName"]],
-      ["LocationName", ["LocationCode", "LocationName"]],
+      ["AreaName", ["AreaCode", "AreaName"]],
+      ["AddressName", ["AddressCode", "AddressName"]],
       ["LotNo", ["LotNo"]],
     ],
     sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
@@ -150,7 +134,7 @@ export default {
   }),
   computed: {
     ds: function () {
-      return useStockByLocation();
+      return useStockByArea();
     },
   },
   mounted: function () {
@@ -162,7 +146,7 @@ export default {
       this.rawData = [];
       this.treeData = [];
     },
-    "filter.location": function () {
+    "filter.area": function () {
       this.rawData = [];
       this.treeData = [];
     },
@@ -185,7 +169,8 @@ export default {
         // { text: "Warehouse Code", dataField: "WarehouseCode", width: "250px" },
         { text: "Warehouse Name", dataField: "WarehouseName", width: "250px" },
         { text: "Item Name", dataField: "ItemName", width: "250px" },
-        { text: "Location", dataField: "LocationName", width: "250px" },
+        { text: "Area", dataField: "AreaName", width: "250px" },
+        { text: "Address", dataField: "AddressName", width: "250px" },
         { text: "Lot No", dataField: "LotNo", width: "max-content" },
         {
           text: "Begin",
@@ -228,7 +213,7 @@ export default {
           Keyword: this.filter.keyword || "",
           ItemCode: this.filter.item || "",
           WarehouseCode: this.filter.warehouse || "",
-          LocationCode: this.filter.location || "",
+          AreaCode: this.filter.area || "",
           LotNo: this.filter.lotno || "",
         },
       ];
@@ -241,7 +226,7 @@ export default {
     },
     reset: function () {
       this.filter.warehouse = null;
-      this.filter.location = null;
+      this.filter.area = null;
       this.filter.item = null;
       this.filter.lotno = null;
       this.search();
@@ -298,9 +283,11 @@ export default {
     },
     openModal: function (row) {
       this.detail.warehouse = row.children[0].WarehouseCode;
-      this.detail.location = row.children[0].LocationCode;
+      this.detail.area = row.children[0].AreaCode;
+      this.detail.address = row.children[0].AddressCode;
       this.detail.item = row.children[0].ItemCode;
       this.detail.lotno = row.children[0].LotNo;
+      console.log(this.detail);
       this.$bvModal.show("modal-detail");
     },
   },

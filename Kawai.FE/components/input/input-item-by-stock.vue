@@ -52,11 +52,9 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "warehouseCode",
-    "locationCode",
-    "areaCode",
-    "itemTypeCode",
-    "brandCode",
+    "warehouse",
+    "area",
+    "address",
     "showOptionAll",
   ],
   data: () => ({
@@ -79,23 +77,15 @@ export default {
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
-    warehouseCode: function (after) {
+    warehouse: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    locationCode: function (after) {
+    area: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    areaCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    itemTypeCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    brandCode: function (after) {
+    address: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
@@ -128,19 +118,15 @@ export default {
           .get(
             `/item/ddl-item-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouse=${this.warehouseCode}&location=${
-              this.locationCode
-            }&area=${this.areaCode}&brand=${this.brandCode}&itemType=${
-              this.itemTypeCode
+            }&warehouse=${this.warehouse}&area=${this.area}&address=${
+              this.address
             }`
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.ItemCode;
-            }
-
             this.list =
-              (this.showOptionAll || false) && (q || "") == "" && p.data.Data.length > 0
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
                 ? [
                     {
                       ItemCode: "ALL",
@@ -149,6 +135,10 @@ export default {
                     ...p.data.Data,
                   ]
                 : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.ItemCode;
+            }
           })
           .finally(() => (this.isLoading = false));
 

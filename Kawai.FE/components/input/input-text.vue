@@ -1,17 +1,19 @@
 <template>
   <div>
-    <div>
+    <div style="position: relative">
       <input
         v-if="multiline === undefined"
         type="text"
         :class="inputClass"
-        v-model="tempValue" 
+        v-model="tempValue"
         @keyup="change"
         :placeholder="placeholder"
-        :disabled="(disabled !== undefined || disabled === true) && disabled !== false"
+        :disabled="
+          (disabled !== undefined || disabled === true) && disabled !== false
+        "
         :ref="`input-text-${key}`"
         :maxlength="maxlength || 100000"
-        v-maska 
+        v-maska
         :data-maska="mask"
         class="w-100 form-control"
       />
@@ -19,91 +21,125 @@
         v-else
         :class="inputClass"
         :rows="rows || 3"
-        v-model="tempValue" 
+        v-model="tempValue"
         @keyup="change"
         :placeholder="placeholder"
-        :disabled="(disabled !== undefined || disabled === true) && disabled !== false"
+        :disabled="
+          (disabled !== undefined || disabled === true) && disabled !== false
+        "
         :ref="`input-text-${key}`"
-        v-maska 
+        v-maska
         :data-maska="mask"
         class="w-100 form-control"
       />
+      <!-- cuma muncul kalo value nya ga kosong, ada props show suffix, dan kalo text boxt nya ga disable -->
+      <button
+        v-if="
+          tempValue &&
+          (showSuffix !== undefined || false) &&
+          !(
+            (disabled !== undefined || disabled === true) &&
+            disabled !== false
+
+          )
+        "
+        type="button"
+        class="btn btn-sm btn-link position-absolute"
+        @click="clearValue"
+        style="top: 50%; right: 10px; transform: translateY(-50%); z-index: 2"
+      >
+        <font-awesome-icon icon="x" />
+      </button>
     </div>
     <div class="invalid-feedback d-block" v-if="errors">
       {{ errors[0] }}
     </div>
-    <small class="form-text text-muted" v-if="description">{{description}}</small>
+    <small class="form-text text-muted" v-if="description">{{
+      description
+    }}</small>
   </div>
 </template>
 
 <script>
-import { vMaska } from 'maska';
-import bootstrap from 'bootstrap/dist/js/bootstrap.bundle';
+import { vMaska } from "maska";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 export default {
   directives: { maska: vMaska },
   model: {
-    prop: 'modelValue',
-    event: 'update',
+    prop: "modelValue",
+    event: "update",
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   props: [
-    'modelValue', 'label', 'col', 
-    'description', 'placeholder', 'onSelect', 
-    'errors', 'value', 'multiline', 
-    'rows', 'no-group', 'disabled',
-    'text-center', 'mask', 'maxlength'
+    "modelValue",
+    "label",
+    "col",
+    "description",
+    "placeholder",
+    "onSelect",
+    "errors",
+    "value",
+    "multiline",
+    "rows",
+    "no-group",
+    "disabled",
+    "text-center",
+    "mask",
+    "maxlength",
+    "showSuffix",
   ],
   data: () => ({
     tempValue: null,
     key: uniqueId(),
   }),
   computed: {
-    inputClass: function() {
-      var c = '';
-      if(this.errors)
-        c = c.concat('is-invalid', ' ')
+    inputClass: function () {
+      var c = "";
+      if (this.errors) c = c.concat("is-invalid", " ");
 
-      if(this.textCenter !== undefined && this.textCenter !== false) {
-        c = c.concat('text-center', ' ')
+      if (this.textCenter !== undefined && this.textCenter !== false) {
+        c = c.concat("text-center", " ");
       }
-      
+
       return c;
-    }
+    },
   },
   watch: {
-    modelValue: function(after, before) {
-      if(after === 0 )
-        this.tempValue = 0;
-      else
-        this.tempValue = after == null ? null : structuredClone(after)
+    modelValue: function (after, before) {
+      if (after === 0) this.tempValue = 0;
+      else this.tempValue = after == null ? null : structuredClone(after);
     },
-    errors: function(after) {
-      if(JSON.stringify(after) != '{}') {
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    errors: function (after) {
+      if (JSON.stringify(after) != "{}") {
+        const tooltipTriggerList = document.querySelectorAll(
+          '[data-bs-toggle="tooltip"]'
+        );
+        const tooltipList = [...tooltipTriggerList].map(
+          (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+        );
         // const popover = new bootstrap.Popover(`#input-text-${this.key}`, {
         //   container: '.modal-body'
         // })
       }
     },
   },
-  mounted: function() {
-    if(this.modelValue === 0 )
-      this.tempValue = 0;
-    else
-      this.tempValue = structuredClone(this.modelValue)
+  mounted: function () {
+    if (this.modelValue === 0) this.tempValue = 0;
+    else this.tempValue = structuredClone(this.modelValue);
   },
   methods: {
-    change: function(e) {
+    change: function (e) {
       this.$emit("update:modelValue", e.target.value);
     },
+    clearValue: function () {
+      this.tempValue = null;
+      this.$emit("update:modelValue", null);
+    },
   },
-}
+};
 </script>
 
-
 <style>
-
 .input-text-custom {
   height: 80%;
 }

@@ -11,6 +11,7 @@ export const useNotification = defineStore('Notification', {
     isLoadingDetail: false,
     detail: {},
     data: [],
+    newNotif: 0
   }),
   actions: {
     loadCountUnread: function(receiver) {
@@ -68,6 +69,9 @@ export const useNotification = defineStore('Notification', {
           .finally(_ => this.isEditing = false);
       })
     },
+    setNewNotif:function() {
+      this.newNotif++;
+    }
   },
 });
 

@@ -24,4 +24,10 @@ public class ConnectionFactory : IConnectionFactory
         var connStr = _configuration.GetConnectionString("DbLog");
         return new SqlConnection(connStr);
     }
+
+    public IDbConnection GetDbPortalConnection()
+    {
+        var connStr = _configuration.GetConnectionString("DbPortal");
+        return new SqlConnection(connStr);
+    }
 }

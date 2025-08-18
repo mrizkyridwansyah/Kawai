@@ -164,7 +164,7 @@ export default {
               .remove(item.ItemTypeCode)
               .then((_) => {
                 this.ds.load();
-                toastSuccess("Anying........ ngapus");
+                toastSuccess("Data Deleted successfully!");
                 resolve();
               })
               .catch((err) => {

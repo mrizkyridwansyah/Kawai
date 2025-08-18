@@ -7,6 +7,7 @@
             <div class="v-table-wrapper">
               <table
                 class="tree-table v-fixed-table table table-striped mb-0 align-middle"
+                v-if="!isLoading && !isNetworkError && !isServerError"
                 ref="table"
               >
                 <thead>
@@ -52,10 +53,12 @@
                 <v-error-server
                   class="mt-3"
                   v-if="!isLoading && isServerError"
+                  :refresh="refresh"
                 />
                 <v-error-network
                   class="mt-3"
                   v-if="!isLoading && isNetworkError"
+                  :refresh="refresh"
                 />
               </div>
             </div>
@@ -78,6 +81,7 @@ export default {
     childKey: { type: String, required: true },
     groupByFields: { type: Array, required: true },
     frozenColumnLeft: { type: Number, default: 0 },
+    refresh: { type: Function },
   },
   watch: {
     treeData: function () {

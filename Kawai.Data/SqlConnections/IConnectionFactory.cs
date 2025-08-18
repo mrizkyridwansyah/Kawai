@@ -6,4 +6,5 @@ public interface IConnectionFactory
 {
     IDbConnection GetDbConnection();
     IDbConnection GetDbLogConnection();
+    IDbConnection GetDbPortalConnection();
 }

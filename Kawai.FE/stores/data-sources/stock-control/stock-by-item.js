@@ -40,6 +40,7 @@ export const useStockByItem = defineStore('StockByItem', {
     },
     inquiry: function () {
       this.isLoadingDetail = true;
+      this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
         app.$http.post(`/stock/inquiry/item`, this.filter)
           .then(({ data }) => {

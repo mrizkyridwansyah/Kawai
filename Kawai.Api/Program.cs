@@ -1,11 +1,13 @@
 using AspNetCore.Scalar;
 using Dapper;
 using Kawai.Api;
+using Kawai.Api.CronJobs;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
 using Kawai.Api.Shared.Extensions;
 using Kawai.Api.Shared.Middleware;
 using Kawai.Data.SqlConnections;
+using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
 using System.Text;
@@ -44,6 +46,7 @@ builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
 builder.Services.AddRepositoriesAuto();
+builder.Services.AddSingleton<StockCalculation>();
 
 // Add services to the container.
 
@@ -116,6 +119,9 @@ SqlMapper.AddTypeHandler(typeof(string), new TrimString());
 
 var app = builder.Build();
 
+var stockCalc = app.Services.GetRequiredService<StockCalculation>();
+stockCalc.StartTimer();
+
 using (var scope = app.Services.CreateScope())
 {
     var sessionManager = scope.ServiceProvider.GetRequiredService<ISessionManager>();
@@ -146,3 +152,4 @@ app.MapHub<NotifApprovalHub>("/notifapprovalhub");
 
 app.MapRazorPages();
 app.Run();
+

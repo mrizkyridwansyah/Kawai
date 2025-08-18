@@ -72,7 +72,7 @@ export const useStock = defineStore('Stock', {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/stock/inquiry-detail`, this.filter)
+        app.$http.post(`/stock/inquiry/detail`, this.filter)
           .then(({ data }) => {
             this.data = data.Data;
 

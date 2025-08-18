@@ -52,12 +52,10 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "warehouseCode",
-    "locationCode",
-    "areaCode",
-    "itemTypeCode",
-    "brandCode",
-    "itemCode",
+    "warehouse",
+    "area",
+    "address",
+    "item",
     "showOptionAll",
   ],
   data: () => ({
@@ -80,27 +78,19 @@ export default {
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
-    warehouseCode: function (after) {
+    warehouse: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    locationCode: function (after) {
+    area: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    areaCode: function (after) {
+    address: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
-    itemTypeCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    brandCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    itemCode: function (after) {
+    item: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
@@ -133,23 +123,21 @@ export default {
           .get(
             `/stock/ddl-lot-no-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouse=${this.warehouseCode}&location=${
-              this.locationCode
-            }&area=${this.areaCode}&brand=${this.brandCode}&itemType=${
-              this.itemTypeCode
-            }&item=${this.itemCode}`
+            }&warehouse=${this.warehouse}&area=${this.area}&address=${
+              this.address
+            }&item=${this.item}`
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.LotNo;
-            }
-
             this.list =
               (this.showOptionAll || false) &&
               (q || "") == "" &&
               p.data.Data.length > 0
                 ? [{ LotNo: "ALL" }, ...p.data.Data]
                 : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.LotNo;
+            }
           })
           .finally(() => (this.isLoading = false));
 

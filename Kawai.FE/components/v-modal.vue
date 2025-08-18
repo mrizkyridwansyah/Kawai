@@ -15,7 +15,8 @@
   >
     <template #header>
       <h4 class="modal-title">{{title}}</h4>
-      <button type="button" class="btn-close" 
+      <button type="button" class="btn-close"
+        :id="`close-${id}`" 
         data-bs-dismiss="modal" 
         aria-label="Close"
         :data-bs-target="`#${id}`"

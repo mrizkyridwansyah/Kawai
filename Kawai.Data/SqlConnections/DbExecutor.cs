@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Transactions;
 
 namespace Kawai.Data.SqlConnections;
 
@@ -66,22 +67,49 @@ public class DbExecutor
     /// <summary>
     /// eksekusi command (insert, update, delete, dsb) => transaction (optional).
     /// </summary>
-    public async Task<int> ExecuteAsync(string sql, object? param = null, IDbTransaction? transaction = null, CommandType commandType = CommandType.StoredProcedure)
+    public async Task<int> ExecuteAsync(string sql, object? param = null, CommandType commandType = CommandType.StoredProcedure)
+    {
+        using var conn = _connectionFactory.GetDbConnection();
+        conn.Open();
+
+        using var transaction = conn.BeginTransaction();
+
+        try
+        {
+            var result = await conn.ExecuteAsync(sql, param, transaction, commandType: commandType);
+            transaction.Commit();
+            return result;
+        }
+        catch (SqlException)
+        {
+            transaction.Rollback();
+            throw;
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
+
+    }
+
+    public async Task<int> ExecuteNonTransactionAsync(string sql, object? param = null, CommandType commandType = CommandType.StoredProcedure)
     {
         try
         {
             using var conn = _connectionFactory.GetDbConnection();
             conn.Open();
-            return await conn.ExecuteAsync(sql, param, transaction, commandType: commandType);
+            return await conn.ExecuteAsync(sql, param, commandType: commandType);
         }
-        catch (SqlException ex)
+        catch (SqlException)
         {
-            throw;// new Exception(ex.Message);
+            throw;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            throw;// new Exception(ex.Message);
+            throw;
         }
+
     }
 
     /// <summary>

@@ -1,11 +1,4 @@
-﻿using Kawai.Domain.Models.Log;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kawai.Domain.DTOs.Log;
+﻿namespace Kawai.Domain.DTOs.Log;
 
 public enum DataLogAction
 {

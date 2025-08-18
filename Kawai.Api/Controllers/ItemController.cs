@@ -40,7 +40,20 @@ public class IItemController : HahaController
             results = results.Where(x => idList.Contains(x.ItemCode)).ToList();
         }
 
-        return Success(results);
+        return Success(results.Take(100));
+    }
+
+    [HttpGet("ddl-item-search-by-stock")]
+    public async Task<IActionResult> DDLItemSearchByStock(string keyword, string ids, string warehouse, string area, string address)
+    {
+        var results = await _itemRepository.DDLItemSearchByStock(keyword, warehouse, area, address);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.ItemCode)).ToList();
+        }
+
+        return Success(results.Take(100));
     }
 
     [HttpGet("warehouse-ddlsearch")]
@@ -132,11 +145,11 @@ public class IItemController : HahaController
             List<object> headers =
             [
                 "Item Code", "Item Name",
-            "Warehouse Code", "Warehouse Name",
-            "Supplier Code", "Supplier Name",
-            "Manufacture Code", "Manufacture Name",
-            "Finish Good Part", "Part Cls", "Reserve Cls", "Supply Cls", "Provision Cls", "Material Cls", "Production Cls", "Packing Style Cls", "Unit Cls", "Stock Control Cls",
-            "Use End Date", "Last Update", "Last User"
+                "Warehouse Code", "Warehouse Name",
+                "Supplier Code", "Supplier Name",
+                "Manufacture Code", "Manufacture Name",
+                "Finish Good Part", "Part Cls", "Reserve Cls", "Supply Cls", "Provision Cls", "Material Cls", "Production Cls", "Packing Style Cls", "Unit Cls", "Stock Control Cls",
+                "Use End Date", "Last Update", "Last User"
             ];
 
             mae.DrawListRight(1, 1, headers, 1, 1, MagerExcel.BorderType.BorderAllThin, XLAlignmentVerticalValues.Center, XLAlignmentHorizontalValues.Center);

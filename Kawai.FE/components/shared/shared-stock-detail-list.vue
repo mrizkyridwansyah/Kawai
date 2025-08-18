@@ -17,14 +17,18 @@
             <th class="text-center">Barcode No</th>
             <th class="text-center">Sublot No</th>
             <th class="text-center">Qty</th>
+            <th class="text-center">Last Update</th>
+            <th class="text-center">Last User</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, idx) in ds.data.Items">
             <td class="text-center">{{ idx + 1 }}.</td>
             <td>{{ item.BarcodeNo }}</td>
-            <td class="text-center">{{ item.SublotNo }}</td>
-            <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
+            <td class="text-right">{{ item.SublotNo }}</td>
+            <td class="text-right">{{ $func.formatMoney(item.CurrentQty) }}</td>
+            <td class="text-left">{{ $func.formatDateTime(item.LastUpdate) }}</td>
+            <td class="text-left">{{ item.LastUser }}</td>
           </tr>
         </tbody>
       </table>
@@ -34,7 +38,7 @@
 
 <script>
 export default {
-  props: ["warehouse", "location", "item", "lotno"],
+  props: ["warehouse", "area", "address", "item", "lotno"],
   data: () => ({
     filter: {
       keyword: null,
@@ -66,7 +70,10 @@ export default {
     warehouse: function () {
       this.search();
     },
-    location: function () {
+    area: function () {
+      this.search();
+    },
+    address: function () {
       this.search();
     },
     item: function () {
@@ -93,7 +100,8 @@ export default {
           Keyword: this.filter.keyword || "",
           ItemCode: this.item || "",
           WarehouseCode: this.warehouse || "",
-          LocationCode: this.location || "",
+          AreaCode: this.area || "",
+          AddressCode: this.address || "",
           LotNo: this.lotno || "",
         },
       ];
@@ -104,7 +112,8 @@ export default {
     reset: function () {
       this.item = null;
       this.warehouse = null;
-      this.location = null;
+      this.area = null;
+      this.address = null;
       this.lotno = null;
       this.search();
     },

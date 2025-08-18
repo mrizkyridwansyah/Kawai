@@ -45,7 +45,7 @@
         mask="##/####"
         :input-id="key"
         v-model:open-pop-up="isOpen"
-        placeholder="MM/yyyy"
+        :placeholder="placeholder || 'MM/yyyy'"
         :flow="['year', 'month']"
       />
       <span class="input-group-text btn btn-primary" @click="open">
@@ -70,7 +70,7 @@ export default {
     event: 'update',
   },
   emits: ['update:modelValue'],
-  props: ['modelValue', 'label', 'col', 'description', 'placeholder', 'onSelect', 'errors', 'value', 'multiline', 'rows', 'no-group', 'disabled'],
+  props: ['modelValue', 'label', 'col', 'description', 'placeholder', 'onSelect', 'errors', 'value', 'multiline', 'rows', 'no-group', 'disabled', 'placeholder'],
   components: { DatePicker, },
   data: () => ({
     tempValue: null,

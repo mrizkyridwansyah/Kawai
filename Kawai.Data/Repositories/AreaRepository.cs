@@ -35,7 +35,7 @@ public class AreaRepository : IAreaRepository
 
     public async Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouseCode, string item)
     {
-        string sp = "sp_Wms_StockInquiry_DDLArea";
+        string sp = "sp_Wms_Area_DDLByStock";
         return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
     }
 

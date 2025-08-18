@@ -20,7 +20,7 @@
        :select="change"
       :class="cClass || 'input-wrapper'" 
       :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false" 
+      :disabled="(disabled !== undefined || disabled === true) && disabled !== false" 
       select-label="" 
       deselect-label="" />
     <div class="invalid-feedback d-block" v-if="errors">

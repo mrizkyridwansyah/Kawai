@@ -52,10 +52,8 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "warehouse",
-    "location",
     "item",
-    "optionAll"
+    "optionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -76,14 +74,6 @@ export default {
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
-    },
-    warehouse: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    location: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
     },
     item: function (after) {
       this.tempValue = null;
@@ -116,17 +106,21 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/stock/ddl-lot-no-search?keyword=${q || ""}&ids=${
-              d || ""
-            }&warehouse=${this.warehosue}&location=${
-              this.location || ""
-            }&item=${this.item || ""}`
+            `/stock/ddl-lot-no-search?keyword=${q || ""}&ids=${d || ""}&item=${
+              this.item || ""
+            }`
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {              
-              this.tempValue = p.data.Data[0]?.ItemCode;
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [{ LotNo: "ALL" }, ...p.data.Data]
+                : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.LotNo;
             }
-            this.list = p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 

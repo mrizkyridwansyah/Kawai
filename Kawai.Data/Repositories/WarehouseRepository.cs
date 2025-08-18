@@ -35,7 +35,7 @@ public class WarehouseRepository : IWarehouseRepository
 
     public async Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string item)
     {
-        string sp = "sp_Wms_StockInquiry_DDLWarehouse";
+        string sp = "sp_Wms_Warehouse_DDLByStock";
         return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? "", ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
     }
 

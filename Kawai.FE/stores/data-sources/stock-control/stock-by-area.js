@@ -1,6 +1,6 @@
 var app = useNuxtApp();
 
-export const useStockByLocation = defineStore('StockByLocation', {
+export const useStockByArea = defineStore('StockByArea', {
   state: () => ({
     isLoading: false,
     isServerError: false,
@@ -40,8 +40,9 @@ export const useStockByLocation = defineStore('StockByLocation', {
     },
     inquiry: function () {
       this.isLoadingDetail = true;
+      this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/stock/inquiry/location`, this.filter)
+        app.$http.post(`/stock/inquiry/area`, this.filter)
           .then(({ data }) => {
             this.data = data.Data;
 
@@ -63,5 +64,5 @@ export const useStockByLocation = defineStore('StockByLocation', {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useStockByLocation, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useStockByArea, import.meta.hot));
 }

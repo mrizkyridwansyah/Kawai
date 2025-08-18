@@ -161,7 +161,7 @@ export default {
               .remove(item.UnitClassificationCode)
               .then((_) => {
                 this.ds.load();
-                toastSuccess("Anying........ ngapus");
+                toastSuccess("Data Deleted successfully!");
                 resolve();
               })
               .catch((err) => {

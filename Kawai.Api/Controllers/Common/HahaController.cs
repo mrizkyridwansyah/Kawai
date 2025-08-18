@@ -76,6 +76,22 @@ public class HahaController : ControllerBase
         };
     }
 
+    protected ContentResult Pending(object data = null, string message = null, string code = null)
+    {
+        return new ContentResult
+        {
+            StatusCode = 202,
+            ContentType = "application/json",
+            Content = JsonConvert.SerializeObject(new
+            {
+                Code = code,
+                Status = "PENDING",
+                Message = "Transaction accepted and on process!",
+                Data = data,
+            })
+        };
+    }
+
     protected ContentResult Success(object data = null, string message = null, string code = null)
     {
         return new ContentResult

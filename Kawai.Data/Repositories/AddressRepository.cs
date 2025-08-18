@@ -35,7 +35,7 @@ public class AddressRepository : IAddressRepository
 
     public async Task<List<AddressDto>> DDLSearchByStock(string keyword, string warehouse, string area, string item)
     {
-        string sp = "sp_Wms_StockInquiry_DDLAddress";
+        string sp = "sp_Wms_Address_DDLByStock";
         return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
     }
 
@@ -43,7 +43,7 @@ public class AddressRepository : IAddressRepository
     {
         address.AddressCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Address_GenerateCode", new { address.WarehouseCode, address.AreaCode });
         string sql = @"sp_Wms_Address_Create";
-        int i = await _dbExecutor.ExecuteAsync(sql, new
+        await _dbExecutor.ExecuteAsync(sql, new
         {
             address.WarehouseCode,
             address.AreaCode,
@@ -56,7 +56,7 @@ public class AddressRepository : IAddressRepository
     public async Task Update(Address address, string userId)
     {
         string sql = @"sp_Wms_Address_Update";
-        int i = await _dbExecutor.ExecuteAsync(sql, new
+        await _dbExecutor.ExecuteAsync(sql, new
         {
             address.WarehouseCode,
             address.AreaCode,
@@ -69,7 +69,7 @@ public class AddressRepository : IAddressRepository
     public async Task Remove(string addressCode, string userId)
     {
         string sql = "sp_Wms_Address_Delete";
-        int i = await _dbExecutor.ExecuteAsync(sql, new { AddressCode = addressCode });
+        await _dbExecutor.ExecuteAsync(sql, new { AddressCode = addressCode });
     }
 
     public async Task<Dictionary<string, object>> Capture(string addressCode)
