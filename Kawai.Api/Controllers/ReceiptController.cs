@@ -1,4 +1,6 @@
 ﻿using Kawai.Api.CronJobs;
+using Kawai.Api.Services;
+using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -14,14 +16,16 @@ namespace Kawai.Api.Controllers;
 public class ReceiptController : HahaController
 {
     private readonly IReceiptRepository _receiptRepository;
+    private readonly ITransactionProducer _transactionProducer;
     private readonly StockCalculation _stockCalculation;
     private readonly DataLogger _logger;
 
-    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, StockCalculation stockCalculation)
+    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, StockCalculation stockCalculation, ITransactionProducer transactionProducer)
     {
         _receiptRepository = receiptRepository;
         _stockCalculation = stockCalculation;
         _logger = logger;
+        _transactionProducer = transactionProducer;
     }
 
     [HttpPost("list")]
@@ -81,6 +85,22 @@ public class ReceiptController : HahaController
 
         _stockCalculation.AddTransaction();
         return Pending(after);
+    }
+
+    [HttpPost("create-using-rabbitmq")]
+    public async Task<IActionResult> CreateUsingRabbitMQ([FromBody] Receipt model)
+    {
+        var message = new StockTransactionMessage<Receipt>
+        {
+            AuthUserId = Auth.User.UserID,
+            TimeStamp = EpochDateTime.Now.ToLong(),
+            TransactionType = "RECEIPT",
+            FormatMessage = "Receipt DN No. : " + model.DNNumber,
+            Payload = model,
+        };
+
+        _transactionProducer.Publish<Receipt>(message);
+        return Pending(message);
     }
 
     [HttpPatch("update")]

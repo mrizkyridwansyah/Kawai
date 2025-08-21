@@ -20,10 +20,20 @@ public class MenuRepository : IMenuRepository
         string sp = "sp_WMS_UserSetup_UserPrivilege";
         return (await _dbExecutor.QueryListAsync<MenuDto>(sp, new { UserID = userId })).ToList();
     }
+    public async Task<List<MenuMobileDto>> GetAllMenuMobileIncludePrivileges(string userId)
+    {
+        string sp = "sp_WMS_UserSetup_UserMobilePrivilege";
+        return (await _dbExecutor.QueryListAsync<MenuMobileDto>(sp, new { UserID = userId })).ToList();
+    }
     public async Task<List<MenuDto>> GetUserMenuPrivileges(string userId)
     {
         string sp = "sp_Wms_Login_GetUserMenu";
         return (await _dbExecutor.QueryListAsync<MenuDto>(sp, new { UserId = userId })).ToList();
+    }
+    public async Task<List<MenuMobileDto>> GetUserMenuMobilePrivileges(string userId)
+    {
+        string sp = "sp_Wms_Login_GetUserMenuMobile";
+        return (await _dbExecutor.QueryListAsync<MenuMobileDto>(sp, new { UserId = userId })).ToList();
     }
     public async Task SavePrivileges(string userId, Privileges privileges)
     {
@@ -46,6 +56,16 @@ public class MenuRepository : IMenuRepository
             }, CommandType.StoredProcedure));
         }
 
+        foreach (var menuPriv in privileges.MenuMobilePrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value))
+        {
+            commands.Add(("sp_WMS_UserSetup_UserPrivilegeMobileUpd", new
+            {
+                UserID = privileges.UserId,
+                menuPriv.MenuID,
+                menuPriv.AllowAccess,
+            }, CommandType.StoredProcedure));
+        }
+
         foreach (var warehousePriv in privileges.WarehousePrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value))
         {
             commands.Add(("sp_WMS_UserSetup_UserPrivilegeWarehouseUpd", new
@@ -62,23 +82,20 @@ public class MenuRepository : IMenuRepository
 
     public async Task<Dictionary<string, object>> Capture(string userId)
     {
-        string sp = "sp_Wms_Privileges_CaptureAll";
-        var result = await _dbExecutor.QueryListAsync<dynamic>(sp, new { UserID = userId });
+        string spMenuPriv = "sp_Wms_Privileges_CaptureMenuPrivileges";
+        var menuPrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spMenuPriv, new { UserID = userId })).ToList();
 
-        if (result == null)
-            return new Dictionary<string, object>();
+        string spMobilePriv = "sp_Wms_Privileges_CaptureMenuMobilePrivileges";
+        var mobilePrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spMobilePriv, new { UserID = userId })).ToList();
 
-        var list = new List<Dictionary<string, object>>();
-        foreach (var row in result)
-        {
-            var dict = ((IDictionary<string, object>)row)
-                .ToDictionary(k => k.Key, v => v.Value);
-            list.Add(dict);
-        }
+        string spWHPriv = "sp_Wms_Privileges_CaptureWarehousePrivileges";
+        var warehousePrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spWHPriv, new { UserID = userId })).ToList();
 
         return new Dictionary<string, object>
         {
-            { "AllPrivileges", list }
+            { "MenuPrivileges", menuPrivileges },
+            { "MobilePrivileges", mobilePrivileges },
+            { "WarehousePrivileges", warehousePrivileges }
         };
     }
 }

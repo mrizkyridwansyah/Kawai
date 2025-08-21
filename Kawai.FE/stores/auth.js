@@ -17,7 +17,7 @@ export const useAuth = defineStore('Auth', {
       return new Promise((resolve, reject) => {
         app.$http.get(`/user/user-info`)
           .then(v => {
-            this.data = v?.Data;
+            this.data = v?.data.Data;
             resolve(v);
           })
           .catch(err => {

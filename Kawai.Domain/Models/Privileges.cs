@@ -11,6 +11,9 @@ public class Privileges
     public List<MenuPrivilege> MenuPrivileges { get; set; }
 
     [Required]
+    public List<MenuMobilePrivilege> MenuMobilePrivileges { get; set; }
+
+    [Required]
     public List<WarehousePrivilege> WarehousePrivileges { get; set; }
 }
 
@@ -20,6 +23,12 @@ public class MenuPrivilege
     public bool? AllowAccess { get; set; } = false;
     public bool? AllowUpdate { get; set; } = false;
     public bool? AllowPrice { get; set; } = false;
+}
+
+public class MenuMobilePrivilege
+{
+    public string MenuID { get; set; }
+    public bool? AllowAccess { get; set; } = false;
 }
 
 public class WarehousePrivilege

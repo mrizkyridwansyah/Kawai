@@ -46,8 +46,10 @@ builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
 builder.Services.AddRepositoriesAuto();
-builder.Services.AddSingleton<StockCalculation>();
+//builder.Services.AddSingleton<StockCalculation>();
 
+//ini buat pake message queueing ditiap transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
+builder.Services.AddHostedService<TransactionConsumer>();
 // Add services to the container.
 
 builder.Services.AddApplication(config);
@@ -119,8 +121,9 @@ SqlMapper.AddTypeHandler(typeof(string), new TrimString());
 
 var app = builder.Build();
 
-var stockCalc = app.Services.GetRequiredService<StockCalculation>();
-stockCalc.StartTimer();
+// ini buat pake stok mutation secara fifo.
+//var stockCalc = app.Services.GetRequiredService<StockCalculation>();
+//stockCalc.StartTimer();
 
 using (var scope = app.Services.CreateScope())
 {

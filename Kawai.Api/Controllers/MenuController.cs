@@ -26,11 +26,13 @@ public class MenuController : HahaController
     public async Task<IActionResult> ListPrivileges(string userID)
     {
         var menuPriv = await _menuRepository.GetAllMenuIncludePrivileges(userID);
+        var menuMobilePriv = await _menuRepository.GetAllMenuMobileIncludePrivileges(userID);
         var warehousePriv = await _warehouseRepository.GetAllWarehouseIncludePrivileges(userID);
         var result = new
         {
             UserID = userID,
             MenuPrivileges = menuPriv,
+            MenuMobilePrivileges = menuMobilePriv,
             WarehousePrivileges = warehousePriv
         };
 
@@ -41,6 +43,13 @@ public class MenuController : HahaController
     public async Task<IActionResult> Privileges()
     {
         var result = await _menuRepository.GetUserMenuPrivileges(Auth.User.UserID);
+        return Success(result);
+    }
+
+    [HttpGet("mobile/privileges")]
+    public async Task<IActionResult> MobilePrivileges()
+    {
+        var result = await _menuRepository.GetUserMenuMobilePrivileges(Auth.User.UserID);
         return Success(result);
     }
 

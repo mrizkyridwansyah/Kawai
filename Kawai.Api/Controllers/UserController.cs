@@ -71,6 +71,19 @@ public class UserController : HahaController
         });
     }
 
+    [HttpGet("mobile/user-info")]
+    public async Task<IActionResult> UserInfoMobile()
+    {
+        var result = await _menuRepository.GetUserMenuMobilePrivileges(Auth.User.UserID);
+        return Success(new
+        {
+            UserId = Auth.User.UserID,
+            Auth.User.FullName,
+            StatusAdmin = Auth.User.IsAdmin,
+            Privileges = result
+        });
+    }
+
     [HttpGet("detail")]
     public async Task<IActionResult> Get(string id)
     {

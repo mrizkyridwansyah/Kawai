@@ -15,3 +15,13 @@ public class MenuDto
     public bool AllowUpdate { get; set; }
     public bool AllowPrice { get; set; }
 }
+
+public class MenuMobileDto
+{
+    public string MenuID { get; set; }
+    public string MenuName { get; set; }
+    public string MenuDescription { get; set; }
+    public int MenuIndex { get; set; }
+    public string ImageName { get; set; }
+    public bool AllowAccess { get; set; }
+}
