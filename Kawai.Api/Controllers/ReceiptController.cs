@@ -1,4 +1,5 @@
-﻿using Kawai.Api.CronJobs;
+﻿using DocumentFormat.OpenXml.InkML;
+using Kawai.Api.CronJobs;
 using Kawai.Api.Services;
 using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
@@ -17,13 +18,14 @@ public class ReceiptController : HahaController
 {
     private readonly IReceiptRepository _receiptRepository;
     private readonly ITransactionProducer _transactionProducer;
-    private readonly StockCalculation _stockCalculation;
+    //private readonly StockCalculation _stockCalculation;
     private readonly DataLogger _logger;
 
-    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, StockCalculation stockCalculation, ITransactionProducer transactionProducer)
+    //public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, StockCalculation stockCalculation, ITransactionProducer transactionProducer)
+    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, ITransactionProducer transactionProducer)
     {
         _receiptRepository = receiptRepository;
-        _stockCalculation = stockCalculation;
+        //_stockCalculation = stockCalculation;
         _logger = logger;
         _transactionProducer = transactionProducer;
     }
@@ -67,6 +69,7 @@ public class ReceiptController : HahaController
         return Success(after);
     }
 
+    /*
     [HttpPost("create-using-mutation")]
     public async Task<IActionResult> CreateUsingMutation([FromBody] Receipt model)
     {
@@ -86,6 +89,7 @@ public class ReceiptController : HahaController
         _stockCalculation.AddTransaction();
         return Pending(after);
     }
+    */
 
     [HttpPost("create-using-rabbitmq")]
     public async Task<IActionResult> CreateUsingRabbitMQ([FromBody] Receipt model)
@@ -93,10 +97,19 @@ public class ReceiptController : HahaController
         var message = new StockTransactionMessage<Receipt>
         {
             AuthUserId = Auth.User.UserID,
-            TimeStamp = EpochDateTime.Now.ToLong(),
+            TimeStamp = EpochDateTime.Now,
             TransactionType = "RECEIPT",
             FormatMessage = "Receipt DN No. : " + model.DNNumber,
             Payload = model,
+            LogContext = new LogContext 
+            {
+                Method = HttpContext.Request.Method,
+                RequestPath = HttpContext.Request.Path,
+                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                UserID = Auth.User.UserID,
+                FullName = Auth.User.FullName
+            }
         };
 
         _transactionProducer.Publish<Receipt>(message);

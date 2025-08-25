@@ -72,7 +72,7 @@
     ref="modalWarehouse"
     id="modal-form-warehouse"
     :title="title"
-    size="sm"
+    size="md"
     @hidden="
       () => {
         this.$refs.formWarehouse.resetForm();

@@ -8,9 +8,8 @@ using Kawai.Domain.Interfaces;
 using Kawai.Api.Services;
 using Kawai.Api.Hub;
 using Kawai.Api.Shared.Handlers;
-using Kawai.Domain;
 
-public class TransactionConsumer : BackgroundService
+public class TransactionConsumerAsync : BackgroundService
 {
     private IConnection _connection;
     private IModel _channel;
@@ -25,7 +24,7 @@ public class TransactionConsumer : BackgroundService
     private const string DlxQueue = "stock_transaction_dead_letter_queue";
     private const string DlxRoutingKey = "dead.stock_transaction";
 
-    public TransactionConsumer
+    public TransactionConsumerAsync
     (
         IServiceScopeFactory scopeFactory
     )
@@ -37,7 +36,7 @@ public class TransactionConsumer : BackgroundService
     private void InitRabbitMq()
     {
         Console.WriteLine("InitRabbitMq");
-        var factory = new RabbitMQ.Client.ConnectionFactory() { HostName = "localhost" };
+        var factory = new RabbitMQ.Client.ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
@@ -70,9 +69,9 @@ public class TransactionConsumer : BackgroundService
         {
             Console.WriteLine("ExecuteAsync");
 
-            var consumer = new EventingBasicConsumer(_channel);
+            var consumer = new AsyncEventingBasicConsumer(_channel);
 
-            consumer.Received += (model, ea) =>
+            consumer.Received += async (model, ea) =>
             {
                 Console.WriteLine("ExecuteAsync Received");
 
@@ -96,30 +95,32 @@ public class TransactionConsumer : BackgroundService
                     message = JsonSerializer.Deserialize<StockTransactionMessage<object>>(json);
 
                     notification.Title = message.FormatMessage;
+                    notification.Description = "Transaction success!";
                     notification.Receiver = message.AuthUserId;
                     notification.Sender = message.AuthUserId;
                     notification.NotifType = "INFO";
 
-                    ProcessMessageAsync(message).GetAwaiter().GetResult();
+                    await ProcessMessageAsync(message);
 
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception ex)
                 {
                     notification.NotifType = "ERROR";
-                    SaveErrorLogs(json, ex).GetAwaiter().GetResult();
-                    _notificationRepository.SaveNotification(notification).GetAwaiter().GetResult();
-                    //_channel.BasicNack(ea.DeliveryTag, false, true);
+                    notification.Description = "Transaction failed: " + ex.Message;
+                    await SaveErrorLogs(json, message.LogContext, ex);
+                    _channel.BasicNack(ea.DeliveryTag, false, false);
                 }
 
                 if (!string.IsNullOrWhiteSpace(notification.Receiver))
                 {
-                    var notifications = new List<Notification> { notification }; 
-                    _notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification", new
+                    await _notificationRepository.SaveNotification(notification);
+                    var notifications = new List<Notification> { notification };
+                    await _notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification", new
                     {
                         Count = 1,
                         Notifications = notifications
-                    }).GetAwaiter().GetResult();
+                    });
                 }
             };
 
@@ -142,7 +143,7 @@ public class TransactionConsumer : BackgroundService
         //return Task.CompletedTask;
     }
 
-    private async Task SaveErrorLogs(string payload, Exception ex)
+    private async Task SaveErrorLogs(string payload, LogContext logContext, Exception ex)
     {
         using var scope = _scopeFactory.CreateScope();
         var _logExecutor = scope.ServiceProvider.GetRequiredService<LogExecutor>();
@@ -156,17 +157,17 @@ public class TransactionConsumer : BackgroundService
 
         var log = new
         {
-            Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
+            Date = new EpochDateTime(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).Value,
             ex.Message,
             Method = "BACKGROUND",
             UserAgent = "RabbitMQ/BackgroundWorker",
-            RemoteAddr = "-",
-            RequestPath = GetType().Name,
+            logContext.RemoteAddr,
+            RequestPath = GetType().Name + ": url(" + logContext.RequestPath + ")",
             RequestBody = payload,
             StackTrace = ex?.InnerException?.StackTrace ?? ex?.StackTrace,
             StatusCode = 500,
-            UserID = "",
-            FullName = ""
+            logContext.UserID,
+            logContext.FullName
         };
 
         await _logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);

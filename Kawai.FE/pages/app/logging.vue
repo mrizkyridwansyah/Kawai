@@ -5,7 +5,7 @@
       <div class="panel-heading ui-sortable-handle">
         <font-awesome-icon icon="history" />
       </div>
-      <div class="panel-body">
+      <div class="panel-body" >
         <div class="d-flex">
           <div class="nav-sub">
             <ul class="nav flex-column">
@@ -38,7 +38,7 @@
               </li>
             </ul>
           </div>
-          <div class="ps-5 flex-fill">
+          <div class="ps-5 flex-fill" style="overflow-x: hidden;">
             <nuxt-page />
           </div>
         </div>

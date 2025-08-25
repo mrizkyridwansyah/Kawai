@@ -54,7 +54,7 @@ public class ValidateModelAttribute : ActionFilterAttribute
 
             var log = new
             {
-                Date = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
                 Message = "Request data is not valid.",
                 request.Method,
                 UserAgent = request.Headers["User-Agent"].ToString(),

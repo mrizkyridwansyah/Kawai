@@ -5,6 +5,7 @@ using Kawai.Api.CronJobs;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
 using Kawai.Api.Shared.Extensions;
+using Kawai.Api.Shared.Handlers;
 using Kawai.Api.Shared.Middleware;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Interfaces;
@@ -12,6 +13,7 @@ using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
 using System.Text;
 using System.Threading.RateLimiting;
+
 
 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -46,12 +48,17 @@ builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
 builder.Services.AddRepositoriesAuto();
+
+
+//ini daftarin producer rabbitmq, buat publish message ke queueing => transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
+builder.Services.AddSingleton<ITransactionProducer, TransactionProducer>();
+
 //builder.Services.AddSingleton<StockCalculation>();
+builder.Services.AddScoped<ITransactionHandler, ReceiptTransactionHandler>();
+//ini daftarin consumer rabbitmq, buat consume message di queueing =>  transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
+builder.Services.AddHostedService<TransactionConsumerAsync>();
 
-//ini buat pake message queueing ditiap transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
-builder.Services.AddHostedService<TransactionConsumer>();
 // Add services to the container.
-
 builder.Services.AddApplication(config);
 builder.Services
     .AddAuthentication("Bearer")

@@ -1,5 +1,6 @@
 ﻿using Kawai.Data;
 using Kawai.Data.SqlConnections;
+using Kawai.Domain;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Data.SqlClient;
@@ -68,7 +69,7 @@ public static class Extension
 
                 var log = new
                 {
-                    Date = DateTimeOffset.UtcNow.ToUnixTimeSeconds(), // Replace with EpochDateTime.Now if needed
+                    Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value, // Replace with EpochDateTime.Now if needed
                     Message = exception?.InnerException?.Message ?? exception?.Message,
                     context.Request.Method,
                     UserAgent = context.Request.Headers.UserAgent.ToString(),

@@ -1,7 +1,9 @@
-﻿namespace Kawai.Api.Shared.Handlers;
+﻿using Kawai.Domain.Models;
+
+namespace Kawai.Api.Shared.Handlers;
 
 public interface ITransactionHandler
 {
     string TransactionType { get; }
-    Task HandleAsync(object payload, string userId);
+    Task HandleAsync(object payload, LogContext logContext, string userId);
 }

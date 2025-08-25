@@ -101,7 +101,7 @@ export default {
         this.$http
           .get(
             `/trade/ddlsearch?keyword=${q || ""}&tradecls=${
-              this.tradeCls
+              this.tradeCls || "2"
             }&ids=${d || ""}`
           )
           .then((p) => {

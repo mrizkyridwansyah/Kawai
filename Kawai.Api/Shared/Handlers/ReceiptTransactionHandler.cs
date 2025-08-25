@@ -18,7 +18,7 @@ public class ReceiptTransactionHandler: ITransactionHandler
         _logger = logger;
     }
 
-    public async Task HandleAsync(object payload, string userId)
+    public async Task HandleAsync(object payload, LogContext logContext, string userId)
     {
         var json = JsonSerializer.Serialize(payload);
         var model = JsonSerializer.Deserialize<Receipt>(json);
@@ -35,7 +35,7 @@ public class ReceiptTransactionHandler: ITransactionHandler
                 ReferenceId = model.ReceiptNo,
                 After = after,
                 Action = DataLogAction.Create
-            });
+            }, logContext);
         }
     }
 }

@@ -15,6 +15,9 @@ public class TransactionProducer : ITransactionProducer, IDisposable
     private readonly string _exchangeName = "stock_transaction_exchange";
     private readonly string _queueName = "stock_transaction_queue";
     private readonly string _routingKey = "stock_transaction";
+    private readonly string _dlxExchange = "stock_transaction_dlx";
+    private readonly string _dlxRoutingKey = "dead.stock_transaction";
+
     private readonly IConnection _connection;
     private readonly IModel _channel;
     public TransactionProducer()
@@ -24,8 +27,13 @@ public class TransactionProducer : ITransactionProducer, IDisposable
         _channel = _connection.CreateModel();
 
         // Declare exchange, queue and bind once during construction
+        var queueArgs = new Dictionary<string, object>
+        {
+            { "x-dead-letter-exchange", _dlxExchange },
+            { "x-dead-letter-routing-key", _dlxRoutingKey }
+        };
         _channel.ExchangeDeclare(_exchangeName, ExchangeType.Direct, durable: true);
-        _channel.QueueDeclare(_queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+        _channel.QueueDeclare(_queueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArgs);
         _channel.QueueBind(_queueName, _exchangeName, _routingKey);
     }
 

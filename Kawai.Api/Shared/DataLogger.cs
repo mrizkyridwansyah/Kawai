@@ -1,5 +1,6 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs.Log;
+using Kawai.Domain.Models;
 using Kawai.Domain.Models.Log;
 using Newtonsoft.Json;
 using System.Collections;
@@ -47,6 +48,41 @@ public class DataLogger(Auth auth, IHttpContextAccessor contextAccessor, LogExec
             VALUES
             (@Date, @UserId, @FullName, @UserAgent, @RemoteAddr, @Method, @RequestPath, @Action, @Activity, @DocumentType, @EntityId, @ReferenceId, @Data, 0)", log, commandType: CommandType.Text);
     }
+
+    public async Task SaveDataLog(DataLogDto data, LogContext logContext)
+    {
+        //var json = JsonConvert.SerializeObject(Compare(data.Before, data.After));
+        var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+        {
+            { "Before", data.Before ?? new Dictionary<string, object>() },
+            { "After", data.After ?? new Dictionary<string, object>() }
+        });
+
+
+        var log = new DataLog
+        {
+            Action = data.Action.ToString(),
+            Activity = string.IsNullOrEmpty(data.Activity) ? data.Action.ToString() : data.Activity,
+            DocumentType = data.DocumentType,
+            ReferenceId = data.ReferenceId,
+            EntityId = data.EntityId,
+            Date = EpochDateTime.Now,
+            Data = json,
+            Method = logContext.Method,
+            RequestPath = logContext.RequestPath,
+            RemoteAddr = logContext.RemoteAddr,
+            UserAgent = logContext.UserAgent,
+            UserId = logContext.UserID,
+            FullName = logContext.FullName,
+        };
+
+        await _logExecutor.ExecuteAsync(@"
+            INSERT INTO [dbo].[DataLogs]
+            ([Date], [UserId], [FullName], [UserAgent], [RemoteAddr], [Method], [RequestPath], [Action], [Activity], [DocumentType], [EntityId], [ReferenceId], [Data], [ElapsedMilliseconds])
+            VALUES
+            (@Date, @UserId, @FullName, @UserAgent, @RemoteAddr, @Method, @RequestPath, @Action, @Activity, @DocumentType, @EntityId, @ReferenceId, @Data, 0)", log, commandType: CommandType.Text);
+    }
+
 
     protected static IDictionary<string, IDictionary<string, object>> Compare(
        Dictionary<string, object> before = null,

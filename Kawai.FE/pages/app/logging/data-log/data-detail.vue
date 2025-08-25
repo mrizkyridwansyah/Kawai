@@ -53,7 +53,9 @@
                   <thead v-if="compared.Before[item].length > 0">
                     <tr>
                       <th
-                        v-for="xx in Object.keys(compared.Before[item][0] || {})"
+                        v-for="xx in Object.keys(
+                          compared.Before[item][0] || {}
+                        )"
                       >
                         {{ xx }}
                       </th>
@@ -67,6 +69,21 @@
                     </tr>
                   </tbody>
                 </table>
+              </div>
+              <div
+                v-else-if="
+                  typeof compared.After[item] === 'object' &&
+                  compared.After[item] !== null
+                "
+              >
+                {{ item }}:
+                <div
+                  v-for="(val, key) in compared.After[item]"
+                  :key="key"
+                  class="ms-3"
+                >
+                  {{ key }}: {{ val }}
+                </div>
               </div>
               <div v-else>{{ item }} : {{ compared.Before[item] }}</div>
             </div>
@@ -98,9 +115,9 @@
           <div class="card-body">
             <h6>After</h6>
             <div v-for="(item, i) in Object.keys(compared.After || {})">
-              <div v-if="Array.isArray(compared.After[item])">
+              <div v-if="Array.isArray(compared.After[item])"style="overflow-x: scroll;">
                 {{ item }} :
-                <table class="x-table">
+                <table class="table">
                   <thead v-if="compared.After[item].length > 0">
                     <tr>
                       <th
@@ -123,6 +140,21 @@
                     {{xx}} : {{ x[xx] }}
                   </div>
                 </div> -->
+              </div>
+              <div
+                v-else-if="
+                  typeof compared.After[item] === 'object' &&
+                  compared.After[item] !== null
+                "
+              >
+                {{ item }}:
+                <div
+                  v-for="(val, key) in compared.After[item]"
+                  :key="key"
+                  class="ms-3"
+                >
+                  {{ key }}: {{ val }}
+                </div>
               </div>
               <div v-else>{{ item }} : {{ compared.After[item] }}</div>
             </div>

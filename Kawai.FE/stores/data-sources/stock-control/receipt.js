@@ -123,7 +123,7 @@ export const useReceipt = defineStore('Receipt', {
     create: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/receipt/create-using-mutation`, data)
+        app.$http.post(`/receipt/create-using-rabbitmq`, data)
           .then(({ data }) => {
             resolve(data);
           })
