@@ -63,7 +63,6 @@ builder.Services.AddApplication(config);
 builder.Services
     .AddAuthentication("Bearer")
     .AddScheme<AuthenticationSchemeOptions, BearerAuthenticationHandler>("Bearer", null);
-//.AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", options => { });
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -107,7 +106,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
 
 //ini tambah signalr buat notif
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 builder.Services.AddControllers(options =>
 {

@@ -92,6 +92,7 @@ public class ReceiptController : HahaController
     */
 
     [HttpPost("create-using-rabbitmq")]
+    //[Idempotent]
     public async Task<IActionResult> CreateUsingRabbitMQ([FromBody] Receipt model)
     {
         var message = new StockTransactionMessage<Receipt>

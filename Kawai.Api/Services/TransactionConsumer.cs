@@ -128,7 +128,7 @@ public class TransactionConsumer : BackgroundService
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                Console.WriteLine($"[RABBITMQ] still running ...");
+                //Console.WriteLine($"[RABBITMQ] still running ...");
                 await Task.Delay(1000, stoppingToken); // sleep to avoid CPU busy loop
             }
         }

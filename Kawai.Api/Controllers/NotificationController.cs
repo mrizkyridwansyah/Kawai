@@ -1,4 +1,7 @@
-﻿using Kawai.Domain.Interfaces;
+﻿using Kawai.Api.Hub;
+using Kawai.Api.Services;
+using Kawai.Domain.Interfaces;
+using Kawai.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers;
@@ -8,9 +11,37 @@ namespace Kawai.Api.Controllers;
 public class NotificationController : HahaController
 {
     private readonly INotificationRepository _notificationReporitory;
-    public NotificationController(INotificationRepository notificationReporitory)
+    private readonly NotificationService<NotifApprovalHub> _notificationService;
+
+    public NotificationController(INotificationRepository notificationReporitory, NotificationService<NotifApprovalHub> notificationService)
     {
         _notificationReporitory = notificationReporitory;
+        _notificationService = notificationService;
+    }
+
+    [HttpPost("tes-notif")]
+    public async Task<IActionResult> Test(string receiver)
+    {
+        List<Notification> notifications = new List<Notification>();
+        Notification notification = new Notification
+        {
+            Title = "Ini untuk " + receiver,
+            Description = $"Test Notification.",
+            NotifType = "ERROR",
+            Priority = "LOW",
+            Receiver = receiver,
+            Sender = receiver
+        };
+
+        notifications.Add(notification);
+
+        await _notificationService.BroadCastOnlyTo([receiver], "NewNotification", new
+        {
+            notifications.Count,
+            Notifications = notifications
+        });
+
+        return Success();
     }
 
     [HttpGet("unread-notif-by-receiver")]

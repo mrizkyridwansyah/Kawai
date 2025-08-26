@@ -34,12 +34,16 @@ public class BearerAuthenticationHandler(
         string token = "";
         var isCookie = Request.Cookies.TryGetValue("__SIDX", out values);
         var isBearer = Request.Headers.TryGetValue("Authorization", out Microsoft.Extensions.Primitives.StringValues value);
+        var isQueryStringMobile = Request.Query.TryGetValue("Access_Token_Mobile", out var mobileValues);
 
-        if (!isCookie && !isBearer)
+        if (!isCookie && !isBearer && !isQueryStringMobile)
             return AuthenticateResult.Fail("Unauthorized");
 
         if (isCookie)
             token = values;
+
+        if (isQueryStringMobile)
+            token = mobileValues;
 
         if (isBearer)
         {
