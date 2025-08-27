@@ -1,0 +1,13 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Bea_Cukai_TPB_Pungutan](
+	[ID] [int] NULL,
+	[JENIS_TARIF] [varchar](255) NULL,
+	[KODE_FASILITAS] [varchar](255) NULL,
+	[NILAI_PUNGUTAN] [decimal](38, 2) NULL,
+	[ID_HEADER] [int] NULL,
+	[NO_PENGAJUAN] [varchar](50) NULL
+) ON [PRIMARY]
+GO

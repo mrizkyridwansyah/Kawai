@@ -1,0 +1,19 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [User_Menu](
+	[App_ID] [char](3) NOT NULL,
+	[Menu_ID] [char](10) NOT NULL,
+	[Menu_Name] [char](50) NULL,
+	[Menu_Desc] [char](50) NULL,
+	[Group_ID] [char](50) NULL,
+	[Menu_Indeks] [numeric](5, 0) NOT NULL,
+	[Group_Indeks] [numeric](5, 0) NULL,
+ CONSTRAINT [PK_User_Menu] PRIMARY KEY CLUSTERED 
+(
+	[App_ID] ASC,
+	[Menu_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO

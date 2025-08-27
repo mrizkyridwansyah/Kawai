@@ -1,0 +1,25 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Bea_Cukai_TPB_Barang_Tarif](
+	[ID] [int] NULL,
+	[FLAG_BMT_SEMENTARA] [varchar](255) NULL,
+	[JENIS_TARIF] [varchar](255) NULL,
+	[JUMLAH_SATUAN] [decimal](38, 4) NULL,
+	[KODE_FASILITAS] [varchar](255) NULL,
+	[KODE_KOMODITI_CUKAI] [varchar](255) NULL,
+	[KODE_SATUAN] [varchar](255) NULL,
+	[KODE_SUB_KOMODITI_CUKAI] [varchar](255) NULL,
+	[KODE_TARIF] [varchar](255) NULL,
+	[NILAI_BAYAR] [decimal](38, 2) NULL,
+	[NILAI_FASILITAS] [decimal](38, 2) NULL,
+	[NILAI_SUDAH_DILUNASI] [decimal](38, 2) NULL,
+	[SERI_BARANG] [int] NULL,
+	[TARIF] [decimal](38, 2) NULL,
+	[TARIF_FASILITAS] [decimal](38, 2) NULL,
+	[ID_BARANG] [int] NULL,
+	[ID_HEADER] [int] NULL,
+	[NO_PENGAJUAN] [varchar](50) NULL
+) ON [PRIMARY]
+GO

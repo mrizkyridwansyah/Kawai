@@ -68,7 +68,7 @@ public static class ApplicationExtension
 
     public static void UseApplication(this WebApplication app)
     {
-        app.UseKawaiEntity();
+        //app.UseKawaiEntity();
         app.UseKawaiHangfire();
         app.UseCronJobs();
         app.UseHealthChecks("/check");

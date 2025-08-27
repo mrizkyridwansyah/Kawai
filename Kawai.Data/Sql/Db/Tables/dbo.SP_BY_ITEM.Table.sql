@@ -1,0 +1,9 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [SP_BY_ITEM](
+	[DateProcess] [date] NULL,
+	[Item_Code] [char](25) NULL
+) ON [PRIMARY]
+GO

@@ -1,0 +1,12 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Trade_Upload](
+	[TradeCode] [char](15) NULL,
+	[NPWP] [char](20) NULL,
+	[NPWPNAME] [char](100) NULL,
+	[NPWPADRESS] [char](100) NULL,
+	[NPWPCITY] [char](50) NULL
+) ON [PRIMARY]
+GO

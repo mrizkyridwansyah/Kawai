@@ -1,0 +1,10 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Bea_Cukai_Skema_Tarif](
+	[ID] [int] NULL,
+	[KODE_SKEMA] [varchar](255) NULL,
+	[URAIAN_SKEMA] [varchar](255) NULL
+) ON [PRIMARY]
+GO

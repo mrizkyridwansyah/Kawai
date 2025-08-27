@@ -1,0 +1,14 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Bea_Cukai_TPB_Barang_Dokumen](
+	[ID] [int] NULL,
+	[SERI_DOKUMEN] [int] NULL,
+	[ID_BARANG] [int] NULL,
+	[ID_HEADER] [int] NULL,
+	[KODE_BARANG] [varchar](50) NULL,
+	[NO_PENGAJUAN] [varchar](50) NULL,
+	[NO_SERI] [int] NULL
+) ON [PRIMARY]
+GO

@@ -1,17 +1,14 @@
 using AspNetCore.Scalar;
 using Dapper;
 using Kawai.Api;
-using Kawai.Api.CronJobs;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
 using Kawai.Api.Shared.Extensions;
 using Kawai.Api.Shared.Handlers;
 using Kawai.Api.Shared.Middleware;
 using Kawai.Data.SqlConnections;
-using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
-using System.Text;
 using System.Threading.RateLimiting;
 
 

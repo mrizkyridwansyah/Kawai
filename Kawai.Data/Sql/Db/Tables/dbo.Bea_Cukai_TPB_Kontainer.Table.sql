@@ -1,0 +1,24 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Bea_Cukai_TPB_Kontainer](
+	[ID] [int] NULL,
+	[KESESUAIAN_DOKUMEN] [varchar](255) NULL,
+	[KETERANGAN] [varchar](255) NULL,
+	[KODE_STUFFING] [varchar](255) NULL,
+	[KODE_TIPE_KONTAINER] [varchar](255) NULL,
+	[KODE_UKURAN_KONTAINER] [varchar](255) NULL,
+	[FLAG_GATE_IN] [varchar](1) NULL,
+	[FLAG_GATE_OUT] [varchar](1) NULL,
+	[NO_POLISI] [varchar](255) NULL,
+	[NOMOR_KONTAINER] [varchar](255) NULL,
+	[NOMOR_SEGEL] [varchar](255) NULL,
+	[SERI_KONTAINER] [int] NULL,
+	[WAKTU_GATE_IN] [datetime] NULL,
+	[WAKTU_GATE_OUT] [datetime] NULL,
+	[ID_HEADER] [int] NULL,
+	[ID_KONTAINER] [int] NULL,
+	[NO_PENGAJUAN] [varchar](50) NULL
+) ON [PRIMARY]
+GO

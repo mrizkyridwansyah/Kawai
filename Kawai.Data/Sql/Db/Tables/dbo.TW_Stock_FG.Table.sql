@@ -1,0 +1,9 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [TW_Stock_FG](
+	[Item_Code] [varchar](16) NULL,
+	[Serial_No] [varchar](8) NULL
+) ON [PRIMARY]
+GO

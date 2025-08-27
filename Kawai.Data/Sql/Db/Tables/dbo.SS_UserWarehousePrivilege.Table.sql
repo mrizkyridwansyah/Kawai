@@ -1,0 +1,17 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [SS_UserWarehousePrivilege](
+	[UserID] [varchar](50) NOT NULL,
+	[WarehouseCode] [varchar](25) NOT NULL,
+	[AllowAccess] [bit] NULL,
+	[Last_User] [char](15) NULL,
+	[Last_Update] [datetime] NULL,
+ CONSTRAINT [PK_SS_UserWarehousePrivilege] PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC,
+	[WarehouseCode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO

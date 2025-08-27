@@ -1,0 +1,16 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Inventory_Control](
+	[Inventory_Year] [numeric](4, 0) NOT NULL,
+	[Inventory_Month] [numeric](2, 0) NOT NULL,
+	[Fix_Cls] [char](1) NULL,
+	[ClosingDate] [datetime] NULL,
+ CONSTRAINT [PK_Inventory_Control] PRIMARY KEY CLUSTERED 
+(
+	[Inventory_Year] ASC,
+	[Inventory_Month] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO

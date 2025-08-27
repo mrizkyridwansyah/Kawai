@@ -1,0 +1,13 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Bea_Cukai_TPS](
+	[ID] [int] NOT NULL,
+	[FL_AKTIF] [varchar](255) NULL,
+	[JNS_GUDANG] [varchar](255) NULL,
+	[KD_KANTOR] [varchar](255) NULL,
+	[KODE_TPS] [varchar](255) NULL,
+	[URAIAN_TPS] [varchar](255) NULL
+) ON [PRIMARY]
+GO

@@ -1,0 +1,23 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [AP_Master](
+	[Supplier_Code] [char](15) NOT NULL,
+	[AP_No] [char](12) NOT NULL,
+	[AP_Date] [datetime] NULL,
+	[Last_Update] [datetime] NULL,
+	[Last_User] [char](15) NULL,
+	[Register_Date] [datetime] NULL,
+ CONSTRAINT [PK_AP_Master] PRIMARY KEY CLUSTERED 
+(
+	[Supplier_Code] ASC,
+	[AP_No] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [AP_Master]  WITH NOCHECK ADD  CONSTRAINT [FK_AP_Master_Trade_Master] FOREIGN KEY([Supplier_Code])
+REFERENCES [Trade_Master] ([Trade_Code])
+GO
+ALTER TABLE [AP_Master] CHECK CONSTRAINT [FK_AP_Master_Trade_Master]
+GO

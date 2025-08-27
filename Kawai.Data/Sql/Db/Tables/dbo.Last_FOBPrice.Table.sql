@@ -1,0 +1,9 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Last_FOBPrice](
+	[item_code] [char](25) NOT NULL,
+	[Last_FOBPrice] [numeric](18, 5) NULL
+) ON [PRIMARY]
+GO

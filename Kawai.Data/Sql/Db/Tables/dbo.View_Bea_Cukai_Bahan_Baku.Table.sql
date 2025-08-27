@@ -1,0 +1,21 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [View_Bea_Cukai_Bahan_Baku](
+	[PARENT_KODE_BARANG] [varchar](50) NULL,
+	[KODE_BARANG] [varchar](50) NULL,
+	[SERI_BARANG] [int] NULL,
+	[HS_CODE] [varchar](50) NULL,
+	[JUMLAH_SATUAN] [decimal](38, 4) NULL,
+	[HARGA_PENYERAHAN] [numeric](18, 4) NULL,
+	[BC40_NO] [varchar](50) NULL,
+	[BC40_DATE] [date] NULL,
+	[SERI_BARANG_ASAL] [numeric](18, 0) NULL,
+	[URAIAN] [varchar](255) NULL,
+	[SURAT_JALAN_DATE] [date] NULL,
+	[KODE_DOKUMEN_PABEAN] [varchar](255) NULL,
+	[KODE_KANTOR] [varchar](255) NULL,
+	[KODE_ASAL_BAHAN_BAKU] [varchar](255) NULL
+) ON [PRIMARY]
+GO
