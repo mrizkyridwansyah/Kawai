@@ -2,6 +2,7 @@
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
+using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Shared;
 
 namespace Kawai.Data.Repositories;
@@ -21,16 +22,33 @@ public class ReceiptRepository : IReceiptRepository
         string sp = "sp_Wms_Receipt_List";
         return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, param.ToQueryObject())).ToList();
     }
-    public async Task<ReceiptDto> GetDetail(long id)
+    public async Task<ReceiptDto> GetDataHeader(long id)
     {
-        string sp = "sp_Wms_Receipt_Detail";
+        string sp = "sp_Wms_Receipt_DataHeader";
         return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDto>(sp, new { ReceiptId = id });
     }
-
-    public async Task<List<ReceiptDetailDto>> GetListDetail(long id)
+    public async Task<List<ReceiptDetailDto>> GetListDetail(long receiptId)
     {
         string sp = "sp_Wms_Receipt_ListDetail";
-        return (await _dbExecutor.QueryListAsync<ReceiptDetailDto>(sp, new { ReceiptId = id })).ToList();
+        return (await _dbExecutor.QueryListAsync<ReceiptDetailDto>(sp, new { ReceiptId = receiptId })).ToList();
+    }
+
+    public async Task<List<ReceiptDetailBarcodeDto>> GetListDetailBarcode(long receiptId)
+    {
+        string sp = "sp_Wms_Receipt_ListDetailBarcode";
+        return (await _dbExecutor.QueryListAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = receiptId })).ToList();
+    }
+
+    public async Task<ReceiptDetailBarcodeDto> GetDataBarcode(long id, string barcodeNo)
+    {
+        string sp = "sp_Wms_Receipt_DataBarcode";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = id, BarcodeNo = barcodeNo });
+    }
+
+    public async Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status)
+    {
+        string sp = "sp_Wms_Receipt_DDLSearchReceipt";
+        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "", Status = status ?? "" })).ToList();
     }
 
     public async Task Create(Receipt receipt, string userId)
@@ -51,7 +69,7 @@ public class ReceiptRepository : IReceiptRepository
             Details = DataTableHelper.ToDataTable(receipt.Details),
             RegisterBy = userId
         });
-        receipt.Id = newId; 
+        receipt.Id = newId;
     }
 
     public async Task CreateUsingMutation(Receipt receipt, string userId)
@@ -99,6 +117,20 @@ public class ReceiptRepository : IReceiptRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new { Id = id });
     }
 
+    public async Task Verify(MobileReceipt payload, bool updateStock, string userId)
+    {
+        string sqlHeader = "sp_Wms_Receipt_Verify";
+        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        {
+            payload.Id,
+            payload.BarcodeNo,
+            payload.Qty,
+            payload.QtyVerify,
+            IsUpdateStock = updateStock,
+            VerifiedBy = userId
+        });
+    }
+
     public async Task<Dictionary<string, object>> Capture(long id)
     {
         string sp = "sp_Wms_Receipt_CaptureHeader";
@@ -114,4 +146,14 @@ public class ReceiptRepository : IReceiptRepository
         };
     }
 
+    public async Task<Dictionary<string, object>> CaptureDataBarcode(long id)
+    {
+        string sp = "sp_Wms_Receipt_CaptureDataBarcode";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { Id = id });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.InkML;
 using Kawai.Api.CronJobs;
 using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -18,14 +19,11 @@ public class ReceiptController : HahaController
 {
     private readonly IReceiptRepository _receiptRepository;
     private readonly ITransactionProducer _transactionProducer;
-    //private readonly StockCalculation _stockCalculation;
     private readonly DataLogger _logger;
 
-    //public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, StockCalculation stockCalculation, ITransactionProducer transactionProducer)
     public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, ITransactionProducer transactionProducer)
     {
         _receiptRepository = receiptRepository;
-        //_stockCalculation = stockCalculation;
         _logger = logger;
         _transactionProducer = transactionProducer;
     }
@@ -37,10 +35,10 @@ public class ReceiptController : HahaController
         return DataTableResult(parameter, results);
     }
 
-    [HttpGet("detail")]
-    public async Task<IActionResult> GetDetail(long id)
+    [HttpGet("data-header")]
+    public async Task<IActionResult> GetDataHeader(long id)
     {
-        var result = await _receiptRepository.GetDetail(id);
+        var result = await _receiptRepository.GetDataHeader(id);
         return Success(result);
     }
 
@@ -68,28 +66,6 @@ public class ReceiptController : HahaController
         });
         return Success(after);
     }
-
-    /*
-    [HttpPost("create-using-mutation")]
-    public async Task<IActionResult> CreateUsingMutation([FromBody] Receipt model)
-    {
-        await _receiptRepository.CreateUsingMutation(model, Auth.User.UserID);
-
-        var after = await _receiptRepository.Capture(model.Id.Value);
-        await _logger.SaveDataLog(new DataLogDto
-        {
-            DocumentType = "Part Receipt Material",
-            EntityId = model.Id.ToString(),
-            ReferenceId = model.ReceiptNo,
-            Before = null,
-            After = after,
-            Action = DataLogAction.Create
-        });
-
-        _stockCalculation.AddTransaction();
-        return Pending(after);
-    }
-    */
 
     [HttpPost("create-using-rabbitmq")]
     //[Idempotent]

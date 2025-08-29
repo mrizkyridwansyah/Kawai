@@ -64,7 +64,7 @@ export const useReceipt = defineStore('Receipt', {
     loadDetail: function (id) {
       this.isLoadingDetail = true;
       return new Promise((resolve, reject) => {
-        app.$http.get(`/receipt/detail?id=${id}`)
+        app.$http.get(`/receipt/data-header?id=${id}`)
           .then(({ data }) => {
             this.detail = data.Data;
 

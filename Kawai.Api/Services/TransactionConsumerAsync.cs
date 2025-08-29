@@ -98,7 +98,7 @@ public class TransactionConsumerAsync : BackgroundService
                     notification.Description = "Transaction success!";
                     notification.Receiver = message.AuthUserId;
                     notification.Sender = message.AuthUserId;
-                    notification.NotifType = "INFO";
+                    notification.NotifType = "SUCCESS";
 
                     await ProcessMessageAsync(message);
 

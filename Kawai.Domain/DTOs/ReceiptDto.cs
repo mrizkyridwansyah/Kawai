@@ -31,3 +31,20 @@ public class ReceiptDetailDto : DataTableDto
     public double ReceiptQty { get; set; }
     public string IQCResult { get; set; }
 }
+
+public class ReceiptDetailBarcodeDto : DataTableDto
+{
+    public long Id { get; set; }
+    public long ReceiptDetailId { get; set; }
+    public long ReceiptId { get; set; }
+    public string PONumber { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string BarcodeNo { get; set; }
+    public string LotNo { get; set; }
+    public int SublotNo { get; set; }
+    public double Qty { get; set; }
+    public bool IsVerified { get; set; }
+    public string VerifiedBy { get; set; }
+    public DateTime? VerifiedDate { get; set; }
+}

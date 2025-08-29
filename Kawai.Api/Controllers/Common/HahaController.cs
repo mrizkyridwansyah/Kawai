@@ -84,7 +84,7 @@ public class HahaController : ControllerBase
             ContentType = "application/json",
             Content = JsonConvert.SerializeObject(new
             {
-                Code = code,
+                Code = 202,
                 Status = "PENDING",
                 Message = "Transaction accepted and on process!",
                 Data = data,

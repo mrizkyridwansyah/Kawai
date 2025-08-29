@@ -1,17 +1,34 @@
 ﻿using Kawai.Domain.DTOs;
 using Kawai.Domain.Models;
+using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Shared;
 
 namespace Kawai.Domain.Interfaces;
 
 public interface IReceiptRepository
 {
+    #region WEB
     Task<List<ReceiptDto>> GetList(RequestParameter parameter);
-    Task<ReceiptDto> GetDetail(long id);
-    Task<List<ReceiptDetailDto>> GetListDetail(long id);
+    Task<ReceiptDto> GetDataHeader(long id);
     Task Create(Receipt receipt, string userId);
     Task CreateUsingMutation(Receipt receipt, string userId);
     Task Update(Receipt receipt, string userId);
     Task Remove(long id);
+    #endregion
+
+    #region WEB
+    Task<ReceiptDetailBarcodeDto> GetDataBarcode(long id, string barcodeNo);
+    Task Verify(MobileReceipt payload, bool updateStock, string userId);
+    #endregion
+
+    #region COMMON
+    Task<List<ReceiptDetailDto>> GetListDetail(long receiptId);
+    Task<List<ReceiptDetailBarcodeDto>> GetListDetailBarcode(long receiptId);
+    #endregion
+
+    Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status);
+
+
     Task<Dictionary<string, object>> Capture(long id);
+    Task<Dictionary<string, object>> CaptureDataBarcode(long id);
 }
