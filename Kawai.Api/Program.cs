@@ -9,7 +9,11 @@ using Kawai.Api.Shared.Middleware;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading;
 using System.Threading.RateLimiting;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
@@ -66,38 +70,9 @@ builder.Services.AddRateLimiter(options =>
 {
     options.AddPolicy("PerUserTokenPolicy", context =>
     {
-
-        var authHeader = context.Request.Headers.Authorization.ToString();
-        var token = authHeader.StartsWith("Bearer ")
-            ? authHeader["Bearer ".Length..]
-            : authHeader;
-
-        if (string.IsNullOrEmpty(token))
-        {
-            // Fallback ke shared token (atau bisa ditolak)
-            token = "anonymous";
-        }
-
-        token = Cryptography.SHA256Hash(token);
-
-        // Limit: 5 request per 10 detik per token
-        return RateLimitPartition.GetTokenBucketLimiter(token, key => new TokenBucketRateLimiterOptions
-        {
-            TokenLimit = 5,
-            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-            QueueLimit = 0,
-            ReplenishmentPeriod = TimeSpan.FromSeconds(10),
-            TokensPerPeriod = 5,
-            AutoReplenishment = true
-        });
+        var token = RateLimiterExtension.GetHashedToken(context);
+        return RateLimitPartition.GetTokenBucketLimiter(token, _ => RateLimiterExtension.DefaultLimiterOptions);
     });
-
-    // Optional: custom response kalau limit terlewati
-    options.OnRejected = async (context, token) =>
-    {
-        context.HttpContext.Response.StatusCode = 429;
-        await context.HttpContext.Response.WriteAsync("Terlalu banyak permintaan. Coba lagi sebentar.", token);
-    };
 });
 
 builder.Services.AddAuthorization();
@@ -154,7 +129,32 @@ app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRateLimiter();
+
+app.UseRateLimiter(new RateLimiterOptions
+{
+    GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    {
+        var token = RateLimiterExtension.GetHashedToken(context);
+        return RateLimitPartition.GetTokenBucketLimiter(token, _ => RateLimiterExtension.DefaultLimiterOptions);
+    }),
+    OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        context.HttpContext.Response.ContentType = "application/json";
+
+        var responseObj = new
+        {
+            Code = 429,
+            Status = "Too Many Requests",
+            Message = "Terlalu banyak permintaan."
+        };
+
+        var json = System.Text.Json.JsonSerializer.Serialize(responseObj);
+
+        await context.HttpContext.Response.WriteAsync(json, cancellationToken);
+    }
+});
+
 app.UseWebSockets();
 app.MapControllers();
 

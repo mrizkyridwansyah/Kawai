@@ -1,7 +1,4 @@
-﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.EMMA;
-using Kawai.Api.Services;
-using Kawai.Domain.DTOs.Log;
+﻿using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;

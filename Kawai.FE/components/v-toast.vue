@@ -5,6 +5,7 @@
         <rect width="100%" height="100%" :fill="color"></rect>
       </svg>
       <strong class="me-auto">
+        <span v-if="variant == 'info'">Info</span>
         <span v-if="variant == 'success'">Success</span>
         <span v-if="variant == 'danger'">Error</span>
         <span v-if="variant == 'warning'">Warning</span>
@@ -31,7 +32,10 @@ export default {
   }),
   computed: {
     color: function() {
-      if(this.variant.toLowerCase() == 'success')
+      if(this.variant.toLowerCase() == 'info')
+        return 'dodgerblue';
+
+        if(this.variant.toLowerCase() == 'success')
         return '#00e396';
 
       if(this.variant.toLowerCase() == 'danger')

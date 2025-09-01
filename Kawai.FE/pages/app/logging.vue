@@ -36,6 +36,15 @@
                   API Request 
                 </v-app-link>
               </li>
+              <li class="nav-item">
+                <v-app-link
+                  to="/logging/mq"
+                  active-class="active"
+                  class="nav-link"
+                >
+                  Message Queueing 
+                </v-app-link>
+              </li>
             </ul>
           </div>
           <div class="ps-5 flex-fill" style="overflow-x: hidden;">

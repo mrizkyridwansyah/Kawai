@@ -30,6 +30,26 @@ const BToast = app => {
     
     setTimeout(instance.$el.remove, 5000)
   }
+  window.toastInfo = (msg) => {
+
+    const instance = createApp(ToastComponent).mount(document.createElement('div'));
+
+    instance.message = msg;
+    instance.variant = 'info';
+
+    instance.$el.className += ' mb-3';
+    instance.$el.addEventListener('hidden.bs.toast', () => {
+      instance.$el.remove();
+    })
+
+    subContainer.prepend(instance.$el);
+
+    var toast =  new bootstrap.Toast(instance.$el, {});
+    toast.show();
+    
+    setTimeout(instance.$el.remove, 5000)
+  }  
+  
   window.toastSuccess = (msg) => {
 
     const instance = createApp(ToastComponent).mount(document.createElement('div'));

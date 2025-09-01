@@ -19,6 +19,11 @@ public class LoggingRepository : ILoggingRepository
         string sp = "sp_Logging_RequestLogList";
         return (await _logExecutor.QueryListAsync<LoggingRequestDto>(sp, param.ToQueryObject())).ToList();
     }
+    public async Task<List<LoggingMQDto>> GetMQLogAll(RequestParameter param)
+    {
+        string sp = "sp_Logging_MQLogList";
+        return (await _logExecutor.QueryListAsync<LoggingMQDto>(sp, param.ToQueryObject())).ToList();
+    }
     public async Task<List<LoggingDataDto>> GetDataLogAll(RequestParameter param)
     {
         string sp = "sp_Logging_DataLogList";

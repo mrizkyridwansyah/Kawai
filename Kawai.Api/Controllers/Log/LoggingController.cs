@@ -22,6 +22,13 @@ public class LoggingController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("mq/list")]
+    public async Task<IActionResult> ListMQLog([FromBody] RequestParameter parameter)
+    {
+        var results = await _loggingRepository.GetMQLogAll(parameter);
+        return DataTableResult(parameter, results);
+    }
+
     [HttpPost("data/list")]
     public async Task<IActionResult> ListDataLog([FromBody] RequestParameter parameter)
     {

@@ -153,6 +153,22 @@ export default {
       });
     });
 
+    signalr.onreconnected(() => {
+      console.log("✅ Reconnected to SignalR");
+      this.notif
+        .loadCountUnread(this.userData.UserId)
+        .then((dt3) => {
+          let diff = dt3.Data - this.unreadCount; 
+          if(diff > 0) {
+            toastSuccess(`You have ${diff} new notifications!`);
+          }
+
+          this.unreadCount = dt3.Data;
+        })
+        .catch((err) => {
+          console.error("Failed to reload unread count after reconnect:", err);
+        });
+    });
     const notifToggle = this.$refs.notifToggle;
     if (notifToggle) {
       notifToggle.addEventListener("shown.bs.dropdown", () => {

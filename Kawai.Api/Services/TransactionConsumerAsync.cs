@@ -8,6 +8,7 @@ using Kawai.Domain.Interfaces;
 using Kawai.Api.Services;
 using Kawai.Api.Hub;
 using Kawai.Api.Shared.Handlers;
+using System.Diagnostics;
 
 public class TransactionConsumerAsync : BackgroundService
 {
@@ -74,53 +75,67 @@ public class TransactionConsumerAsync : BackgroundService
             consumer.Received += async (model, ea) =>
             {
                 Console.WriteLine("ExecuteAsync Received");
-
-                using var scope = _scopeFactory.CreateScope();
-                var _notificationRepository = scope.ServiceProvider.GetRequiredService<INotificationRepository>();
-                var _notificationService = scope.ServiceProvider.GetRequiredService<NotificationService<NotifApprovalHub>>();
-
-                var body = ea.Body.ToArray();
-                var json = Encoding.UTF8.GetString(body);
-
-                StockTransactionMessage<object> message = null;
-
-                Notification notification = new Notification
-                {
-                    Priority = "TOP",
-                    UrlRedirect = ""
-                };
-
                 try
                 {
-                    message = JsonSerializer.Deserialize<StockTransactionMessage<object>>(json);
+                    using var scope = _scopeFactory.CreateScope();
+                    var _notificationRepository = scope.ServiceProvider.GetRequiredService<INotificationRepository>();
+                    var _notificationService = scope.ServiceProvider.GetRequiredService<NotificationService<NotifApprovalHub>>();
 
-                    notification.Title = message.FormatMessage;
-                    notification.Description = "Transaction success!";
-                    notification.Receiver = message.AuthUserId;
-                    notification.Sender = message.AuthUserId;
-                    notification.NotifType = "SUCCESS";
+                    var body = ea.Body.ToArray();
+                    var json = Encoding.UTF8.GetString(body);
 
-                    await ProcessMessageAsync(message);
+                    StockTransactionMessage<object> message = null;
 
-                    _channel.BasicAck(ea.DeliveryTag, false);
+                    Notification notification = new Notification
+                    {
+                        Priority = "TOP",
+                        UrlRedirect = ""
+                    };
+
+                    try
+                    {
+                        var stopwatch = Stopwatch.StartNew();
+
+                        message = JsonSerializer.Deserialize<StockTransactionMessage<object>>(json);
+                        if (message == null)
+                            throw new Exception("Failed to deserialize message.");
+
+                        notification.Title = message.FormatMessage;
+                        notification.Description = "Transaction success!";
+                        notification.Receiver = message.AuthUserId;
+                        notification.Sender = message.AuthUserId;
+                        notification.NotifType = "SUCCESS";
+
+                        await ProcessMessageAsync(message);
+
+                        _channel.BasicAck(ea.DeliveryTag, false);
+
+                        stopwatch.Stop();
+
+                        await SaveMQLogs(message, stopwatch.ElapsedMilliseconds);
+                    }
+                    catch (Exception ex)
+                    {
+                        notification.NotifType = "ERROR";
+                        notification.Description = "Transaction failed: " + ex.Message;
+                        await SaveErrorLogs(json, message.LogContext, ex);
+                        _channel.BasicNack(ea.DeliveryTag, false, false);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(notification.Receiver))
+                    {
+                        await _notificationRepository.SaveNotification(notification);
+                        var notifications = new List<Notification> { notification };
+                        await _notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification", new
+                        {
+                            Count = 1,
+                            Notifications = notifications
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {
-                    notification.NotifType = "ERROR";
-                    notification.Description = "Transaction failed: " + ex.Message;
-                    await SaveErrorLogs(json, message.LogContext, ex);
                     _channel.BasicNack(ea.DeliveryTag, false, false);
-                }
-
-                if (!string.IsNullOrWhiteSpace(notification.Receiver))
-                {
-                    await _notificationRepository.SaveNotification(notification);
-                    var notifications = new List<Notification> { notification };
-                    await _notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification", new
-                    {
-                        Count = 1,
-                        Notifications = notifications
-                    });
                 }
             };
 
@@ -136,11 +151,7 @@ public class TransactionConsumerAsync : BackgroundService
         catch (Exception ex)
         {
             Console.WriteLine($"[ERROR] Failed to start TransactionConsumer: {ex.Message}");
-            //throw;
         }
-
-
-        //return Task.CompletedTask;
     }
 
     private async Task SaveErrorLogs(string payload, LogContext logContext, Exception ex)
@@ -173,6 +184,35 @@ public class TransactionConsumerAsync : BackgroundService
         await _logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
     }
 
+    private async Task SaveMQLogs(StockTransactionMessage<object> message, long elapsedTime)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var _logExecutor = scope.ServiceProvider.GetRequiredService<LogExecutor>();
+
+        var sql = @"
+                    INSERT INTO [dbo].[MQLogs]
+                    ([TimeStamp], [TransactionType], [FormatMessage], [Method], [Path], [UserID], [FullName], [ElapsedtimeMs])
+                    VALUES
+                    (@TimeStamp, @TransactionType, @FormatMessage, @Method, @RequestPath, @UserID, @FullName, @ElapsedMilliseconds);
+                ";
+
+        long timeStamp = EpochDateTime.Now;
+        var log = new
+        {
+            message.TimeStamp,
+            message.TransactionType,
+            message.FormatMessage,
+            Method = "BACKGROUND",
+            RequestPath = GetType().Name + ": url(" + message.LogContext.RequestPath + ")",
+            message.LogContext.UserID,
+            message.LogContext.FullName,
+            Date = timeStamp,
+            ElapsedMilliseconds = elapsedTime
+        };
+
+        await _logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
+    }
+
     private async Task ProcessMessageAsync(StockTransactionMessage<object> message)
     {
         using var scope = _scopeFactory.CreateScope();
@@ -188,8 +228,6 @@ public class TransactionConsumerAsync : BackgroundService
         {
             throw new InvalidOperationException($"No handler found for transaction type: {message.TransactionType}");
         }
-
-        await Task.Delay(500);
     }
 
     public override void Dispose()
