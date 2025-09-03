@@ -149,7 +149,7 @@ export default {
   },
   methods: {
     load: function () {
-      this.ds.load().then((dt) => (this.listRemaining = dt.Data.Items));
+      this.ds.load().then((dt) => (this.listRemaining = dt.Data));
       this.ds.loadSummary().then((dt) => {
         this.summary.total = dt.Data.Total;
         this.summary.womin = dt.Data.Womin;

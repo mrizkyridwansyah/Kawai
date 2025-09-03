@@ -1,5 +1,6 @@
 ﻿namespace Kawai.Domain.DTOs;
 
+// INI DIPAKE DI WEB & MOBILE
 public class ReceiptDto: DataTableDto
 {
     public long? Id { get; set; }
@@ -17,6 +18,7 @@ public class ReceiptDto: DataTableDto
     public string LastUser { get; set; }
 }
 
+// INI DIPAKE DI MOBILE
 public class ReceiptDetailDto : DataTableDto
 {
     public long Id { get; set; }
@@ -32,6 +34,7 @@ public class ReceiptDetailDto : DataTableDto
     public string IQCResult { get; set; }
 }
 
+// INI DIPAKE DI MOBILE
 public class ReceiptDetailBarcodeDto : DataTableDto
 {
     public long Id { get; set; }
@@ -47,4 +50,14 @@ public class ReceiptDetailBarcodeDto : DataTableDto
     public bool IsVerified { get; set; }
     public string VerifiedBy { get; set; }
     public DateTime? VerifiedDate { get; set; }
+}
+
+public class ReceiptAndonDto : DataTableDto
+{
+    public string ReceiptNo { get; set; }
+    public DateTime ReceiptDate { get; set; }
+    public string SupplierName { get; set; }
+    public string DNNumber { get; set; }
+    public string ItemName { get; set; }
+    public string StatusReceipt { get; set; }
 }

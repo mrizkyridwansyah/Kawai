@@ -69,45 +69,50 @@
               <span style="font-size: 1.05em" class="ml-3">Total Receipt</span>
             </div>
             <div class="panel-body">
-              <table class="table table-striped mb-0 align-middle w-100">
-                <thead>
-                  <tr>
-                    <th class="text-center">No.</th>
-                    <th class="text-center">Date</th>
-                    <th class="text-center">Supplier</th>
-                    <th class="text-center">DN</th>
-                    <th class="text-center">Item</th>
-                    <th class="text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, i) in list">
-                    <td class="text-right">{{ i + 1 }}.</td>
-                    <td>{{ $func.formatDate(item.Date) }}</td>
-                    <td>{{ item.SupplierName }}</td>
-                    <td>{{ item.DNNumber }}</td>
-                    <td>{{ item.ItemName }}</td>
-                    <td
-                      :class="{
-                        'text-success': item.Status === 'PASSED',
-                        'text-danger': item.Status === 'FAILED',
-                        'text-warning': item.Status === 'PENDING',
-                      }"
-                    >
-                      {{ item.Status }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <v-data-empty
-                class="mt-3"
-                v-if="
-                  !ds.isLoading &&
-                  list.length == 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
-              />
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped mb-0 align-middle w-100 v-fixed-table"
+                  ref="table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">No.</th>
+                      <th class="text-center">Date</th>
+                      <th class="text-center">Supplier</th>
+                      <th class="text-center">DN</th>
+                      <th class="text-center">Item</th>
+                      <th class="text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, i) in list">
+                      <td class="text-right">{{ i + 1 }}.</td>
+                      <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
+                      <td>{{ item.SupplierName }}</td>
+                      <td>{{ item.DNNumber }}</td>
+                      <td>{{ item.ItemName }}</td>
+                      <td
+                        :class="{
+                          'text-success': item.StatusReceipt === 'PASSED',
+                          'text-danger': item.StatusReceipt === 'FAILED',
+                          'text-warning': item.StatusReceipt === 'PENDING',
+                        }"
+                      >
+                        {{ item.StatusReceipt }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <v-data-empty
+                  class="mt-3"
+                  v-if="
+                    !ds.isLoading &&
+                    list.length == 0 &&
+                    !ds.isNetworkError &&
+                    !ds.isServerError
+                  "
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -134,7 +139,7 @@
                 <tbody>
                   <tr v-for="(item, i) in listPending">
                     <td class="text-right">{{ i + 1 }}.</td>
-                    <td>{{ $func.formatDate(item.Date) }}</td>
+                    <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
                     <td>{{ item.ItemName }}</td>
@@ -145,7 +150,7 @@
                 class="mt-3"
                 v-if="
                   !ds.isLoading &&
-                  list.length == 0 &&
+                  listPending.length == 0 &&
                   !ds.isNetworkError &&
                   !ds.isServerError
                 "
@@ -177,18 +182,18 @@
                 <tbody>
                   <tr v-for="(item, i) in listPassed">
                     <td class="text-right">{{ i + 1 }}.</td>
-                    <td>{{ $func.formatDate(item.Date) }}</td>
+                    <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
                     <td>{{ item.ItemName }}</td>
                     <td
                       :class="{
-                        'text-success': item.Status === 'PASSED',
-                        'text-danger': item.Status === 'FAILED',
-                        'text-warning': item.Status === 'PENDING',
+                        'text-success': item.StatusReceipt === 'PASSED',
+                        'text-danger': item.StatusReceipt === 'FAILED',
+                        'text-warning': item.StatusReceipt === 'PENDING',
                       }"
                     >
-                      {{ item.Status }}
+                      {{ item.StatusReceipt }}
                     </td>
                   </tr>
                 </tbody>
@@ -197,7 +202,7 @@
                 class="mt-3"
                 v-if="
                   !ds.isLoading &&
-                  list.length == 0 &&
+                  listPassed.length == 0 &&
                   !ds.isNetworkError &&
                   !ds.isServerError
                 "
@@ -225,7 +230,7 @@
                 <tbody>
                   <tr v-for="(item, i) in listNG">
                     <td class="text-right">{{ i + 1 }}.</td>
-                    <td>{{ $func.formatDate(item.Date) }}</td>
+                    <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
                     <td>{{ item.ItemName }}</td>
@@ -236,7 +241,7 @@
                 class="mt-3"
                 v-if="
                   !ds.isLoading &&
-                  list.length == 0 &&
+                  listNG.length == 0 &&
                   !ds.isNetworkError &&
                   !ds.isServerError
                 "
@@ -288,10 +293,11 @@ export default {
   methods: {
     load: function () {
       this.ds.load().then((dt) => {
-        this.list = dt.Data.Items;
-        this.listPending = dt.Data.Items.filter((p) => p.Status === "PENDING");
-        this.listPassed = dt.Data.Items.filter((p) => p.Status === "PASSED");
-        this.listNG = dt.Data.Items.filter((p) => p.Status === "NG");
+        console.log(dt);
+        this.list = dt.data.Data;
+        this.listPending = this.list.filter((p) => p.Status === "PENDING");
+        this.listPassed = this.list.filter((p) => p.Status === "PASSED");
+        this.listNG = this.list.filter((p) => p.Status === "NG");
 
         this.summary.total = this.list.length;
         this.summary.pending = this.listPending.length;
@@ -322,5 +328,52 @@ export default {
 .icon-title {
   font-size: 1.5em;
   font-weight: bolder;
+}
+</style>
+
+<style>
+.v-table-wrapper {
+  overflow: auto;
+  max-height: 400px;
+  /* border: 1px solid #ddd; */
+  position: relative;
+}
+
+/* Bikin table bisa scroll horizontal juga */
+.v-fixed-table {
+  width: max-content; /* agar scroll horizontal muncul */
+  min-width: 100%;
+  /* border-collapse: separate; */
+  /* border-spacing: 0; */
+}
+
+.v-fixed-table th,
+.v-fixed-table td {
+  white-space: nowrap;
+  padding: 8px 16px;
+  /* border: 1px solid #dee2e6; */
+  background: #fff;
+}
+
+/* Sticky Header (atas) */
+.v-fixed-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20; /* harus lebih tinggi dari sticky kiri */
+  background: #f8f9fa;
+}
+
+/* Sticky Columns (kiri) */
+.sticky-left {
+  position: sticky;
+  background: white !important;
+  background-color: white;
+  z-index: 10;
+  /* left akan diset via JS */
+}
+
+/* Kalau sticky kiri di header, beri z-index lebih tinggi */
+thead .sticky-left {
+  z-index: 30;
 }
 </style>

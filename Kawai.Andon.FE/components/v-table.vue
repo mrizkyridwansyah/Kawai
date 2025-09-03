@@ -200,7 +200,7 @@ export default {
 <style>
 .v-table-wrapper {
   overflow: auto;
-  max-height: 500px;
+  max-height: 200px;
   /* border: 1px solid #ddd; */
   position: relative;
 }

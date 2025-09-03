@@ -131,6 +131,12 @@ public class ReceiptRepository : IReceiptRepository
         });
     }
 
+    public async Task<List<ReceiptAndonDto>> GetListNSummary()
+    {
+        string sp = "sp_Wms_Andon_ReceiptGetList";
+        return (await _dbExecutor.QueryListAsync<ReceiptAndonDto>(sp)).ToList();
+    }
+
     public async Task<Dictionary<string, object>> Capture(long id)
     {
         var result = await _dbExecutor.QueryMultipleAsync(

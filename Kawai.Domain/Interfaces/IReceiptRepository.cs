@@ -16,7 +16,7 @@ public interface IReceiptRepository
     Task Remove(long id);
     #endregion
 
-    #region WEB
+    #region MOBILE
     Task<ReceiptDetailBarcodeDto> GetDataBarcode(long id, string barcodeNo);
     Task Verify(MobileReceipt payload, bool updateStock, string userId);
     #endregion
@@ -24,6 +24,10 @@ public interface IReceiptRepository
     #region COMMON
     Task<List<ReceiptDetailDto>> GetListDetail(long receiptId);
     Task<List<ReceiptDetailBarcodeDto>> GetListDetailBarcode(long receiptId);
+    #endregion
+
+    #region ANDON
+    Task<List<ReceiptAndonDto>> GetListNSummary();
     #endregion
 
     Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status);
