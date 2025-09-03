@@ -222,32 +222,5 @@ export default defineNuxtPlugin(nuxtApp => {
       // Format it in ISO-like string but without timezone conversion
       return `${year}-${month}-${day}`;
     },
-    printDocumentTypeName: function(key) {
-      var d = [
-        { value: 'RESERVATION', text: 'Sales - Reservasi' },
-        { value: 'RESERVATION_WAITING_LIST', text: 'Sales - Kartu Waiting List' },
-        { value: 'MKT_ORDER', text: 'Sales - Surat Pesanan' },
-        { value: 'MKT_CANCELLATION_FORM', text: 'Sales - Form Pembatalan' },
-        { value: 'MKT_PAYMENT_SCHEDULE', text: 'Sales - Jadwal Pembayaran' },
-        { value: 'MKT_AGREEMENT', text: 'Sales - PPJB' },
-        { value: 'MKT_HANDOVER', text: 'Sales - BAST' },
-        { value: 'MKT_TAX_ADJUSTMENT', text: 'Sales - Adjustment PPN' },
-        { value: 'MKT_CASH_BACK_INCENTIVE', text: 'Sales - Cash Back Incentive' },
-        { value: 'MKT_PAYMENT_CONFIRMATION_RECEIPT', text: 'Finance & AR - Tanda Terima Sementara' },
-        { value: 'MKT_RECEIPT', text: 'Finance & AR - Bukti Kas Masuk' },
-        { value: 'MKT_MEMO', text: 'Finance & AR - Memo Pelunasan' },
-        { value: 'MKT_INVOICE', text: 'Collection - Invoice' },
-        { value: 'MKT_WARNING_LETTER', text: 'Collection - Surat Peringatan' },
-        { value: 'MKT_WARNING_LETTER_LAST', text: 'Collection - Surat Peringatan (Somasi)' },
-        { value: 'NUP_STATEMENT_INTEREST', text: 'NUP - Pernyataan Minat' },
-        { value: 'NUP_REGULER', text: 'NUP - Reguler' },
-        { value: 'NUP_EKSKLUSIF', text: 'NUP - Eksklusif' },
-        ]
-      var templ = d.find(p => p.value == key);
-      if(templ)
-        return templ.text;
-
-      return key;
-    }
   })
 })

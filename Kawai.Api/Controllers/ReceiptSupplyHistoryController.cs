@@ -18,6 +18,6 @@ public class ReceiptSupplyHistoryController : HahaController
     public async Task<IActionResult> GetList([FromBody] RequestParameter parameter)
     {
         var results = await _receiptSupplyHistoryRepository.GetList(parameter);
-        return DataTableResult(parameter, results);
+        return Success(results);
     }
 }

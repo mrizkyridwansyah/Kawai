@@ -17,7 +17,14 @@
       </div>
       <div class="col-lg-4 col-md-4 col-sm-12 col-12">
         <div class="mr-1">
-          <input-lot-no class="form-control" v-model="filter.lotno" />
+          <input-lot-no
+            class="form-control"
+            v-model="filter.lotno"
+            :warehouse="filter.warehouse"
+            area="ALL"
+            address="ALL"
+            :item="filter.item"
+          />
         </div>
       </div>
     </div>
@@ -28,13 +35,14 @@
       <v-button-search-reset :search="search" :reset="reset" />
     </div>
   </div>
-  <!-- <v-tree
+  <v-tree
     :tree-data="treeData"
     :columns="columns"
     :is-loading="ds.isLoading"
     :is-server-error="ds.isServerError"
     :is-network-error="ds.isNetworkError"
-  /> -->
+    child-key="children"
+  />
 </template>
 
 <script>
@@ -77,24 +85,20 @@ export default {
         width: "200px",
         align: "left",
       },
-      { text: "Date", dataField: "Date", width: "100px" },
+      { text: "Date", dataField: "TransactionDate", width: "150px" },
       {
         text: "Transaction Type",
         dataField: "TransactionType",
         width: "150px",
       },
-      { text: "Qty", dataField: "Qty", width: "150px", align: "right" },
-      { text: "From Area", dataField: "FromArea", width: "150px" },
-      { text: "To Area", dataField: "ToArea", width: "150px" },
-      { text: "From Address", dataField: "FromAddress", width: "150px" },
-      { text: "To Address", dataField: "ToAddress", width: "150px" },
+      { text: "Qty", dataField: "QtyTrans", width: "150px", align: "right" },
       {
         text: "Doc. Reference",
         dataField: "DocReference",
         width: "150px",
         align: "left",
       },
-      { text: "Remarks", dataField: "Remarks", width: "150px", align: "left" },
+      { text: "Remarks", dataField: "Remarks", width: "300px", align: "left" },
       { text: "User", dataField: "LastUser", width: "150px", align: "left" },
     ],
     rawData: [],
@@ -128,18 +132,18 @@ export default {
       this.ds.setSort(this.filter.sorts);
       let filters = [
         {
-          Keyword: this.filter.keyword || "",
-          ItemCode: this.filter.item || "",
           WarehouseCode: this.filter.warehouse || "",
-          AreaCode: this.filter.area || "",
+          ItemCode: this.filter.item || "",
           LotNo: this.filter.lotno || "",
+          Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
         },
       ];
 
       this.ds.setFilter(filters);
       this.ds.load().then((dt) => {
-        this.rawData = dt.Data.Items;
+        this.rawData = dt.Data;
         this.treeData = this.buildTree(this.rawData);
+        console.log(this.treeData);
       });
     },
     reset: function () {
@@ -150,22 +154,29 @@ export default {
       this.search();
     },
     buildTree: function (data) {
-      const map = {};
-      const roots = [];
+      const grouped = {};
 
       data.forEach((item) => {
-        map[item.ChildLvl] = { ...item, children: [] };
-      });
+        const lotNo = item.LotNo;
 
-      data.forEach((item) => {
-        if (item.ParentLvl && map[item.ParentLvl]) {
-          map[item.ParentLvl].children.push(map[item.ChildLvl]);
-        } else {
-          roots.push(map[item.ChildLvl]);
+        if (!grouped[lotNo]) {
+          grouped[lotNo] = {
+            LotNo: lotNo,
+            children: [],
+          };
         }
+
+        const childItem = { ...item };
+        delete childItem.LotNo;
+        childItem.TransactionDate = this.$func.formatDateTime(
+          childItem.TransactionDate
+        );
+        childItem.QtyTrans = this.$func.formatNumber(childItem.QtyTrans);
+        grouped[lotNo].children.push(childItem);
       });
 
-      return roots;
+      // Ubah object ke array
+      return Object.values(grouped);
     },
   },
 };

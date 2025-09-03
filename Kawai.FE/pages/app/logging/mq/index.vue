@@ -23,7 +23,7 @@
           <tr v-for="(item, i) in ds.data.Items" :key="i">
             <td>{{ i + 1 }}.</td>
             <td>
-              {{ $func.formatDateTime(item.Timestamp, "DD MMM YYYY HH:mm:ss") }}
+              {{ $func.formatDateTime(item.TimeStamp, "DD MMM YYYY HH:mm:ss") }}
             </td>
             <td>{{ item.FullName }}</td>
             <td>{{ item.Method }}</td>

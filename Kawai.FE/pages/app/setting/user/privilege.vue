@@ -1,6 +1,11 @@
 <template>
   <header-menu title="User Privileges" :breadcrumbs="this.breadcrumbs" />
-  <button class="btn btn-sm btn-primary btn-elevate" @click="submit" :disabled="isLoading">
+
+  <button
+    class="btn btn-sm btn-primary btn-elevate"
+    @click="submit"
+    :disabled="isLoading"
+  >
     <div
       class="spinner-border spinner-border-sm text-light"
       role="status"
@@ -13,6 +18,7 @@
   </button>
   <button
     class="ml-2 btn btn-sm btn-danger btn-elevate"
+    :disabled="isLoading"
     @click="() => this.$router.push('/app/setting/user')"
   >
     <font-awesome-icon icon="arrow-left" />
@@ -151,6 +157,42 @@
           </table>
         </div>
         <!-- END tab-pane -->
+        <!-- BEGIN tab-pane MOBILE -->
+        <div class="tab-pane fade mt-3" id="default-tab-3" role="tabpanel">
+          <table class="table table-striped table-bordered mb-0 align-middle">
+            <thead>
+              <tr>
+                <th class="text-center" style="vertical-align: middle">
+                  Menu ID
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Description
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  <span>Access</span>
+                  <div class="mt-1" style="justify-items: center">
+                    <input-checkbox @click="(e) => allowAllAccessMenuMobile(e)" />
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in allowed.mobile">
+                <td>{{ item.MenuID }}</td>
+                <td>{{ item.MenuDescription }}</td>
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      v-model="item.AllowAccess"
+                      @click="(e) => allowAccessMenuMobile(e, item)"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- END tab-pane -->
       </div>
       <!-- END tab-content -->
       <!-- BEGIN hljs-wrapper -->
@@ -178,11 +220,12 @@ export default {
       // { value: "Process", text: "Process", defaultActive: false },
       // { value: "Line", text: "Line", defaultActive: false },
       { value: "Warehouse", text: "Warehouse", defaultActive: false },
-      // { value: "Mobile", text: "Mobile", defaultActive: false },
+      { value: "Mobile", text: "Mobile", defaultActive: false },
     ],
     allowed: {
       menu: [],
       warehouse: [],
+      mobile: []
     },
   }),
   computed: {
@@ -194,6 +237,7 @@ export default {
     this.dsMenu.loadprivileges(this.$route.query.id).then((dt) => {
       this.allowed.menu = dt.Data.MenuPrivileges;
       this.allowed.warehouse = dt.Data.WarehousePrivileges;
+      this.allowed.mobile = dt.Data.MenuMobilePrivileges;
     });
   },
   methods: {
@@ -226,6 +270,13 @@ export default {
     allowAllAccessWarehouse: function (e) {
       this.allowed.warehouse.map((p) => (p.AllowAccess = e.target.checked));
     },
+    allowAllAccessMenuMobile: function (e) {
+      this.allowed.mobile.map((p) => (p.AllowAccess = e.target.checked));
+    },
+    allowAccessMenuMobile: function (e, item) {
+      this.allowed.mobile.find((p) => p.MenuID === item.MenuID).AllowAccess =
+        e.target.checked;        
+    },
     submit: function () {
       this.isLoading = true;
 
@@ -233,6 +284,7 @@ export default {
         UserID: this.$route.query.id,
         MenuPrivileges: this.allowed.menu,
         WarehousePrivileges: this.allowed.warehouse,
+        MenuMobilePrivileges: this.allowed.mobile,
       };
 
       this.dsMenu
@@ -244,10 +296,11 @@ export default {
           this.errors = err?.Errors;
           toastDanger(err?.Message);
         })
-        .finally(() => (
+        .finally(() =>
           setTimeout(() => {
-            this.isLoading = false
-          }, 500)));
+            this.isLoading = false;
+          }, 500)
+        );
     },
   },
 };

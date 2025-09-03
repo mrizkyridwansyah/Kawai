@@ -2,8 +2,11 @@
 
 public class ReceiptSupplyHistoryDto: DataTableDto
 {
+    public string ProcessMenu { get; set; }
     public string WarehouseCode { get; set; }
+    public string WarehouseName { get; set; }
     public string ItemCode { get; set; }
+    public string ItemName { get; set; }
     public string LotNo { get; set; }
     public string TransactionType { get; set; }
     public DateTime TransactionDate { get; set; }

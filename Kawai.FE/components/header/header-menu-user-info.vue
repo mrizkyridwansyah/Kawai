@@ -23,7 +23,7 @@
         >
           <div class="media-left">
             <i
-              v-if="notif.NotifType == 'INFO'"
+              v-if="notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS'"
               class="fa fa-bell media-object bg-blue-400"
             ></i>
             <i
@@ -44,9 +44,9 @@
                 v-else-if="notif.Priority == 'TOP'"
                 class="fa"
                 :class="{
-                  'fa-info-circle': notif.NotifType == 'INFO',
-                  'fa-warning': notif.NotifType != 'INFO',
-                  'text-info': notif.NotifType == 'INFO',
+                  'fa-info-circle': notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS',
+                  'fa-warning': notif.NotifType != 'INFO' && notif.NotifType != 'SUCCESS',
+                  'text-info': notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS',
                   'text-warning': notif.NotifType == 'WARNING',
                   'text-danger': notif.NotifType == 'ERROR',
                 }"

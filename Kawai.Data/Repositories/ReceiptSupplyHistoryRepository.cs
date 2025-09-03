@@ -5,7 +5,7 @@ using Kawai.Domain.Shared;
 
 namespace Kawai.Data.Repositories;
 
-public class ReceiptSupplyHistoryRepository: IReceiptSupplyHistoryRepository
+public class ReceiptSupplyHistoryRepository : IReceiptSupplyHistoryRepository
 {
     private readonly DbExecutor _dbExecutor;
 
@@ -16,7 +16,14 @@ public class ReceiptSupplyHistoryRepository: IReceiptSupplyHistoryRepository
 
     public async Task<List<ReceiptSupplyHistoryDto>> GetList(RequestParameter param)
     {
+        var filters = param.Filters[0];
         string sp = "sp_Wms_ReceiptSupplyHistory_GetList";
-        return (await _dbExecutor.QueryListAsync<ReceiptSupplyHistoryDto>(sp, param.ToQueryObject())).ToList();
+        return (await _dbExecutor.QueryListAsync<ReceiptSupplyHistoryDto>(sp, new
+        {
+            WarehouseCode = filters["WarehouseCode"],
+            ItemCode = filters["ItemCode"],
+            LotNo = filters["LotNo"],
+            Period = filters["Period"],
+        })).ToList();
     }
 }

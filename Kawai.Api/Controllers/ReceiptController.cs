@@ -93,39 +93,39 @@ public class ReceiptController : HahaController
         return Pending(message);
     }
 
-    [HttpPatch("update")]
-    public async Task<IActionResult> Update([FromBody] Receipt model)
-    {
-        var before = await _receiptRepository.Capture(model.Id.Value);
-        await _receiptRepository.Update(model, Auth.User.UserID);
-        var after = await _receiptRepository.Capture(model.Id.Value);
+    //[HttpPatch("update")]
+    //public async Task<IActionResult> Update([FromBody] Receipt model)
+    //{
+    //    var before = await _receiptRepository.Capture(model.Id.Value);
+    //    await _receiptRepository.Update(model, Auth.User.UserID);
+    //    var after = await _receiptRepository.Capture(model.Id.Value);
 
-        await _logger.SaveDataLog(new DataLogDto
-        {
-            DocumentType = "Part Receipt Material",
-            EntityId = model.Id.ToString(),
-            ReferenceId = model.ReceiptNo,
-            Action = DataLogAction.Update,
-            Before = before,
-            After = after
-        });
-        return Success(after);
-    }
+    //    await _logger.SaveDataLog(new DataLogDto
+    //    {
+    //        DocumentType = "Part Receipt Material",
+    //        EntityId = model.Id.ToString(),
+    //        ReferenceId = model.ReceiptNo,
+    //        Action = DataLogAction.Update,
+    //        Before = before,
+    //        After = after
+    //    });
+    //    return Success(after);
+    //}
 
-    [HttpDelete("remove")]
-    public async Task<IActionResult> Remove(long id, string receiptNo)
-    {
-        var before = await _receiptRepository.Capture(id);
-        await _receiptRepository.Remove(id);
-        await _logger.SaveDataLog(new DataLogDto
-        {
-            DocumentType = "Part Receipt Material",
-            EntityId = id.ToString(),
-            ReferenceId = receiptNo,
-            Action = DataLogAction.Delete,
-            Before = before
-        });
+    //[HttpDelete("remove")]
+    //public async Task<IActionResult> Remove(long id, string receiptNo)
+    //{
+    //    var before = await _receiptRepository.Capture(id);
+    //    await _receiptRepository.Remove(id);
+    //    await _logger.SaveDataLog(new DataLogDto
+    //    {
+    //        DocumentType = "Part Receipt Material",
+    //        EntityId = id.ToString(),
+    //        ReferenceId = receiptNo,
+    //        Action = DataLogAction.Delete,
+    //        Before = before
+    //    });
 
-        return Success(before);
-    }
+    //    return Success(before);
+    //}
 }

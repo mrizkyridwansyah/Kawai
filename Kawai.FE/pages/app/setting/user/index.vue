@@ -54,7 +54,7 @@
             </td>
             <td>{{ item.UserID }}</td>
             <td>{{ item.FullName }}</td>
-            <td>{{ item.JobPosition }}</td>
+            <td>{{ item.JobPositionDesc }}</td>
             <td v-if="item.IsAdmin">Yes</td>
             <td v-else>No</td>
             <td>{{ item.UserGroupID }}</td>

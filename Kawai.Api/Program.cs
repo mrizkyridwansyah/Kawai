@@ -9,11 +9,8 @@ using Kawai.Api.Shared.Middleware;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
-using System.Threading;
 using System.Threading.RateLimiting;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);

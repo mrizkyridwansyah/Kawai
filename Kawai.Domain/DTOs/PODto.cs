@@ -21,5 +21,6 @@ public class PODetailDto : DataTableDto
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
     public double Qty { get; set; }
+    public double QtyPacking { get; set; }
     public double TotalPacking { get; set; }
 }

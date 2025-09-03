@@ -3,78 +3,70 @@
     <!-- BEGIN navbar-header -->
     <div class="navbar-header">
       <span class="navbar-brand">
-        <span class="navbar-logo"></span><b class="me-3px">TOS</b> ANDON
+        <span class="navbar-logo"></span
+        ><b class="me-3px" style="color: white">TOS</b>
+        <span style="color: white">ANDON</span>
       </span>
     </div>
     <!-- END navbar-header -->
 
     <!-- BEGIN header-nav -->
-    <div class="navbar-nav">
+    <div class="navbar-nav" style="border-top: inherit">
       <div class="navbar-item navbar-form">
         <v-search-menu placeholder="Search Menu..." />
       </div>
-      <header-menu-user-info />
+      <button class="btn-hamburger" @click="toggleSidebar">
+        <font-awesome-icon icon="bars" />
+      </button>
+      <!-- <header-menu-user-info /> -->
     </div>
 
-    <!-- BEGIN header-nav -->
+    <!-- Optional time (hidden) -->
     <div class="navbar-nav" style="display: none">
       <header-menu-time />
     </div>
-    <!-- END header-nav -->
   </div>
-  <!-- NAVIGATION SLIDER -->
-  <div class="app-header-menu mt-5" style="display: none">
-    <div
-      class="navbar-menu-wrapper"
-      @mousedown="startDrag"
-      @touchstart="startDrag"
-      @mouseup="stopDrag"
-      @touchend="stopDrag"
-      @mouseleave="stopDrag"
-      @mousemove="onDrag"
-      @touchmove="onDrag"
-    >
-      <div
-        class="navbar-menu-loop"
-        :style="{
-          transform: `translateX(${currentTranslate}px)`,
-          animationPlayState: isDragging ? 'paused' : 'running',
-          animationDirection: animationDirection,
-        }"
-        ref="menuLoop"
+  <!-- Sidebar Menu (slide dari kanan) -->
+  <div class="sidebar" :class="{ open: isSidebarOpen }">
+    <div class="sidebar-header">
+      <span>Menu</span>
+    </div>
+    <div class="sidebar-body">
+      <v-app-link
+        v-for="menu in list"
+        :key="'sidebar-' + menu.url"
+        :to="menu.url"
+        class="sidebar-menu-item"
+        @click="toggleSidebar"
       >
-        <div class="navbar-menu ml-3" v-for="i in 10" :key="'loop-' + i">
-          <v-app-link
-            v-for="menu in list"
-            :key="menu.url + '-' + i"
-            :to="menu.url"
-            class="menu-item"
-          >
-            <div class="menu-icon">
-              <font-awesome-icon :icon="menu.icon" />
-            </div>
-            <div class="menu-text">{{ menu.text }}</div>
-          </v-app-link>
-        </div>
-      </div>
+        <font-awesome-icon :icon="menu.icon" />
+        <span>{{ menu.text }}</span>
+      </v-app-link>
     </div>
   </div>
+
+  <!-- Backdrop -->
+  <div v-if="isSidebarOpen" class="backdrop" @click="toggleSidebar"></div>
 </template>
 
 <script>
 export default {
   data: () => ({
     list: [
-      { url: "/receiving", icon: "bell", text: "Receiving" },
-      { url: "/request", icon: "bell", text: "Request Control" },
+      { url: "/receiving", icon: "chart-column", text: "Receiving Andon" },
+      { url: "/request-control", icon: "file-lines", text: "Womin Request Control" },
     ],
     isDragging: false,
     startX: 0,
     currentTranslate: 0,
     prevTranslate: 0,
-    animationDirection: "normal", // normal = kiri ke kanan, reverse = kanan ke kiri
+    animationDirection: "normal",
+    isSidebarOpen: false,
   }),
   methods: {
+    toggleSidebar() {
+      this.isSidebarOpen = !this.isSidebarOpen;
+    },
     startDrag(e) {
       this.isDragging = true;
       this.startX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
@@ -83,7 +75,6 @@ export default {
     stopDrag() {
       if (!this.isDragging) return;
       this.isDragging = false;
-      // Jika terakhir drag ke kanan (posisi bertambah), ubah arah animasi jadi reverse
       if (this.currentTranslate > this.prevTranslate) {
         this.animationDirection = "reverse";
       } else {
@@ -103,20 +94,47 @@ export default {
 </script>
 
 <style lang="scss">
-.backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
+.app-header {
+  background: linear-gradient(to right, #007bff, #8ec5fc);
+  padding: 0.5rem 1rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-header {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-hamburger {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+
+  &:hover {
+    color: #ddd;
+  }
 }
 
 .app-header-menu {
   width: 100%;
-  background: white; // biru gradasi ke muda
-  padding: 0.5em 0 0.5em 0;
+  background: white;
+  padding: 0.5em 0;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -128,20 +146,15 @@ export default {
   cursor: grab;
 }
 
-.navbar-nav {
-  width: 100%;
-  background: linear-gradient(to right, #007bff, #8ec5fc); // gradasi biru muda
-  padding: 0.5rem 1rem; // bisa disesuaikan
-}
 .navbar-menu-loop {
   display: flex;
   width: max-content;
   animation: scroll-loop 100s linear infinite;
   animation-direction: normal;
-}
 
-.navbar-menu-loop:hover {
-  animation-play-state: paused;
+  &:hover {
+    animation-play-state: paused;
+  }
 }
 
 .navbar-menu {
@@ -158,10 +171,8 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
-
-  background: #888; // linear-gradient(to bottom right, #888, #ddd); // abu2 ke abu2 terang
-  // border-radius: 16px;
-  color: white;
+  background: #888;
+  color: black;
   font-weight: bold;
   text-decoration: none;
   font-size: 14px;
@@ -183,13 +194,9 @@ export default {
   .menu-icon {
     font-size: 28px;
     margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .menu-text {
-    // color: white; // agar tetap kontras di background abu2
     font-weight: 600;
     font-size: 13px;
   }
@@ -218,5 +225,68 @@ export default {
   100% {
     transform: translateX(-50%);
   }
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 260px;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1050;
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  background: #f5f5f5;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+}
+
+.sidebar-body {
+  padding: 1em;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.75em 1em;
+  text-decoration: none;
+  color: #333;
+  border-radius: 6px;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  svg {
+    font-size: 18px;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
 }
 </style>

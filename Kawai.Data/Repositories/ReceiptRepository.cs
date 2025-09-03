@@ -133,27 +133,65 @@ public class ReceiptRepository : IReceiptRepository
 
     public async Task<Dictionary<string, object>> Capture(long id)
     {
-        string sp = "sp_Wms_Receipt_CaptureHeader";
-        var header = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { Id = id });
-
-        string spDetail = "sp_Wms_Receipt_CaptureListDetail";
-        var detail = (await _dbExecutor.QueryListAsync<dynamic>(spDetail, new { ReceiptId = id })).ToList();
+        var result = await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_Receipt_Capture",
+            param: new { Id = id },
+            async multi =>
+            {
+                var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
+                var detail = (await multi.ReadAsync<dynamic>()).ToList();
+                var stocks = (await multi.ReadAsync<StockMasterDto>()).ToList();
+                var stockDetail = (await multi.ReadAsync<StockDetailDto>()).ToList();
+                foreach (var master in stocks)
+                {
+                    master.StockDetails = stockDetail
+                    .Where(detail =>
+                        detail.WarehouseCode == master.WarehouseCode &&
+                        detail.AreaCode == master.AreaCode &&
+                        detail.ItemCode == master.ItemCode &&
+                        detail.LotNo == master.LotNo
+                    ).ToList();
+                }
+                return (header, detail, stocks);
+            }
+        );
 
         return new Dictionary<string, object>
         {
-            { "Header", header },
-            { "Detail", detail }
+            { "Receipt Header", result.header },
+            { "Receipt Detail", result.detail },
+            { "Stock", result.stocks }
         };
     }
 
     public async Task<Dictionary<string, object>> CaptureDataBarcode(long id)
     {
-        string sp = "sp_Wms_Receipt_CaptureDataBarcode";
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { Id = id });
+        var result = await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_Receipt_CaptureBarcode",
+            param: new { Id = id },
+            async multi =>
+            {
+                var detail = (await multi.ReadAsync<dynamic>()).ToList();
+                var stocks = (await multi.ReadAsync<StockMasterDto>()).ToList();
+                var stockDetail = (await multi.ReadAsync<StockDetailDto>()).ToList();
+                foreach (var master in stocks)
+                {
+                    master.StockDetails = stockDetail
+                    .Where(detail =>
+                        detail.WarehouseCode == master.WarehouseCode &&
+                        detail.AreaCode == master.AreaCode &&
+                        detail.ItemCode == master.ItemCode &&
+                        detail.LotNo == master.LotNo
+                    ).ToList();
+                }
+                return (detail, stocks);
+            }
+        );
 
-        if (result == null)
-            return new Dictionary<string, object>();
-
-        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
+        return new Dictionary<string, object>
+        {
+            { "Receipt Detail Barcode", result.detail },
+            { "Stock", result.stocks }
+        };
     }
 }

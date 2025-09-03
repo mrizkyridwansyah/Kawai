@@ -45,48 +45,7 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-body">
-            <h6>Before</h6>
-            <div v-for="(item, i) in Object.keys(compared.Before || {})">
-              <div v-if="Array.isArray(compared.Before[item])">
-                {{ item }} :
-                <table class="x-table">
-                  <thead v-if="compared.Before[item].length > 0">
-                    <tr>
-                      <th
-                        v-for="xx in Object.keys(
-                          compared.Before[item][0] || {}
-                        )"
-                      >
-                        {{ xx }}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(x, i) in compared.Before[item]">
-                      <td v-for="xx in Object.keys(x || {})">
-                        {{ x[xx] }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div
-                v-else-if="
-                  typeof compared.After[item] === 'object' &&
-                  compared.After[item] !== null
-                "
-              >
-                {{ item }}:
-                <div
-                  v-for="(val, key) in compared.After[item]"
-                  :key="key"
-                  class="ms-3"
-                >
-                  {{ key }}: {{ val }}
-                </div>
-              </div>
-              <div v-else>{{ item }} : {{ compared.Before[item] }}</div>
-            </div>
+            <h5 class="mb-4">Before</h5>
             <div
               v-if="
                 JSON.stringify(compared.Before) == '{}' &&
@@ -107,64 +66,23 @@
                 No data changes!
               </div>
             </div>
+            <shared-log-data-viewer :data="compared.Before" />
           </div>
         </div>
       </div>
       <div class="col-sm-12 mt-5">
         <div class="card">
           <div class="card-body">
-            <h6>After</h6>
-            <div v-for="(item, i) in Object.keys(compared.After || {})">
-              <div v-if="Array.isArray(compared.After[item])"style="overflow-x: scroll;">
-                {{ item }} :
-                <table class="table">
-                  <thead v-if="compared.After[item].length > 0">
-                    <tr>
-                      <th
-                        v-for="xx in Object.keys(compared.After[item][0] || {})"
-                      >
-                        {{ xx }}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(x, i) in compared.After[item]">
-                      <td v-for="xx in Object.keys(x || {})">
-                        {{ x[xx] }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <!-- <div v-for="(x) in compared.After[item]">
-                  <div v-for="(xx, i) in Object.keys(x || {})">
-                    {{xx}} : {{ x[xx] }}
-                  </div>
-                </div> -->
-              </div>
-              <div
-                v-else-if="
-                  typeof compared.After[item] === 'object' &&
-                  compared.After[item] !== null
-                "
-              >
-                {{ item }}:
-                <div
-                  v-for="(val, key) in compared.After[item]"
-                  :key="key"
-                  class="ms-3"
-                >
-                  {{ key }}: {{ val }}
-                </div>
-              </div>
-              <div v-else>{{ item }} : {{ compared.After[item] }}</div>
-            </div>
+            <h5 class="mb-4">After</h5>
             <div
               v-if="
                 JSON.stringify(compared.After) == '{}' &&
                 data.Action == 'Delete'
               "
             >
-              <div class="alert alert-danger" role="alert">Data Deleted!</div>
+              <div class="alert alert-primary" role="alert">
+                Data not available!
+              </div>
             </div>
             <div
               v-if="
@@ -176,6 +94,7 @@
                 No data changes!
               </div>
             </div>
+            <shared-log-data-viewer :data="compared.After" />
           </div>
         </div>
       </div>

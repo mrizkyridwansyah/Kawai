@@ -139,6 +139,7 @@ input.form-control:focus {
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-size: 14px;
+  color: black
 }
 
 .suggestions li:hover {

@@ -9,6 +9,7 @@ public class UserDto : DataTableDto
     public string FullName { get; set; }
     public string Password { get; set; }
     public string JobPositionCode { get; set; }
+    public string JobPositionDesc { get; set; }
     public string UserGroupID { get; set; }
     public IFormFile ImageAttachment { get; set; }
     public string ImageName { get; set; }

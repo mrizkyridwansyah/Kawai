@@ -110,6 +110,7 @@
           <th class="text-center">Unit</th>
           <th class="text-center" style="width: 12em">Expected Qty</th>
           <th class="text-center" style="width: 12em">Total Packing</th>
+          <th class="text-center" style="width: 12em">Qty Packing</th>
           <th class="text-center" style="width: 12em">Received Qty</th>
           <th class="text-center" style="width: 1em" v-if="mode !== 'add'">IQC Result</th>
           <th class="text-center"></th>
@@ -147,6 +148,7 @@
           <td>{{ item.UnitClsName }}</td>
           <td class="text-right">{{ $func.formatMoney(item.ExpectedQty) }}</td>
           <td class="text-right">{{ $func.formatMoney(item.TotalPacking) }}</td>
+          <td class="text-right">{{ $func.formatMoney(item.QtyPacking) }}</td>
           <td>
             <input-money
               v-model="item.ReceiptQty"
@@ -299,6 +301,7 @@ export default {
           UnitClsCode: null,
           ExpectedQty: null,
           TotalPacking: null,
+          QtyPacking: null,
           ReceiptQty: null,
           IQCResult: null,
         });
@@ -366,6 +369,7 @@ export default {
       detail.UnitClsName = dt.UnitClsName;
       detail.ExpectedQty = dt.Qty;
       detail.TotalPacking = dt.TotalPacking;
+      detail.QtyPacking = dt.QtyPacking;
 
       this.$bvModal.hide("shared-po-list-detail");
     },
@@ -391,7 +395,9 @@ export default {
       // else this.update();
     },
     create() {
+      this.model.Details = this.model.Details.filter(p => p.ReceiptQty > 0);
       this.model.IsManual = this.isManual;
+
       this.ds
         .create(this.model)
         .then((dt) => {

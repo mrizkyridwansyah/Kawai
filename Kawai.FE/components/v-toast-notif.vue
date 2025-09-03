@@ -46,12 +46,14 @@ export default {
   props: {
     notif: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     color: function () {
-      if (this.notif.notifType.toLowerCase() == "info") return "#00e396";
+      if (this.notif.notifType.toLowerCase() == "info") return "dodgerblue";
+
+      if (this.notif.notifType.toLowerCase() == "success") return "#00e396";
 
       if (this.notif.notifType.toLowerCase() == "error") return "#f44336";
 

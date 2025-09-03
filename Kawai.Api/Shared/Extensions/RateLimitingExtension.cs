@@ -15,11 +15,11 @@ public static class RateLimiterExtension
 
     public static TokenBucketRateLimiterOptions DefaultLimiterOptions => new()
     {
-        TokenLimit = 50,
-        TokensPerPeriod = 50,
+        TokenLimit = 20,
+        TokensPerPeriod = 20,
         ReplenishmentPeriod = TimeSpan.FromSeconds(10),
         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-        QueueLimit = 20,
+        QueueLimit = 5,
         AutoReplenishment = true
     };
 }

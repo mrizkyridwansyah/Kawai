@@ -65,6 +65,30 @@ public class DbExecutor
     }
 
     /// <summary>
+    /// Eksekusi stored procedure yang mengembalikan 2 result sets.
+    /// </summary>
+    public async Task<TResult> QueryMultipleAsync<TResult>(
+    string sqlOrSp,
+        object? param,
+        Func<SqlMapper.GridReader, Task<TResult>> readerFunc,
+        CommandType commandType = CommandType.StoredProcedure)
+    {
+        try
+        {
+            using var conn = _connectionFactory.GetDbConnection();
+            conn.Open();
+
+            using var multi = await conn.QueryMultipleAsync(sqlOrSp, param, commandType: commandType);
+            return await readerFunc(multi);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"QueryMultipleAsync failed: {ex.Message}", ex);
+        }
+    }
+
+
+    /// <summary>
     /// eksekusi command (insert, update, delete, dsb) => transaction (optional).
     /// </summary>
     public async Task<int> ExecuteAsync(string sql, object? param = null, CommandType commandType = CommandType.StoredProcedure)

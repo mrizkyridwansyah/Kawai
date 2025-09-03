@@ -20,3 +20,29 @@ public class StockDto: DataTableDto
     public DateTime LastUpdate { get; set; }
     public string LastUser { get; set; }
 }
+
+public class StockMasterDto: DataTableDto
+{
+    public string WarehouseCode { get; set; }
+    public string AreaCode { get; set; }
+    public string ItemCode { get; set; }
+    public string LotNo { get; set; }
+    public double TMPreMonth { get; set; }
+    public double TMReceipt { get; set; }
+    public double TMSupply { get; set; }
+    public double TMCurrent { get; set; }
+    public double TMInventory { get; set; }
+    public List<StockDetailDto> StockDetails { get; set; }
+}
+public class StockDetailDto : DataTableDto
+{
+    public string WarehouseCode { get; set; }
+    public string AreaCode { get; set; }
+    public string AddressCode { get; set; }
+    public string ItemCode { get; set; }
+    public string BarcodeNo { get; set; }
+    public string LotNo { get; set; }
+    public int SublotNo { get; set; }
+    public double Qty { get; set; }
+    public double InventoryQty { get; set; }
+}

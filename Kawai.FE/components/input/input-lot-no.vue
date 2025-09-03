@@ -52,6 +52,9 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "warehouse",
+    "area",
+    "address",
     "item",
     "optionAll",
   ],
@@ -74,6 +77,18 @@ export default {
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
+    },
+    warehouse: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    area: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    address: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
     },
     item: function (after) {
       this.tempValue = null;
@@ -106,9 +121,11 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/stock/ddl-lot-no-search?keyword=${q || ""}&ids=${d || ""}&item=${
-              this.item || ""
-            }`
+            `/stock/ddl-lot-no-search?keyword=${q || ""}&ids=${
+              d || ""
+            }&warehouse=${this.warehouse}&area=${this.area}&address=${
+              this.address
+            }&item=${this.item || ""}`
           )
           .then((p) => {
             this.list =
