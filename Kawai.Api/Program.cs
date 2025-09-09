@@ -10,6 +10,11 @@ using Kawai.Data.SqlConnections;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.RateLimiting;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Prometheus;
 using System.Threading.RateLimiting;
 
 
@@ -95,6 +100,30 @@ builder.Services.AddControllers(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService("Kawai.Api"))
+    // ini kalo mau tracing secara detail, bisa pake Jaeger (opensource)
+    //.WithTracing(tracing =>
+    //{
+    //    tracing
+    //        .AddHttpClientInstrumentation()
+    //        .AddAspNetCoreInstrumentation();
+    //})
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("MyDotNetApp", serviceVersion: "1.0.0"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            //.AddPrometheusExporter()
+            .AddOtlpExporter(otlpOptions =>
+            {
+                string? uriString = builder.Configuration.GetSection("Monitoring:OpenTelemetry").Get<string>();
+                otlpOptions.Endpoint = new Uri(uriString ?? "http://localhost:4318"); // default OTLP/HTTP endpoint
+            });
+    });
+
 // init buat trim leading & trailing spasi dan tab di STRING, karna di DB BANYAK pake tipe data CHAR.
 SqlMapper.AddTypeHandler(typeof(string), new TrimString());
 
@@ -122,10 +151,19 @@ app.UseMorphErrorHandler();
 app.UseApplication();
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseHttpMetrics();
+
 app.UseRouting();
+
 app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    _ = endpoints.MapMetrics();
+});
 
 app.UseRateLimiter(new RateLimiterOptions
 {
@@ -159,4 +197,3 @@ app.MapHub<NotifApprovalHub>("/notifapprovalhub");
 
 app.MapRazorPages();
 app.Run();
-
