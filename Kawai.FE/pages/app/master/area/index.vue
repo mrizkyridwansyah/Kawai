@@ -2,12 +2,12 @@
   <header-menu title="Area" :breadcrumbs="this.breadcrumbs" />
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
-      <div class="col-lg-6 col-md-6 col-sm-8 col-8">
+      <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
         <div class="mr-1" style="width: 100%">
           <input-warehouse class="form-control" v-model="filter.warehouse" />
         </div>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-4 col-4 ml-3">
+      <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
         <div class="mr-1" style="width: 100%">
           <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>

@@ -3,29 +3,27 @@
     title="Receipt / Supply History"
     :breadcrumbs="this.breadcrumbs"
   />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-        <div class="mr-1">
-          <input-warehouse class="form-control" v-model="filter.warehouse" />
-        </div>
+  <div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-12 mt-1">
+      <div class="mr-1">
+        <input-warehouse class="form-control" v-model="filter.warehouse" />
       </div>
-      <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-        <div class="mr-1">
-          <input-item class="form-control" v-model="filter.item" />
-        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-12 mt-1">
+      <div class="mr-1">
+        <input-item class="form-control" v-model="filter.item" />
       </div>
-      <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-        <div class="mr-1">
-          <input-lot-no
-            class="form-control"
-            v-model="filter.lotno"
-            :warehouse="filter.warehouse"
-            area="ALL"
-            address="ALL"
-            :item="filter.item"
-          />
-        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-12 mt-1">
+      <div class="mr-1">
+        <input-lot-no
+          class="form-control"
+          v-model="filter.lotno"
+          :warehouse="filter.warehouse"
+          area="ALL"
+          address="ALL"
+          :item="filter.item"
+        />
       </div>
     </div>
   </div>

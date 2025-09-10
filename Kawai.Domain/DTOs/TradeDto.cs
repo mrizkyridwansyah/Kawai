@@ -1,6 +1,4 @@
-﻿using Kawai.Domain.Shared;
-
-namespace Kawai.Domain.DTOs;
+﻿namespace Kawai.Domain.DTOs;
 
 public class TradeDto: DataTableDto
 {

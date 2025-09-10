@@ -1,8 +1,7 @@
 <template>
   <header-menu title="Stock Inquiry By Item" :breadcrumbs="this.breadcrumbs" />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-2">
+  <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
         <div class="" style="width: 100%">
           <input-item-by-stock
             class="form-control"
@@ -15,7 +14,7 @@
           />
         </div>
       </div>
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
+      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
         <div class="mr-1" style="width: 100%">
           <input-warehouse-by-stock
             class="form-control"
@@ -26,7 +25,7 @@
           />
         </div>
       </div>
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
+      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
         <div class="mr-1" style="width: 100%">
           <input-area-by-stock
             class="form-control"
@@ -38,7 +37,7 @@
           />
         </div>
       </div>
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
         <div class="" style="width: 100%">
           <input-lot-by-stock
             class="form-control"
@@ -52,7 +51,6 @@
           />
         </div>
       </div>
-    </div>
   </div>
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">

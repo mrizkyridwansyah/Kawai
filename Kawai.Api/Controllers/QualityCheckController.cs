@@ -1,7 +1,4 @@
-﻿using ClosedXML.Excel;
-using Kawai.Api.Services;
-using Kawai.Data.Repositories;
-using Kawai.Domain.DTOs.Log;
+﻿using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;

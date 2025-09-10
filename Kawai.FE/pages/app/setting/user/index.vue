@@ -4,7 +4,7 @@
   <v-table
     :filter="filter"
     :keyword-keys="keywordKeys"
-    :export-excel="true"
+    :export-excel="false"
     :export-excel-action="exportExcel"
     :data-items="ds.data.Items"
     :ds="ds"

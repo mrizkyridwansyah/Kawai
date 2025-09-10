@@ -132,7 +132,8 @@ export default {
         .signIn(this.model)
         .then((p) => {
           setCookie("__SIDX", p.Data.AccessToken, p.Data.ExpiryDate);
-          localStorage.setItem("UserPhoto", p.Data.UserPhoto);
+          if (p.Data.UserPhoto)
+            localStorage.setItem("UserPhoto", p.Data.UserPhoto);
           if (this.$router.currentRoute.query?.continue)
             location.href = this.$router.currentRoute.query?.continue;
           else location.href = "/app";

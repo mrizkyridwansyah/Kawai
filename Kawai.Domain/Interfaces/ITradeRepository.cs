@@ -7,7 +7,7 @@ namespace Kawai.Domain.Interfaces;
 public interface ITradeRepository
 {
     Task<List<TradeDto>> GetAll(RequestParameter param);
-    Task<List<TradeDto>> GetDDL(string keyword,string tradecls);
+    Task<List<TradeDto>> GetDDL(string keyword);
     Task<TradeDto> GetData(string Trade_Code);
     Task Create(Trade trade, string userId);
     Task Update(Trade trade, string userId);

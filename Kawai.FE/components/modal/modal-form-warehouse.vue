@@ -19,9 +19,10 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Adm Group</label>
-      <input-text
+      <input-trade
         placeholder="Adm Group"
         v-model="model.AdmGroup"
+        :trade-cls="['1', '2', '3']"
         :errors="errors?.AdmGroup"
       />
     </div>

@@ -1,56 +1,54 @@
 <template>
   <header-menu title="Stock Inquiry By Area" :breadcrumbs="this.breadcrumbs" />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
-        <div class="mr-1" style="width: 100%">
-          <input-warehouse-by-stock
-            class="form-control"
-            placeholder="Search Warehouse"
-            v-model="filter.warehouse"
-            item-code="ALL"
-            :show-option-all="false"
-          />
-        </div>
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+      <div class="mr-1" style="width: 100%">
+        <input-warehouse-by-stock
+          class="form-control"
+          placeholder="Search Warehouse"
+          v-model="filter.warehouse"
+          item-code="ALL"
+          :show-option-all="false"
+        />
       </div>
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
-        <div class="mr-1" style="width: 100%">
-          <input-area-by-stock
-            class="form-control"
-            placeholder="Search Area"
-            v-model="filter.area"
-            :warehouse="filter.warehouse"
-            item="ALL"
-            :show-option-all="true"
-          />
-        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+      <div class="mr-1" style="width: 100%">
+        <input-area-by-stock
+          class="form-control"
+          placeholder="Search Area"
+          v-model="filter.area"
+          :warehouse="filter.warehouse"
+          item="ALL"
+          :show-option-all="true"
+        />
       </div>
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3 mr-1">
-        <div class="mr-1" style="width: 100%">
-          <input-item-by-stock
-            class="form-control"
-            placeholder="Search Item"
-            v-model="filter.item"
-            :warehouse="filter.warehouse"
-            :area="filter.area"
-            address="ALL"
-            :show-option-all="true"
-          />
-        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+      <div class="mr-1" style="width: 100%">
+        <input-item-by-stock
+          class="form-control"
+          placeholder="Search Item"
+          v-model="filter.item"
+          :warehouse="filter.warehouse"
+          :area="filter.area"
+          address="ALL"
+          :show-option-all="true"
+        />
       </div>
-      <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-        <div class="" style="width: 100%">
-          <input-lot-by-stock
-            class="form-control"
-            placeholder="Search Lot No"
-            v-model="filter.lotno"
-            :warehouse="filter.warehouse"
-            :area="filter.area"
-            address="ALL"
-            :item="filter.item"
-            :show-option-all="true"
-          />
-        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+      <div class="" style="width: 100%">
+        <input-lot-by-stock
+          class="form-control"
+          placeholder="Search Lot No"
+          v-model="filter.lotno"
+          :warehouse="filter.warehouse"
+          :area="filter.area"
+          address="ALL"
+          :item="filter.item"
+          :show-option-all="true"
+        />
       </div>
     </div>
   </div>

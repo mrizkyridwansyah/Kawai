@@ -1,23 +1,19 @@
 <template>
   <header-menu title="Address" :breadcrumbs="this.breadcrumbs" />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-lg-6 col-md-6 col-sm-6 col-6 mr-1">
-        <div class="mr-1" style="width: 100%">
-          <input-warehouse class="form-control" v-model="filter.warehouse" />
-        </div>
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+      <div class="mr-1" style="width: 100%">
+        <input-warehouse class="form-control" v-model="filter.warehouse" />
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-6 col-6">
-        <div class="" style="width: 100%">
-          <input-area
-            class="form-control"
-            v-model="filter.area"
-            :warehouse="filter.warehouse"
-          />
-        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+      <div class="" style="width: 100%">
+        <input-area
+          class="form-control"
+          v-model="filter.area"
+          :warehouse="filter.warehouse"
+        />
       </div>
-      <br>
-
     </div>
   </div>
   <div class="d-flex mt-3">
@@ -40,7 +36,8 @@
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle" style="width: 100%;"
+        class="table table-striped mb-0 align-middle"
+        style="width: 100%"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>

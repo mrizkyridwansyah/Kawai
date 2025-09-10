@@ -97,7 +97,7 @@ export default {
 <style scoped>
 .search-menu-wrapper {
   position: relative;
-  max-width: 300px;
+  /* max-width: 300px; */
   width: 100%;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }

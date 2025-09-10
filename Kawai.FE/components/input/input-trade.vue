@@ -20,9 +20,12 @@
       :select="change"
       :class="cClass || 'input-wrapper'"
       :multiple="multiple !== undefined || false"
-      :disabled="(disabled !== undefined || disabled === true) && disabled !== false" 
-      select-label="" 
-      deselect-label="" />
+      :disabled="
+        (disabled !== undefined || disabled === true) && disabled !== false
+      "
+      select-label=""
+      deselect-label=""
+    />
     <div class="invalid-feedback d-block" v-if="errors">
       {{ errors[0] }}
     </div>
@@ -95,13 +98,22 @@ export default {
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
+
+      var tradeFlags = Array.isArray(this.tradeCls)
+        ? this.tradeCls.map((p) => "&tradecls=" + p)
+        : [];
+
       if (this.debounce != null) clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/trade/ddlsearch?keyword=${q || ""}&tradecls=${
-              this.tradeCls || "2"
+            `/trade/ddlsearch?keyword=${q || ""}${
+              tradeFlags.length == 0
+                ? this.tradeCls
+                  ? "&tradecls=" + this.tradeCls
+                  : ""
+                : tradeFlags.join("")
             }&ids=${d || ""}`
           )
           .then((p) => {

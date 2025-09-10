@@ -27,10 +27,10 @@ public class TradeRepository : ITradeRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<TradeDto>(sp, new { Trade_Code = trade_Code });
     }
 
-    public async Task<List<TradeDto>> GetDDL(string keyword,string tradecls)
+    public async Task<List<TradeDto>> GetDDL(string keyword)
     {
         string sp = "sp_Wms_Trade_DDL";
-        return (await _dbExecutor.QueryListAsync<TradeDto>(sp, new { Keyword = keyword ?? "" , Trade_Cls = tradecls ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<TradeDto>(sp, new { Keyword = keyword ?? "" })).ToList();
     }
 
     

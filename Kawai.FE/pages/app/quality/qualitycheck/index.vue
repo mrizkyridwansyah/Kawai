@@ -1,74 +1,71 @@
 <template>
   <header-menu title="Quality Check (IQC)" :breadcrumbs="this.breadcrumbs" />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-lg-2 col-md-2 col-sm-2 col-2 mr-6">
-        <label class="form-label">Supplier</label>
-        <input-trade
-          class="form-control"
-          placeholder="Search Supplier"
-          v-model="filter.supplier"
-          trade-cls="2"
-          :show-option-all="true"
-        />
-      </div>
-      <div class="col-lg-2 col-md-2 col-sm-2 col-2 mr-6">
-        <label class="form-label">DN No</label>
-        <input-dnno-supplier-from-to
-          class="form-control"
-          placeholder="Search DNNo No"
-          v-model="filter.dnno"
-          :supplier="filter.supplier"
-          :receiptdatefrom="filter.receiptdatefrom"
-          :receiptdateto="filter.receiptdateto"
-          :show-option-all="true"
-        />
-      </div>
-      <div class="col-lg-2 col-md-2 col-sm-2 col-2 mr-6">
-        <label class="form-label">Item</label>
-        <input-item
-          class="form-control"
-          placeholder="Search Item"
-          v-model="filter.item"
-          :show-option-all="true"
-        />
-      </div>
-      <div class="col-lg-2 col-md-2 col-sm-2 col-2 mr-6">
-        <label class="form-label">QC Status</label>
-        <input-dropdown
-          :options="[
-            { value: '0', text: 'Pending' },
-            { value: '1', text: 'NG' },
-            { value: '2', text: 'Passed' },
-          ]"
-          textField="text"
-          valueField="value"
-          v-model="filter.qcstatus"
-          placeholder=" QC Status"
-        />
-      </div>
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <label class="form-label">Supplier</label>
+      <input-trade
+        class="form-control"
+        placeholder="Search Supplier"
+        v-model="filter.supplier"
+        trade-cls="2"
+        :show-option-all="true"
+      />
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <label class="form-label">DN No</label>
+      <input-dnno-supplier-from-to
+        class="form-control"
+        placeholder="Search DNNo No"
+        v-model="filter.dnno"
+        :supplier="filter.supplier"
+        :receiptdatefrom="filter.receiptdatefrom"
+        :receiptdateto="filter.receiptdateto"
+        :show-option-all="true"
+      />
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <label class="form-label">Item</label>
+      <input-item
+        class="form-control"
+        placeholder="Search Item"
+        v-model="filter.item"
+        :show-option-all="true"
+      />
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <label class="form-label">QC Status</label>
+      <input-dropdown
+        :options="[
+          { value: '0', text: 'Pending' },
+          { value: '1', text: 'NG' },
+          { value: '2', text: 'Passed' },
+        ]"
+        textField="text"
+        valueField="value"
+        v-model="filter.qcstatus"
+        placeholder=" QC Status"
+      />
     </div>
   </div>
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-lg-2 col-md-2 col-sm-2 col-2 mr-6">
-        <label class="form-label">Receipt Date From</label>
-        <input-date
-          placeholder="ReceiptDateFrom"
-          v-model="filter.receiptdatefrom"
-          :errors="errors?.ReceiptDateFrom"
-        />
-      </div>
-      <div class="col-lg-2 col-md-2 col-sm-2 col-2 mr-6">
-        <label class="form-label">Receipt Date To</label>
-        <input-date
-          placeholder="ReceiptDateTo"
-          v-model="filter.receiptdateto"
-          :errors="errors?.ReceiptDateTo"
-        />
-      </div>
+  <div class="row mt-3">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+      <label class="form-label">Receipt Date From</label>
+      <input-date
+        placeholder="ReceiptDateFrom"
+        v-model="filter.receiptdatefrom"
+        :errors="errors?.ReceiptDateFrom"
+      />
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+      <label class="form-label">Receipt Date To</label>
+      <input-date
+        placeholder="ReceiptDateTo"
+        v-model="filter.receiptdateto"
+        :errors="errors?.ReceiptDateTo"
+      />
     </div>
   </div>
+
   <div class="d-flex mt-3">
     <div class="d-flex flex-fill">
       <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
