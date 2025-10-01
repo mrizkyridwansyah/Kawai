@@ -1,207 +1,217 @@
 <template>
-  <header-menu title="User Privileges" :breadcrumbs="this.breadcrumbs" />
-
-  <button
-    class="btn btn-sm btn-primary btn-elevate"
-    @click="submit"
-    :disabled="isLoading"
-  >
-    <div
-      class="spinner-border spinner-border-sm text-light"
-      role="status"
-      v-if="isLoading"
-    >
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <font-awesome-icon icon="save" v-else />
-    <span class="ml-2">Save</span>
-  </button>
-  <button
-    class="ml-2 btn btn-sm btn-danger btn-elevate"
-    :disabled="isLoading"
-    @click="() => this.$router.push('/app/setting/user')"
-  >
-    <font-awesome-icon icon="arrow-left" />
-    <span class="ml-2">Back</span>
-  </button>
-  <div class="row mt-4">
-    <div class="col-lg-8 col-md-8 col-sm-12 col-12">
-      <!-- BEGIN nav-tabs -->
-      <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item" role="presentation" v-for="(li, idx) in list">
-          <a
-            :href="`#default-tab-${idx + 1}`"
-            data-bs-toggle="tab"
-            class="nav-link"
-            :class="{
-              active: li.defaultActive,
-            }"
-            aria-selected="false"
-            role="tab"
-            tabindex="-1"
-          >
-            <span class="d-sm-block d-none">{{ li.text }}</span>
-          </a>
-        </li>
-      </ul>
-      <!-- END nav-tabs -->
-      <!-- BEGIN tab-content -->
-      <div class="tab-content panel rounded-0 p-3 m-0">
-        <!-- BEGIN tab-pane MENU -->
+  <v-frame title="User Privileges" icon="users">
+    <template #frame-content>
+      <button
+        class="btn btn-sm btn-primary btn-elevate"
+        @click="submit"
+        :disabled="isLoading"
+      >
         <div
-          class="tab-pane fade active show mt-3"
-          id="default-tab-1"
-          role="tabpanel"
+          class="spinner-border spinner-border-sm text-light"
+          role="status"
+          v-if="isLoading"
         >
-          <table class="table table-striped table-bordered mb-0 align-middle">
-            <thead>
-              <tr>
-                <th class="text-center" style="vertical-align: middle">
-                  Menu Group
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  Menu ID
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  Description
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  <span>Access</span>
-                  <div class="mt-1" style="justify-items: center">
-                    <input-checkbox @click="(e) => allowAllAccessMenu(e)" />
-                  </div>
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  <span>Update</span>
-                  <div class="mt-1" style="justify-items: center">
-                    <input-checkbox @click="(e) => allowAllUpdateMenu(e)" />
-                  </div>
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  <span>Price</span>
-                  <div class="mt-1" style="justify-items: center">
-                    <input-checkbox @click="(e) => allowAllPriceMenu(e)" />
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in allowed.menu">
-                <td>{{ item.MenuGroup }}</td>
-                <td>{{ item.MenuID }}</td>
-                <td>{{ item.MenuDescription }}</td>
-                <td>
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      v-model="item.AllowAccess"
-                      @click="(e) => allowAccessMenu(e, item)"
-                    />
-                  </div>
-                </td>
-                <td>
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      v-model="item.AllowUpdate"
-                      @click="(e) => allowUpdateMenu(e, item)"
-                    />
-                  </div>
-                </td>
-                <td>
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      v-model="item.AllowPrice"
-                      @click="(e) => allowPriceMenu(e, item)"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <!-- END tab-pane -->
-        <!-- BEGIN tab-pane WAREHOUSE -->
-        <div class="tab-pane fade mt-3" id="default-tab-2" role="tabpanel">
-          <table class="table table-striped table-bordered mb-0 align-middle">
-            <thead>
-              <tr>
-                <th class="text-center" style="vertical-align: middle">
-                  Warehouse Code
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  Warehouse Name
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  <span>Show</span>
-                  <div class="mt-1" style="justify-items: center">
-                    <input-checkbox
-                      @click="(e) => allowAllAccessWarehouse(e)"
-                    />
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in allowed.warehouse">
-                <td>{{ item.WarehouseCode }}</td>
-                <td>{{ item.WarehouseName }}</td>
-                <td>
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      v-model="item.AllowAccess"
-                      @click="(e) => allowAccessWarehouse(e, item)"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <font-awesome-icon icon="save" v-else />
+        <span class="ml-2">Save</span>
+      </button>
+      <button
+        class="ml-2 btn btn-sm btn-danger btn-elevate"
+        :disabled="isLoading"
+        @click="() => this.$router.push('/app/setting/user')"
+      >
+        <font-awesome-icon icon="arrow-left" />
+        <span class="ml-2">Back</span>
+      </button>
+      <div class="row mt-4">
+        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+          <!-- BEGIN nav-tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation" v-for="(li, idx) in list">
+              <a
+                :href="`#default-tab-${idx + 1}`"
+                data-bs-toggle="tab"
+                class="nav-link"
+                :class="{
+                  active: li.defaultActive,
+                }"
+                aria-selected="false"
+                role="tab"
+                tabindex="-1"
+              >
+                <span class="d-sm-block d-none">{{ li.text }}</span>
+              </a>
+            </li>
+          </ul>
+          <!-- END nav-tabs -->
+          <!-- BEGIN tab-content -->
+          <div class="tab-content panel rounded-0 p-3 m-0">
+            <!-- BEGIN tab-pane MENU -->
+            <div
+              class="tab-pane fade active show"
+              id="default-tab-1"
+              role="tabpanel"
+            >
+              <table
+                class="table table-striped table-bordered mb-0 align-middle"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center" style="vertical-align: middle">
+                      Menu Group
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Menu ID
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Description
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Access</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox @click="(e) => allowAllAccessMenu(e)" />
+                      </div>
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Update</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox @click="(e) => allowAllUpdateMenu(e)" />
+                      </div>
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Price</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox @click="(e) => allowAllPriceMenu(e)" />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, idx) in allowed.menu">
+                    <td>{{ item.MenuGroup }}</td>
+                    <td>{{ item.MenuID }}</td>
+                    <td>{{ item.MenuDescription }}</td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowAccess"
+                          @click="(e) => allowAccessMenu(e, item)"
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowUpdate"
+                          @click="(e) => allowUpdateMenu(e, item)"
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowPrice"
+                          @click="(e) => allowPriceMenu(e, item)"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- END tab-pane -->
+            <!-- BEGIN tab-pane WAREHOUSE -->
+            <div class="tab-pane fade" id="default-tab-2" role="tabpanel">
+              <table
+                class="table table-striped table-bordered mb-0 align-middle"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center" style="vertical-align: middle">
+                      Warehouse Code
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Warehouse Name
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Show</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox
+                          @click="(e) => allowAllAccessWarehouse(e)"
+                        />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, idx) in allowed.warehouse">
+                    <td>{{ item.WarehouseCode }}</td>
+                    <td>{{ item.WarehouseName }}</td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowAccess"
+                          @click="(e) => allowAccessWarehouse(e, item)"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- END tab-pane -->
+            <!-- BEGIN tab-pane MOBILE -->
+            <div class="tab-pane fade" id="default-tab-3" role="tabpanel">
+              <table
+                class="table table-striped table-bordered mb-0 align-middle"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center" style="vertical-align: middle">
+                      Menu ID
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Description
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Access</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox
+                          @click="(e) => allowAllAccessMenuMobile(e)"
+                        />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, idx) in allowed.mobile">
+                    <td>{{ item.MenuID }}</td>
+                    <td>{{ item.MenuDescription }}</td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowAccess"
+                          @click="(e) => allowAccessMenuMobile(e, item)"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- END tab-pane -->
+          </div>
+          <!-- END tab-content -->
+          <!-- BEGIN hljs-wrapper -->
+          <div class="hljs-wrapper rounded-0 rounded-bottom mb-4">
+            <pre><code class="html hljs language-xml" data-url="../assets/data/ui-tabs-accordions/code-1.json" data-highlighted="yes"></code></pre>
+          </div>
+          <!-- END hljs-wrapper -->
         </div>
-        <!-- END tab-pane -->
-        <!-- BEGIN tab-pane MOBILE -->
-        <div class="tab-pane fade mt-3" id="default-tab-3" role="tabpanel">
-          <table class="table table-striped table-bordered mb-0 align-middle">
-            <thead>
-              <tr>
-                <th class="text-center" style="vertical-align: middle">
-                  Menu ID
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  Description
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  <span>Access</span>
-                  <div class="mt-1" style="justify-items: center">
-                    <input-checkbox @click="(e) => allowAllAccessMenuMobile(e)" />
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in allowed.mobile">
-                <td>{{ item.MenuID }}</td>
-                <td>{{ item.MenuDescription }}</td>
-                <td>
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      v-model="item.AllowAccess"
-                      @click="(e) => allowAccessMenuMobile(e, item)"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- END tab-pane -->
       </div>
-      <!-- END tab-content -->
-      <!-- BEGIN hljs-wrapper -->
-      <div class="hljs-wrapper rounded-0 rounded-bottom mb-4">
-        <pre><code class="html hljs language-xml" data-url="../assets/data/ui-tabs-accordions/code-1.json" data-highlighted="yes"></code></pre>
-      </div>
-      <!-- END hljs-wrapper -->
-    </div>
-  </div>
+    </template>
+  </v-frame>
 </template>
 
 <script>
@@ -225,7 +235,7 @@ export default {
     allowed: {
       menu: [],
       warehouse: [],
-      mobile: []
+      mobile: [],
     },
   }),
   computed: {
@@ -275,7 +285,7 @@ export default {
     },
     allowAccessMenuMobile: function (e, item) {
       this.allowed.mobile.find((p) => p.MenuID === item.MenuID).AllowAccess =
-        e.target.checked;        
+        e.target.checked;
     },
     submit: function () {
       this.isLoading = true;
@@ -308,10 +318,15 @@ export default {
 
 <style scoped>
 thead {
-  background-color: #2d353c;
+  background-color: #8ec5fc;
+}
+.nav-tabs .nav-link.active {
+  background-color: #007bff !important; /* Ganti dengan warna yang kamu mau */
+  color: white !important; /* Warna teks di tab aktif */
+  border-color: #007bff #007bff #fff; /* Biar matching */
 }
 
-thead tr th {
+/* thead tr th {
   color: white !important;
-}
+} */
 </style>

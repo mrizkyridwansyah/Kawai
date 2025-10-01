@@ -1,54 +1,57 @@
 <template>
-  <header-menu title="NG Master" :breadcrumbs="this.breadcrumbs" />
-  <v-button-add :add="add" cClass="mr-1" />
-  <v-table
-    :filter="filter"
-    :keyword-keys="keywordKeys"
-    :export-excel="true"
-    :export-excel-action="exportExcel"
-    :ds="ds"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle"
-        style="min-width: 100%; width: max-content"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+  <v-frame title="NG Master" icon="database">
+    <template #frame-content>
+      <v-button-add :add="add" cClass="mr-1" />
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :export-excel="true"
+        :export-excel-action="exportExcel"
+        :ds="ds"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Action</th>
-            <th class="text-center">NG Code</th>
-            <th class="text-center">Description</th>
-            <th class="text-center">Common</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.NGCode }}</td>
-            <td>{{ item.Description }}</td>
-            <td v-if="item.IsCommon">Yes</td>
-            <td v-else>No</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.Lastuser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle"
+            style="min-width: 100%; width: max-content"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Action</th>
+                <th class="text-center">NG Code</th>
+                <th class="text-center">Description</th>
+                <th class="text-center">Common</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.NGCode }}</td>
+                <td>{{ item.Description }}</td>
+                <td v-if="item.IsCommon">Yes</td>
+                <td v-else>No</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.Lastuser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalNG"

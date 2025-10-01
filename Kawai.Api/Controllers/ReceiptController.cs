@@ -67,6 +67,7 @@ public class ReceiptController : HahaController
         return Success(after);
     }
 
+    /*
     [HttpPost("create-using-rabbitmq")]
     //[Idempotent]
     public async Task<IActionResult> CreateUsingRabbitMQ([FromBody] Receipt model)
@@ -78,7 +79,7 @@ public class ReceiptController : HahaController
             TransactionType = "RECEIPT",
             FormatMessage = "Receipt DN No. : " + model.DNNumber,
             Payload = model,
-            LogContext = new LogContext 
+            LogContext = new LogContext
             {
                 Method = HttpContext.Request.Method,
                 RequestPath = HttpContext.Request.Path,
@@ -92,40 +93,5 @@ public class ReceiptController : HahaController
         _transactionProducer.Publish<Receipt>(message);
         return Pending(message);
     }
-
-    //[HttpPatch("update")]
-    //public async Task<IActionResult> Update([FromBody] Receipt model)
-    //{
-    //    var before = await _receiptRepository.Capture(model.Id.Value);
-    //    await _receiptRepository.Update(model, Auth.User.UserID);
-    //    var after = await _receiptRepository.Capture(model.Id.Value);
-
-    //    await _logger.SaveDataLog(new DataLogDto
-    //    {
-    //        DocumentType = "Part Receipt Material",
-    //        EntityId = model.Id.ToString(),
-    //        ReferenceId = model.ReceiptNo,
-    //        Action = DataLogAction.Update,
-    //        Before = before,
-    //        After = after
-    //    });
-    //    return Success(after);
-    //}
-
-    //[HttpDelete("remove")]
-    //public async Task<IActionResult> Remove(long id, string receiptNo)
-    //{
-    //    var before = await _receiptRepository.Capture(id);
-    //    await _receiptRepository.Remove(id);
-    //    await _logger.SaveDataLog(new DataLogDto
-    //    {
-    //        DocumentType = "Part Receipt Material",
-    //        EntityId = id.ToString(),
-    //        ReferenceId = receiptNo,
-    //        Action = DataLogAction.Delete,
-    //        Before = before
-    //    });
-
-    //    return Success(before);
-    //}
+    */
 }

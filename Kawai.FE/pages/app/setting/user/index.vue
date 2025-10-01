@@ -1,72 +1,77 @@
 <template>
-  <header-menu title="User" :breadcrumbs="this.breadcrumbs" />
-  <v-button-add :add="add" cClass="mr-1" />
-  <v-table
-    :filter="filter"
-    :keyword-keys="keywordKeys"
-    :export-excel="false"
-    :export-excel-action="exportExcel"
-    :data-items="ds.data.Items"
-    :ds="ds"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle v-fixed-table"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+  <v-frame title="User" icon="users">
+    <template #frame-content>
+      <v-button-add :add="add" cClass="mr-1" />
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :export-excel="false"
+        :export-excel-action="exportExcel"
+        :data-items="ds.data.Items"
+        :frozen-column-left="3"
+        :ds="ds"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Action</th>
-            <th class="text-center">User ID</th>
-            <th class="text-center">Full Name</th>
-            <th class="text-center">Job Position</th>
-            <th class="text-center">Status Admin</th>
-            <th class="text-center">User Group</th>
-            <th class="text-center">Register Date</th>
-            <th class="text-center">Register User</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                style="cursor: pointer"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 mr-2 text-danger"
-                icon="trash"
-                style="cursor: pointer"
-                @click="remove(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-grey"
-                icon="cog"
-                style="cursor: pointer"
-                @click="
-                  () => this.$router.push(`user/privilege?id=${item.UserID}`)
-                "
-              />
-            </td>
-            <td>{{ item.UserID }}</td>
-            <td>{{ item.FullName }}</td>
-            <td>{{ item.JobPositionDesc }}</td>
-            <td v-if="item.IsAdmin">Yes</td>
-            <td v-else>No</td>
-            <td>{{ item.UserGroupID }}</td>
-            <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
-            <td>{{ item.RegisterUser }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Action</th>
+                <th class="text-center">User ID</th>
+                <th class="text-center">Full Name</th>
+                <th class="text-center">Job Position</th>
+                <th class="text-center">Status Admin</th>
+                <th class="text-center">User Group</th>
+                <th class="text-center">Register Date</th>
+                <th class="text-center">Register User</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    style="cursor: pointer"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 mr-2 text-danger"
+                    icon="trash"
+                    style="cursor: pointer"
+                    @click="remove(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-grey"
+                    icon="cog"
+                    style="cursor: pointer"
+                    @click="
+                      () =>
+                        this.$router.push(`user/privilege?id=${item.UserID}`)
+                    "
+                  />
+                </td>
+                <td>{{ item.UserID }}</td>
+                <td>{{ item.FullName }}</td>
+                <td>{{ item.JobPositionDesc }}</td>
+                <td v-if="item.IsAdmin">Yes</td>
+                <td v-else>No</td>
+                <td>{{ item.UserGroupID }}</td>
+                <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
+                <td>{{ item.RegisterUser }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.LastUser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalUser"
@@ -214,3 +219,13 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-fixed-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #8ec5fc;
+  text-align: center !important;
+}
+</style>

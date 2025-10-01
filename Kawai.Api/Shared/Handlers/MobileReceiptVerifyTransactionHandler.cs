@@ -25,7 +25,7 @@ public class MobileReceiptVerifyTransactionHandler : ITransactionHandler
         var model = JsonSerializer.Deserialize<MobileReceipt>(json);
 
         var before = await _receiptRepo.CaptureDataBarcode(model.Id);
-        await _receiptRepo.Verify(model, true, userId);
+        await _receiptRepo.Verify(model, userId);
         var after = await _receiptRepo.CaptureDataBarcode(model.Id);
 
         await _logger.SaveDataLog(new DataLogDto

@@ -7,7 +7,7 @@
 <script>
 export default {
   mounted: function () {
-    this.$router.push("logging/data-log");    
+    // this.$router.push("/app/logging/data-log");    
   }
 }
 </script>

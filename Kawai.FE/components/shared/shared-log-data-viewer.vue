@@ -3,12 +3,15 @@
     <div v-if="isObject(data)">
       <div v-for="(value, key) in data" :key="key" class="mb-2">
 
-        <!-- Primitive: langsung tampil tanpa collapse -->
+        <!-- Primitive -->
         <div v-if="isPrimitive(value)">
-          <strong>{{ key }}:</strong> {{ formatValue(value) }}
+          <strong>{{ key }} : </strong>
+          <span :class="getHighlightClass(key, value)">
+            {{ formatValue(value) }}
+          </span>
         </div>
 
-        <!-- Array atau Object: tampil pakai <details> -->
+        <!-- Object or Array -->
         <details v-else open>
           <summary class="fw-bold">{{ key }}</summary>
 
@@ -27,30 +30,43 @@
                     <DataViewer
                       v-if="isComplex(row[col])"
                       :data="{ [col]: row[col] }"
+                      :compareData="{ [col]: getCompareValue(key, idx, col) }"
+                      :mode="mode"
                     />
-                    <span v-else>{{ formatValue(row[col]) }}</span>
+                    <span v-else :class="getHighlightClassFromArray(key, idx, col, row[col])">
+                      {{ formatValue(row[col]) }}
+                    </span>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Object -->
+          <!-- Nested Object -->
           <div v-else-if="isObject(value)" class="ms-3 mt-2">
-            <DataViewer :data="value" />
+            <DataViewer
+              :data="value"
+              :compareData="compareData ? compareData[key] : null"
+              :mode="mode"
+            />
           </div>
         </details>
       </div>
     </div>
 
+    <!-- Array fallback -->
     <div v-else-if="Array.isArray(data)">
       <p>[Array with {{ data.length }} items]</p>
     </div>
 
-    <div v-else>{{ formatValue(data) }}</div>
+    <!-- Primitive fallback -->
+    <div v-else>
+      <span :class="getHighlightClass(null, data)">
+        {{ formatValue(data) }}
+      </span>
+    </div>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -59,6 +75,14 @@ export default {
     data: {
       type: [Object, Array, String, Number, Boolean, null],
       required: true,
+    },
+    compareData: {
+      type: [Object, Array, String, Number, Boolean, null],
+      default: null,
+    },
+    mode: {
+      type: String,
+      default: "before", // or "after"
     },
   },
   methods: {
@@ -79,6 +103,27 @@ export default {
         return value.toLocaleString("en-US");
       }
       return value;
+    },
+    getHighlightClass(key, value) {
+      if (!this.compareData || key == null) return "";
+
+      const compareVal = this.compareData[key];
+
+      if (compareVal !== value) {
+        return this.mode === "before" ? "text-danger" : "text-success";
+      }
+      return "";
+    },
+    getCompareValue(key, idx, col) {
+      if (!this.compareData || !Array.isArray(this.compareData[key])) return null;
+      return this.compareData[key][idx] ? this.compareData[key][idx][col] : null;
+    },
+    getHighlightClassFromArray(key, idx, col, value) {
+      const compareVal = this.getCompareValue(key, idx, col);
+      if (compareVal !== value) {
+        return this.mode === "before" ? "text-danger" : "text-success";
+      }
+      return "";
     },
   },
 };

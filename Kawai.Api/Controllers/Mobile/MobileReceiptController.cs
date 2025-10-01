@@ -92,48 +92,25 @@ public class MobileReceiptController : HahaController
     [HttpPost("verify")]
     public async Task<IActionResult> Verify(MobileReceipt model)
     {
-        if (model.Qty != model.QtyVerify)
+        var message = new StockTransactionMessage<MobileReceipt>
         {
-            var message = new StockTransactionMessage<MobileReceipt>
+            AuthUserId = Auth.User.UserID,
+            TimeStamp = EpochDateTime.Now,
+            TransactionType = "RECEIPT-VERIFY-MOBILE",
+            FormatMessage = "Receipt Barcode No. : " + model.BarcodeNo,
+            Payload = model,
+            LogContext = new LogContext
             {
-                AuthUserId = Auth.User.UserID,
-                TimeStamp = EpochDateTime.Now,
-                TransactionType = "RECEIPT-VERIFY-MOBILE",
-                FormatMessage = "Receipt Barcode No. : " + model.BarcodeNo,
-                Payload = model,
-                LogContext = new LogContext
-                {
-                    Method = HttpContext.Request.Method,
-                    RequestPath = HttpContext.Request.Path,
-                    RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
-                    UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
-                    UserID = Auth.User.UserID,
-                    FullName = Auth.User.FullName
-                }
-            };
+                Method = HttpContext.Request.Method,
+                RequestPath = HttpContext.Request.Path,
+                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                UserID = Auth.User.UserID,
+                FullName = Auth.User.FullName
+            }
+        };
 
-            _transactionProducer.Publish<MobileReceipt>(message);
-            return Pending(message);
-
-        }
-        else
-        {
-            var before = await _receiptRepository.CaptureDataBarcode(model.Id);
-            await _receiptRepository.Verify(model, false, Auth.User.UserID);
-            var after = await _receiptRepository.CaptureDataBarcode(model.Id);
-
-            await _logger.SaveDataLog(new DataLogDto
-            {
-                DocumentType = "Mobile - Receipt",
-                EntityId = model.Id.ToString(),
-                ReferenceId = model.BarcodeNo,
-                Before = before,
-                After = after,
-                Action = DataLogAction.Update,
-                Activity = "Verify Receiving Barcode"
-            });
-
-            return Success(after, "Data berhasil diverifikasi!");
-        }
+        _transactionProducer.Publish<MobileReceipt>(message);
+        return Pending(message);
     }
 }

@@ -139,7 +139,7 @@ public class DbExecutor
     /// <summary>
     /// eksekusi beberapa command => transaction (required).
     /// </summary>
-    public async Task<int> ExecuteTransactionAsync(IEnumerable<(string SqlOrSp, object? Param, CommandType CmdType)> commands)
+    public async Task<int> ExecuteMultiCommandWithTransactionAsync(IEnumerable<(string SqlOrSp, object? Param, CommandType CmdType)> commands)
     {
         using var connection = _connectionFactory.GetDbConnection();
         connection.Open();

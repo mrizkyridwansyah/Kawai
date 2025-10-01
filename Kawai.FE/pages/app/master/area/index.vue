@@ -1,86 +1,99 @@
 <template>
-  <header-menu title="Area" :breadcrumbs="this.breadcrumbs" />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
-        <div class="mr-1" style="width: 100%">
-          <input-warehouse class="form-control" v-model="filter.warehouse" />
+  <v-frame title="Area" icon="database">
+    <template #frame-content>
+      <div class="d-flex">
+        <div class="d-flex flex-fill">
+          <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
+            <div class="mr-1" style="width: 100%">
+              <label class="form-label">Warehouse</label>
+              <input-warehouse
+                class="form-control"
+                v-model="filter.warehouse"
+              />
+            </div>
+          </div>
+          <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
+            <label class="form-label">&nbsp;</label>
+            <br />
+            <div class="mr-1" style="width: 100%">
+              <v-button-search-reset
+                class="ms-1"
+                :search="search"
+                :reset="reset"
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
-        <div class="mr-1" style="width: 100%">
-          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-add :add="add" cClass="mr-1" />
+          <v-button-print :print="print" :is-loading="isLoadingPrint" />
         </div>
       </div>
-    </div>
-  </div>
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print :print="print" :is-loading="isLoadingPrint" />
-    </div>
-  </div>
-  <v-table
-    :filter="filter"
-    :export-excel="true"
-    :export-excel-action="exportExcel"
-    :ds="ds"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+      <v-table
+        :filter="filter"
+        :export-excel="true"
+        :export-excel-action="exportExcel"
+        :ds="ds"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Print</th>
-            <th class="text-center">Action</th>
-            <th class="text-center">Warehouse Code</th>
-            <th class="text-center">Warehouse Name</th>
-            <th class="text-center">Area Code</th>
-            <th class="text-center">Area Name</th>
-            <th class="text-center">Register Date</th>
-            <th class="text-center">Register User</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td>
-              <div style="justify-items: center">
-                <input-checkbox
-                  :modelValue="isChecked(item.AreaCode)"
-                  @update:modelValue="(checked) => check(checked, item)"
-                />
-              </div>
-            </td>
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.WarehouseCode }}</td>
-            <td>{{ item.WarehouseName }}</td>
-            <td>{{ item.AreaCode }}</td>
-            <td>{{ item.AreaName }}</td>
-            <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
-            <td>{{ item.RegisterUser }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle"
+            style="min-width: 100%; width: max-content; "
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Print</th>
+                <th class="text-center">Action</th>
+                <th class="text-center">Warehouse Code</th>
+                <th class="text-center">Warehouse Name</th>
+                <th class="text-center">Area Code</th>
+                <th class="text-center">Area Name</th>
+                <th class="text-center">Register Date</th>
+                <th class="text-center">Register User</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isChecked(item.AreaCode)"
+                      @update:modelValue="(checked) => check(checked, item)"
+                    />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.WarehouseCode }}</td>
+                <td>{{ item.WarehouseName }}</td>
+                <td>{{ item.AreaCode }}</td>
+                <td>{{ item.AreaName }}</td>
+                <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
+                <td>{{ item.RegisterUser }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.LastUser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
-
+  </v-frame>
   <v-modal
     ref="modalArea"
     id="modal-form-area"

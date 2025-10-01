@@ -77,7 +77,7 @@ public class MenuRepository : IMenuRepository
             }, CommandType.StoredProcedure));
         }
 
-        await _dbExecutor.ExecuteTransactionAsync(commands);
+        await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
     }
 
     public async Task<Dictionary<string, object>> Capture(string userId)

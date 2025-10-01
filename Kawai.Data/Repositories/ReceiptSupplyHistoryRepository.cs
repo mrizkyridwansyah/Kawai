@@ -21,6 +21,7 @@ public class ReceiptSupplyHistoryRepository : IReceiptSupplyHistoryRepository
         return (await _dbExecutor.QueryListAsync<ReceiptSupplyHistoryDto>(sp, new
         {
             WarehouseCode = filters["WarehouseCode"],
+            AreaCode = filters["AreaCode"],
             ItemCode = filters["ItemCode"],
             LotNo = filters["LotNo"],
             Period = filters["Period"],

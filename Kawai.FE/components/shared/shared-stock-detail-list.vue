@@ -15,7 +15,7 @@
           <tr>
             <th class="text-center">#</th>
             <th class="text-center">Barcode No</th>
-            <th class="text-center">Sublot No</th>
+            <!-- <th class="text-center">Sublot No</th> -->
             <th class="text-center">Qty</th>
             <th class="text-center">Last Update</th>
             <th class="text-center">Last User</th>
@@ -25,7 +25,7 @@
           <tr v-for="(item, idx) in ds.data.Items">
             <td class="text-center">{{ idx + 1 }}.</td>
             <td>{{ item.BarcodeNo }}</td>
-            <td class="text-right">{{ item.SublotNo }}</td>
+            <!-- <td class="text-right">{{ item.SublotNo }}</td> -->
             <td class="text-right">{{ $func.formatMoney(item.CurrentQty) }}</td>
             <td class="text-left">{{ $func.formatDateTime(item.LastUpdate) }}</td>
             <td class="text-left">{{ item.LastUser }}</td>
@@ -52,12 +52,12 @@ export default {
           selected: true,
           direction: "asc",
         },
-        {
-          label: "Sublot",
-          value: "SublotNo",
-          selected: false,
-          direction: "asc",
-        },
+        // {
+        //   label: "Sublot",
+        //   value: "SublotNo",
+        //   selected: false,
+        //   direction: "asc",
+        // },
       ],
     },
   }),

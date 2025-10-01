@@ -53,6 +53,7 @@ export default {
     "multiple",
     "class",
     "warehouse",
+    "includeTemp"
   ],
   data: () => ({
     isLoading: false,
@@ -102,9 +103,9 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/area/ddlsearch?keyword=${q || ""}&selectedVal=${
+            `/area/ddlsearch?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouseCode=${this.warehouse || "ALL"}`
+            }&warehouseCode=${this.warehouse || "ALL"}${this.includeTemp ? "&includeTemp=true": "&includeTemp=false"}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

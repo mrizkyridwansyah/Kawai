@@ -1,139 +1,143 @@
 <template>
-  <header-menu title="Quality Check (IQC)" :breadcrumbs="this.breadcrumbs" />
-  <div class="row">
-    <div class="col-lg-3 col-md-6 col-sm-12">
-      <label class="form-label">Supplier</label>
-      <input-trade
-        class="form-control"
-        placeholder="Search Supplier"
-        v-model="filter.supplier"
-        trade-cls="2"
-        :show-option-all="true"
-      />
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-12">
-      <label class="form-label">DN No</label>
-      <input-dnno-supplier-from-to
-        class="form-control"
-        placeholder="Search DNNo No"
-        v-model="filter.dnno"
-        :supplier="filter.supplier"
-        :receiptdatefrom="filter.receiptdatefrom"
-        :receiptdateto="filter.receiptdateto"
-        :show-option-all="true"
-      />
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-12">
-      <label class="form-label">Item</label>
-      <input-item
-        class="form-control"
-        placeholder="Search Item"
-        v-model="filter.item"
-        :show-option-all="true"
-      />
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-12">
-      <label class="form-label">QC Status</label>
-      <input-dropdown
-        :options="[
-          { value: '0', text: 'Pending' },
-          { value: '1', text: 'NG' },
-          { value: '2', text: 'Passed' },
-        ]"
-        textField="text"
-        valueField="value"
-        v-model="filter.qcstatus"
-        placeholder=" QC Status"
-      />
-    </div>
-  </div>
-  <div class="row mt-3">
-    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-      <label class="form-label">Receipt Date From</label>
-      <input-date
-        placeholder="ReceiptDateFrom"
-        v-model="filter.receiptdatefrom"
-        :errors="errors?.ReceiptDateFrom"
-      />
-    </div>
-    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-      <label class="form-label">Receipt Date To</label>
-      <input-date
-        placeholder="ReceiptDateTo"
-        v-model="filter.receiptdateto"
-        :errors="errors?.ReceiptDateTo"
-      />
-    </div>
-  </div>
+  <v-frame title="Quality Check (IQC)" icon="receipt">
+    <template #frame-content>
+      <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+          <label class="form-label">Supplier</label>
+          <input-trade
+            class="form-control"
+            placeholder="Search Supplier"
+            v-model="filter.supplier"
+            trade-cls="2"
+            :show-option-all="true"
+          />
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12">
+          <label class="form-label">DN No</label>
+          <input-dnno-supplier-from-to
+            class="form-control"
+            placeholder="Search DNNo No"
+            v-model="filter.dnno"
+            :supplier="filter.supplier"
+            :receiptdatefrom="filter.receiptdatefrom"
+            :receiptdateto="filter.receiptdateto"
+            :show-option-all="true"
+          />
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12">
+          <label class="form-label">Item</label>
+          <input-item
+            class="form-control"
+            placeholder="Search Item"
+            v-model="filter.item"
+            :show-option-all="true"
+          />
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12">
+          <label class="form-label">QC Status</label>
+          <input-dropdown
+            :options="[
+              { value: '0', text: 'Pending' },
+              { value: '1', text: 'NG' },
+              { value: '2', text: 'Passed' },
+            ]"
+            textField="text"
+            valueField="value"
+            v-model="filter.qcstatus"
+            placeholder=" QC Status"
+          />
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+          <label class="form-label">Receipt Date From</label>
+          <input-date
+            placeholder="ReceiptDateFrom"
+            v-model="filter.receiptdatefrom"
+            :errors="errors?.ReceiptDateFrom"
+          />
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+          <label class="form-label">Receipt Date To</label>
+          <input-date
+            placeholder="ReceiptDateTo"
+            v-model="filter.receiptdateto"
+            :errors="errors?.ReceiptDateTo"
+          />
+        </div>
+      </div>
 
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-    </div>
-  </div>
-  <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle"
-        style="width: 100%"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-      >
-        <thead>
-          <tr>
-            <th class="text-center">DN No</th>
-            <th class="text-center">Item Code</th>
-            <th class="text-center">Description</th>
-            <th class="text-center">Qty</th>
-            <th class="text-center">Inspection Date</th>
-            <th class="text-center">Inspector</th>
-            <th class="text-center">QC Status</th>
-            <th class="text-center">Photo</th>
-            <th class="text-center">Remarks</th>
-            <th class="text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td>{{ item.DN_No }}</td>
-            <td>{{ item.Item_Code }}</td>
-            <td>{{ item.Item_Name }}</td>
-            <td class="text-center">{{ item.Qty }}</td>
-            <td class="text-center">
-              {{ $func.formatDateTime(item.Inspection_Date) }}
-            </td>
-            <td class="text-center">{{ item.Inspection_User }}</td>
-            <td class="text-center">
-              <span
-                class="qc-status"
-                :class="item.QC_Status_Descs.toLowerCase()"
-              >
-                {{ item.QC_Status_Descs }}
-              </span>
-            </td>
-            <td class="text-center">
-              <a
-                href="javascript:void(0)"
-                class="ml-2 text-blue"
-                @click="viewphoto(item)"
-              >
-                View Photo
-              </a>
-            </td>
-            <td>{{ item.Remarks }}</td>
-            <td class="text-center">
-              <button
-                type="button"
-                class="btn btn-sm btn-green btn-elevate"
-                @click="edit(item)"
-              >
-                Confirm
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+        </div>
+      </div>
+      <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle"
+            style="width: 100%"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">DN No</th>
+                <th class="text-center">Item Code</th>
+                <th class="text-center">Description</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">Inspection Date</th>
+                <th class="text-center">Inspector</th>
+                <th class="text-center">QC Status</th>
+                <th class="text-center">Photo</th>
+                <th class="text-center">Remarks</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td>{{ item.DN_No }}</td>
+                <td>{{ item.Item_Code }}</td>
+                <td>{{ item.Item_Name }}</td>
+                <td class="text-center">{{ item.Qty }}</td>
+                <td class="text-center">
+                  {{ $func.formatDateTime(item.Inspection_Date) }}
+                </td>
+                <td class="text-center">{{ item.Inspection_User }}</td>
+                <td class="text-center">
+                  <span
+                    class="qc-status"
+                    :class="item.QC_Status_Descs.toLowerCase()"
+                  >
+                    {{ item.QC_Status_Descs }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <a
+                    href="javascript:void(0)"
+                    class="ml-2 text-blue"
+                    @click="viewphoto(item)"
+                  >
+                    View Photo
+                  </a>
+                </td>
+                <td>{{ item.Remarks }}</td>
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-green btn-elevate"
+                    @click="edit(item)"
+                  >
+                    Confirm
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
+
   <v-modal
     ref="modalQualityCheck"
     id="modal-form-qualitycheck-confirm"

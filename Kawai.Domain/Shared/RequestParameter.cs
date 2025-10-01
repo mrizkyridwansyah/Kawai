@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
+﻿using System.Dynamic;
 
 namespace Kawai.Domain.Shared;
 public class RequestParameter

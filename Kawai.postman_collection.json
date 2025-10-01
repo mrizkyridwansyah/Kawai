@@ -1,0 +1,1414 @@
+{
+	"info": {
+		"_postman_id": "380fa319-537d-4451-a0ad-6717ff6711f7",
+		"name": "Kawai",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28430742",
+		"_collection_link": "https://planetary-shadow-903474.postman.co/workspace/New-Team-Workspace~74e3afa9-42f0-47fc-a024-a8a5f9095aef/collection/28430742-380fa319-537d-4451-a0ad-6717ff6711f7?action=share&source=collection_link&creator=28430742"
+	},
+	"item": [
+		{
+			"name": "Master",
+			"item": [
+				{
+					"name": "Warehouse",
+					"item": [
+						{
+							"name": "Get Detail Warehouse",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "YFvamOhMqVE6Zf32t0eUrn5xKbBCPokLlzGAW9I14DdRuwTy8JNgHXcjSsp7Qi"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/warehouse/detail?id=AG01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"warehouse",
+										"detail"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "AG01"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Warehouse",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "RqP7T29UmW3ESDhjz40raGFZ8A1Hs5fCYNlXkQwOegop6VxduiIcbnLJvKMByt"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\":\r\n    { \r\n        // \"WarehouseCode\": \"desc\",\r\n        \"WarehouseName\": \"asc\"\r\n    },\r\n    \"Filters\": [\r\n        { \"Keyword\": \"\" }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/warehouse/list"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Warehouse",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "2N1wW3FKhxebvqyGsaJtXnROSomQigPIAcz4r97Yd6ZL5UDHVplfCEjB80uMTk"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"WarehouseCode\": \"JK1@.C\",\r\n    \"WarehouseName\": \"Jakarta OY OY OY\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/warehouse/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Warehouse",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "2N1wW3FKhxebvqyGsaJtXnROSomQigPIAcz4r97Yd6ZL5UDHVplfCEjB80uMTk"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"WarehouseCode\": \"JKT\",\r\n    \"WarehouseName\": \"Jakarta OY OY OY\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5056/api/warehouse/update?id=JKT",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"warehouse",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "JKT"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Warehouse",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "2N1wW3FKhxebvqyGsaJtXnROSomQigPIAcz4r97Yd6ZL5UDHVplfCEjB80uMTk"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/warehouse/remove?id=JKT",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"warehouse",
+										"remove"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "JKT"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Area",
+					"item": [
+						{
+							"name": "List Area",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"LocationCode\": \"desc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\", \r\n            \"WarehouseCode\": \"AG01\" \r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/location/list"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Area",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "ylSzYU2DvT0BjbAxVoLZm8NJ1QRkM6F7KtquwGrOsCnp3e5fcI9XEiagPdWh4H"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"WarehouseCode\": \"AG01\",\r\n    \"LocationCode\": \"#AUTO\",\r\n    \"LocationName\": \"Aging Room Lokasi 7\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/location/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Area",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "ylSzYU2DvT0BjbAxVoLZm8NJ1QRkM6F7KtquwGrOsCnp3e5fcI9XEiagPdWh4H"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"WarehouseCode\": \"JKT\",\r\n    \"WarehouseName\": \"Jakarta OY OY OY\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5056/api/warehouse/update?id=JKT",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"warehouse",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "JKT"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Area",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "ylSzYU2DvT0BjbAxVoLZm8NJ1QRkM6F7KtquwGrOsCnp3e5fcI9XEiagPdWh4H"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/warehouse/remove?id=JKT",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"warehouse",
+										"remove"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "JKT"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Detail Area",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/location/detail?id=AG01/007",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"location",
+										"detail"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "AG01/007"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Address",
+					"item": [
+						{
+							"name": "List Address",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"AddressName\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\", \r\n            \"WarehouseCode\": \"AG01\",\r\n            \"AreaCode\": \"AG01/001\" \r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/address/list"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Address",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"WarehouseCode\": \"AG01\",\r\n    \"AreaCode\": \"AG01/001\",\r\n    \"AddressCode\": \"#AUTO\",\r\n    \"AddressName\": \"TESAREABARU\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/address/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Address",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"WarehouseCode\": \"AG01\",\r\n    \"AreaCode\": \"AG01/001\",\r\n    \"AddressCode\": \"AG01/AG01/001/007\",\r\n    \"AddressName\": \"TES AREA BARU\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/address/update"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Address",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/address/remove?id=AG01/AG01/001/007",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"address",
+										"remove"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "AG01/AG01/001/007"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Detail Address",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HZzLaKuC8xIg0rAdFiqSQnGhMvkTUl9cDJ7R3NYy41wVoe6sP2pXjWEmBOb5ft"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/area/detail?id=AG01/AG01/001/001",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"area",
+										"detail"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "AG01/AG01/001/001"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Get Detail User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "9EyUXDuYdIsoW6N3R04PKrx7HQaliqpz1TkvJOF5ABGSwgVCmbMZfehc28njtL"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/user/detail?id=hisyam",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"user",
+										"detail"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "hisyam"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "9EyUXDuYdIsoW6N3R04PKrx7HQaliqpz1TkvJOF5ABGSwgVCmbMZfehc28njtL"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": [\r\n         { \"FullName\": \"desc\" }\r\n    ],\r\n    \"Filters\": [\r\n        { \"Keyword\": \"\" }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/user/list"
+							},
+							"response": []
+						},
+						{
+							"name": "Create User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "9EyUXDuYdIsoW6N3R04PKrx7HQaliqpz1TkvJOF5ABGSwgVCmbMZfehc28njtL"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "UserID",
+											"value": "ridwansyah2",
+											"type": "text"
+										},
+										{
+											"key": "FullName",
+											"value": "Muhammad Rizky Ridwansyah",
+											"type": "text"
+										},
+										{
+											"key": "Password",
+											"value": "password123",
+											"type": "text"
+										},
+										{
+											"key": "JobPositionCode",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "UserGroupID",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "ImageAttachment",
+											"type": "file",
+											"src": "/C:/Users/berth/Downloads/download (4).jpeg"
+										},
+										{
+											"key": "IsAdmin",
+											"value": "True",
+											"type": "text"
+										}
+									]
+								},
+								"url": "http://localhost:5056/api/user/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "2N1wW3FKhxebvqyGsaJtXnROSomQigPIAcz4r97Yd6ZL5UDHVplfCEjB80uMTk"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "ImageName",
+											"value": "4UF5wza1inDouAhKCcNgTVtksxYQ63",
+											"type": "text"
+										},
+										{
+											"key": "UserID",
+											"value": "ridwansyah2",
+											"type": "text"
+										},
+										{
+											"key": "FullName",
+											"value": "R Ridwansyah",
+											"type": "text"
+										},
+										{
+											"key": "Password",
+											"value": "pass1234",
+											"type": "text"
+										},
+										{
+											"key": "ImageAttachment",
+											"type": "file",
+											"src": "/C:/Users/berth/Downloads/download.jpeg"
+										},
+										{
+											"key": "IsAdmin",
+											"value": "True",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5056/api/user/update?id=ridwansyah2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"user",
+										"update"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "ridwansyah2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "2N1wW3FKhxebvqyGsaJtXnROSomQigPIAcz4r97Yd6ZL5UDHVplfCEjB80uMTk"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/user/remove?id=JKT",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"user",
+										"remove"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "JKT"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Item",
+					"item": [
+						{
+							"name": "Get Detail Item",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "List Item",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\":\r\n    { \r\n        // \"WarehouseCode\": \"desc\",\r\n        \"WarehouseName\": \"asc\"\r\n    },\r\n    \"Filters\": [\r\n        { \"Keyword\": \"\" }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/item/list"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Item",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\":\r\n    { \r\n        // \"WarehouseCode\": \"desc\",\r\n        \"WarehouseName\": \"asc\"\r\n    },\r\n    \"Filters\": [\r\n        { \"Keyword\": \"\" }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/item/list"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Privileges",
+			"item": [
+				{
+					"name": "List Privileges",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "tczZhiklFYwdp2HNJL8ABEXugRbGM9axVmeWT5jo3q0IUC1S4QODvyfK6rnsP7"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5056/api/menu/listprivileges?userID=hisyam",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"menu",
+								"listprivileges"
+							],
+							"query": [
+								{
+									"key": "userID",
+									"value": "hisyam"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Privileges",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "tczZhiklFYwdp2HNJL8ABEXugRbGM9axVmeWT5jo3q0IUC1S4QODvyfK6rnsP7"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5056/api/menu/privileges?userID=hisyam",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"menu",
+								"privileges"
+							],
+							"query": [
+								{
+									"key": "userID",
+									"value": "hisyam"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Privileges",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "tczZhiklFYwdp2HNJL8ABEXugRbGM9axVmeWT5jo3q0IUC1S4QODvyfK6rnsP7"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserId\": \"hisyam\",\r\n    \"MenuPrivileges\": [\r\n        {\r\n            \"MenuID\": \"A01\",\r\n            \"AllowAccess\": true,\r\n            \"AllowUpdate\": true,\r\n            \"AllowPrice\": true\r\n        },\r\n        {\r\n            \"MenuID\": \"A02\",\r\n            \"AllowAccess\": true,\r\n            \"AllowUpdate\": true,\r\n            \"AllowPrice\": true\r\n        }\r\n    ],\r\n    \"WarehousePrivileges\": [\r\n        {\r\n            \"WarehouseCode\": \"AG01\",\r\n            \"AllowAccess\": true\r\n        },\r\n        {\r\n            \"WarehouseCode\": \"WH-001\",\r\n            \"AllowAccess\": true\r\n        }\r\n    ]\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/menu/privileges/save"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "SignIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserName\": \"Hisyam\",\r\n    \"Password\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/auth/sign-in"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "uXs6ly2oQtbZgvTLHOaedxYJ7DSUjFNkRIKifWPrM4m3Ah08cE1BpVGCq5wz9n"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Password\": \"1234\",\r\n    \"NewPassword\": \"123\",\r\n    \"ConfirmPassword\": \"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/user/change-password"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logging",
+			"item": [
+				{
+					"name": "List Data Logs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"Id\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/logging/data/list"
+					},
+					"response": []
+				},
+				{
+					"name": "List Request Logs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"Id\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/logging/request/list"
+					},
+					"response": []
+				},
+				{
+					"name": "List MQ Logs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"Id\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/logging/mq/list"
+					},
+					"response": []
+				},
+				{
+					"name": "List Error Logs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"Id\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/logging/error/list"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Data Logs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"Id\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5056/api/logging/data/detail?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"logging",
+								"data",
+								"detail"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Error Logs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\": 1,\r\n    \"Length\": 10,\r\n    \"Sorts\": \r\n         { \"Id\": \"asc\" }\r\n    ,\r\n    \"Filters\": [\r\n        { \r\n            \"Keyword\": \"\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5056/api/logging/error/detail?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"logging",
+								"error",
+								"detail"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Part Receipt",
+			"item": [
+				{
+					"name": "Create Part Receipt",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "CqGMuj1eF8OQT9rfhcwiISRJs2KD6NBpUvPxl5gZ7mEtWV0kyXbdzaoAn3Y4HL"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\": null,\r\n    \"ReceiptNo\": \"\",\r\n    \"DNNumber\": \"123\",\r\n    \"SupplierCode\": \"S0238\",\r\n    \"DNDate\": \"2025-08-14\",\r\n    \"BCNumber\": \"123\",\r\n    \"BCType\": \"BC 2.3\",\r\n    \"BCDate\": \"2025-08-14\",\r\n    \"VehicleNo\": \"123\",\r\n    \"Details\": [\r\n        {\r\n            \"Id\": null,\r\n            \"PONumber\": \"KI3-2501-GEN-AKP-1\",\r\n            \"ItemCode\": \"888997\",\r\n            \"UnitClsCode\": \"11\",\r\n            \"ExpectedQty\": 60,\r\n            \"TotalPacking\": 1,\r\n            \"ReceiptQty\": 0,\r\n            \"IQCResult\": \"PASS\",\r\n            \"ItemName\": \"PP Strapping Band 14.5mm x 0.90mm\",\r\n            \"UnitClsName\": \"roll\",\r\n            \"ReceivedQty\": 60\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/receipt/create-using-rabbitmq"
+					},
+					"response": []
+				},
+				{
+					"name": "List Receipt",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Page\":1,\r\n    \"Length\":10,\r\n    \"Sorts\":\r\n    {\r\n        \"ReceiptNo\":\"asc\"\r\n    },\r\n    \"Filters\":[]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5056/api/receipt/list"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Data Header Receipt",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get List Data Detail Receipt",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5056/api/receipt/list-detail?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"receipt",
+								"list-detail"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notification",
+			"item": [
+				{
+					"name": "Tes Send Notif",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5056/api/notification/tes-notif?receiver=hisyam",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"notification",
+								"tes-notif"
+							],
+							"query": [
+								{
+									"key": "receiver",
+									"value": "hisyam"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Count Unread Notif By Receiver",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5056/api/notification/unread-notif-by-receiver?receiver=hisyam",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"notification",
+								"unread-notif-by-receiver"
+							],
+							"query": [
+								{
+									"key": "receiver",
+									"value": "hisyam"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get List Notif By Receiver",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5056/api/notification/list-by-receiver?receiver=hisyam",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"notification",
+								"list-by-receiver"
+							],
+							"query": [
+								{
+									"key": "receiver",
+									"value": "hisyam"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Seen Notif",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5056/api/notification/update-seen?id=76",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5056",
+							"path": [
+								"api",
+								"notification",
+								"update-seen"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "76"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mobile",
+			"item": [
+				{
+					"name": "Receipt",
+					"item": [
+						{
+							"name": "Get DDL Pending DN",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5056/api/mobile/receipt/ddlsearch?keyboard=&status=PENDING&ids",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"mobile",
+										"receipt",
+										"ddlsearch"
+									],
+									"query": [
+										{
+											"key": "keyboard",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": "PENDING"
+										},
+										{
+											"key": "ids",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Data Receipt By DN",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HuNgW1y6dMkrXv2lcs3zpOBfZtQI8VLiw9ajm7YTPJnRh0qAoGx5DFb4SKUEeC"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:5056/api/mobile/receipt/detail?id=11",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"mobile",
+										"receipt",
+										"detail"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "11"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Data Barcode Receipt",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "HuNgW1y6dMkrXv2lcs3zpOBfZtQI8VLiw9ajm7YTPJnRh0qAoGx5DFb4SKUEeC"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:5056/api/mobile/receipt/data-barcode?id=11&barcodeno=RM202508160046",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5056",
+									"path": [
+										"api",
+										"mobile",
+										"receipt",
+										"data-barcode"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "11"
+										},
+										{
+											"key": "barcodeno",
+											"value": "RM202508160046"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify Barcode Receipt",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Id\": 46,\r\n    \"BarcodeNo\": \"RM202508160046\",\r\n    \"Qty\": 100,\r\n    \"QtyVerify\": 100 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:5056/api/mobile/receipt/verify"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Last Version Mobile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5056/api/mobile/last-version"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

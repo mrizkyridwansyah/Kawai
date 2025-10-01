@@ -1,98 +1,103 @@
 <template>
-  <header-menu title="Address" :breadcrumbs="this.breadcrumbs" />
-  <div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
-      <div class="mr-1" style="width: 100%">
-        <input-warehouse class="form-control" v-model="filter.warehouse" />
+  <v-frame title="Address" icon="database">
+    <template #frame-content>
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Warehouse</label>
+            <input-warehouse class="form-control" v-model="filter.warehouse" />
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+          <div class="" style="width: 100%">
+            <label class="form-label">Area</label>
+            <input-area
+              class="form-control"
+              v-model="filter.area"
+              :warehouse="filter.warehouse"
+            />
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
-      <div class="" style="width: 100%">
-        <input-area
-          class="form-control"
-          v-model="filter.area"
-          :warehouse="filter.warehouse"
-        />
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-add :add="add" cClass="mr-1" />
+          <v-button-print
+            :print="print"
+            cClass="mr-1"
+            :is-loading="isLoadingPrint"
+          />
+          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print
-        :print="print"
-        cClass="mr-1"
-        :is-loading="isLoadingPrint"
-      />
-      <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-    </div>
-  </div>
-  <v-table
-    :filter="filter"
-    :keyword-keys="keywordKeys"
-    :export-excel="true"
-    :export-excel-action="exportExcel"
-    :ds="ds"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle"
-        style="width: 100%"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :export-excel="true"
+        :export-excel-action="exportExcel"
+        :ds="ds"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Print</th>
-            <th class="text-center">Action</th>
-            <th class="text-center">Warehouse Code</th>
-            <th class="text-center">Warehouse Name</th>
-            <th class="text-center">Area Code</th>
-            <th class="text-center">Area Name</th>
-            <th class="text-center">Address Code</th>
-            <th class="text-center">Address Name</th>
-            <th class="text-center">Register Date</th>
-            <th class="text-center">Register User</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td>
-              <div style="justify-items: center">
-                <input-checkbox
-                  :modelValue="isChecked(item.AddressCode)"
-                  @update:modelValue="(checked) => check(checked, item)"
-                />
-              </div>
-            </td>
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.WarehouseCode }}</td>
-            <td>{{ item.WarehouseName }}</td>
-            <td>{{ item.AreaCode }}</td>
-            <td>{{ item.AreaName }}</td>
-            <td>{{ item.AddressCode }}</td>
-            <td>{{ item.AddressName }}</td>
-            <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
-            <td>{{ item.RegisterUser }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle"
+            style="min-width: 100%; width: max-content; "
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Print</th>
+                <th class="text-center">Action</th>
+                <th class="text-center">Warehouse Code</th>
+                <th class="text-center">Warehouse Name</th>
+                <th class="text-center">Area Code</th>
+                <th class="text-center">Area Name</th>
+                <th class="text-center">Address Code</th>
+                <th class="text-center">Address Name</th>
+                <th class="text-center">Register Date</th>
+                <th class="text-center">Register User</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isChecked(item.AddressCode)"
+                      @update:modelValue="(checked) => check(checked, item)"
+                    />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.WarehouseCode }}</td>
+                <td>{{ item.WarehouseName }}</td>
+                <td>{{ item.AreaCode }}</td>
+                <td>{{ item.AreaName }}</td>
+                <td>{{ item.AddressCode }}</td>
+                <td>{{ item.AddressName }}</td>
+                <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
+                <td>{{ item.RegisterUser }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.LastUser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalAddress"

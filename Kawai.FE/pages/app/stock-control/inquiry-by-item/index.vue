@@ -1,88 +1,96 @@
 <template>
-  <header-menu title="Stock Inquiry By Item" :breadcrumbs="this.breadcrumbs" />
-  <div class="row">
-      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-        <div class="" style="width: 100%">
-          <input-item-by-stock
-            class="form-control"
-            placeholder="Search Item"
-            v-model="filter.item"
-            warehouse="ALL"
-            area="ALL"
-            address="ALL"
-            :show-option-all="false"
-          />
+  <v-frame title="Stock Inquiry By Item" icon="boxes-stacked">
+    <template #frame-content>
+      <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+          <div class="" style="width: 100%">
+            <label class="form-label">Item</label>
+            <input-item-by-stock
+              class="form-control"
+              placeholder="Search Item"
+              v-model="filter.item"
+              warehouse="ALL"
+              area="ALL"
+              address="ALL"
+              :show-option-all="false"
+            />
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Warehouse</label>
+            <input-warehouse-by-stock
+              class="form-control"
+              placeholder="Search Warehouse"
+              v-model="filter.warehouse"
+              :item-code="filter.item"
+              :show-option-all="true"
+            />
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Area</label>
+            <input-area-by-stock
+              class="form-control"
+              placeholder="Search Area"
+              v-model="filter.area"
+              :warehouse="filter.warehouse"
+              :item="filter.item"
+              :show-option-all="true"
+            />
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
+          <div class="" style="width: 100%">
+            <label class="form-label">Lot No</label>
+            <input-lot-by-stock
+              class="form-control"
+              placeholder="Search Lot No"
+              v-model="filter.lotno"
+              :warehouse="filter.warehouse"
+              :area="filter.area"
+              address="ALL"
+              :item="filter.item"
+              :show-option-all="true"
+            />
+          </div>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-        <div class="mr-1" style="width: 100%">
-          <input-warehouse-by-stock
-            class="form-control"
-            placeholder="Search Warehouse"
-            v-model="filter.warehouse"
-            :item-code="filter.item"
-            :show-option-all="true"
-          />
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-        <div class="mr-1" style="width: 100%">
-          <input-area-by-stock
-            class="form-control"
-            placeholder="Search Area"
-            v-model="filter.area"
-            :warehouse="filter.warehouse"
-            :item="filter.item"
-            :show-option-all="true"
+      <v-tree-group
+        :tree-data="treeData"
+        :columns="columns"
+        child-key="children"
+        :group-by-fields="groupByFields"
+        :frozen-column-left="3"
+        :start-collapse-level="1"
+        :is-loading="ds.isLoading"
+        :is-server-error="ds.isServerError"
+        :is-network-error="ds.isNetworkError"
+        :refresh="search"
+      >
+        <template #paging-tree>
+          <v-table-pagination
+            v-if="
+              !ds.isLoading &&
+              ds.data.Items.length > 0 &&
+              !ds.isNetworkError &&
+              !ds.isServerError
+            "
+            class="mt-3"
+            :table="ds.data"
+            :page-change="ds.setPage"
+            :length-change="ds.setLength"
           />
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-        <div class="" style="width: 100%">
-          <input-lot-by-stock
-            class="form-control"
-            placeholder="Search Lot No"
-            v-model="filter.lotno"
-            :warehouse="filter.warehouse"
-            :area="filter.area"
-            address="ALL"
-            :item="filter.item"
-            :show-option-all="true"
-          />
-        </div>
-      </div>
-  </div>
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-    </div>
-  </div>
-  <v-tree-group
-    :tree-data="treeData"
-    :columns="columns"
-    child-key="children"
-    :group-by-fields="groupByFields"
-    :frozen-column-left="3"
-    :is-loading="ds.isLoading"
-    :is-server-error="ds.isServerError"
-    :is-network-error="ds.isNetworkError"
-    :refresh="search"
-  >
-    <template #paging-tree>
-      <v-table-pagination
-        v-if="
-          !ds.isLoading &&
-          ds.data.Items.length > 0 &&
-          !ds.isNetworkError &&
-          !ds.isServerError
-        "
-        class="mt-3"
-        :table="ds.data"
-        :page-change="ds.setPage"
-        :length-change="ds.setLength"
-      />
+        </template>
+      </v-tree-group>
     </template>
-  </v-tree-group>
+  </v-frame>
 
   <v-modal title="Detail Stock" class="modal-lg" id="modal-detail">
     <shared-stock-detail-list
@@ -151,6 +159,7 @@ export default {
       console.log(this.ds.data.Items);
       this.rawData = this.ds.data.Items;
       this.treeData = this.buildTree(this.rawData);
+      console.log(this.treeData);
     },
   },
   methods: {
@@ -195,7 +204,7 @@ export default {
           text: "Detail",
           isRender: true,
           showAtLevel: [this.groupByFields.length - 1],
-          action: (row) => this.openModal(row), 
+          action: (row) => this.openModal(row),
           /* 
           showAtLevel: [
             this.groupByFields.length - 2,

@@ -66,7 +66,11 @@
                 No data changes!
               </div>
             </div>
-            <shared-log-data-viewer :data="compared.Before" />
+            <shared-log-data-viewer
+              :data="compared.Before"
+              :compare-data="compared.After"
+              mode="before"
+            />
           </div>
         </div>
       </div>
@@ -94,7 +98,11 @@
                 No data changes!
               </div>
             </div>
-            <shared-log-data-viewer :data="compared.After" />
+            <shared-log-data-viewer
+              :data="compared.After"
+              :compare-data="compared.Before"
+              mode="after"
+            />
           </div>
         </div>
       </div>

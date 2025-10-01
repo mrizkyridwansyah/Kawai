@@ -6,7 +6,7 @@
       :class="{ 'sticky-left': activeFrozenColumns.includes(idx) }"
       :style="{
         textAlign: col.align || 'left',
-        paddingLeft: '0', //idx === groupingColIndex ? `${level * 2}em` : '0',
+        paddingLeft: '0.5em', //idx === groupingColIndex ? `${level * 2}em` : '0',
         left:
           activeFrozenColumns.includes(idx) && leftOffsets[idx] !== undefined
             ? `${leftOffsets[idx]}px`
@@ -33,12 +33,15 @@
         </a>
       </template>
       <template v-else-if="idx === groupingColIndex">
-        <span v-if="hasExpandableChildren" style="padding-right: 0.5em">
-          {{ expanded ? "▼" : "▶" }}
+        <span
+          v-if="hasExpandableChildren"
+          :class="['toggle-button', expanded ? 'collapse' : 'expand']"
+        >
+          {{ expanded ? "-" : "+" }}
         </span>
         {{ node[col.dataField] }}
       </template>
-      <template v-else>
+      <template v-else style="padding-left: 0.5em">
         {{ node[col.dataField] }}
       </template>
     </td>
@@ -54,6 +57,7 @@
       :key="child[childKey]"
       :node="child"
       :level="level + 1"
+      :start-collapse-level="startCollapseLevel"
       :columns="columns"
       :child-key="childKey"
       :group-by-fields="groupByFields"
@@ -72,10 +76,11 @@ export default {
     childKey: { type: String, required: true },
     groupByFields: { type: Array, required: true },
     frozenColumnLeft: { type: Number, default: 0 },
+    startCollapseLevel: { type: Number },
   },
   data() {
     return {
-      expanded: true,
+      expanded: false,
       leftOffsets: [],
       activeFrozenColumns: [],
     };
@@ -96,6 +101,14 @@ export default {
         Array.isArray(this.node[this.childKey]) &&
         this.node[this.childKey].length > 0
       );
+    },
+  },
+  watch: {
+    level: {
+      immediate: true,
+      handler(newVal) {
+        this.expanded = newVal < this.startCollapseLevel;
+      },
     },
   },
   mounted: function () {
@@ -160,5 +173,37 @@ export default {
   background: white !important;
   background-color: white;
   z-index: 10;
+}
+
+.toggle-button {
+  margin-left: 1em;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 50%; /* full bulat */
+  cursor: pointer;
+  margin-right: 6px;
+  user-select: none;
+}
+
+.toggle-button.expand {
+  color: #007bff;
+  border-color: #007bff;
+  background-color: #e6f0ff;
+}
+
+.toggle-button.collapse {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: #ffe6e6;
+}
+
+.toggle-button:hover {
+  opacity: 0.85;
 }
 </style>

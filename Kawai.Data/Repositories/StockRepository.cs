@@ -54,4 +54,9 @@ public class StockRepository : IStockRepository
             ItemCode = !String.IsNullOrEmpty(item) ? item : "ALL"
         })).ToList();
     }
+
+    public async Task RecalculateStockMaster()
+    {
+        await _dbExecutor.ExecuteAsync("sp_Wms_RecalculateStockMaster");
+    }
 }

@@ -1,7 +1,7 @@
 <template>
   <v-button-popup>
     <template #button-content>
-      <!-- <v-icon icon="arrow-down-up" scale=".8rem" /> -->
+      <font-awesome-icon icon="sort" class="mr-2" />
       Sort
     </template>
     <div>

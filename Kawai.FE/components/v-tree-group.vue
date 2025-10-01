@@ -6,7 +6,7 @@
           <div ref="tableContainer">
             <div class="v-table-wrapper">
               <table
-                class="tree-table v-fixed-table table table-striped mb-0 align-middle"
+                class="tree-table v-fixed-table table table-bordered table-striped mb-0 align-middle"
                 v-if="!isLoading && !isNetworkError && !isServerError"
                 ref="table"
               >
@@ -32,6 +32,7 @@
                     :key="row[childKey]"
                     :node="row"
                     :level="0"
+                    :start-collapse-level="startCollapseLevel"
                     :columns="columns"
                     :child-key="childKey"
                     :group-by-fields="groupByFields"
@@ -81,6 +82,7 @@ export default {
     childKey: { type: String, required: true },
     groupByFields: { type: Array, required: true },
     frozenColumnLeft: { type: Number, default: 0 },
+    startCollapseLevel: { type: Number },
     refresh: { type: Function },
   },
   watch: {
@@ -244,14 +246,15 @@ export default {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #f8f9fa;
+  background: #8ec5fc;
+  text-align: center !important;
 }
 
 /* Sticky Columns (left) */
 .sticky-left {
   position: sticky;
-  background: white !important;
-  background-color: white;
+  background: #8ec5fc !important;
+  background-color: #8ec5fc;
   z-index: 10;
 }
 

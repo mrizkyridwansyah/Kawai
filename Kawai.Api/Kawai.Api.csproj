@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="CronJobs\StockCalculation.cs" />
+    <Compile Remove="Services\TransactionConsumer.cs" />
     <Compile Remove="Shared\Extensions\CommandExtension.cs" />
     <Compile Remove="Shared\Middleware\ErrorHandlingMiddleware.cs" />
   </ItemGroup>

@@ -56,7 +56,7 @@ export default {
     "area",
     "address",
     "item",
-    "optionAll",
+    "showOptionAll",
   ],
   data: () => ({
     isLoading: false,

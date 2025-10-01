@@ -2,23 +2,22 @@
   <div class="mt-4">
     <div class="panel panel-inverse">
       <!-- BEGIN panel-header -->
-      <div class="panel-heading ui-sortable-handle">
+      <div class="panel-heading ui-sortable-handle" style="background-color: #333;">
         <v-button-sort
           class="mr-1"
           v-model="this.filter.sorts"
           :items="this.filter.sortItems"
         />
-        <!-- <select class="ms-1 form-control"
-                    style="width: fit-content; padding: 4px 10px;" v-model="this.filter.keywordKey">
-                    <option v-for="(keyword, idx) in keywordKeys" :value="keyword.Id">{{ keyword.Name }}</option>
-                </select> -->
-        <input
-          type="text"
-          placeholder="Search.."
-          style="padding: 4px 10px"
-          class="form-control ml-2 mr-2"
-          v-model="this.filter.keyword"
-        />
+        <div class="input-group ml-2 mr-2">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="form-control"
+            style="padding: 4px 10px"
+            v-model="filter.keyword"
+          />
+        </div>
+
         <button
           v-if="this.exportExcel"
           class="btn btn-sm btn-green btn-elevate"
@@ -35,7 +34,10 @@
       </div>
       <!-- END panel-header -->
       <!-- BEGIN panel-body -->
-      <div class="panel-body">
+      <div
+        class="panel-body"
+        style="border: 1px solid #d1d5db; border-radius: 0 0 0.375rem 0.375rem"
+      >
         <!-- BEGIN table-responsive -->
         <div ref="tableContainer">
           <div class="v-table-wrapper">
@@ -226,6 +228,10 @@ export default {
   position: relative;
 }
 
+.v-table-wrapper thead th {
+  background-color: #8ec5fc;
+}
+
 /* Bikin table bisa scroll horizontal juga */
 .v-fixed-table {
   width: max-content; /* agar scroll horizontal muncul */
@@ -247,14 +253,14 @@ export default {
   position: sticky;
   top: 0;
   z-index: 20; /* harus lebih tinggi dari sticky kiri */
-  background: #f8f9fa;
+  background: #8ec5fc;
 }
 
 /* Sticky Columns (kiri) */
 .sticky-left {
   position: sticky;
-  background: white !important;
-  background-color: white;
+  /* background: #8ec5fc !important;
+  background-color: #8ec5fc; */
   z-index: 10;
   /* left akan diset via JS */
 }

@@ -1,60 +1,63 @@
 <template>
-  <header-menu title="Item" :breadcrumbs="this.breadcrumbs" />
-  <v-button-add :add="add" cClass="mr-1" />
-  <v-table
-    :filter="filter"
-    :keyword-keys="keywordKeys"
-    :export-excel="true"
-    :export-excel-action="exportExcel"
-    :data-items="ds.data.Items"
-    :frozen-column-left="2"
-    :ds="ds"
-    ref="vtable"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle v-fixed-table"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-        ref="table"
+  <v-frame title="Item" icon="database">
+    <template #frame-content>
+      <v-button-add :add="add" cClass="mr-1" />
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :export-excel="true"
+        :export-excel-action="exportExcel"
+        :data-items="ds.data.Items"
+        :frozen-column-left="2"
+        :ds="ds"
+        ref="vtable"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Action</th>
-            <th class="text-center">Item Code</th>
-            <th class="text-center">Item Name</th>
-            <th class="text-center">Finish Good Part Cls</th>
-            <th class="text-center">Drawing Number</th>
-            <th class="text-center">Warehouse</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items" :key="idx">
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.ItemCode }}</td>
-            <td>{{ item.ItemName }}</td>
-            <td>{{ item.FinishGoodPartClsDesc }}</td>
-            <td>{{ item.DrawingNumber }}</td>
-            <td>{{ item.WarehouseName }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="table"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Action</th>
+                <th class="text-center">Item Code</th>
+                <th class="text-center">Item Name</th>
+                <th class="text-center">Finish Good Part Cls</th>
+                <th class="text-center">Drawing Number</th>
+                <th class="text-center">Warehouse</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items" :key="idx">
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.ItemCode }}</td>
+                <td>{{ item.ItemName }}</td>
+                <td>{{ item.FinishGoodPartClsDesc }}</td>
+                <td>{{ item.DrawingNumber }}</td>
+                <td>{{ item.WarehouseName }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.LastUser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalItem"

@@ -1,60 +1,63 @@
 <template>
-  <header-menu title="Part Receipt Material" :breadcrumbs="this.breadcrumbs" />
-  <v-button-add :add="add" cClass="mr-1" />
+  <v-frame title="Part Receipt Material" icon="receipt">
+    <template #frame-content>
+      <v-button-add :add="add" cClass="mr-1" />
 
-  <v-table
-    :filter="filter"
-    :export-excel="false"
-    :export-excel-action="exportExcel"
-    :data-items="ds.data.Items"
-    :ds="ds"
-    ref="vtable"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle v-fixed-table"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-        ref="table"
+      <v-table
+        :filter="filter"
+        :export-excel="false"
+        :export-excel-action="exportExcel"
+        :data-items="ds.data.Items"
+        :ds="ds"
+        ref="vtable"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Action</th>
-            <th class="text-center">Receipt No</th>
-            <th class="text-center">Receipt Date</th>
-            <th class="text-center">Supplier</th>
-            <th class="text-center">DN Number</th>
-            <th class="text-center">BC Number</th>
-            <th class="text-center">BC Type</th>
-            <th class="text-center">Vehicle No</th>
-            <th class="text-center">Last User</th>
-            <th class="text-center">Last Update</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items" :key="idx">
-            <td class="text-center" v-if="item.IsComplete"></td>
-            <td class="text-center" v-else>
-              <font-awesome-icon
-              style="cursor: pointer;"
-                class="ml-2 text-primary"
-                icon="eye"
-                @click="view(item)"
-              />
-            </td>
-            <td>{{ item.ReceiptNo }}</td>
-            <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
-            <td>{{ item.SupplierName }}</td>
-            <td>{{ item.DNNumber }}</td>
-            <td>{{ item.BCNumber }}</td>
-            <td>{{ item.BCType }}</td>
-            <td>{{ item.VehicleNo }}</td>
-            <td>{{ item.LastUser }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="table"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Action</th>
+                <th class="text-center">Receipt No</th>
+                <th class="text-center">Receipt Date</th>
+                <th class="text-center">Supplier</th>
+                <th class="text-center">DN Number</th>
+                <th class="text-center">BC Number</th>
+                <th class="text-center">BC Type</th>
+                <th class="text-center">Vehicle No</th>
+                <th class="text-center">Last User</th>
+                <th class="text-center">Last Update</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items" :key="idx">
+                <td class="text-center" v-if="item.IsComplete"></td>
+                <td class="text-center" v-else>
+                  <font-awesome-icon
+                    style="cursor: pointer"
+                    class="ml-2 text-primary"
+                    icon="eye"
+                    @click="view(item)"
+                  />
+                </td>
+                <td>{{ item.ReceiptNo }}</td>
+                <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
+                <td>{{ item.SupplierName }}</td>
+                <td>{{ item.DNNumber }}</td>
+                <td>{{ item.BCNumber }}</td>
+                <td>{{ item.BCType }}</td>
+                <td>{{ item.VehicleNo }}</td>
+                <td>{{ item.LastUser }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalPartReceipt"
@@ -138,8 +141,8 @@ export default {
       },
     },
     "notif.newNotif": function () {
-      this.ds.load()
-    }
+      this.ds.load();
+    },
   },
   mounted: function () {
     this.ds.setSort(this.filter.sorts);

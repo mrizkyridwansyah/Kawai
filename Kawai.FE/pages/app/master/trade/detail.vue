@@ -1,59 +1,63 @@
 <template>
-  <header-menu title="Delivery Place" :breadcrumbs="this.breadcrumbs" />
-  <button
-    class="ml-2 btn btn-sm btn-danger btn-elevate"
-    @click="() => this.$router.push('/app/master/trade')"
-  >
-    <font-awesome-icon icon="arrow-left" />
-    <span class="ml-2">Back</span>
-  </button>
-  <v-button-add
-    :add="add"
-    cClass="btn btn-sm btn-primary btn-elevate"
-    style="margin-left: 10px"
-  />
-
-  <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle"
-        style="min-width: 100%; width: max-content"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+  <v-frame title="Delivery Place" icon="database">
+    <template #frame-content>
+      <button
+        class="btn btn-sm btn-danger btn-elevate"
+        @click="() => this.$router.push('/app/master/trade')"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Action</th>
-            <th class="text-center">Trade Code</th>
-            <th class="text-center">Location Code</th>
-            <th class="text-center">Location Name</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.Trade_Code }}</td>
-            <td>{{ item.Location_Code }}</td>
-            <td>{{ item.Location_Name }}</td>
-            <td>{{ $func.formatDateTime(item.Last_Update) }}</td>
-            <td>{{ item.Last_User }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <font-awesome-icon icon="arrow-left" />
+        <span class="ml-2">Back</span>
+      </button>
+      <v-button-add
+        :add="add"
+        cClass="btn btn-sm btn-primary btn-elevate"
+        style="margin-left: 10px"
+      />
+
+      <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle"
+            style="min-width: 100%; width: max-content"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Action</th>
+                <th class="text-center">Trade Code</th>
+                <th class="text-center">Location Code</th>
+                <th class="text-center">Location Name</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.Trade_Code }}</td>
+                <td>{{ item.Location_Code }}</td>
+                <td>{{ item.Location_Name }}</td>
+                <td>{{ $func.formatDateTime(item.Last_Update) }}</td>
+                <td>{{ item.Last_User }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
+
   <v-modal
     ref="modalDeliveryPlace"
     id="modal-form-deliveryplace"

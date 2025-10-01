@@ -117,7 +117,7 @@ public class ReceiptRepository : IReceiptRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new { Id = id });
     }
 
-    public async Task Verify(MobileReceipt payload, bool updateStock, string userId)
+    public async Task Verify(MobileReceipt payload, string userId)
     {
         string sqlHeader = "sp_Wms_Receipt_Verify";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
@@ -126,7 +126,6 @@ public class ReceiptRepository : IReceiptRepository
             payload.BarcodeNo,
             payload.Qty,
             payload.QtyVerify,
-            IsUpdateStock = updateStock,
             VerifiedBy = userId
         });
     }

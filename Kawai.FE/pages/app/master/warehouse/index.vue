@@ -1,72 +1,76 @@
 <template>
-  <header-menu title="Warehouse" :breadcrumbs="this.breadcrumbs" />
-  <v-button-add :add="add" cClass="mr-1" />
-  <v-button-print :print="print" :is-loading="isLoadingPrint" />
-  <v-table
-    :filter="filter"
-    :keyword-keys="keywordKeys"
-    :export-excel="true"
-    :export-excel-action="exportExcel"
-    :ds="ds"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle" style="min-width: 100%; width: max-content;"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+  <v-frame title="Warehouse" icon="database">
+    <template #frame-content>
+      <v-button-add :add="add" cClass="mr-1" />
+      <v-button-print :print="print" :is-loading="isLoadingPrint" />
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :export-excel="true"
+        :export-excel-action="exportExcel"
+        :ds="ds"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Print</th>
-            <th class="text-center">Action</th>
-            <th class="text-center">Warehouse Code</th>
-            <th class="text-center">Warehouse Name</th>
-            <th class="text-center">Adm Group</th>
-            <th class="text-center">Adm Name</th>
-            <th class="text-center">Stock Cls</th>
-            <th class="text-center">NG Cls</th>
-            <th class="text-center">Use End Date</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items">
-            <td>
-              <div style="justify-items: center">
-                <input-checkbox
-                  :modelValue="isChecked(item.WarehouseCode)"
-                  @update:modelValue="(checked) => check(checked, item)"
-                />
-              </div>
-            </td>
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.WarehouseCode }}</td>
-            <td>{{ item.WarehouseName }}</td>
-            <td>{{ item.AdmGroup }}</td>
-            <td>{{ item.AdmGroupName }}</td>
-            <td v-if="item.StockControlCls == '01'">YES</td>
-            <td v-else-if="item.StockControlCls == '02'">NO</td>
-            <td v-if="item.NGCls == '01'">YES</td>
-            <td v-else-if="item.NGCls == '02'">NO</td>
-            <td>{{ $func.formatDate(item.UseEndDate) }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.Lastuser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle"
+            style="min-width: 100%; width: max-content; "
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Print</th>
+                <th class="text-center">Action</th>
+                <th class="text-center">Warehouse Code</th>
+                <th class="text-center">Warehouse Name</th>
+                <th class="text-center">Adm Group</th>
+                <th class="text-center">Adm Name</th>
+                <th class="text-center">Stock Cls</th>
+                <th class="text-center">NG Cls</th>
+                <th class="text-center">Use End Date</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items">
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isChecked(item.WarehouseCode)"
+                      @update:modelValue="(checked) => check(checked, item)"
+                    />
+                  </div>
+                </td>
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.WarehouseCode }}</td>
+                <td>{{ item.WarehouseName }}</td>
+                <td>{{ item.AdmGroup }}</td>
+                <td>{{ item.AdmGroupName }}</td>
+                <td v-if="item.StockControlCls == '01'">YES</td>
+                <td v-else-if="item.StockControlCls == '02'">NO</td>
+                <td v-if="item.NGCls == '01'">YES</td>
+                <td v-else-if="item.NGCls == '02'">NO</td>
+                <td>{{ $func.formatDate(item.UseEndDate) }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.Lastuser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalWarehouse"
@@ -237,7 +241,7 @@ export default {
         this.isLoadingPrint = false;
         return;
       }
-      
+
       new Promise((resolve, reject) => {
         this.ds
           .exportQR(this.selectedPrint)
@@ -251,8 +255,7 @@ export default {
           })
           .finally(() => {
             setTimeout(() => {
-              
-              (this.isLoadingPrint = false)
+              this.isLoadingPrint = false;
             }, 1000);
           });
       });

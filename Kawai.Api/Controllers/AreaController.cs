@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Kawai.Api.Services;
+using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -31,9 +32,18 @@ public class AreaController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string warehouseCode, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string warehouseCode, string ids, bool includeTemp = false)
     {
         var results = await _areaRepository.GetDDL(keyword, warehouseCode);
+        if (includeTemp)
+        {
+            results.Add(new AreaDto
+            {
+                AreaCode = "TMP",
+                AreaName = "Temporary"
+            });
+        }
+
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

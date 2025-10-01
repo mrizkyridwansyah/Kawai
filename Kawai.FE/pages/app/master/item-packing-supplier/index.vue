@@ -1,74 +1,85 @@
 <template>
-  <header-menu title="Item Packing Supplier" :breadcrumbs="this.breadcrumbs" />
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
-        <div class="mr-1" style="width: 100%">
-          <input-trade class="form-control" v-model="filter.supplier" />
+  <v-frame title="Item Packing Supplier" icon="database">
+    <template #frame-content>
+      <div class="d-flex">
+        <div class="d-flex flex-fill">
+          <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
+            <div class="mr-1" style="width: 100%">
+              <label class="form-label">Trade</label>
+              <input-trade class="form-control" v-model="filter.supplier" />
+            </div>
+          </div>
+          <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
+            <label class="form-label">&nbsp;</label>
+            <div class="mr-1" style="width: 100%">
+              <v-button-search-reset
+                class="ms-1"
+                :search="search"
+                :reset="reset"
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
-        <div class="mr-1" style="width: 100%">
-          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-add :add="add" cClass="mr-1" />
         </div>
       </div>
-    </div>
-  </div>
-  <div class="d-flex mt-3">
-    <div class="d-flex flex-fill">
-      <v-button-add :add="add" cClass="mr-1" />
-    </div>
-  </div>
-  <v-table
-    :filter="filter"
-    :export-excel="false"
-    :export-excel-action="exportExcel"
-    :data-items="ds.data.Items"
-    :ds="ds"
-    ref="vtable"
-  >
-    <template #table-content>
-      <table
-        class="table table-striped mb-0 align-middle v-fixed-table"
-        v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-        ref="table"
+      <v-table
+        :filter="filter"
+        :export-excel="false"
+        :export-excel-action="exportExcel"
+        :data-items="ds.data.Items"
+        :ds="ds"
+        ref="vtable"
       >
-        <thead>
-          <tr>
-            <th class="text-center">Action</th>
-            <th class="text-center">Item Code</th>
-            <th class="text-center">Item Name</th>
-            <th class="text-center">Qty Packing</th>
-            <th class="text-center">Unit</th>
-            <th class="text-center">Last Update</th>
-            <th class="text-center">Last User</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in ds.data.Items" :key="idx">
-            <td class="text-center">
-              <font-awesome-icon
-                class="mr-2 text-success"
-                icon="pencil"
-                @click="edit(item)"
-              />
-              <font-awesome-icon
-                class="ml-2 text-danger"
-                icon="trash"
-                @click="remove(item)"
-              />
-            </td>
-            <td>{{ item.ItemCode }}</td>
-            <td>{{ item.ItemName }}</td>
-            <td class="text-right">{{ $func.formatMoney(item.QtyPacking) }}</td>
-            <td>{{ item.UnitClsName }}</td>
-            <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-            <td>{{ item.LastUser }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <template #table-content>
+          <table
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="table"
+          >
+            <thead>
+              <tr>
+                <th class="text-center">Action</th>
+                <th class="text-center">Item Code</th>
+                <th class="text-center">Item Name</th>
+                <th class="text-center">Qty Packing</th>
+                <th class="text-center">Unit</th>
+                <th class="text-center">Last Update</th>
+                <th class="text-center">Last User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, idx) in ds.data.Items" :key="idx">
+                <td class="text-center">
+                  <font-awesome-icon
+                    class="mr-2 text-success"
+                    icon="pencil"
+                    @click="edit(item)"
+                  />
+                  <font-awesome-icon
+                    class="ml-2 text-danger"
+                    icon="trash"
+                    @click="remove(item)"
+                  />
+                </td>
+                <td>{{ item.ItemCode }}</td>
+                <td>{{ item.ItemName }}</td>
+                <td class="text-right">
+                  {{ $func.formatMoney(item.QtyPacking) }}
+                </td>
+                <td>{{ item.UnitClsName }}</td>
+                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.LastUser }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </v-table>
     </template>
-  </v-table>
+  </v-frame>
 
   <v-modal
     ref="modalItemPackingSupplier"

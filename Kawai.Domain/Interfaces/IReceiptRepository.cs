@@ -18,7 +18,7 @@ public interface IReceiptRepository
 
     #region MOBILE
     Task<ReceiptDetailBarcodeDto> GetDataBarcode(long id, string barcodeNo);
-    Task Verify(MobileReceipt payload, bool updateStock, string userId);
+    Task Verify(MobileReceipt payload, string userId);
     #endregion
 
     #region COMMON

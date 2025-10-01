@@ -10,5 +10,7 @@ public interface IStockRepository
     Task<List<StockDto>> InquiryDetail(RequestParameter parameter);
     Task<List<StockDto>> DDLLotNo(string keyword, string warehouse, string area, string address, string item);
     Task<List<StockDto>> DDLLotNoByStock(string keyword, string warehouse, string area, string address, string item);
+
+    Task RecalculateStockMaster();
     //Task<List<StockDto>> Capture(string keyword, string warehouse, string area, string address, string item);
 }

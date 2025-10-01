@@ -79,7 +79,7 @@
       class="navbar-link dropdown-toggle d-flex align-items-center"
       data-bs-toggle="dropdown"
     >
-      <img src="../../assets/img/user/user-12.jpg" alt="" />
+      <img src="/img/user/user-12.jpg" alt="" />
       <span>
         <span class="d-none d-md-inline fw-bold">{{
           this.userData?.FullName
