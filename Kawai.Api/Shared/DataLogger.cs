@@ -17,12 +17,17 @@ public class DataLogger(Auth auth, IHttpContextAccessor contextAccessor, LogExec
 
     public async Task SaveDataLog(DataLogDto data)
     {
-        //var json = JsonConvert.SerializeObject(Compare(data.Before, data.After));
-        var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+        var diff = DataLogComparer.Compare(data.Before, data.After);
+        var json = JsonConvert.SerializeObject(new
         {
-            { "Before", data.Before ?? new Dictionary<string, object>() },
-            { "After", data.After ?? new Dictionary<string, object>() }
-        });
+            diff.Before,
+            diff.After
+        }, Formatting.Indented);
+        //var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+        //{
+        //    { "Before", data.Before ?? new Dictionary<string, object>() },
+        //    { "After", data.After ?? new Dictionary<string, object>() }
+        //});
 
 
         var log = new DataLog
@@ -51,12 +56,18 @@ public class DataLogger(Auth auth, IHttpContextAccessor contextAccessor, LogExec
 
     public async Task SaveDataLog(DataLogDto data, LogContext logContext)
     {
-        //var json = JsonConvert.SerializeObject(Compare(data.Before, data.After));
-        var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+        var diff = DataLogComparer.Compare(data.Before, data.After);
+        var json = JsonConvert.SerializeObject(new
         {
-            { "Before", data.Before ?? new Dictionary<string, object>() },
-            { "After", data.After ?? new Dictionary<string, object>() }
-        });
+            diff.Before,
+            diff.After
+        }, Formatting.Indented);
+
+        //var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+        //{
+        //    { "Before", data.Before ?? new Dictionary<string, object>() },
+        //    { "After", data.After ?? new Dictionary<string, object>() }
+        //});
 
 
         var log = new DataLog

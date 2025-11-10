@@ -75,6 +75,10 @@ export default {
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
+    factoryCode: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
     itemCode: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
@@ -108,7 +112,7 @@ export default {
           .get(
             `/warehouse/ddl-warehouse-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&item=${this.itemCode}`
+            }&item=${this.itemCode}&factoryCode=${this.factoryCode}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

@@ -34,4 +34,10 @@ public class RequestParameter
 
         return obj;
     }
+
+    public string? GetParam(string key)
+    {
+        return Filters.FirstOrDefault(f => f.ContainsKey(key))?[key];
+    }
+
 }

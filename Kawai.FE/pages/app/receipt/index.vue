@@ -1,7 +1,7 @@
 <template>
-  <v-frame title="Part Receipt Material" icon="receipt">
+  <v-frame title="Part Receipt Material Inquiry" icon="receipt">
     <template #frame-content>
-      <v-button-add :add="add" cClass="mr-1" />
+      <!-- <v-button-add :add="add" cClass="mr-1" /> -->
 
       <v-table
         :filter="filter"
@@ -27,6 +27,8 @@
                 <th class="text-center">BC Number</th>
                 <th class="text-center">BC Type</th>
                 <th class="text-center">Vehicle No</th>
+                <th class="text-center">Transport</th>
+                <th class="text-center">Remarks</th>
                 <th class="text-center">Last User</th>
                 <th class="text-center">Last Update</th>
               </tr>
@@ -49,6 +51,8 @@
                 <td>{{ item.BCNumber }}</td>
                 <td>{{ item.BCType }}</td>
                 <td>{{ item.VehicleNo }}</td>
+                <td>{{ item.Transport }}</td>
+                <td>{{ item.Remarks }}</td>
                 <td>{{ item.LastUser }}</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
               </tr>

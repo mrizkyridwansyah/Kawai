@@ -1,37 +1,26 @@
 <template>
-  <div
-    class="d-grid gap-2"
-    :class="{
-      'mt-4': (nomargintop == undefined || !nomargintop),
-    }"
+  <button
+    class="btn btn-sm btn-blue btn-elevate"
+    :class="cClass"
+    @click="submit"
+    :disabled="
+      (disabled !== undefined && disabled !== false) || isLoading
+    "
   >
-    <button
-      class="btn btn-primary rounded-pill"
-      type="button"
-      style="color: white"
-      :style="{
-        width: width,
-      }"
-      @click="submit"
-      :disabled="
-        (disabled !== undefined && disabled !== false) || isLoading !== false
-      "
+    <div
+      class="spinner-border spinner-border-sm text-light"
+      role="status"
+      v-if="isLoading"
     >
-      <div
-        class="spinner-border spinner-border-sm text-light"
-        role="status"
-        v-if="isLoading"
-      >
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      {{ label || "Submit" }}
-    </button>
-  </div>
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <font-awesome-icon v-else :icon="icon || 'save'" />
+    <span class="ml-2">{{ label || "Submit" }}</span>
+  </button>
 </template>
 
 <script>
 export default {
-  props: ["isLoading", "disabled", "label", "submit", "width", "nomargintop"],
-  mounted: function () {},
+  props: ["label", "submit", "icon", "cClass", "isLoading", "disabled"],
 };
 </script>

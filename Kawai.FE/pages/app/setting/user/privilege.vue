@@ -25,7 +25,7 @@
         <span class="ml-2">Back</span>
       </button>
       <div class="row mt-4">
-        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
           <!-- BEGIN nav-tabs -->
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation" v-for="(li, idx) in list">
@@ -121,13 +121,59 @@
               </table>
             </div>
             <!-- END tab-pane -->
-            <!-- BEGIN tab-pane WAREHOUSE -->
+            <!-- BEGIN tab-pane FACTORY -->
             <div class="tab-pane fade" id="default-tab-2" role="tabpanel">
               <table
                 class="table table-striped table-bordered mb-0 align-middle"
               >
                 <thead>
                   <tr>
+                    <th class="text-center" style="vertical-align: middle">
+                      Factory Code
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Factory Name
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Show</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox
+                          @click="(e) => allowAllAccessFactory(e)"
+                        />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, idx) in allowed.factory">
+                    <td>{{ item.FactoryCode }}</td>
+                    <td>{{ item.FactoryName }}</td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowAccess"
+                          @click="(e) => allowAccessFactory(e, item)"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- END tab-pane -->
+            <!-- BEGIN tab-pane WAREHOUSE -->
+            <div class="tab-pane fade" id="default-tab-3" role="tabpanel">
+              <table
+                class="table table-striped table-bordered mb-0 align-middle"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center" style="vertical-align: middle">
+                      Factory Code
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Factory Name
+                    </th>
                     <th class="text-center" style="vertical-align: middle">
                       Warehouse Code
                     </th>
@@ -145,7 +191,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, idx) in allowed.warehouse">
+                  <tr
+                    v-for="(item, idx) in allowed.warehouse.filter(
+                      (x) => x.AllowedAccessFactory
+                    )"
+                  >
+                    <td>{{ item.FactoryCode }}</td>
+                    <td>{{ item.FactoryName }}</td>
                     <td>{{ item.WarehouseCode }}</td>
                     <td>{{ item.WarehouseName }}</td>
                     <td>
@@ -161,8 +213,58 @@
               </table>
             </div>
             <!-- END tab-pane -->
+            <!-- BEGIN tab-pane AREA -->
+            <div class="tab-pane fade" id="default-tab-4" role="tabpanel">
+              <table
+                class="table table-striped table-bordered mb-0 align-middle"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center" style="vertical-align: middle">
+                      Warehouse Code
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Warehouse Name
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Area Code
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Area Name
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      <span>Show</span>
+                      <div class="mt-1" style="justify-items: center">
+                        <input-checkbox @click="(e) => allowAllAccessArea(e)" />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(item, idx) in allowed.area.filter(
+                      (x) => x.AllowedAccessWarehouse && x.AllowedAccessFactory
+                    )"
+                  >
+                    <td>{{ item.WarehouseCode }}</td>
+                    <td>{{ item.WarehouseName }}</td>
+                    <td>{{ item.AreaCode }}</td>
+                    <td>{{ item.AreaName }}</td>
+                    <td>
+                      <div style="justify-items: center">
+                        <input-checkbox
+                          v-model="item.AllowAccess"
+                          @click="(e) => allowAccessArea(e, item)"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- END tab-pane -->
             <!-- BEGIN tab-pane MOBILE -->
-            <div class="tab-pane fade" id="default-tab-3" role="tabpanel">
+            <div class="tab-pane fade" id="default-tab-5" role="tabpanel">
               <table
                 class="table table-striped table-bordered mb-0 align-middle"
               >
@@ -215,8 +317,6 @@
 </template>
 
 <script>
-import { TheaterIcon } from "vue-tabler-icons";
-
 export default {
   data: () => ({
     isLoading: false,
@@ -229,12 +329,16 @@ export default {
       { value: "Menu", text: "Menu", defaultActive: true },
       // { value: "Process", text: "Process", defaultActive: false },
       // { value: "Line", text: "Line", defaultActive: false },
+      { value: "Factory", text: "Factory", defaultActive: false },
       { value: "Warehouse", text: "Warehouse", defaultActive: false },
+      { value: "Area", text: "Area", defaultActive: false },
       { value: "Mobile", text: "Mobile", defaultActive: false },
     ],
     allowed: {
       menu: [],
+      factory: [],
       warehouse: [],
+      area: [],
       mobile: [],
     },
   }),
@@ -246,7 +350,37 @@ export default {
   mounted: function () {
     this.dsMenu.loadprivileges(this.$route.query.id).then((dt) => {
       this.allowed.menu = dt.Data.MenuPrivileges;
+      this.allowed.factory = dt.Data.FactoryPrivileges;
       this.allowed.warehouse = dt.Data.WarehousePrivileges;
+      this.allowed.warehouse.map((x) => {
+        x.AllowedAccessFactory = false;
+        if (
+          this.allowed.factory.filter(
+            (y) => y.AllowAccess && y.FactoryCode == x.FactoryCode
+          ).length > 0
+        )
+          x.AllowedAccessFactory = true;
+      });
+
+      this.allowed.area = dt.Data.AreaPrivileges;
+      this.allowed.area.map((x) => {
+        x.AllowedAccessFactory = false;
+        x.AllowedAccessWarehouse = false;
+        if (
+          this.allowed.factory.filter(
+            (y) => y.AllowAccess && y.FactoryCode == x.FactoryCode
+          ).length > 0
+        )
+          x.AllowedAccessFactory = true;
+
+        if (
+          this.allowed.warehouse.filter(
+            (y) => y.AllowAccess && y.WarehouseCode == x.WarehouseCode
+          ).length > 0
+        )
+          x.AllowedAccessWarehouse = true;
+      });
+
       this.allowed.mobile = dt.Data.MenuMobilePrivileges;
     });
   },
@@ -263,10 +397,31 @@ export default {
       this.allowed.menu.find((p) => p.MenuID === item.MenuID).AllowPrice =
         e.target.checked;
     },
+    allowAccessFactory: function (e, item) {
+      this.allowed.factory.find(
+        (p) => p.FactoryCode === item.FactoryCode
+      ).AllowAccess = e.target.checked;
+
+      this.allowed.warehouse
+        .filter((p) => p.FactoryCode == item.FactoryCode)
+        .map((p) => (p.AllowedAccessFactory = e.target.checked));
+
+      this.allowed.area
+        .filter((p) => p.FactoryCode == item.FactoryCode)
+        .map((p) => (p.AllowedAccessFactory = e.target.checked));
+    },
     allowAccessWarehouse: function (e, item) {
       this.allowed.warehouse.find(
         (p) => p.WarehouseCode === item.WarehouseCode
       ).AllowAccess = e.target.checked;
+
+      this.allowed.area
+        .filter((p) => p.WarehouseCode == item.WarehouseCode)
+        .map((p) => (p.AllowedAccessWarehouse = e.target.checked));
+    },
+    allowAccessArea: function (e, item) {
+      this.allowed.area.find((p) => p.AreaCode === item.AreaCode).AllowAccess =
+        e.target.checked;
     },
     allowAllAccessMenu: function (e) {
       this.allowed.menu.map((p) => (p.AllowAccess = e.target.checked));
@@ -277,8 +432,21 @@ export default {
     allowAllPriceMenu: function (e) {
       this.allowed.menu.map((p) => (p.AllowPrice = e.target.checked));
     },
+    allowAllAccessFactory: function (e) {
+      this.allowed.factory.map((p) => (p.AllowAccess = e.target.checked));
+      this.allowed.warehouse.map(
+        (p) => (p.AllowedAccessFactory = e.target.checked)
+      );
+      this.allowed.area.map((p) => (p.AllowedAccessFactory = e.target.checked));
+    },
     allowAllAccessWarehouse: function (e) {
       this.allowed.warehouse.map((p) => (p.AllowAccess = e.target.checked));
+      this.allowed.area.map(
+        (p) => (p.AllowedAccessWarehouse = e.target.checked)
+      );
+    },
+    allowAllAccessArea: function (e) {
+      this.allowed.area.map((p) => (p.AllowAccess = e.target.checked));
     },
     allowAllAccessMenuMobile: function (e) {
       this.allowed.mobile.map((p) => (p.AllowAccess = e.target.checked));
@@ -293,7 +461,9 @@ export default {
       let model = {
         UserID: this.$route.query.id,
         MenuPrivileges: this.allowed.menu,
+        FactoryPrivileges: this.allowed.factory,
         WarehousePrivileges: this.allowed.warehouse,
+        AreaPrivileges: this.allowed.area,
         MenuMobilePrivileges: this.allowed.mobile,
       };
 

@@ -12,13 +12,17 @@ namespace Kawai.Api.Controllers;
 public class MenuController : HahaController
 {
     private readonly IMenuRepository _menuRepository;
+    private readonly IFactoryRepository _factoryRepository;
     private readonly IWarehouseRepository _warehouseRepository;
+    private readonly IAreaRepository _areaRepository;
     private readonly DataLogger _logger;
 
-    public MenuController(IMenuRepository menuRepository, IWarehouseRepository warehouseRepository, DataLogger logger)
+    public MenuController(IMenuRepository menuRepository, IFactoryRepository factoryRepository, IWarehouseRepository warehouseRepository, IAreaRepository areaRepository, DataLogger logger)
     {
         _menuRepository = menuRepository;
+        _factoryRepository = factoryRepository;
         _warehouseRepository = warehouseRepository;
+        _areaRepository = areaRepository;
         _logger = logger;
     }
 
@@ -27,13 +31,17 @@ public class MenuController : HahaController
     {
         var menuPriv = await _menuRepository.GetAllMenuIncludePrivileges(userID);
         var menuMobilePriv = await _menuRepository.GetAllMenuMobileIncludePrivileges(userID);
+        var factoryPriv = await _factoryRepository.GetAllFactoryIncludePrivileges(userID);
         var warehousePriv = await _warehouseRepository.GetAllWarehouseIncludePrivileges(userID);
+        var areaPriv = await _areaRepository.GetAllAreaIncludePrivileges(userID);
         var result = new
         {
             UserID = userID,
             MenuPrivileges = menuPriv,
             MenuMobilePrivileges = menuMobilePriv,
-            WarehousePrivileges = warehousePriv
+            FactoryPrivileges = factoryPriv,
+            WarehousePrivileges = warehousePriv,
+            AreaPrivileges = areaPriv
         };
 
         return Success(result);

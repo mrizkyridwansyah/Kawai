@@ -295,7 +295,7 @@ export default {
       this.ds.load().then((dt) => {
         console.log(dt);
         this.list = dt.data.Data;
-        this.listPending = this.list.filter((p) => p.Status === "PENDING");
+        this.listPending = this.list.filter((p) => p.Status === "NEW" || p.Status === "PENDING");
         this.listPassed = this.list.filter((p) => p.Status === "PASSED");
         this.listNG = this.list.filter((p) => p.Status === "NG");
 

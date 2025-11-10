@@ -28,7 +28,7 @@
   </div>
   <div>
     <div class="d-flex justify-content-end mt-4">
-      <v-button-submit
+      <v-button-submit-modal
         :submit="submit"
         :label="Yes"
         :disabled="btnDisabled !== undefined && btnDisabled !== false"

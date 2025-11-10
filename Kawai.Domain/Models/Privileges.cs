@@ -14,7 +14,13 @@ public class Privileges
     public List<MenuMobilePrivilege> MenuMobilePrivileges { get; set; }
 
     [Required]
+    public List<FactoryPrivilege> FactoryPrivileges { get; set; }
+
+    [Required]
     public List<WarehousePrivilege> WarehousePrivileges { get; set; }
+
+    [Required]
+    public List<AreaPrivilege> AreaPrivileges { get; set; }
 }
 
 public class MenuPrivilege
@@ -31,8 +37,22 @@ public class MenuMobilePrivilege
     public bool? AllowAccess { get; set; } = false;
 }
 
+public class FactoryPrivilege
+{
+    public string FactoryCode { get; set; }
+    public bool? AllowAccess { get; set; } = false;
+}
+
 public class WarehousePrivilege
 {
+    public string FactoryCode { get; set; }
     public string WarehouseCode { get; set; }
+    public bool? AllowAccess { get; set; } = false;
+}
+
+public class AreaPrivilege
+{
+    public string WarehouseCode { get; set; }
+    public string AreaCode { get; set; }
     public bool? AllowAccess { get; set; } = false;
 }

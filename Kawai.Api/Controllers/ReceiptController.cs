@@ -1,7 +1,4 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using Kawai.Api.CronJobs;
-using Kawai.Api.Services;
-using Kawai.Data.Repositories;
+﻿using Kawai.Api.Services;
 using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -18,14 +15,12 @@ namespace Kawai.Api.Controllers;
 public class ReceiptController : HahaController
 {
     private readonly IReceiptRepository _receiptRepository;
-    private readonly ITransactionProducer _transactionProducer;
     private readonly DataLogger _logger;
 
-    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger, ITransactionProducer transactionProducer)
+    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger)
     {
         _receiptRepository = receiptRepository;
         _logger = logger;
-        _transactionProducer = transactionProducer;
     }
 
     [HttpPost("list")]
@@ -49,6 +44,14 @@ public class ReceiptController : HahaController
         return Success(results);
     }
 
+    [HttpPost("list-po-detail")]
+    public async Task<IActionResult> GetListPODetail([FromBody] RequestParameter parameter)
+    {
+        var results = await _receiptRepository.GetListPODetail(parameter);
+        return DataTableResult(parameter, results);
+    }
+
+
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] Receipt model)
     {
@@ -65,6 +68,39 @@ public class ReceiptController : HahaController
             Action = DataLogAction.Create
         });
         return Success(after);
+    }
+
+    [HttpPatch("update")]
+    public async Task<IActionResult> Update([FromBody] Receipt model)
+    {
+        var before = await _receiptRepository.Capture(model.Id.Value);
+
+        await _receiptRepository.Update(model, Auth.User.UserID);
+
+        var after = await _receiptRepository.Capture(model.Id.Value);
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Material",
+            EntityId = model.Id.ToString(),
+            ReferenceId = model.ReceiptNo,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update
+        });
+        return Success(after);
+    }
+
+    [HttpGet("ddlsearch")]
+    public async Task<IActionResult> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string ids)
+    {
+        var results = await _receiptRepository.DDLSearch(keyword, supplier, periodFrom, periodUntil, status, sourceMenu);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.Id.ToString())).ToList();
+        }
+
+        return Success(results.Take(100));
     }
 
     /*

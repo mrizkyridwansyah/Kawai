@@ -12,7 +12,7 @@
         <input-money placeholder="Qty Packing" v-model="model.QtyPacking" :errors="errors?.QtyPacking" />
     </div>
     <div class="mt-4 mb-3">
-        <v-button-submit :submit="submit" :disabled="(btnDisabled !== undefined && btnDisabled !== false)"
+        <v-button-submit-modal :submit="submit" :disabled="(btnDisabled !== undefined && btnDisabled !== false)"
             :is-loading="isLoading" />
     </div>
 </template>

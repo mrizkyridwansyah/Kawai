@@ -40,7 +40,7 @@ export default {
   props: [
     'modelValue', 'type', 'label', 'col', 'description',
     'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class'
+    , 'disabled', 'multiple', 'class', 'factoryCode'
   ],
   data: () => ({
     isLoading: false,
@@ -63,6 +63,10 @@ export default {
     tempValue: function (after) {
       if (!after)
         this.$emit("update:modelValue", null);
+    },
+    factoryCode: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
     },
   },
   mounted: function () {
@@ -91,7 +95,7 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/warehouse/ddlsearch?keyword=${q || ''}&ids=${d || ''}`)
+        this.$http.get(`/warehouse/ddlsearch?keyword=${q || ''}&ids=${d || ''}&factoryCode=${this.factoryCode || ''}`)
           .then(p => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.WarehouseCode;

@@ -27,16 +27,69 @@ public class WarehouseRepository : IWarehouseRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<WarehouseDto>(sp, new { WarehouseCode = warehouseCode });
     }
 
-    public async Task<List<WarehouseDto>> GetDDL(string keyword)
+    public async Task<List<WarehouseDto>> GetDDL(string keyword, string factoryCode)
     {
         string sp = "sp_Wms_Warehouse_DDL";
-        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode
+        })).ToList();
     }
 
-    public async Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string item)
+    public async Task<List<WarehouseDto>> GetDDLWarehouseLine(string keyword, string factoryCode)
+    {
+        string sp = "sp_Wms_Warehouse_DDLWarehouseLine";
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode
+        })).ToList();
+    }
+
+    public async Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string factoryCode, string item)
     {
         string sp = "sp_Wms_Warehouse_DDLByStock";
-        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? "", ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item
+        })).ToList();
+    }
+
+    public async Task<List<WarehouseDto>> GetDDLPrivileges(string keyword, string factoryCode, string userId)
+    {
+        string sp = "sp_Wms_WarehousePrivileges_DDL";
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
+            UserId = userId
+        })).ToList();
+    }
+
+    public async Task<List<WarehouseDto>> GetDDLPrivilegesWarehouseLine(string keyword, string factoryCode, string userId)
+    {
+        string sp = "sp_Wms_WarehousePrivileges_DDLWarehouseLine";
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
+            UserId = userId
+        })).ToList();
+    }
+
+    public async Task<List<WarehouseDto>> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string userId)
+    {
+        string sp = "sp_Wms_WarehousePrivileges_DDLByStock";
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            UserId = userId
+        })).ToList();
     }
 
     public async Task Create(Warehouse warehouse, string userId)
@@ -44,6 +97,7 @@ public class WarehouseRepository : IWarehouseRepository
         string sql = @"sp_Wms_Warehouse_Create";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
+            warehouse.FactoryCode,
             warehouse.WarehouseName,
             warehouse.WarehouseCode,
             warehouse.AdmGroup,
@@ -59,6 +113,7 @@ public class WarehouseRepository : IWarehouseRepository
         string sql = @"sp_Wms_Warehouse_Update";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
+            warehouse.FactoryCode,
             warehouse.WarehouseName,
             warehouse.WarehouseCode,
             warehouse.AdmGroup,

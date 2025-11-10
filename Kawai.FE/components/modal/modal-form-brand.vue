@@ -9,7 +9,7 @@
         <input-text placeholder="Brand Name" v-model="model.BrandName" :errors="errors?.BrandName" />
     </div>
     <div class="mt-4 mb-3">
-        <v-button-submit :submit="submit" :disabled="(btnDisabled !== undefined && btnDisabled !== false)"
+        <v-button-submit-modal :submit="submit" :disabled="(btnDisabled !== undefined && btnDisabled !== false)"
             :is-loading="isLoading" />
     </div>
 </template>

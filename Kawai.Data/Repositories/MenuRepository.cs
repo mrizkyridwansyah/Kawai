@@ -66,13 +66,38 @@ public class MenuRepository : IMenuRepository
             }, CommandType.StoredProcedure));
         }
 
-        foreach (var warehousePriv in privileges.WarehousePrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value))
+        var factoryPrivs = privileges.FactoryPrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value).ToList();
+        foreach (var factoryPriv in factoryPrivs)
+        {
+            commands.Add(("sp_WMS_UserSetup_UserPrivilegeFactoryUpd", new
+            {
+                UserID = privileges.UserId,
+                factoryPriv.FactoryCode,
+                factoryPriv.AllowAccess,
+                UpdateBy = userId
+            }, CommandType.StoredProcedure));
+        }
+
+        var warehousePrivs = privileges.WarehousePrivileges.Where(p => factoryPrivs.Select(p => p.FactoryCode).Contains(p.FactoryCode) && p.AllowAccess.HasValue && p.AllowAccess.Value).ToList();
+        foreach (var warehousePriv in warehousePrivs)
         {
             commands.Add(("sp_WMS_UserSetup_UserPrivilegeWarehouseUpd", new
             {
                 UserID = privileges.UserId,
                 warehousePriv.WarehouseCode,
                 warehousePriv.AllowAccess,
+                UpdateBy = userId
+            }, CommandType.StoredProcedure));
+        }
+
+        var areaPrivs = privileges.AreaPrivileges.Where(p => warehousePrivs.Select(p => p.WarehouseCode).Contains(p.WarehouseCode) && p.AllowAccess.HasValue && p.AllowAccess.Value).ToList();
+        foreach (var areaPriv in areaPrivs)
+        {
+            commands.Add(("sp_WMS_UserSetup_UserPrivilegeAreaUpd", new
+            {
+                UserID = privileges.UserId,
+                areaPriv.AreaCode,
+                areaPriv.AllowAccess,
                 UpdateBy = userId
             }, CommandType.StoredProcedure));
         }
@@ -88,14 +113,22 @@ public class MenuRepository : IMenuRepository
         string spMobilePriv = "sp_Wms_Privileges_CaptureMenuMobilePrivileges";
         var mobilePrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spMobilePriv, new { UserID = userId })).ToList();
 
+        string spFactoryPriv = "sp_Wms_Privileges_CaptureFactoryPrivileges";
+        var factoryPrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spFactoryPriv, new { UserID = userId })).ToList();
+
         string spWHPriv = "sp_Wms_Privileges_CaptureWarehousePrivileges";
         var warehousePrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spWHPriv, new { UserID = userId })).ToList();
+
+        string spAreaPriv = "sp_Wms_Privileges_CaptureAreaPrivileges";
+        var areaPrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spAreaPriv, new { UserID = userId })).ToList();
 
         return new Dictionary<string, object>
         {
             { "MenuPrivileges", menuPrivileges },
             { "MobilePrivileges", mobilePrivileges },
-            { "WarehousePrivileges", warehousePrivileges }
+            { "FactoryPrivileges", factoryPrivileges },
+            { "WarehousePrivileges", warehousePrivileges },
+            { "AreaPrivileges", areaPrivileges }
         };
     }
 }

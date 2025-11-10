@@ -1,4 +1,5 @@
-﻿using Kawai.Domain.Interfaces;
+﻿using Kawai.Data.Repositories;
+using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,5 +39,18 @@ public class POController : HahaController
     {
         var results = await _poRepository.GetListDetail(parameter);
         return DataTableResult(parameter, results);
+    }
+
+    [HttpGet("ddlsearch")]
+    public async Task<IActionResult> DDLSearch(string keyword, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string ids)
+    {
+        var results = await _poRepository.GetDDL(keyword, supplier, typeDate, periodFrom, periodUntil, showOptionAll);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.PONumber)).ToList();
+        }
+
+        return Success(results);
     }
 }

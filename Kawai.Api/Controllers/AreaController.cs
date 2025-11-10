@@ -66,6 +66,41 @@ public class AreaController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddlsearch-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearch(string keyword, string warehouseCode, string ids, bool includeTemp = false)
+    {
+        var results = await _areaRepository.GetDDLPrivileges(keyword, warehouseCode, Auth.User.UserID);
+        if (includeTemp)
+        {
+            results.Add(new AreaDto
+            {
+                AreaCode = "TMP",
+                AreaName = "Temporary"
+            });
+        }
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.AreaCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("ddl-area-search-by-stock-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string warehouse, string item, string ids)
+    {
+        var results = await _areaRepository.DDLPrivilegesSearchByStock(keyword, warehouse, item, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.AreaCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
     [HttpGet("detail")]
     public async Task<IActionResult> Get(string id)
     {

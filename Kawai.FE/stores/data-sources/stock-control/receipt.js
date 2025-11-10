@@ -104,6 +104,26 @@ export const useReceipt = defineStore('Receipt', {
           .finally(_ => this.isLoadingListDetail = false);
       })
     },
+    listPODetail: function (filters) {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/list-po-detail`, filters)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoading = false);
+      })
+    },
     setFilter: function (v) {
       this.filter.Filters = v;
       this.filter.Page = 1;
@@ -123,7 +143,7 @@ export const useReceipt = defineStore('Receipt', {
     create: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/receipt/create-using-rabbitmq`, data)
+        app.$http.post(`/receipt/create`, data)
           .then(({ data }) => {
             resolve(data);
           })

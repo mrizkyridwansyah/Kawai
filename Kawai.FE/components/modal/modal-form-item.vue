@@ -658,7 +658,7 @@
     </div>
   </div>
   <div class="submit-wrapper">
-    <v-button-submit
+    <v-button-submit-modal
       :nomargintop="true"
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"

@@ -4,6 +4,8 @@ namespace Kawai.Domain.DTOs;
 
 public class WarehouseDto: DataTableDto
 {
+    public string FactoryCode { get; set; }
+    public string FactoryName { get; set; }
     public string WarehouseCode { get; set; }
     public string WarehouseName { get; set; }
     public string AdmGroup { get; set; }

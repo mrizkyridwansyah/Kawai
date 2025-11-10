@@ -581,7 +581,7 @@
   </div>
   <!-- END tab-content -->
   <div class="submit-wrapper">
-    <v-button-submit
+    <v-button-submit-modal
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"

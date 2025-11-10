@@ -9,9 +9,9 @@ public interface IReceiptRepository
 {
     #region WEB
     Task<List<ReceiptDto>> GetList(RequestParameter parameter);
+    Task<List<PODetailDto>> GetListPODetail(RequestParameter parameter);
     Task<ReceiptDto> GetDataHeader(long id);
     Task Create(Receipt receipt, string userId);
-    Task CreateUsingMutation(Receipt receipt, string userId);
     Task Update(Receipt receipt, string userId);
     Task Remove(long id);
     #endregion
@@ -30,6 +30,7 @@ public interface IReceiptRepository
     Task<List<ReceiptAndonDto>> GetListNSummary();
     #endregion
 
+    Task<List<ReceiptDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu);
     Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status);
 
 

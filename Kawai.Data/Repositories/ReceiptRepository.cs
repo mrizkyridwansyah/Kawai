@@ -22,6 +22,25 @@ public class ReceiptRepository : IReceiptRepository
         string sp = "sp_Wms_Receipt_List";
         return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, param.ToQueryObject())).ToList();
     }
+    public async Task<List<PODetailDto>> GetListPODetail(RequestParameter param)
+    {
+        var paramReceiptId = param.GetParam("ReceiptId");
+        var paramPONumber = param.GetParam("PONumber");
+        var paramSupplier = param.GetParam("SupplierCode");
+        var paramDateFrom = param.GetParam("DateFrom");
+        var paramDateUntil = param.GetParam("DateUntil");
+
+        string sp = "sp_Wms_Receipt_ListPODetail";
+        return (await _dbExecutor.QueryListAsync<PODetailDto>(sp, new
+        {
+            ReceiptId = paramReceiptId,
+            PONumber = paramPONumber,
+            SupplierCode = paramSupplier,
+            DateFrom = paramDateFrom,
+            DateUntil = paramDateUntil,
+        })).ToList();
+    }
+
     public async Task<ReceiptDto> GetDataHeader(long id)
     {
         string sp = "sp_Wms_Receipt_DataHeader";
@@ -45,6 +64,21 @@ public class ReceiptRepository : IReceiptRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = id, BarcodeNo = barcodeNo });
     }
 
+    public async Task<List<ReceiptDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu)
+    {
+        string sp = "sp_Wms_Receipt_DDL";
+
+        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            Status = status ?? "",
+            SourceMenu = sourceMenu ?? "",
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            PeriodFrom = periodFrom,
+            PeriodUntil = periodUntil,
+        })).ToList();
+    }
+
     public async Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status)
     {
         string sp = "sp_Wms_Receipt_DDLSearchReceipt";
@@ -58,7 +92,6 @@ public class ReceiptRepository : IReceiptRepository
         long newId = await _dbExecutor.QuerySingleOrDefaultAsync<long>(sqlHeader, new
         {
             receipt.ReceiptNo,
-            receipt.IsManual,
             receipt.DNNumber,
             receipt.SupplierCode,
             receipt.DNDate,
@@ -66,27 +99,8 @@ public class ReceiptRepository : IReceiptRepository
             receipt.BCType,
             receipt.BCDate,
             receipt.VehicleNo,
-            Details = DataTableHelper.ToDataTable(receipt.Details),
-            RegisterBy = userId
-        });
-        receipt.Id = newId;
-    }
-
-    public async Task CreateUsingMutation(Receipt receipt, string userId)
-    {
-        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode");
-        string sqlHeader = "sp_Wms_Receipt_CreateWithMutation";
-        long newId = await _dbExecutor.QuerySingleOrDefaultAsync<long>(sqlHeader, new
-        {
-            receipt.ReceiptNo,
-            receipt.IsManual,
-            receipt.DNNumber,
-            receipt.SupplierCode,
-            receipt.DNDate,
-            receipt.BCNumber,
-            receipt.BCType,
-            receipt.BCDate,
-            receipt.VehicleNo,
+            receipt.Transport,
+            receipt.Remarks,
             Details = DataTableHelper.ToDataTable(receipt.Details),
             RegisterBy = userId
         });
@@ -106,6 +120,8 @@ public class ReceiptRepository : IReceiptRepository
             receipt.BCType,
             receipt.BCDate,
             receipt.VehicleNo,
+            receipt.Transport,
+            receipt.Remarks,
             Details = DataTableHelper.ToDataTable(receipt.Details),
             UpdateBy = userId
         });
@@ -144,28 +160,35 @@ public class ReceiptRepository : IReceiptRepository
             async multi =>
             {
                 var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
-                var detail = (await multi.ReadAsync<dynamic>()).ToList();
-                var stocks = (await multi.ReadAsync<StockMasterDto>()).ToList();
-                var stockDetail = (await multi.ReadAsync<StockDetailDto>()).ToList();
-                foreach (var master in stocks)
+                var details = (await multi.ReadAsync<dynamic>()).ToList();
+                var detailBarcode = (await multi.ReadAsync<dynamic>()).ToList();
+                foreach (var detail in details)
                 {
-                    master.StockDetails = stockDetail
-                    .Where(detail =>
-                        detail.WarehouseCode == master.WarehouseCode &&
-                        detail.AreaCode == master.AreaCode &&
-                        detail.ItemCode == master.ItemCode &&
-                        detail.LotNo == master.LotNo
-                    ).ToList();
+                    detail.DetailBarcodes = detailBarcode
+                    .Where(barcode =>
+                        barcode.ReceiptId == detail.ReceiptId &&
+                        barcode.ReceiptDetailId == detail.Id
+                    )
+                    .Select(p => new
+                    {
+                        p.BarcodeNo,
+                        p.LotNo,
+                        p.SublotNo,
+                        p.Qty,
+                        p.IsVerified,
+                        p.VerifiedBy,
+                        p.VerifiedDate
+                    })
+                    .ToList();
                 }
-                return (header, detail, stocks);
+                return (header, details);
             }
         );
 
         return new Dictionary<string, object>
         {
             { "Receipt Header", result.header },
-            { "Receipt Detail", result.detail },
-            { "Stock", result.stocks }
+            { "Receipt Detail", result.details }
         };
     }
 

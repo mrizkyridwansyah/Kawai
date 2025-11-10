@@ -14,11 +14,16 @@ public class ReceiptDto: DataTableDto
     public string BCType { get; set; }
     public DateTime BCDate { get; set; }
     public string VehicleNo { get; set; }
+    public string Transport { get; set; }
+    public string Remarks { get; set; }
+    public DateTime? DeliveryDatePOFrom { get; set; }
+    public DateTime? DeliveryDatePOUntil { get; set; }
+    public string PONumber { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
 }
 
-// INI DIPAKE DI MOBILE
+// INI DIPAKE DI WEB & MOBILE
 public class ReceiptDetailDto : DataTableDto
 {
     public long Id { get; set; }
@@ -30,6 +35,7 @@ public class ReceiptDetailDto : DataTableDto
     public string UnitClsName { get; set; }
     public double ExpectedQty { get; set; }
     public double TotalPacking { get; set; }
+    public double QtyPacking { get; set; }
     public double ReceiptQty { get; set; }
     public string IQCResult { get; set; }
 }

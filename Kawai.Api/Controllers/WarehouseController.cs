@@ -17,16 +17,12 @@ namespace Kawai.Api.Controllers;
 public class WarehouseController : HahaController
 {
     private readonly IWarehouseRepository _warehouseRepository;
-    private readonly INotificationRepository _notificationRepository;
     private readonly DataLogger _logger;
-    private readonly NotificationService<NotifApprovalHub> _notificationService;
 
-    public WarehouseController(IWarehouseRepository warehouseRepository, INotificationRepository notificationRepository, DataLogger logger, NotificationService<NotifApprovalHub> notificationService)
+    public WarehouseController(IWarehouseRepository warehouseRepository, DataLogger logger)
     {
         _warehouseRepository = warehouseRepository;
-        _notificationRepository = notificationRepository;
         _logger = logger;
-        _notificationService = notificationService;
     }
 
     [HttpPost("list")]
@@ -37,9 +33,22 @@ public class WarehouseController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string factoryCode, string ids)
     {
-        var results = await _warehouseRepository.GetDDL(keyword);
+        var results = await _warehouseRepository.GetDDL(keyword, factoryCode);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("warehouseline-ddlsearch")]
+    public async Task<IActionResult> DDLSearchWarehouseLine(string keyword, string factoryCode, string ids)
+    {
+        var results = await _warehouseRepository.GetDDLWarehouseLine(keyword, factoryCode);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -50,9 +59,48 @@ public class WarehouseController : HahaController
     }
 
     [HttpGet("ddl-warehouse-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string item, string ids)
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string factoryCode, string item, string ids)
     {
-        var results = await _warehouseRepository.DDLSearchByStock(keyword, item);
+        var results = await _warehouseRepository.DDLSearchByStock(keyword, factoryCode, item);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("ddlsearch-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearch(string keyword, string factoryCode, string ids)
+    {
+        var results = await _warehouseRepository.GetDDLPrivileges(keyword, factoryCode, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("warehouseline-ddlsearch-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearchWarehouseLine(string keyword, string factoryCode, string ids)
+    {
+        var results = await _warehouseRepository.GetDDLPrivilegesWarehouseLine(keyword, factoryCode, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("ddl-warehouse-search-by-stock-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string ids)
+    {
+        var results = await _warehouseRepository.DDLPrivilegesSearchByStock(keyword, factoryCode, item, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -84,35 +132,6 @@ public class WarehouseController : HahaController
             After = after,
             Action = DataLogAction.Create
         });
-
-
-
-        List<string> receivers = ["hisyam", "admin"];
-        List<Notification> notifications = new List<Notification>();
-        Notification notification = new Notification
-        {
-            Title = "Master Warehouse Created",
-            Description = $"Warehouse {model.WarehouseCode} - {model.WarehouseName} has been created.",
-            NotifType = "INFO",
-            Priority = "LOW",
-            Sender = Auth.User.UserID,
-            UrlRedirect = "/app/notif/warehouse?id=" + model.WarehouseCode
-        };
-
-        notifications.Add(notification);
-
-        foreach (var reciver in receivers)
-        {
-            notification.Receiver = reciver;
-            await _notificationRepository.SaveNotification(notification);
-        }
-
-        await _notificationService.BroadCastOnlyTo(receivers, "NewNotification", new
-        {
-            notifications.Count,
-            Notifications = notifications
-        });
-
         return Success(after);
     }
 

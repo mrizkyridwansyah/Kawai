@@ -1,7 +1,6 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
-using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 
 namespace Kawai.Data.Repositories;
@@ -46,6 +45,23 @@ public class PORepository : IPORepository
             { "Header", header },
             { "Detail", detail }
         };
+    }
+
+    public async Task<List<PODto>> GetDDL(string keyword, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll)
+    {
+        string sp = "sp_Wms_PO_DDL";
+        var today = DateTime.Today;
+        var awalBulan = new DateTime(today.Year, today.Month, 1);
+
+        return (await _dbExecutor.QueryListAsync<PODto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            TypeDate = typeDate,
+            PeriodFrom = periodFrom.HasValue ? periodFrom.Value : awalBulan,
+            PeriodUntil = periodUntil.HasValue ? periodUntil.Value : DateTime.Today,
+            ShowOptionAll = showOptionAll
+        })).ToList();
     }
 
 }

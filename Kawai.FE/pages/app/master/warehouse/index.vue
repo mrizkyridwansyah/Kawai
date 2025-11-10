@@ -1,8 +1,36 @@
 <template>
   <v-frame title="Warehouse" icon="database">
     <template #frame-content>
-      <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print :print="print" :is-loading="isLoadingPrint" />
+      <div class="d-flex">
+        <div class="d-flex flex-fill">
+          <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
+            <div class="mr-1" style="width: 100%">
+              <label class="form-label">Factory</label>
+              <input-factory
+                class="form-control"
+                v-model="filter.factory"
+              />
+            </div>
+          </div>
+          <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
+            <label class="form-label">&nbsp;</label>
+            <br />
+            <div class="mr-1" style="width: 100%">
+              <v-button-search-reset
+                class="ms-1"
+                :search="search"
+                :reset="reset"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-add :add="add" cClass="mr-1" />
+          <v-button-print :print="print" :is-loading="isLoadingPrint" />
+        </div>
+      </div>
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
@@ -13,7 +41,7 @@
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle"
-            style="min-width: 100%; width: max-content; "
+            style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >
             <thead>
@@ -88,6 +116,7 @@
       ref="formWarehouse"
       :id="idSelected"
       :mode="modalMode"
+      :factory="filter.factory"
       @submitted="close"
     />
   </v-modal>
@@ -114,6 +143,7 @@ export default {
     filter: {
       keyword: null,
       keywordKey: "WarehouseCode",
+      factory: null,
       sorts: {
         WarehouseName: "asc",
       },
@@ -145,35 +175,42 @@ export default {
     },
   },
   watch: {
-    filter: {
-      deep: true,
-      handler: function (after) {
-        if (this.debounce) clearTimeout(this.debounce);
-
-        this.debounce = setTimeout(() => {
-          var filter = [];
-
-          if (after.keywordKey != "" && after)
-            filter.push({ Keyword: after.keyword || "" });
-
-          this.ds.setSort(after.sorts);
-          this.ds.setFilter(filter);
-          this.ds.load();
-        }, 800);
-      },
+    "filter.factory": function () {
+      this.selectedPrint = [];
+      this.ds.data.Items = [];
+    },
+    "filter.keyword": function () {
+      this.search();
+    },
+    "filter.sorts": function () {
+      this.search();
     },
   },
   mounted: function () {
-    this.ds.setSort(this.filter.sorts);
-    this.ds.setFilter([]);
-    this.ds.load();
+    this.search();
   },
   methods: {
+    search: function () {
+      this.ds.setSort(this.filter.sorts);
+      let filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          FactoryCode: this.filter.factory || "",
+        },
+      ];
+
+      this.ds.setFilter(filters);
+      this.ds.load();
+    },
     add: function () {
-      this.title = "Add Warehouse";
-      this.modalMode = "add";
-      this.idSelected = null; // Reset ID for Add mode
-      this.$bvModal.show("modal-form-warehouse");
+      if (this.filter.factory) {
+        this.title = "Add Warehouse";
+        this.modalMode = "add";
+        this.idSelected = null; // Reset ID for Add mode
+        this.$bvModal.show("modal-form-warehouse");
+      } else {
+        toastWarning("Please choose factory!");
+      }
     },
     edit: function (dt) {
       this.title = "Edit Warehouse";
@@ -206,9 +243,15 @@ export default {
       this.ds.load();
     },
     exportExcel: function () {
+      if (!this.filter.factory) {
+        toastWarning("Please choose factory!");
+        return;
+      }
+
+      let filters = [{ FactoryCode: this.filter.factory }];
       return new Promise((resolve, reject) => {
         this.ds
-          .exportExcel()
+          .exportExcel(filters)
           .then((_) => {
             resolve();
           })

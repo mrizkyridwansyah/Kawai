@@ -1,6 +1,14 @@
 <template>
   <div>
     <div class="mb-3">
+      <label class="form-label">Factory</label>
+      <input-factory
+        class="form-control"
+        v-model="model.FactoryCode"
+        disabled="true"
+      />
+    </div>
+    <div class="mb-3">
       <label class="form-label">Warehouse Code</label>
       <input-text
         placeholder="Warehouse Code"
@@ -50,7 +58,7 @@
     </div>
   </div>
   <div>
-    <v-button-submit
+    <v-button-submit-modal
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"
@@ -59,10 +67,11 @@
 </template>
 <script>
 export default {
-  props: ["id", "btnDisabled", "mode"],
+  props: ["id", "factory", "btnDisabled", "mode"],
   data: () => ({
     isLoading: false,
     model: {
+      FactoryCode: "",
       WarehouseCode: "",
       WarehouseName: "",
       AdmGroup: "",
@@ -86,6 +95,9 @@ export default {
     }
   },
   watch: {
+    factory: function (val) {
+      this.model.FactoryCode = val;
+    },
     mode: function (val) {
       if (val === "edit") {
         this.loadDetail(this.id);
@@ -96,11 +108,16 @@ export default {
   },
   methods: {
     loadDetail: function () {
-      this.ds.loadDetail(this.id).then((dt) => (this.model = dt.Data));
+      this.ds.loadDetail(this.id).then((dt) => {
+        this.model = dt.Data;
+        this.model.StockControlCls = this.model.StockControlCls == "01";
+        this.model.NGCls = this.model.NGCls == "01";
+      });
     },
     resetForm: function () {
       // Kosongkan form untuk mode Add
       this.model = {
+        FactoryCode: this.factory || "",
         WarehouseCode: "",
         WarehouseName: "",
         AdmGroup: "",
@@ -111,6 +128,7 @@ export default {
       this.errors = {}; // Reset errors
     },
     submit: function () {
+      this.model.FactoryCode = this.factory;
       if (this.mode === "add") this.create();
       else this.update();
     },
@@ -145,4 +163,3 @@ export default {
   },
 };
 </script>
-

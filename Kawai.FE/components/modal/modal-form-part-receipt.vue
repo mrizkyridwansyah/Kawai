@@ -86,6 +86,18 @@
     </div>
     <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
       <div class="mb-3">
+        <label class="form-label">Transport By</label>
+        <input-cls
+          type-data="Transport_Cls"
+          placeholder="Transport"
+          v-model="model.Transport"
+          :disabled="!isManual || mode === 'view'"
+          :errors="errors?.Transport"
+        />
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+      <div class="mb-3">
         <label class="form-label">BC Date</label>
         <input-date
           placeholder="BC Date"
@@ -95,12 +107,25 @@
         />
       </div>
     </div>
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="mr-1">
+        <label class="form-label">Remarks</label>
+        <input-text
+          multiline
+          :disabled="!isManual || mode === 'view'"
+          v-model="model.Remarks"
+          :errors="errors?.Remarks"
+        />
+      </div>
+    </div>
   </div>
   <hr />
-  <div :class="
-    { 'detail-content': mode === 'add'},
-    { 'detail-content-view': mode === 'view'}
-  ">
+  <div
+    :class="
+      ({ 'detail-content': mode === 'add' },
+      { 'detail-content-view': mode === 'view' })
+    "
+  >
     <table class="table table-striped mb-0 align-middle v-fixed-table">
       <thead>
         <tr>
@@ -112,7 +137,9 @@
           <th class="text-center" style="width: 12em">Total Packing</th>
           <th class="text-center" style="width: 12em">Qty Packing</th>
           <th class="text-center" style="width: 12em">Received Qty</th>
-          <th class="text-center" style="width: 1em" v-if="mode !== 'add'">IQC Result</th>
+          <th class="text-center" style="width: 1em" v-if="mode !== 'add'">
+            IQC Result
+          </th>
           <th class="text-center"></th>
         </tr>
       </thead>
@@ -127,7 +154,6 @@
                   v-model="item.PONumber"
                   :disabled="mode === 'view'"
                   :errors="errors?.[`Details[${i}].PONumber`]"
-                  
                   show-suffix
                 />
               </div>
@@ -147,8 +173,16 @@
           <td>{{ item.ItemName }}</td>
           <td>{{ item.UnitClsName }}</td>
           <td class="text-right">{{ $func.formatMoney(item.ExpectedQty) }}</td>
+          <td class="text-right">
+            {{
+              $func.formatMoney(
+                Math.round(
+                  parseFloat(item.ExpectedQty) / parseFloat(item.TotalPacking)
+                )
+              )
+            }}
+          </td>
           <td class="text-right">{{ $func.formatMoney(item.TotalPacking) }}</td>
-          <td class="text-right">{{ $func.formatMoney(item.QtyPacking) }}</td>
           <td>
             <input-money
               v-model="item.ReceiptQty"
@@ -188,8 +222,8 @@
     <a href="javascript:void(0)" @click="addDetail(5)"> [+5] Tambah 5 Baris </a>
   </div>
   <div class="submit-wrapper">
-    <v-button-submit
-      v-if="mode==='add'"
+    <v-button-submit-modal
+      v-if="mode === 'add'"
       :nomargintop="true"
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
@@ -395,7 +429,7 @@ export default {
       // else this.update();
     },
     create() {
-      this.model.Details = this.model.Details.filter(p => p.ReceiptQty > 0);
+      this.model.Details = this.model.Details.filter((p) => p.ReceiptQty > 0);
       this.model.IsManual = this.isManual;
 
       this.ds
@@ -417,15 +451,15 @@ export default {
 <style scoped>
 .detail-content {
   /* padding-bottom: 5em; */
-  height: 60%;
-  max-height: 60%;
+  height: 50%;
+  max-height: 50%;
   overflow-y: scroll;
 }
 
 .detail-content-view {
   /* padding-bottom: 5em; */
-  height: 70%;
-  max-height: 70%;
+  height: 60%;
+  max-height: 60%;
   overflow-y: scroll;
 }
 </style>

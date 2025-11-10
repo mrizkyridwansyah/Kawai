@@ -4,6 +4,10 @@ namespace Kawai.Domain.Models;
 
 public class Warehouse
 {
+    [Required(ErrorMessage = "Factory Code tidak boleh kosong")]
+    [MaxLength(25, ErrorMessage = "Factory Code tidak boleh lebih dari 25 karakter")]
+    public string FactoryCode { get; set; }
+
     [Required(ErrorMessage = "Warehouse Code tidak boleh kosong")]
     [MaxLength(25, ErrorMessage = "Warehouse Code tidak boleh lebih dari 25 karakter")]
     public string WarehouseCode { get; set; }

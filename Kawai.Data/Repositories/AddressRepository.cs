@@ -39,6 +39,18 @@ public class AddressRepository : IAddressRepository
         return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
     }
 
+    public async Task<List<AddressDto>> GetDDLPrivileges(string keyword, string warehouse, string area, string userId)
+    {
+        string sp = "sp_Wms_AddressPrivileges_DDL";
+        return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, UserId = userId })).ToList();
+    }
+
+    public async Task<List<AddressDto>> DDLPrivilegesSearchByStock(string keyword, string warehouse, string area, string item, string userId)
+    {
+        string sp = "sp_Wms_AddressPrivileges_DDLByStock";
+        return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item, UserId = userId })).ToList();
+    }
+
     public async Task Create(Address address, string userId)
     {
         address.AddressCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Address_GenerateCode", new { address.WarehouseCode, address.AreaCode });

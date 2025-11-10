@@ -56,6 +56,32 @@ public class AddressController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddlsearch-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearch(string keyword, string warehouse, string area, string ids)
+    {
+        var results = await _addressRepository.GetDDLPrivileges(keyword, warehouse, area, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.AddressCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("ddl-address-search-by-stock-privileges")]
+    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string warehouse, string area, string item, string ids)
+    {
+        var results = await _addressRepository.DDLPrivilegesSearchByStock(keyword, warehouse, area, item, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.AddressCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
     [HttpGet("detail")]
     public async Task<IActionResult> Get(string id)
     {

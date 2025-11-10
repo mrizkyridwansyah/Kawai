@@ -22,7 +22,7 @@ public class AreaRepository : IAreaRepository
     }
 
     public async Task<AreaDto> GetData(string areaCode)
-    {        
+    {
         string sp = "sp_Wms_Area_GetDetail";
         return await _dbExecutor.QueryFirstOrDefaultAsync<AreaDto>(sp, new { AreaCode = areaCode });
     }
@@ -37,6 +37,18 @@ public class AreaRepository : IAreaRepository
     {
         string sp = "sp_Wms_Area_DDLByStock";
         return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
+    }
+
+    public async Task<List<AreaDto>> GetDDLPrivileges(string keyword, string warehouseCode, string userId)
+    {
+        string sp = "sp_Wms_AreaPrivileges_DDL";
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, UserId = userId })).ToList();
+    }
+
+    public async Task<List<AreaDto>> DDLPrivilegesSearchByStock(string keyword, string warehouseCode, string item, string userId)
+    {
+        string sp = "sp_Wms_AreaPrivileges_DDLByStock";
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item, UserId = userId })).ToList();
     }
 
     public async Task Create(Area area, string userId)

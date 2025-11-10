@@ -7,8 +7,15 @@ namespace Kawai.Domain.Interfaces;
 public interface IWarehouseRepository
 {
     Task<List<WarehouseDto>> GetAll(RequestParameter param);
-    Task<List<WarehouseDto>> GetDDL(string keyword);
-    Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string item);
+
+    Task<List<WarehouseDto>> GetDDL(string keyword, string factoryCode);
+    Task<List<WarehouseDto>> GetDDLWarehouseLine(string keyword, string factoryCode);
+    Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string factoryCode, string item);
+
+    Task<List<WarehouseDto>> GetDDLPrivileges(string keyword, string factoryCode, string userId);
+    Task<List<WarehouseDto>> GetDDLPrivilegesWarehouseLine(string keyword, string factoryCode, string userId);
+    Task<List<WarehouseDto>> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string userId);
+
     Task<WarehouseDto> GetData(string warehouseCode);
     Task Create(Warehouse warehouse, string userId);
     Task Update(Warehouse warehouse, string userId);

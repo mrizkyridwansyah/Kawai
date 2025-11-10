@@ -14,7 +14,7 @@ public class NumberGreaterThan : ValidationAttribute
         if (value == null)
             return ValidationResult.Success;
 
-        if (value.ToDouble() < Compare)
+        if (value.ToDouble() <= Compare)
             return new ValidationResult($"The {validationContext.DisplayName} should greater than {Compare}.", [validationContext.MemberName]);
 
         return ValidationResult.Success;

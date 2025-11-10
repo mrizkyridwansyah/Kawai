@@ -25,7 +25,7 @@
     />
   </div>
   <div class="mt-4 mb-3">
-    <v-button-submit
+    <v-button-submit-modal
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"
