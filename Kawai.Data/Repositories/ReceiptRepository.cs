@@ -79,10 +79,10 @@ public class ReceiptRepository : IReceiptRepository
         })).ToList();
     }
 
-    public async Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status)
+    public async Task<List<ReceiptDto>> DDLSearchReceipt(string keyword)
     {
         string sp = "sp_Wms_Receipt_DDLSearchReceipt";
-        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "", Status = status ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "" })).ToList();
     }
 
     public async Task Create(Receipt receipt, string userId)

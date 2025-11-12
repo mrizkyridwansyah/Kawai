@@ -31,7 +31,7 @@ public interface IReceiptRepository
     #endregion
 
     Task<List<ReceiptDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu);
-    Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string status);
+    Task<List<ReceiptDto>> DDLSearchReceipt(string keyword);
 
 
     Task<Dictionary<string, object>> Capture(long id);

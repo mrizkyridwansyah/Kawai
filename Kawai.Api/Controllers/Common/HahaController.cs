@@ -100,7 +100,7 @@ public class HahaController : ControllerBase
             ContentType = "application/json",
             Content = JsonConvert.SerializeObject(new
             {
-                Code = code,
+                Code = 200,
                 Status = "Success",
                 Message = message,
                 Data = data,

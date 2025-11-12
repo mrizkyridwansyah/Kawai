@@ -24,9 +24,9 @@ public class MobileReceiptController : HahaController
 
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearchReceipt(string keyword, string status, string ids)
+    public async Task<IActionResult> DDLSearchReceipt(string keyword, string ids)
     {
-        var results = await _receiptRepository.DDLSearchReceipt(keyword, status);
+        var results = await _receiptRepository.DDLSearchReceipt(keyword);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -49,7 +49,7 @@ public class MobileReceiptController : HahaController
         {
             p.Id,
             p.ReceiptId,
-            p.PONumber,
+            PONumber = p.PONumber ?? "",
             p.ItemCode,
             p.ItemName,
             p.UnitClsCode,
