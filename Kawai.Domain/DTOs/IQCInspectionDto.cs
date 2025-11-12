@@ -34,5 +34,4 @@ public class IQCSampleDetailBarcodeDto
     public int SublotNo { get; set; }
     public double Qty { get; set; }
     public double QtySample { get; set; }
-
 }
