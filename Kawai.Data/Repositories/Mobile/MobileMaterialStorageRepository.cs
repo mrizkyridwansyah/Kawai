@@ -71,7 +71,7 @@ public class MobileMaterialStorageRepository : IMobileMaterialStorageRepository
 
         return new Dictionary<string, object>
         {
-            { "Material NG", result }
+            { "Material Storage", result }
         };
     }
 }
