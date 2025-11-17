@@ -38,6 +38,8 @@ CREATE TABLE [InvoiceSupplier_Master](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+ALTER TABLE [InvoiceSupplier_Master] ADD  CONSTRAINT [DF_InvoiceSupplier_Master_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO
 ALTER TABLE [InvoiceSupplier_Master]  WITH NOCHECK ADD  CONSTRAINT [FK_InvoiceSupplier_Master_Trade_Master] FOREIGN KEY([Supplier_Code])
 REFERENCES [Trade_Master] ([Trade_Code])
 GO

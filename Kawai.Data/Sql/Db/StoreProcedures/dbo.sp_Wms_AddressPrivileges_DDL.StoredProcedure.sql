@@ -18,6 +18,7 @@ begin
 	select AreaCode From SS_UserAreaPrivilege where UserID = @UserId and AllowAccess = 1
 
 	select 
+		ma.WarehouseCode, ma.AreaCode,
 		ma.AddressCode, ma.AddressName
 	From MS_Address ma
 	inner join @tblAreaPrivileges xx on ma.AreaCode = xx.area

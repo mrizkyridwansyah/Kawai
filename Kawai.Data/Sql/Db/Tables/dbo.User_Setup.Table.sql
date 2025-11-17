@@ -16,10 +16,15 @@ CREATE TABLE [User_Setup](
 	[Last_Update] [datetime] NULL,
 	[Last_User] [char](15) NULL,
 	[Register_Date] [datetime] NULL,
+	[Company_Code] [char](25) NULL,
  CONSTRAINT [PK_User_Setup] PRIMARY KEY CLUSTERED 
 (
 	[App_ID] ASC,
 	[Username] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+ALTER TABLE [User_Setup] ADD  CONSTRAINT [DF_User_Setup_InvalidLogin]  DEFAULT ((0)) FOR [InvalidLogin]
+GO
+ALTER TABLE [User_Setup] ADD  CONSTRAINT [DF_User_Setup_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
 GO

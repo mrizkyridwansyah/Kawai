@@ -20,6 +20,8 @@ CREATE TABLE [InventoryCost_Item](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+ALTER TABLE [InventoryCost_Item] ADD  CONSTRAINT [DF_InventoryCost_Item_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO
 ALTER TABLE [InventoryCost_Item]  WITH CHECK ADD  CONSTRAINT [FK_InventoryCost_Item_InventoryCost_Master] FOREIGN KEY([Cost_Cls])
 REFERENCES [InventoryCost_Master] ([Cost_Cls])
 GO

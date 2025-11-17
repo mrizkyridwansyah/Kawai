@@ -32,7 +32,7 @@ begin
 	declare @sql varchar(max) = 
 	'
 		select 
-			us.UserID, us.FullName, cp.Description [JobPosition], us2.UserID [UserGroupID], isnull(us2.FullName, '''') [UserGroupName], 
+			us.UserID, us.FullName, us.JobPosition [JobPositionCode], cp.Description [JobPositionDesc], us2.UserID [UserGroupID], isnull(us2.FullName, '''') [UserGroupName], 
 			case when isnull(us.StatusAdmin, 0) = 1 then cast(1 as bit) else cast(0 as bit) end [IsAdmin], us.RegisterDate, isnull(us3.FullName, us.RegisterUser) RegisterUser, us.UpdateDate LastUpdate, isnull(us4.FullName, us.UpdateUser) LastUser, 
 			COUNT(*) OVER() AS TotalRows 
 		From SS_UserSetup us

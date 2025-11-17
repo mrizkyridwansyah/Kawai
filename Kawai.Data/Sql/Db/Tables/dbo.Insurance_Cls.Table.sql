@@ -10,3 +10,5 @@ CREATE TABLE [Insurance_Cls](
 	[Register_Date] [datetime] NULL
 ) ON [PRIMARY]
 GO
+ALTER TABLE [Insurance_Cls] ADD  CONSTRAINT [DF_Insurance_Cls_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO

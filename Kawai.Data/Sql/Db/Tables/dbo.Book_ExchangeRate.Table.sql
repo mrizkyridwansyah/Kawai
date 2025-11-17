@@ -23,3 +23,5 @@ CREATE TABLE [Book_ExchangeRate](
 	[Register_Date] [datetime] NULL
 ) ON [PRIMARY]
 GO
+ALTER TABLE [Book_ExchangeRate] ADD  CONSTRAINT [DF_Book_ExchangeRate_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO

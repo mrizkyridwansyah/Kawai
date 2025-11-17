@@ -81,6 +81,8 @@ begin
 			a.BCType,
 			a.BCDate,
 			a.VehicleNo,
+			a.Transport,
+			a.Remarks,
 			a.LastUpdate,
 			c.FullName LastUser
 		FROM PartReceiptHeader a

@@ -5,6 +5,7 @@ GO
 
 
 CREATE OR ALTER PROCEDURE [sp_Wms_Warehouse_Update]
+	@FactoryCode varchar(25),
 	@WarehouseCode varchar(25),
 	@WarehouseName varchar(200),
 	@AdmGroup varchar(15),
@@ -31,7 +32,7 @@ begin
 		Adm_Group = @AdmGroup, 
 		StockControl_Cls = @StockControlCls, 
 		NG_Cls = @NGCls, 
-		Use_EndDay = @UseEndDate, 
+		Use_EndDay = format(@UseEndDate, 'yyyyMMdd'), 
 		Last_User = @UpdateBy, 
 		Last_Update = getdate() 
 	where WH_Code = @WarehouseCode

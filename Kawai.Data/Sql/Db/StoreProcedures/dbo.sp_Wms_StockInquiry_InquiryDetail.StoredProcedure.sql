@@ -54,7 +54,7 @@ begin
 		left join MS_Area ma on sd.AreaCode = ma.AreaCode
 		left join MS_Address mad on sd.AddressCode = mad.AddressCode
 		left join Item_Master mi on sd.ItemCode = mi.Item_Code
-		left join vw_User us on sd.LastUser = us.UserID
+		left join vw_User us on isnull(sd.LastUser, sd.RegisterUser) = us.UserID
 		where 1=1
 		and (BarcodeNo like ''%'+@Keyword+'%'') 
 		and sd.WarehouseCode = '''+ @WarehouseCode + ''' and sd.AreaCode = '''+ @AreaCode + ''' and sd.AddressCode = '''+ @AddressCode + '''

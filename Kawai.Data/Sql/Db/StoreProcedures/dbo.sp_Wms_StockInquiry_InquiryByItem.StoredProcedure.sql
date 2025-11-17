@@ -13,10 +13,10 @@ CREATE OR ALTER PROCEDURE [sp_Wms_StockInquiry_InquiryByItem]
 	@Keyword varchar(max) = '',
 
 	-- PARAMETER FILTER
-	@WarehouseCode varchar(25),
-	@AreaCode varchar(25),
-	@ItemCode varchar(25),
-	@LotNo varchar(100)	
+	@WarehouseCode varchar(25) = 'ALL',
+	@AreaCode varchar(25) = 'ALL',
+	@ItemCode varchar(25) = 'ALL',
+	@LotNo varchar(100)	 = 'ALL'
 as
 begin
 	declare @sqlSort varchar(max) = ''
@@ -61,6 +61,7 @@ begin
 		from
 		(
 			select 
+				sd.RefNo,
 				sd.WarehouseCode WarehouseCode, xx.WarehouseName,
 				sd.AreaCode, xx.AreaName,
 				sd.AddressCode, xx.AddressName,
@@ -70,11 +71,11 @@ begin
 			From StockDetail sd
 			inner join 
 			(
-				select WarehouseCode, AreaCode, AddressCode, ItemCode, WarehouseName, AreaName, AddressName, ItemName, LotNo
+				select RefNo, WarehouseCode, AreaCode, AddressCode, ItemCode, WarehouseName, AreaName, AddressName, ItemName, LotNo
 				from 
 				(
 					select 
-						sdt.WarehouseCode, sdt.AreaCode, sdt.AddressCode, sdt.ItemCode, 
+						sdt.RefNo, sdt.WarehouseCode, sdt.AreaCode, sdt.AddressCode, sdt.ItemCode, 
 						mw.WarehouseName, isnull(ml.AreaName, ''Temporary'') AreaName, isnull(mx.AddressName, ''Temporary'') AddressName, mi.Item_Name ItemName, sdt.LotNo
 					From StockDetail sdt
 					inner join 
@@ -116,13 +117,14 @@ begin
 					and ('''+ @AreaCode + ''' = ''ALL'' or '''+ @AreaCode + ''' = sdt.AreaCode)
 					and ('''+ @ItemCode + ''' = ''ALL'' or '''+ @ItemCode + ''' = sdt.ItemCode)
 					and ('''+ @LotNo + ''' = ''ALL'' or '''+ @LotNo + ''' = sdt.LotNo)
-					group by sdt.WarehouseCode, sdt.AreaCode, sdt.AddressCode, sdt.ItemCode, mw.WarehouseName, isnull(ml.AreaName, ''Temporary''), isnull(mx.AddressName, ''Temporary''), mi.Item_Name, sdt.LotNo
+					group by sdt.RefNo, sdt.WarehouseCode, sdt.AreaCode, sdt.AddressCode, sdt.ItemCode, mw.WarehouseName, isnull(ml.AreaName, ''Temporary''), isnull(mx.AddressName, ''Temporary''), mi.Item_Name, sdt.LotNo
 				) res
 			) xx 
-			on sd.WarehouseCode = xx.WarehouseCode and sd.AreaCode = xx.AreaCode and sd.AddressCode = xx.AddressCode 
+			on sd.RefNo = xx.RefNo and sd.WarehouseCode = xx.WarehouseCode and sd.AreaCode = xx.AreaCode and sd.AddressCode = xx.AddressCode 
 			and sd.ItemCode = xx.ItemCode and sd.LotNo = xx.LotNo
 			where sd.qty > 0
 			group by 
+				sd.RefNo,
 				sd.WarehouseCode, xx.WarehouseName,
 				sd.AreaCode, xx.AreaName,
 				sd.AddressCode, xx.AddressName,
@@ -131,8 +133,8 @@ begin
 		) sd
 		outer apply
 		(
-			select * From StockMaster sm2 
-			where sm2.WarehouseCode = sd.WarehouseCode AND sm2.AreaCode = sd.AreaCode 
+			select * From StockHeader sm2 
+			where sm2.RefNo = sd.RefNo and sm2.WarehouseCode = sd.WarehouseCode AND sm2.AreaCode = sd.AreaCode 
 			and sm2.ItemCode = sd.ItemCode and sm2.LotNo = sd.LotNo
 		) sm
 		order by sd.ItemName, sd.WarehouseName, sd.AreaName, sd.AddressName, sd.LotNo

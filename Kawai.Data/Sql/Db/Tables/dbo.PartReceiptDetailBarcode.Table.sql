@@ -4,6 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [PartReceiptDetailBarcode](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+	[ReceiptDetailId] [bigint] NOT NULL,
 	[ReceiptId] [bigint] NOT NULL,
 	[ReceiptDate] [date] NOT NULL,
 	[PONumber] [varchar](50) NOT NULL,
@@ -15,8 +16,9 @@ CREATE TABLE [PartReceiptDetailBarcode](
 	[IsVerified] [bit] NULL,
 	[VerifiedBy] [varchar](25) NULL,
 	[VerifiedDate] [datetime] NULL,
-	[HasValid] [bit] NULL,
-	[ValidDate] [datetime] NULL,
+	[PrintStatus] [bit] NULL,
+	[PrintDate] [datetime] NULL,
+	[PrintUser] [varchar](50) NULL,
  CONSTRAINT [PK_PartReceiptDetailBarcode_1] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

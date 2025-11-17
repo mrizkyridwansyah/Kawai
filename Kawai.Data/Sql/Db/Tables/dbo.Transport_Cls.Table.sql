@@ -10,3 +10,5 @@ CREATE TABLE [Transport_Cls](
 	[Register_Date] [datetime] NULL
 ) ON [PRIMARY]
 GO
+ALTER TABLE [Transport_Cls] ADD  CONSTRAINT [DF_Transport_Cls_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO

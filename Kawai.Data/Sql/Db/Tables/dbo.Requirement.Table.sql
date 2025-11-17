@@ -31,3 +31,13 @@ CREATE TABLE [Requirement](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+ALTER TABLE [Requirement] ADD  CONSTRAINT [DF_Requirement_Off_Qty]  DEFAULT ((0)) FOR [Off_Qty]
+GO
+ALTER TABLE [Requirement] ADD  CONSTRAINT [DF_Requirement_OffChildRequirement_Qty]  DEFAULT ((0)) FOR [OffChildRequirement_Qty]
+GO
+ALTER TABLE [Requirement] ADD  CONSTRAINT [DF_Requirement_TempQty]  DEFAULT ((0)) FOR [TempQty]
+GO
+ALTER TABLE [Requirement] ADD  CONSTRAINT [DF_Requirement_NonMRP_Cls]  DEFAULT ((0)) FOR [NonMRP_Cls]
+GO
+ALTER TABLE [Requirement] ADD  CONSTRAINT [DF_Requirement_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO

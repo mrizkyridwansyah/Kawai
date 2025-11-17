@@ -12,11 +12,14 @@ CREATE TABLE [WareHouse_Master](
 	[Last_User] [char](15) NULL,
 	[Register_Date] [datetime] NULL,
 	[NG_Cls] [char](2) NULL,
+	[Company_Code] [char](25) NULL,
  CONSTRAINT [PK_WareHouse_Master] PRIMARY KEY CLUSTERED 
 (
 	[WH_Code] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+ALTER TABLE [WareHouse_Master] ADD  CONSTRAINT [DF_WareHouse_Master_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
 GO
 ALTER TABLE [WareHouse_Master]  WITH NOCHECK ADD  CONSTRAINT [FK_WareHouse_Master_Trade_Master] FOREIGN KEY([Adm_Group])
 REFERENCES [Trade_Master] ([Trade_Code])

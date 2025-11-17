@@ -17,8 +17,6 @@ CREATE TABLE [PartReceiptDetail](
 	[Attachment] [varchar](200) NULL,
 	[InspectionDate] [datetime] NULL,
 	[InspectionBy] [varchar](25) NULL,
-	[HasValid] [bit] NULL,
-	[ValidDate] [datetime] NULL,
  CONSTRAINT [PK_PartReceiptDetail] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

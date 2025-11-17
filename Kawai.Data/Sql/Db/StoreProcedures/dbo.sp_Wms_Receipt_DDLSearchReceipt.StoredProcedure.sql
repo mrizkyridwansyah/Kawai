@@ -3,12 +3,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE   procedure [sp_Wms_Receipt_DDLSearchReceipt]
-	@Keyword varchar(max) = '',
-	@Status varchar(max) = ''
+	@Keyword varchar(max) = ''
 as
 begin
 	select Id, ReceiptNo, DNNumber From PartReceiptHeader
 	where (DNNumber like '%'+@Keyword+'%' or ReceiptNo like '%'+@Keyword+'%')
-	and StatusReceipt = @Status
+	and StatusReceipt IN ('NEW', 'PENDING')
 end
 GO

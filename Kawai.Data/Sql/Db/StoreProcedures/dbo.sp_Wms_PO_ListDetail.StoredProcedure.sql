@@ -48,7 +48,8 @@ begin
 		select
 			TotalRows = '''+ cast(@TotalRow as varchar) + ''',
 			a.PO_No PONumber, b.PO_Date PODate, b.Supplier_Code SupplierCode, c.Trade_Name SupplierName, 
-			a.Item_Code ItemCode, d.Item_Name ItemName, a.Unit_Cls UnitClsCode, e.Description UnitClsName, a.Qty, 5 TotalPacking--isnull(f.QtyPacking, 0) TotalPacking
+			a.Item_Code ItemCode, d.Item_Name ItemName, a.Unit_Cls UnitClsCode, e.Description UnitClsName, a.Qty, 5 TotalPacking, 
+			isnull(f.QtyPacking, 0) QtyPacking
 		FROM PurchaseOrder_Detail a
 		inner join PurchaseOrder_Master b on a.PO_No = b.PO_No
 		left join trade_master c on b.Supplier_Code = c.Trade_Code

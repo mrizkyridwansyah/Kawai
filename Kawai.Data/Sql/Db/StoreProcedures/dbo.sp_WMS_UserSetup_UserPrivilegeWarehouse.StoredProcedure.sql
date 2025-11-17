@@ -7,10 +7,21 @@ CREATE OR ALTER PROCEDURE [sp_WMS_UserSetup_UserPrivilegeWarehouse]
 as 
 
 select 
-	a.WH_Code WarehouseCode, a.WH_Name WarehouseName, b.AllowAccess
+	a.WH_Code WarehouseCode, a.WH_Name WarehouseName, b.AllowAccess, a.Company_Code FactoryCode, cp.Company_Name FactoryName
 From WareHouse_Master a
+left join Company_Profile cp on a.Company_Code = cp.Company_Code
 left join 
 (
 	select * From SS_UserWarehousePrivilege where UserID = @UserID
 ) b on a.WH_Code = b.WarehouseCode
+union all
+select 
+	a.Line_Code WarehouseCode, a.Line_Name WarehouseName, b.AllowAccess, a.Company_Code FactoryCode, cp.Company_Name FactoryName
+From Manufacture_Line a
+left join Company_Profile cp on a.Company_Code = cp.Company_Code
+left join 
+(
+	select * From SS_UserWarehousePrivilege where UserID = @UserID
+) b on a.Line_Code = b.WarehouseCode
+
 GO

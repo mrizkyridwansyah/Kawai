@@ -8,7 +8,9 @@ as
 
 delete from SS_UserPrivilege where UserID = @UserID
 delete from SS_UserMobilePrivilege where UserID = @UserID
+delete from SS_UserFactoryPrivilege where UserID = @UserID
 delete from SS_UserWarehousePrivilege where UserID = @UserID
+delete from SS_UserAreaPrivilege where UserID = @UserID
 
 
 GO

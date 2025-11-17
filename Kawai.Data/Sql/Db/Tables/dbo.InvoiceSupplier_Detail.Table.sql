@@ -34,6 +34,8 @@ CREATE TABLE [InvoiceSupplier_Detail](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+ALTER TABLE [InvoiceSupplier_Detail] ADD  CONSTRAINT [DF_InvoiceSupplier_Detail_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO
 ALTER TABLE [InvoiceSupplier_Detail]  WITH NOCHECK ADD  CONSTRAINT [FK_InvoiceSupplier_Detail_InvoiceSupplier_Master] FOREIGN KEY([Supplier_Code], [Invoice_No])
 REFERENCES [InvoiceSupplier_Master] ([Supplier_Code], [Invoice_No])
 GO

@@ -5,6 +5,7 @@ GO
 
 
 CREATE OR ALTER PROCEDURE [sp_Wms_Warehouse_Create]
+	@FactoryCode varchar(25),
 	@WarehouseCode varchar(25),
 	@WarehouseName varchar(200),
 	@AdmGroup varchar(15),
@@ -25,7 +26,7 @@ begin
 		set @UseEndDate = cast('9999-12-31' as date)
 	end
 
-	insert into WareHouse_Master(WH_Code, WH_Name, Adm_Group, StockControl_Cls, NG_Cls, Use_EndDay, Last_User, Register_Date)
-	values (@WarehouseCode, @WarehouseName, @AdmGroup, @StockControlCls, @NGCls, format(@UseEndDate, 'yyyyddMM'), @RegisterBy, getdate())
+	insert into WareHouse_Master(WH_Code, WH_Name, Adm_Group, StockControl_Cls, NG_Cls, Use_EndDay, Last_User, Register_Date, Company_Code)
+	values (@WarehouseCode, @WarehouseName, @AdmGroup, @StockControlCls, @NGCls, format(@UseEndDate, 'yyyyddMM'), @RegisterBy, getdate(), @FactoryCode)
 end
 GO

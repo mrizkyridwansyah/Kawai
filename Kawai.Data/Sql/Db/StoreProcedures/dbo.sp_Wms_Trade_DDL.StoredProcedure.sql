@@ -7,14 +7,13 @@ GO
 
 
 CREATE OR ALTER PROCEDURE [sp_Wms_Trade_DDL]
-	@Keyword varchar(max) = '',
-    @Trade_Cls varchar(max) = '2'
+	@Keyword varchar(max) = ''
 as
 begin
 	select 
-		RTRIM(Trade_Code) Trade_Code, Trade_Name
+		RTRIM(Trade_Code) Trade_Code, Trade_Name, Trade_Cls
 	From Trade_Master
-	where 1=1 and Trade_Cls = @Trade_Cls
+	where 1=1
 	and Trade_Name like '%'+ @Keyword +'%'
 end
 

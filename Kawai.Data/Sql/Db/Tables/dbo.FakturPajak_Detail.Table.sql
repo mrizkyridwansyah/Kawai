@@ -34,6 +34,12 @@ CREATE TABLE [FakturPajak_Detail](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+ALTER TABLE [FakturPajak_Detail] ADD  CONSTRAINT [DF_FakturPajak_Detail_FakturPajak_No]  DEFAULT ((1)) FOR [FakturPajak_No]
+GO
+ALTER TABLE [FakturPajak_Detail] ADD  CONSTRAINT [DF_FakturPajak_Detail_DOSeqNo]  DEFAULT ((0)) FOR [DOSeq_No]
+GO
+ALTER TABLE [FakturPajak_Detail] ADD  CONSTRAINT [DF_FakturPajak_Detail_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
+GO
 ALTER TABLE [FakturPajak_Detail]  WITH NOCHECK ADD  CONSTRAINT [FK_FakturPajak_Detail_FakturPajak_Master] FOREIGN KEY([FakturPajak_No])
 REFERENCES [FakturPajak_Master] ([FakturPajak_No])
 ON UPDATE CASCADE

@@ -1,0 +1,26 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [sp_Wms_Mobile_MaterialStorage_GetDataBarcode]
+	@BarcodeNo varchar(100) 
+as
+begin
+	if not exists (select 1 from StockDetail where BarcodeNo = @BarcodeNo and Qty > 0)
+	begin
+		raiserror('Data Stock tidak ditemukan!', 16,1)
+		return
+	end
+
+	if not exists (select 1 from StockDetail where BarcodeNo = @BarcodeNo and Qty > 0 and StatusReceipt = 'OK')
+	begin
+		raiserror('Status Stock belum OK!', 16,1)
+		return
+	end
+
+	SELECT sd.RefNo, sd.WarehouseCode, sd.BarcodeNo, sd.ItemCode, mi.Item_Name ItemName, sd.LotNo, sd.SublotNo, sd.Qty
+	FROM StockDetail sd
+	left join Item_Master mi on sd.ItemCode = mi.Item_Code
+	WHERE sd.BarcodeNo = @BarcodeNo and sd.Qty > 0
+end
+GO

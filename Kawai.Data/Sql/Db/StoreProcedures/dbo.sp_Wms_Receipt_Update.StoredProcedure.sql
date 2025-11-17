@@ -35,9 +35,9 @@ begin
 		return
 	end
 
-	if not exists (select 1 from PartReceiptHeader where Id = @Id and StatusReceipt = 'NEW')
+	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id)
 	begin
-		raiserror('Data Receipt sudah tidak bisa diubah!', 16, 1)
+		raiserror('Data Receipt sudah tidak bisa diubah karena sudah print label!', 16, 1)
 		return
 	end
 
@@ -70,7 +70,6 @@ begin
 	DELETE FROM Part_Receipt WHERE RefWMSReceiptId = @Id
 
 	-- INSERT DETAIL BARU KE PART RECEIPT EZR
-	declare @PrevLot varchar(100) = (select top 1 LotNo from PartReceiptDetailBarcode where ReceiptId = @Id)
 	declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
 	insert into Part_Receipt 
 	(
@@ -80,72 +79,11 @@ begin
 	)
 	select 
 		@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
-		dtl.UnitCls, null Currency, null Price, null Amount, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport, @PrevLot,
+		dtl.UnitCls, null Currency, null Price, null Amount, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport, NULL,
 		getdate(), @UpdateBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, @Id
 	From PartReceiptHeader hd
 	inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 	left join Item_Master it on dtl.ItemCode = it.Item_Code
 	where hd.Id = @Id
-
-	declare @dt varchar(8) = format(@ReceiptDate, 'yyyyMMdd')
-	declare @prefixBarcode varchar(10) = 'RM' + @dt
-
-	declare @i int = 1
-
-	declare @partReceiptDetail table 
-	(
-		[Urutan] int,
-		[Id] bigint,
-		[PONumber] [varchar](50) ,
-		[ItemCode] [varchar](25) ,
-		[WarehouseCode] [varchar](25) ,
-		[ReceiptQty] [numeric](18,9),
-		[QtyPacking] [numeric](18, 9)
-	)
-	
-	insert into @partReceiptDetail
-	select ROW_NUMBER() over (order by Id), Id, PONumber, a.ItemCode, c.WH_Code, a.ReceiptQty, b.QtyPacking
-	From PartReceiptDetail a
-	inner join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-	inner join Item_Master c on a.ItemCode = c.Item_Code
-	where ReceiptId = @Id
-
-	-- HAPUS DETAIL BARCODE LAMA
-	DELETE FROM PartReceiptDetailBarcode WHERE ReceiptId = @Id
-
-	-- INSERT DETAIL BARCODE LAMA
-	while @i <= (select count(1) from @partReceiptDetail)
-	begin
-		declare 
-			@ReceiptDetailId bigint, @PONumber varchar(50), @ItemCode varchar(25), @WarehouseCode varchar(25), 
-			@ReceiptQty numeric(18,9), @QtyPacking numeric(18,9)
-
-		select 
-			@ReceiptDetailId = Id, @PONumber = PONumber, @ItemCode = ItemCode, @WarehouseCode = WarehouseCode, 
-			@ReceiptQty = ReceiptQty, @QtyPacking = QtyPacking 
-		From @partReceiptDetail where Urutan = @i
-
-		while @ReceiptQty > 0
-		begin
-			declare @tempQty numeric(18,9) = @QtyPacking
-
-			declare @NewBarcode varchar(100) 
-			EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcode OUTPUT;
-
-			declare @SublotNo int = isnull((select max(SublotNo) from PartReceiptDetailBarcode where ReceiptDate = @ReceiptDate), 0) + 1
-
-			if @ReceiptQty < @QtyPacking
-			begin
-				set @tempQty = @ReceiptQty
-			end
-
-			insert into PartReceiptDetailBarcode (ReceiptDetailId, ReceiptId, ReceiptDate, PONumber,ItemCode, BarcodeNo, LotNo, SublotNo, Qty)
-			values (@ReceiptDetailId, @Id, @ReceiptDate, @PONumber, @ItemCode, @NewBarcode, @PrevLot, @SublotNo, @tempQty)
-
-			set @ReceiptQty -= @tempQty
-		end
-
-		set @i += 1
-	end
 end
 GO

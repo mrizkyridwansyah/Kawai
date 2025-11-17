@@ -37,9 +37,12 @@ CREATE TABLE [Part_Receipt](
 	[Receipt_Status] [varchar](2) NULL,
 	[No_Register] [varchar](30) NULL,
 	[No_Seri] [varchar](9) NULL,
+	[RefWMSReceiptId] [bigint] NULL,
  CONSTRAINT [PK_PartReceipt_Detail] PRIMARY KEY CLUSTERED 
 (
 	[Seq_No] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+ALTER TABLE [Part_Receipt] ADD  CONSTRAINT [DF_Part_Receipt_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
 GO

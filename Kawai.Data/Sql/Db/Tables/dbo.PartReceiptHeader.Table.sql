@@ -19,11 +19,14 @@ CREATE TABLE [PartReceiptHeader](
 	[LastUpdate] [datetime] NULL,
 	[LastUser] [varchar](25) NULL,
 	[IsManual] [bit] NULL,
-	[HasValid] [bit] NULL,
-	[ValidDate] [datetime] NULL,
+	[Transport] [varchar](15) NULL,
+	[Remarks] [varchar](max) NULL,
+	[SourceMenu] [varchar](100) NULL,
  CONSTRAINT [PK_PartReceiptHeader] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+ALTER TABLE [PartReceiptHeader] ADD  CONSTRAINT [DF_PartReceiptHeader_StatusReceipt]  DEFAULT ('NEW') FOR [StatusReceipt]
 GO
