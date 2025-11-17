@@ -120,6 +120,12 @@
             cClass="mr-1"
             :is-loading="isLoading"
           />
+          <v-button-print
+            label="Print Label"
+            class="mr-1"
+            :print="printLabel"
+            :is-loading="isLoading"
+          />
         </div>
       </div>
 
@@ -219,7 +225,10 @@
         </template>
       </v-table-input>
 
-      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+      <div
+        class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2"
+        style="display: none"
+      >
         <div class="mr-1" style="width: 100%">
           <label class="form-label">Remarks</label>
           <input-text
@@ -263,6 +272,7 @@ export default {
     },
     model: {
       Id: null,
+      ReceiptNo: "",
       DNNumber: "",
       SupplierCode: null,
       DNDate: null,
@@ -338,6 +348,7 @@ export default {
       };
       this.model = {
         Id: null,
+        ReceiptNo: "",
         DNNumber: "",
         SupplierCode: null,
         DNDate: null,
@@ -387,6 +398,25 @@ export default {
         this.$nextTick(() => setTimeout(() => this.search(), 500));
       });
     },
+    printLabel: function () {
+      if (this.model.Id == null || this.model.Id == undefined) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+
+      this.model.Remarks = "-";
+      this.dsReceipt
+        .printLabel(this.model)
+        .then((dt) => {
+          toastSuccess("Data saved successfully!");
+          this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+    },
     submit: function () {
       this.isLoading = true;
       this.errors = {};
@@ -399,6 +429,7 @@ export default {
 
       this.model.Id = this.filter.ReceiptId;
       this.model.SupplierCode = this.filter.SupplierCode;
+      this.model.Details = this.items;
 
       if (this.isNew) {
         this.createReceipt();

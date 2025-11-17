@@ -24,15 +24,15 @@ public class MobileReceiptVerifyTransactionHandler : ITransactionHandler
         var json = JsonSerializer.Serialize(payload);
         var model = JsonSerializer.Deserialize<MobileReceipt>(json);
 
-        var before = await _receiptRepo.CaptureDataBarcode(model.Id);
+        var before = await _receiptRepo.CaptureDataGrouping(model.RefNo);
         await _receiptRepo.Verify(model, userId);
-        var after = await _receiptRepo.CaptureDataBarcode(model.Id);
+        var after = await _receiptRepo.CaptureDataGrouping(model.RefNo);
 
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Mobile - Receipt",
-            EntityId = model.Id.ToString(),
-            ReferenceId = model.BarcodeNo,
+            EntityId = model.RefNo,
+            ReferenceId = model.RefNo,
             Before = before,
             After = after,
             Action = DataLogAction.Update,

@@ -174,6 +174,17 @@ export const useReceipt = defineStore('Receipt', {
 
       })
     },
+    printLabel: function (data) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/print-label`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {
         let filterExport = {

@@ -1,5 +1,6 @@
-﻿using Kawai.Domain.DTOs.Log;
+﻿using Kawai.Api.Services;
 using Kawai.Domain.Interfaces.Mobile;
+using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,13 @@ namespace Kawai.Api.Controllers.Mobile;
 public class MobileMaterialNGController : HahaController
 {
     private readonly IMobileMaterialNGRepository _materialNGRepository;
+    private readonly ITransactionProducer _transactionProducer;
     private readonly DataLogger _logger;
 
-    public MobileMaterialNGController(IMobileMaterialNGRepository materialNGRepository, DataLogger logger)
+    public MobileMaterialNGController(IMobileMaterialNGRepository materialNGRepository, ITransactionProducer transactionProducer, DataLogger logger)
     {
         _materialNGRepository = materialNGRepository;
+        _transactionProducer = transactionProducer;
         _logger = logger;
     }
 
@@ -28,23 +31,25 @@ public class MobileMaterialNGController : HahaController
     [HttpPost("save")]
     public async Task<IActionResult> Save(MobileMaterialNG model)
     {
-        var before = model.InspectionId.HasValue ? await _materialNGRepository.Capture(model.InspectionId.Value) : null;
-
-        await _materialNGRepository.Save(model, Auth.User.UserID);
-
-        var after = await _materialNGRepository.Capture(model.InspectionId.Value);
-
-        await _logger.SaveDataLog(new DataLogDto
+        var message = new StockTransactionMessage<MobileMaterialNG>
         {
-            DocumentType = "Mobile Material NG",
-            EntityId = model.InspectionId.ToString(),
-            ReferenceId = model.InspectionId.ToString(),
-            Before = before,
-            After = after,
-            Activity = "Save Mobile Material NG",
-            Action = DataLogAction.Create
-        });
+            AuthUserId = Auth.User.UserID,
+            TimeStamp = EpochDateTime.Now,
+            TransactionType = "MATERIAL-NG-MOBILE",
+            FormatMessage = "Material NG Mobile",
+            Payload = model,
+            LogContext = new LogContext
+            {
+                Method = HttpContext.Request.Method,
+                RequestPath = HttpContext.Request.Path,
+                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                UserID = Auth.User.UserID,
+                FullName = Auth.User.FullName
+            }
+        };
 
-        return Success(after, "Data saved successfully!");
+        _transactionProducer.Publish<MobileMaterialNG>(message);
+        return Pending(message);
     }
 }

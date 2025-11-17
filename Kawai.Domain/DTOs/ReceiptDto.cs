@@ -46,6 +46,9 @@ public class ReceiptDetailBarcodeDto : DataTableDto
     public long Id { get; set; }
     public long ReceiptDetailId { get; set; }
     public long ReceiptId { get; set; }
+    public string DNNumber { get; set; }
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
     public string PONumber { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }

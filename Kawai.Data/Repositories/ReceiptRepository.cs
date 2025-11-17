@@ -58,10 +58,10 @@ public class ReceiptRepository : IReceiptRepository
         return (await _dbExecutor.QueryListAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = receiptId })).ToList();
     }
 
-    public async Task<ReceiptDetailBarcodeDto> GetDataBarcode(long id, string barcodeNo)
+    public async Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo)
     {
         string sp = "sp_Wms_Receipt_DataBarcode";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = id, BarcodeNo = barcodeNo });
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDetailBarcodeDto>(sp, new { BarcodeNo = barcodeNo });
     }
 
     public async Task<List<ReceiptDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu)
@@ -133,15 +133,25 @@ public class ReceiptRepository : IReceiptRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new { Id = id });
     }
 
+    public async Task PrintLabel(long id, string userId)
+    {
+        string sqlHeader = "sp_Wms_Receipt_PrintLabel";
+        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        {
+            ReceiptId = id,
+            UserId = userId
+        });
+    }
+
     public async Task Verify(MobileReceipt payload, string userId)
     {
         string sqlHeader = "sp_Wms_Receipt_Verify";
+        payload.RefNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Stock_GeneratePalletNo");
+
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
-            payload.Id,
-            payload.BarcodeNo,
-            payload.Qty,
-            payload.QtyVerify,
+            payload.RefNo,
+            Details = DataTableHelper.ToDataTable(payload.Details),
             VerifiedBy = userId
         });
     }
@@ -192,34 +202,34 @@ public class ReceiptRepository : IReceiptRepository
         };
     }
 
-    public async Task<Dictionary<string, object>> CaptureDataBarcode(long id)
+    public async Task<Dictionary<string, object>> CaptureDataGrouping(string refNo)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
             "sp_Wms_Receipt_CaptureBarcode",
-            param: new { Id = id },
+            param: new { RefNo = refNo },
             async multi =>
             {
-                var detail = (await multi.ReadAsync<dynamic>()).ToList();
                 var stocks = (await multi.ReadAsync<StockMasterDto>()).ToList();
                 var stockDetail = (await multi.ReadAsync<StockDetailDto>()).ToList();
                 foreach (var master in stocks)
                 {
                     master.StockDetails = stockDetail
                     .Where(detail =>
+                        detail.RefNo == master.RefNo &&
                         detail.WarehouseCode == master.WarehouseCode &&
                         detail.AreaCode == master.AreaCode &&
                         detail.ItemCode == master.ItemCode &&
                         detail.LotNo == master.LotNo
                     ).ToList();
                 }
-                return (detail, stocks);
+                return stocks;
             }
         );
 
         return new Dictionary<string, object>
         {
-            { "Receipt Detail Barcode", result.detail },
-            { "Stock", result.stocks }
+            { "Pallet No: ", refNo },
+            { "Stock", result }
         };
     }
 }

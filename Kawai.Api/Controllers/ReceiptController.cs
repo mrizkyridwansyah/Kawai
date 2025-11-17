@@ -103,6 +103,29 @@ public class ReceiptController : HahaController
         return Success(results.Take(100));
     }
 
+    [HttpPost("print-label")]
+    public async Task<IActionResult> PrintLabel(Receipt payload)
+    {
+        if (!payload.Id.HasValue) return Invalid("Data Receipt Invalid");
+
+        var before = await _receiptRepository.Capture(payload.Id ?? 0);
+
+        await _receiptRepository.PrintLabel(payload.Id ?? 0, Auth.User.UserID);
+
+        var after = await _receiptRepository.Capture(payload.Id ?? 0);
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Material",
+            EntityId = (payload.Id ?? 0).ToString(),
+            ReferenceId = payload.ReceiptNo,
+            Before = before,
+            After = after,
+            Activity = "Print Label Receipt",
+            Action = DataLogAction.Update
+        });
+        return Success(after);
+    }
+
     /*
     [HttpPost("create-using-rabbitmq")]
     //[Idempotent]

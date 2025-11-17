@@ -45,6 +45,13 @@ public class MobileReceiptController : HahaController
 
         await Task.WhenAll(header, detail, detailBarcode);
 
+        foreach (var barcode in detailBarcode.Result)
+        {
+            barcode.DNNumber = header.Result.DNNumber;
+            barcode.SupplierCode = header.Result.SupplierCode;
+            barcode.SupplierName = header.Result.SupplierName;
+        }
+
         var resultDetail = detail.Result.Select(p => new
         {
             p.Id,
@@ -83,21 +90,24 @@ public class MobileReceiptController : HahaController
     }
 
     [HttpGet("data-barcode")]
-    public async Task<IActionResult> GetDataBarcode(long id, string barcodeNo)
+    public async Task<IActionResult> GetDataBarcode(string barcodeNo)
     {
-        var result = await _receiptRepository.GetDataBarcode(id, barcodeNo);
+        var result = await _receiptRepository.GetDataBarcode(barcodeNo);
         return Success(result);
     }
 
     [HttpPost("verify")]
     public async Task<IActionResult> Verify(MobileReceipt model)
     {
+        if (model.Details == null || model.Details.Count == 0)
+            return Invalid("Detail Barcode tidak boleh kosong");
+
         var message = new StockTransactionMessage<MobileReceipt>
         {
             AuthUserId = Auth.User.UserID,
             TimeStamp = EpochDateTime.Now,
             TransactionType = "RECEIPT-VERIFY-MOBILE",
-            FormatMessage = "Receipt Barcode No. : " + model.BarcodeNo,
+            FormatMessage = "Receipt Check Mobile",
             Payload = model,
             LogContext = new LogContext
             {

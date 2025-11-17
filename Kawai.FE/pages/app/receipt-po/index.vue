@@ -274,6 +274,7 @@ export default {
     },
     model: {
       Id: null,
+      ReceiptNo: "",
       DNNumber: "",
       SupplierCode: null,
       DNDate: null,
@@ -338,6 +339,7 @@ export default {
       };
       this.model = {
         Id: null,
+        ReceiptNo: "",
         DNNumber: "",
         SupplierCode: null,
         DNDate: null,
@@ -370,7 +372,19 @@ export default {
     check: function (e, item) {
       item.Selected = e.target.checked;
     },
-    printLabel: function () {},
+    printLabel: function () {
+      this.ds
+        .printLabel(this.model)
+        .then((dt) => {
+          toastSuccess("Data saved successfully!");
+          this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));      
+    },
     printReport: function () {},
     submit: function () {
       this.isLoading = true;

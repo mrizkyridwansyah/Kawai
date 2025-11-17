@@ -5,8 +5,16 @@ namespace Kawai.Domain.Models.Mobile;
 
 public class MobileReceipt
 {
+    public string RefNo { get; set; }
+
     [Required]
-    public long Id { get; set; }
+    public List<MobileReceiptDetail> Details { get; set; } = new List<MobileReceiptDetail>();
+}
+
+public class MobileReceiptDetail
+{
+    [Required]
+    public long ReceiptDetailBarcodeId { get; set; }
 
     [Required(ErrorMessage = "Barcode tidak boleh kosong")]
     public string BarcodeNo { get; set; }

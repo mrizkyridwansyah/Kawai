@@ -14,10 +14,11 @@ public interface IReceiptRepository
     Task Create(Receipt receipt, string userId);
     Task Update(Receipt receipt, string userId);
     Task Remove(long id);
+    Task PrintLabel(long id, string userId);
     #endregion
 
     #region MOBILE
-    Task<ReceiptDetailBarcodeDto> GetDataBarcode(long id, string barcodeNo);
+    Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo);
     Task Verify(MobileReceipt payload, string userId);
     #endregion
 
@@ -35,5 +36,5 @@ public interface IReceiptRepository
 
 
     Task<Dictionary<string, object>> Capture(long id);
-    Task<Dictionary<string, object>> CaptureDataBarcode(long id);
+    Task<Dictionary<string, object>> CaptureDataGrouping(string refNo);
 }
