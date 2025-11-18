@@ -112,7 +112,7 @@ export default {
           .get(
             `/warehouse/ddl-warehouse-search-by-stock-privileges?keyword=${q || ""}&ids=${
               d || ""
-            }&item=${this.itemCode}&factoryCode=${this.factoryCode}`
+            }&item=${this.itemCode}&factoryCode=${this.factoryCode || ""}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
