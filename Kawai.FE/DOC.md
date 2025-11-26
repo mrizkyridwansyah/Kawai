@@ -47,14 +47,14 @@
 4. 📁 Struktur Folder BackEnd
     /Kawai.Api      # API Utama. Controller, Middleware, SignalR, CronJobs, MQ ada disini
         /Controller     # Entry Point API
-        /CronJobs       # Background Job Hangfire biar ga pake SqlJobs because SqlJobs is sucks 
+        /CronJobs       # Background Job Hangfire biar ga pake SqlJobs because SqlJobs is sucks
         /Hub            # Notification SignalR
         /Services       # Custom Folder aja, isi nya handler2 buat File Storage, MQ, Notif Service, Session Manager, Email, dll 
         /Shared         # Custom Folder juga 
     /Kawai.Data     # Layer untuk ke database. Eksekusi Query & SP ada disini
         /Repositories   # File untuk eksekusi query & sp sesuai action di Interface
-        /Sql            # File query skema database agar bisa ditracking di git. (TIAP PERUBAHAN SKEMA TOLONG TARO DISINI!!)
-        /SqlConnection  # File untuk configurasi multi koneksi sql. (JANGAN SEMBARANGAN DI UBAH!!) 
+        /Sql            # File query skema database agar bisa ditracking di git. (Tiap PERUBAHAN SKEMA DB, TOLONG TARO DISINI!!)
+        /SqlConnection  # File untuk configurasi multi koneksi sql. (Jangan Sembarangan Diubah ya) 
     /Kawai.Domain  # Layer untuk DTO, Model & Interface dari Kawai.Data. 
         /DTOs           # Class untuk proses baca dan kembalian ke client. 
         /Models         # Class untuk proses tulis. untuk template payload yg mau client kirim.

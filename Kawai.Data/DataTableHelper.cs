@@ -1,4 +1,7 @@
-﻿using System.Data;
+﻿using Kawai.Api.Models;
+using System;
+using System.Data;
+using System.Data.Common;
 
 namespace Kawai.Data;
 
@@ -24,6 +27,22 @@ public static class DataTableHelper
                 values[i] = properties[i].GetValue(item) ?? DBNull.Value;
             }
             table.Rows.Add(values);
+        }
+        return table;
+    }
+
+    /// <summary>
+    /// Convert List of string to DataTable with single column. 
+    /// Contoh : List string ke User-Defined Table dengan kolom cuma "BarcodeNo"
+    /// </summary>
+    public static DataTable ToDataTableSingle(List<string> items, string columnName)
+    {
+        var table = new DataTable();
+        table.Columns.Add(columnName, typeof(string));
+
+        foreach (var item in items)
+        {
+            table.Rows.Add(item);
         }
 
         return table;

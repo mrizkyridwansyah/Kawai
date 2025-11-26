@@ -61,6 +61,7 @@ builder.Services.AddScoped<ITransactionHandler, ReceiptTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileReceiptVerifyTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileMaterialNGTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileMaterialStorageTransactionHandler>();
+builder.Services.AddScoped<ITransactionHandler, MobileMaterialMergeStorageTransactionHandler>();
 //ini daftarin consumer rabbitmq, buat consume message di queueing =>  transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
 builder.Services.AddHostedService<TransactionConsumerAsync>();
 

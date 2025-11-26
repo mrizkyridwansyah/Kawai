@@ -45,6 +45,20 @@ public class MobileMaterialStorageRepository : IMobileMaterialStorageRepository
         });
     }
 
+    public async Task SaveMerge(MobileMaterialMergeStorage payload, string userId)
+    {
+        string sql = "sp_Wms_Mobile_MaterialStorage_SaveMerge";
+        payload.RefNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Stock_GeneratePalletNo");
+
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            payload.RefNo,
+            payload.AddressCode,
+            ListBarcodes = DataTableHelper.ToDataTable(payload.Details),
+            UserId = userId
+        });
+    }
+
     public async Task<Dictionary<string, object>> Capture(string refNo)
     {
         var result = await _dbExecutor.QueryMultipleAsync(

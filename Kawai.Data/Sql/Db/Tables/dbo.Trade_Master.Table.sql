@@ -58,7 +58,6 @@ CREATE TABLE [Trade_Master](
 	[CODE_KPPBC] [varchar](6) NULL,
 	[NoIzin_Date] [date] NULL,
 	[NITKU] [varchar](30) NULL,
-	[Company_Code] [char](25) NULL,
  CONSTRAINT [PK_Trade_Master] PRIMARY KEY CLUSTERED 
 (
 	[Trade_Code] ASC

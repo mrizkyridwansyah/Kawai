@@ -66,4 +66,29 @@ public class MobileMaterialStorageController : HahaController
         _transactionProducer.Publish<MobileMaterialStorage>(message);
         return Pending(message);
     }
+
+    [HttpPost("save-merge")]
+    public async Task<IActionResult> SaveMerge(MobileMaterialMergeStorage model)
+    {
+        var message = new StockTransactionMessage<MobileMaterialMergeStorage>
+        {
+            AuthUserId = Auth.User.UserID,
+            TimeStamp = EpochDateTime.Now,
+            TransactionType = "MATERIAL-MERGE-STORAGE-MOBILE",
+            FormatMessage = "Material Merge Storage Mobile",
+            Payload = model,
+            LogContext = new LogContext
+            {
+                Method = HttpContext.Request.Method,
+                RequestPath = HttpContext.Request.Path,
+                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                UserID = Auth.User.UserID,
+                FullName = Auth.User.FullName
+            }
+        };
+
+        _transactionProducer.Publish<MobileMaterialMergeStorage>(message);
+        return Pending(message);
+    }
 }
