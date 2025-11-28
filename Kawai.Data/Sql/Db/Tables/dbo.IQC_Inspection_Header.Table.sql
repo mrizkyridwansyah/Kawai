@@ -12,10 +12,13 @@ CREATE TABLE [IQC_Inspection_Header](
 	[InspectionDate] [datetime] NULL,
 	[InspectorID] [char](15) NULL,
 	[InspectionResult] [varchar](20) NULL,
+	[InspectionResultApproval] [char](35) NULL,
+	[InspectionResultDate] [datetime] NULL,
+	[TotalQtySample] [numeric](18, 2) NOT NULL,
+	[TotalQtyNG] [numeric](18, 2) NULL,
 	[Remarks] [text] NULL,
 	[RegisterDate] [datetime] NULL,
 	[LastUpdate] [datetime] NULL,
-	[TotalQtySample] [numeric](18, 2) NOT NULL,
 	[Soruce] [varchar](20) NULL,
 PRIMARY KEY CLUSTERED 
 (

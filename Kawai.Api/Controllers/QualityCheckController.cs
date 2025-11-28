@@ -1,4 +1,5 @@
-﻿using Kawai.Domain.DTOs.Log;
+﻿using Kawai.Api.Services;
+using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
@@ -13,11 +14,13 @@ namespace Kawai.Api.Controllers;
 public class QualityCheckController : HahaController
 {
     private readonly IQualityCheckRepository _qualitycheckRepository;
+    private readonly ITransactionProducer _transactionProducer;
     private readonly DataLogger _logger;
 
-    public QualityCheckController(IQualityCheckRepository qualitycheckRepository, DataLogger logger)
+    public QualityCheckController(IQualityCheckRepository qualitycheckRepository, ITransactionProducer transactionProducer, DataLogger logger)
     {
         _qualitycheckRepository = qualitycheckRepository;
+        _transactionProducer = transactionProducer;
         _logger = logger;
     }
 
@@ -30,24 +33,51 @@ public class QualityCheckController : HahaController
 
 
     [HttpGet("detail")]
-    public async Task<IActionResult> Get(string id)
+    public async Task<IActionResult> Get(long id)
     {
         var result = await _qualitycheckRepository.GetData(id);
+
+        if (!String.IsNullOrEmpty(result.AttachmentFileName))
+        {
+            Stream? image = FileStorage.GetFromAttachments(result.AttachmentFileName);
+            byte[] imageByte = null;
+
+            if (image != null)
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    image.CopyTo(memoryStream);
+                    imageByte = memoryStream.ToArray();
+                }
+                image.Dispose();
+            }
+
+            result.AttachmentFileBase64 = imageByte;
+        }
+
         return Success(result);
     }
 
-    [HttpPatch("confirm")]
-    public async Task<IActionResult> Confirm([FromBody] QualityCheck model)
+    [HttpPost("save")]
+    public async Task<IActionResult> Save([FromForm] QualityCheckResult model)
     {
-        var before = await _qualitycheckRepository.Capture(model.Id);
-        await _qualitycheckRepository.Confirm(model, Auth.User.UserID);
-        var after = await _qualitycheckRepository.Capture(model.Id);
+        var before = await _qualitycheckRepository.Capture(model.InspectionId);
+
+        if (model.Attachment != null)
+        {
+            model.AttachmentName = String.IsNullOrEmpty(model.AttachmentName) ? "IQC_" + Guid.NewGuid().UniqueId(30) : model.AttachmentName;
+            FileStorage.SaveToAttachments(model.AttachmentName, model.Attachment);
+        }
+
+        await _qualitycheckRepository.Save(model, Auth.User.UserID);
+
+        var after = await _qualitycheckRepository.Capture(model.InspectionId);
 
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Quality Check IQC",
-            EntityId = model.Id,
-            ReferenceId = model.Id,
+            EntityId = model.InspectionId.ToString(),
+            ReferenceId = model.InspectionId.ToString(),
             Action = DataLogAction.Update,
             Before = before,
             After = after
@@ -55,34 +85,30 @@ public class QualityCheckController : HahaController
         return Success(after);
     }
 
-    [HttpGet("ddl-dnno-supplierdate-search")]
-    public async Task<IActionResult> DDLLotSearchByStock(string keyword, string ids, string supplier, string receiptdatefrom, string receiptdateto)
+    [HttpPatch("confirm")]
+    public async Task<IActionResult> Confirm(QualityCheckConfirm model)
     {
-        var results = await _qualitycheckRepository.DDLDNNoBySupplierDateFrom(keyword, supplier, receiptdatefrom, receiptdateto);
-        if (!string.IsNullOrEmpty(ids))
+        var message = new StockTransactionMessage<QualityCheckConfirm>
         {
-            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
-            results = results.Where(x => idList.Contains(x.DN_No)).ToList();
-        }
+            AuthUserId = Auth.User.UserID,
+            TimeStamp = EpochDateTime.Now,
+            TransactionType = "IQC-RESULT-CONFIRM",
+            FormatMessage = "Confirm Quality Check",
+            Payload = model,
+            LogContext = new LogContext
+            {
+                Method = HttpContext.Request.Method,
+                RequestPath = HttpContext.Request.Path,
+                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                UserID = Auth.User.UserID,
+                FullName = Auth.User.FullName
+            }
+        };
 
-        return Success(results);
+        _transactionProducer.Publish<QualityCheckConfirm>(message);
+        return Pending(message);
     }
-    //[HttpDelete("confirm")]
-    //public async Task<IActionResult> Remove(string id)
-    //{
-    //    var before = await _qualitycheckRepository.Capture(id);
-    //    await _qualitycheckRepository.Confirm(id, Auth.User.UserID);
-    //    await _logger.SaveDataLog(new DataLogDto
-    //    {
-    //        DocumentType = "Master Area",
-    //        EntityId = id,
-    //        ReferenceId = id,
-    //        Action = DataLogAction.,
-    //        Before = before
-    //    });
-
-    //    return Success(before);
-    //}
 
 
 }

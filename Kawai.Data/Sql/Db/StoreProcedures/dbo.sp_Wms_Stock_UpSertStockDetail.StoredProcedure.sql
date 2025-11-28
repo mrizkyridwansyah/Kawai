@@ -24,7 +24,7 @@ begin
 		and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
 	) 
 	begin
-		update StockDetail set Qty = Qty + @QtyAfter, InventoryQty = @InventoryQty, Lastupdate = getdate(), LastUser = @UserId
+		update StockDetail set Qty = @QtyAfter, InventoryQty = @InventoryQty, Lastupdate = getdate(), LastUser = @UserId
 		where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and AddressCode = @AddressCode 
 		and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
 		--and Qty >= @QtyAfter

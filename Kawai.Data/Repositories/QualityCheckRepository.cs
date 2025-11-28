@@ -17,39 +17,72 @@ public class QualityCheckRepository : IQualityCheckRepository
 
     public async Task<List<QualityCheckDto>> GetAll(RequestParameter param)
     {
-        string sp = "sp_Wms_QualityCheck_List";
-        return (await _dbExecutor.QueryListAsync<QualityCheckDto>(sp, param.ToQueryObject())).ToList();
+        string sp = "sp_Wms_IQCResult_List";
+        var paramSupplier = param.GetParam("SupplierCode");
+        var paramStatus = param.GetParam("StatusInspection");
+        var paramSource = param.GetParam("Source");
+        var paramDateFrom = param.GetParam("PeriodFrom");
+        var paramDateUntil = param.GetParam("PeriodUntil");
+
+        return (await _dbExecutor.QueryListAsync<QualityCheckDto>(sp, new
+        {
+            SupplierCode = paramSupplier,
+            Source = paramSource,
+            StatusInspection = paramStatus,
+            PeriodFrom = paramDateFrom,
+            PeriodUntil = paramDateUntil,
+        })).ToList();
     }
 
-    public async Task<QualityCheckDto> GetData(string id)
+    public async Task<QualityCheckResultDto> GetData(long inspectionId)
     {
-        string sp = "sp_Wms_QualityCheck_GetDetail";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<QualityCheckDto>(sp, new { Id = id });
+        string sp = "sp_Wms_IQCResult_GetDetail";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<QualityCheckResultDto>(sp, new { InspectionId = inspectionId });
     }
 
-    public async Task Confirm(QualityCheck qualitycheck, string userId)
+    public async Task Save(QualityCheckResult payload, string userId)
     {
-        string sql = @"sp_Wms_QualityCheck_Confirm";
+        string sql = @"sp_Wms_IQCResult_SaveResult";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
-            qualitycheck.Id,
-            qualitycheck.QC_Status,
-            qualitycheck.Remarks,
-            UpdateBy = userId
+            payload.InspectionId,
+            payload.QtyNG,
+            payload.Remarks,
+            payload.AttachmentName,
+            UserId = userId
         });
     }
 
-
-
-    public async Task<Dictionary<string, object>> Capture(string id)
+    public async Task Confirm(QualityCheckConfirm payload, string userId)
     {
-        string sp = "sp_Wms_QualityCheck_Capture";
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { Id = id });
+        string sql = @"sp_Wms_IQCResult_Confirm";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            payload.InspectionId,
+            payload.InspectionResult,
+            UserId = userId
+        });
+    }
 
-        if (result == null)
-            return new Dictionary<string, object>();
+    public async Task<Dictionary<string, object>> Capture(long id)
+    {
+        var result = await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_IQCResult_Capture",
+            param: new { Id = id },
+            async multi =>
+            {
+                var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
+                var details = (await multi.ReadAsync<dynamic>()).ToList();
+                header.SampleDetails = details;
+                return header;
 
-        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
+            }
+        );
+
+        return new Dictionary<string, object>
+        {
+            { "IQC", result },
+        };
     }
 
     public async Task<List<QualityCheckDto>> DDLDNNoBySupplierDateFrom(string keyword, string supplier, string receiptdatefrom, string receiptdateto)
@@ -60,7 +93,7 @@ public class QualityCheckRepository : IQualityCheckRepository
             Keyword = keyword ?? "",
             SupplierCode = !String.IsNullOrEmpty(supplier) ? supplier : "ALL",
             ReceiptDateFrom = !String.IsNullOrEmpty(receiptdatefrom) ? receiptdatefrom : "ALL",
-            ReceiptDateTo = !String.IsNullOrEmpty(receiptdateto) ? receiptdateto : "ALL" 
+            ReceiptDateTo = !String.IsNullOrEmpty(receiptdateto) ? receiptdateto : "ALL"
         })).ToList();
     }
 

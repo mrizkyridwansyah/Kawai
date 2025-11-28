@@ -7,6 +7,7 @@ CREATE   procedure [sp_Wms_Stock_MovingRef]
 	@ToWarehouseCode	varchar(25),
 	@ToAreaCode			varchar(25),
 	@ToAddressCode		varchar(25),
+	@ToRefNo			varchar(50),
 	@UserId				varchar(25)
 as
 begin
@@ -36,7 +37,7 @@ begin
 	)
 	insert into @tblStockDetail
 	select 
-		RefNo			
+		ISNULL(@ToRefNo, RefNo)			
 		, @ToWarehouseCode	
 		, @ToAreaCode		
 		, @ToAddressCode		

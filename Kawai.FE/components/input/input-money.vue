@@ -55,6 +55,10 @@ export default {
   },
   watch: {
     modelValue: function (after) {
+      if (after === null || after === undefined || after === "") {
+        after = 0;
+      }
+
       this.val = structuredClone(after.toFixed(9));
       this.val = after < 0 ? after * -1 : after;
 

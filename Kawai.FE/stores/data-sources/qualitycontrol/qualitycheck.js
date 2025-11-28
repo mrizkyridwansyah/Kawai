@@ -49,7 +49,7 @@ export const useQualityCheck = defineStore('QualityCheck', {
           .finally(_ => this.isLoading = false);
       })
     },
-     loadDetail: function (id) {
+    loadDetail: function (id) {
       this.isLoadingDetail = true;
       return new Promise((resolve, reject) => {
         app.$http.get(`/qualitycheck/detail?id=${id}`)
@@ -86,15 +86,26 @@ export const useQualityCheck = defineStore('QualityCheck', {
       this.filter.Length = v;
       this.load();
     },
-     update: function (data) {
-      this.isEditing = true;
+    save: function (data) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/qualitycheck/save`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
+    confirm: function (data) {
+      this.isLoading = true;
       return new Promise((resolve, reject) => {
         app.$http.patch(`/qualitycheck/confirm`, data)
           .then(({ data }) => {
             resolve(data);
           })
           .catch((err) => reject(err.response?.data))
-          .finally(_ => this.isEditing = false);
+          .finally(_ => this.isLoading = false);
       })
     },
   },

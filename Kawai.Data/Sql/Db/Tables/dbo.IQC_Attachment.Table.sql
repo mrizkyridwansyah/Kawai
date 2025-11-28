@@ -7,7 +7,7 @@ CREATE TABLE [IQC_Attachment](
 	[InspectionID] [int] NOT NULL,
 	[FileName] [varchar](255) NULL,
 	[FilePath] [varchar](255) NULL,
-	[RegisterUser] [int] NULL,
+	[RegisterUser] [varchar](25) NULL,
 	[RegisterDate] [datetime] NULL,
 PRIMARY KEY CLUSTERED 
 (

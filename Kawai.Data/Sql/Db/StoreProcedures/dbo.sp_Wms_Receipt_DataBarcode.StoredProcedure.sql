@@ -12,6 +12,12 @@ begin
 		return
 	end
 
+	if exists (select 1 from StockDetail where BarcodeNo = @BarcodeNo)
+	begin
+		raiserror('Data barcode sudah direceipt!', 16, 1)
+		return
+	end
+
 	declare @ReceiptId bigint = (SELECT ReceiptId fROM PartReceiptDetailBarcode WHERE BarcodeNo = @BarcodeNo)
 
 	SELECT

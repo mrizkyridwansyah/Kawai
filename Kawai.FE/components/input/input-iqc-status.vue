@@ -7,22 +7,20 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Trade`"
+      :placeholder="placeholder || `Search IQC Approval Status`"
       :searchable="true"
-      label="Trade_Name"
-      track-by="Trade_Code"
-      trackBy="Trade_Code"
+      label="Name"
+      track-by="Id"
+      trackBy="Id"
       :hide-selected="true"
       :internal-search="false"
       :loading="isLoading"
       @search-change="search"
       @open="open"
       :select="change"
-      :class="cClass || 'input-wrapper'"
+      :class="cClass"
       :multiple="multiple !== undefined || false"
-      :disabled="
-        (disabled !== undefined || disabled === true) && disabled !== false
-      "
+      :disabled="disabled !== undefined || false"
       select-label=""
       deselect-label=""
     />
@@ -44,7 +42,6 @@ export default {
   emits: ["update:modelValue"],
   props: [
     "modelValue",
-    "tradeCls",
     "type",
     "label",
     "col",
@@ -55,10 +52,23 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
+    lists: [
+      {
+        Id: "ALL",
+        Name: "ALL",
+      },
+      {
+        Id: "Accepted",
+        Name: "Good",
+      },
+      {
+        Id: "Rejected",
+        Name: "NG",
+      },
+    ],
     list: [],
     tempValue: null,
     debounce: null,
@@ -79,7 +89,7 @@ export default {
     },
   },
   mounted: function () {
-    this.load("", this.modelValue);
+    // this.load('', this.modelValue);
   },
   methods: {
     change: function (v) {
@@ -91,62 +101,22 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
-    // refresh: function () {
-    //   this.load('', this.modelValue);
-    // },
     load: function (q = "", d = "") {
-      this.list = [];
       this.isLoading = true;
+      this.list = this.lists.filter((o) =>
+        o.Name.toLowerCase().includes(q.toLowerCase())
+      );
 
-      var tradeFlags = Array.isArray(this.tradeCls)
-        ? this.tradeCls.map((p) => "&tradecls=" + p)
-        : [];
+      if (d) this.list = this.lists.filter((o) => o.Id == d);
 
-      if (this.debounce != null) clearTimeout(this.debounce);
+      if (d && this.list.length > 0) {
+        this.tempValue = this.list[0]?.Id;
+      }
 
-      this.debounce = setTimeout(() => {
-        this.$http
-          .get(
-            `/trade/ddlsearch?keyword=${q || ""}${
-              tradeFlags.length == 0
-                ? this.tradeCls
-                  ? "&tradecls=" + this.tradeCls
-                  : ""
-                : tradeFlags.join("")
-            }&ids=${d || ""}`
-          )
-          .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.Trade_Code;
-            }
-
-            this.list =
-              (this.showOptionAll || false) &&
-              (q || "") == "" &&
-              p.data.Data.length > 0
-                ? [
-                    {
-                      Trade_Code: "ALL",
-                      Trade_Name: "ALL",
-                    },
-                    ...p.data.Data,
-                  ]
-                : p.data.Data;
-          })
-          .finally(() => (this.isLoading = false));
-
-        clearTimeout(this.debounce);
-      }, 200);
+      this.isLoading = false;
     },
   },
 };
 </script>
-
-<style>
-.input-wrapper {
-  min-width: 10em;
-  width: 100%;
-}
-</style>

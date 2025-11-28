@@ -2,20 +2,44 @@
 
 public class QualityCheckDto: DataTableDto
 {
-    public string Id { get; set; }
-    public string Supplier_Code { get; set; }
-    public string DN_No { get; set; }
-    public string Item_Code { get; set; }
-    public string Item_Name { get; set; }
-    public string Qty { get; set; }
-    public string Inspection_Date { get; set; }
-    public string Inspection_User { get; set; }
-    public string QC_Status { get; set; }
-    public string QC_Status_Descs { get; set; }
+    public long InspectionId { get; set; }
+    public string Source { get; set; }
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
+    public string DNNumber { get; set; }
+    public DateTime DNDate { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string UnitCls { get; set; }
+    public string UnitClsDescription { get; set; }
+    public double Qty { get; set; }
+    public double QtyNG { get; set; }
+    public string InspectionResult { get; set; }
+    public DateTime RegisterDate { get; set; }
+    public string RegisterUser { get; set; }
+    public string RegisterUserName { get; set; }
+    public DateTime InspectionDate { get; set; }
+    public string InspectorID { get; set; }
+    public string InspectorName { get; set; }
+    public DateTime? ApprovalDate { get; set; }
+    public string ApprovalUser { get; set; }
+    public string ApprovalUserName { get; set; }
+
+}
+
+
+public class QualityCheckResultDto: DataTableDto
+{
+    public long InspectionId { get; set; }
+    public string DNNumber { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public double Qty { get; set; }
+    public double QtyNG { get; set; }
+    public string InspectionResult { get; set; }
     public string Remarks { get; set; }
-    public string QC_Photo { get; set; }
-    public string Status { get; set; }
-    public DateTime? Receipt_Date { get; set; }
-    public DateTime? LastUpdate { get; set; }
-    public string Lastuser { get; set; }
+    public long? AttachmentID { get; set; }
+    public string AttachmentFileName { get; set; }
+    public byte[] AttachmentFileBase64 { get; set; }
+
 }
