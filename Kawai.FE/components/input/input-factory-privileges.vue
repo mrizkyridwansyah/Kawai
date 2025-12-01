@@ -20,7 +20,9 @@
       :select="change"
       :class="cClass || 'input-wrapper'"
       :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false"
+      :disabled="
+        (disabled !== undefined || disabled === true) && disabled !== false
+      "
       select-label=""
       deselect-label=""
     />
@@ -99,7 +101,9 @@ export default {
 
       this.debounce = setTimeout(() => {
         this.$http
-          .get(`/factory/ddlsearch-privileges?keyword=${q || ""}&ids=${d || ""}`)
+          .get(
+            `/factory/ddlsearch-privileges?keyword=${q || ""}&ids=${d || ""}`
+          )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.CompanyCode;

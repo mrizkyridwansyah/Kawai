@@ -24,6 +24,7 @@ public class ReceiptRepository : IReceiptRepository
     }
     public async Task<List<PODetailDto>> GetListPODetail(RequestParameter param)
     {
+        var paramFactory = param.GetParam("FactoryCode");
         var paramReceiptId = param.GetParam("ReceiptId");
         var paramPONumber = param.GetParam("PONumber");
         var paramSupplier = param.GetParam("SupplierCode");
@@ -33,6 +34,7 @@ public class ReceiptRepository : IReceiptRepository
         string sp = "sp_Wms_Receipt_ListPODetail";
         return (await _dbExecutor.QueryListAsync<PODetailDto>(sp, new
         {
+            FactoryCode = paramFactory,
             ReceiptId = paramReceiptId,
             PONumber = paramPONumber,
             SupplierCode = paramSupplier,
@@ -58,13 +60,13 @@ public class ReceiptRepository : IReceiptRepository
         return (await _dbExecutor.QueryListAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = receiptId })).ToList();
     }
 
-    public async Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo)
+    public async Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo, string userId)
     {
         string sp = "sp_Wms_Receipt_DataBarcode";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDetailBarcodeDto>(sp, new { BarcodeNo = barcodeNo });
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptDetailBarcodeDto>(sp, new { BarcodeNo = barcodeNo, UserId = userId });
     }
 
-    public async Task<List<ReceiptDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu)
+    public async Task<List<ReceiptDto>> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string userId)
     {
         string sp = "sp_Wms_Receipt_DDL";
 
@@ -73,16 +75,18 @@ public class ReceiptRepository : IReceiptRepository
             Keyword = keyword ?? "",
             Status = status ?? "",
             SourceMenu = sourceMenu ?? "",
+            FactoryCode = String.IsNullOrEmpty(factory) ? "ALL" : factory,
             SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
             PeriodFrom = periodFrom,
             PeriodUntil = periodUntil,
+            UserId = userId
         })).ToList();
     }
 
-    public async Task<List<ReceiptDto>> DDLSearchReceipt(string keyword)
+    public async Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string userId)
     {
         string sp = "sp_Wms_Receipt_DDLSearchReceipt";
-        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "", UserId = userId })).ToList();
     }
 
     public async Task Create(Receipt receipt, string userId)
@@ -93,6 +97,7 @@ public class ReceiptRepository : IReceiptRepository
         {
             receipt.ReceiptNo,
             receipt.DNNumber,
+            receipt.FactoryCode,
             receipt.SupplierCode,
             receipt.DNDate,
             receipt.BCNumber,
@@ -114,6 +119,7 @@ public class ReceiptRepository : IReceiptRepository
         {
             receipt.Id,
             receipt.DNNumber,
+            receipt.FactoryCode,
             receipt.SupplierCode,
             receipt.DNDate,
             receipt.BCNumber,
@@ -231,5 +237,10 @@ public class ReceiptRepository : IReceiptRepository
             { "Pallet No: ", refNo },
             { "Stock", result }
         };
+    }
+    public async Task<List<ReceiptInquiryDto>> Inquiry(RequestParameter param)
+    {
+        string sp = "sp_Wms_Receipt_Inquiry";
+        return (await _dbExecutor.QueryListAsync<ReceiptInquiryDto>(sp, param.ToQueryObject())).ToList();
     }
 }

@@ -26,7 +26,7 @@ public class MobileReceiptController : HahaController
     [HttpGet("ddlsearch")]
     public async Task<IActionResult> DDLSearchReceipt(string keyword, string ids)
     {
-        var results = await _receiptRepository.DDLSearchReceipt(keyword);
+        var results = await _receiptRepository.DDLSearchReceipt(keyword, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -92,7 +92,7 @@ public class MobileReceiptController : HahaController
     [HttpGet("data-barcode")]
     public async Task<IActionResult> GetDataBarcode(string barcodeNo)
     {
-        var result = await _receiptRepository.GetDataBarcode(barcodeNo);
+        var result = await _receiptRepository.GetDataBarcode(barcodeNo, Auth.User.UserID);
         return Success(result);
     }
 

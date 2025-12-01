@@ -93,9 +93,10 @@
                       <td>{{ item.ItemName }}</td>
                       <td
                         :class="{
-                          'text-success': item.StatusReceipt === 'PASSED',
-                          'text-danger': item.StatusReceipt === 'FAILED',
+                          'text-success': item.StatusReceipt === 'OK',
+                          'text-danger': item.StatusReceipt === 'NG',
                           'text-warning': item.StatusReceipt === 'PENDING',
+                          'text-primary': item.StatusReceipt === 'NEW',
                         }"
                       >
                         {{ item.StatusReceipt }}
@@ -103,15 +104,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <v-data-empty
-                  class="mt-3"
-                  v-if="
-                    !ds.isLoading &&
-                    list.length == 0 &&
-                    !ds.isNetworkError &&
-                    !ds.isServerError
-                  "
-                />
+                <v-data-empty class="mt-3" v-if="list.length == 0" />
               </div>
             </div>
           </div>
@@ -146,15 +139,7 @@
                   </tr>
                 </tbody>
               </table>
-              <v-data-empty
-                class="mt-3"
-                v-if="
-                  !ds.isLoading &&
-                  listPending.length == 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
-              />
+              <v-data-empty class="mt-3" v-if="listPending.length == 0" />
             </div>
           </div>
         </div>
@@ -188,9 +173,10 @@
                     <td>{{ item.ItemName }}</td>
                     <td
                       :class="{
-                        'text-success': item.StatusReceipt === 'PASSED',
-                        'text-danger': item.StatusReceipt === 'FAILED',
+                        'text-success': item.StatusReceipt === 'OK',
+                        'text-danger': item.StatusReceipt === 'NG',
                         'text-warning': item.StatusReceipt === 'PENDING',
+                        'text-primary': item.StatusReceipt === 'NEW',
                       }"
                     >
                       {{ item.StatusReceipt }}
@@ -198,15 +184,7 @@
                   </tr>
                 </tbody>
               </table>
-              <v-data-empty
-                class="mt-3"
-                v-if="
-                  !ds.isLoading &&
-                  listPassed.length == 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
-              />
+              <v-data-empty class="mt-3" v-if="listPassed.length == 0" />
             </div>
           </div>
         </div>
@@ -237,15 +215,7 @@
                   </tr>
                 </tbody>
               </table>
-              <v-data-empty
-                class="mt-3"
-                v-if="
-                  !ds.isLoading &&
-                  listNG.length == 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
-              />
+              <v-data-empty class="mt-3" v-if="listNG.length == 0" />
             </div>
           </div>
         </div>
@@ -263,6 +233,7 @@ export default {
       passed: 0,
       ng: 0,
     },
+    isLoading: false,
     list: [],
     listPending: [],
     listPassed: [],
@@ -274,36 +245,36 @@ export default {
     },
   },
   mounted: async function () {
-    this.load();
-
-    const nuxtApp = useNuxtApp();
-    const signalr = await nuxtApp.$createSignalR("/notifapprovalhub");
-
-    if (!signalr) {
-      console.warn("SignalR connection not found!");
-      return;
-    }
-
-    // Register event handler
-    signalr.on("AndonReceivingNotification", (data) => {
-      this.hasNewNotification = true;
+    setInterval(() => {
       this.load();
-    });
+    }, 3000);
   },
   methods: {
     load: function () {
-      this.ds.load().then((dt) => {
-        console.log(dt);
-        this.list = dt.data.Data;
-        this.listPending = this.list.filter((p) => p.Status === "NEW" || p.Status === "PENDING");
-        this.listPassed = this.list.filter((p) => p.Status === "PASSED");
-        this.listNG = this.list.filter((p) => p.Status === "NG");
+      if (this.isLoading) {
+        console.log("masih loading bro!");
+        return;
+      }
 
-        this.summary.total = this.list.length;
-        this.summary.pending = this.listPending.length;
-        this.summary.passed = this.listPassed.length;
-        this.summary.ng = this.listNG.length;
-      });
+      this.isLoading = true;
+
+      this.ds
+        .load()
+        .then((dt) => {
+          console.log(dt);
+          this.list = dt.data.Data;
+          this.listPending = this.list.filter(
+            (p) => p.StatusReceipt === "NEW" || p.StatusReceipt === "PENDING"
+          );
+          this.listPassed = this.list.filter((p) => p.StatusReceipt === "OK");
+          this.listNG = this.list.filter((p) => p.StatusReceipt === "NG");
+
+          this.summary.total = this.list.length;
+          this.summary.pending = this.listPending.length;
+          this.summary.passed = this.listPassed.length;
+          this.summary.ng = this.listNG.length;
+        })
+        .finally(() => (this.isLoading = false));
     },
   },
 };

@@ -7,6 +7,8 @@ public class ReceiptDto: DataTableDto
     public string ReceiptNo { get; set; }
     public DateTime ReceiptDate { get; set; }
     public string DNNumber { get; set; }
+    public string FactoryCode { get; set; }
+    public string FactoryName { get; set; }
     public string SupplierCode { get; set; }
     public string SupplierName { get; set; }
     public DateTime DNDate { get; set; }
@@ -69,4 +71,29 @@ public class ReceiptAndonDto : DataTableDto
     public string DNNumber { get; set; }
     public string ItemName { get; set; }
     public string StatusReceipt { get; set; }
+}
+
+public class ReceiptInquiryDto: DataTableDto
+{
+    public long? Id { get; set; }
+    public string ReceiptNo { get; set; }
+    public DateTime ReceiptDate { get; set; }
+    public string FactoryCode { get; set; }
+    public string FactoryName { get; set; }
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string DNNumber { get; set; }
+    public DateTime DNDate { get; set; }
+    public string PONumber { get; set; }
+    public string BCNumber { get; set; }
+    public string BCType { get; set; }
+    public DateTime BCDate { get; set; }
+    public string UnitCls { get; set; }
+    public string UnitClsDescription { get; set; }
+    public double Qty { get; set; }
+    public string Currency { get; set; }
+    public double Price { get; set; }
+    public double Amount { get; set; }
 }

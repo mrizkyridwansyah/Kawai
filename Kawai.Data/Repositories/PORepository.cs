@@ -47,7 +47,7 @@ public class PORepository : IPORepository
         };
     }
 
-    public async Task<List<PODto>> GetDDL(string keyword, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll)
+    public async Task<List<PODto>> GetDDL(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string userId)
     {
         string sp = "sp_Wms_PO_DDL";
         var today = DateTime.Today;
@@ -56,11 +56,13 @@ public class PORepository : IPORepository
         return (await _dbExecutor.QueryListAsync<PODto>(sp, new
         {
             Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factory) ? "ALL" : factory,
             SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
             TypeDate = typeDate,
             PeriodFrom = periodFrom.HasValue ? periodFrom.Value : awalBulan,
             PeriodUntil = periodUntil.HasValue ? periodUntil.Value : DateTime.Today,
-            ShowOptionAll = showOptionAll
+            ShowOptionAll = showOptionAll,
+            UserId = userId
         })).ToList();
     }
 

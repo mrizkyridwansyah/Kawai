@@ -49,12 +49,12 @@
               <v-table-pagination
                 v-if="
                   !ds.isLoading &&
-                  ds.data.Items.length > 0 &&
+                  (dsData || ds.data).Items.length > 0 &&
                   !ds.isNetworkError &&
                   !ds.isServerError
                 "
                 class="mt-3"
-                :table="ds.data"
+                :table="dsData || ds.data"
                 :page-change="dsPage || ds.setPage"
                 :length-change="dsLength || ds.setLength"
               />
@@ -62,7 +62,7 @@
                 class="mt-3"
                 v-if="
                   !ds.isLoading &&
-                  ds.data.Items.length == 0 &&
+                  (dsData || ds.data).Items.length == 0 &&
                   !ds.isNetworkError &&
                   !ds.isServerError
                 "
@@ -103,6 +103,7 @@ export default {
     },
     frozenColumnLeft: { type: Number, default: 0 },
     ds: { type: Object },
+    dsData: {type: Object},
     dsPage: { type: Function },
     dsLength: { type: Function },
     dsLoad: { type: Function },

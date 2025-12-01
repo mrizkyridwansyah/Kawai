@@ -38,6 +38,7 @@
               :disabled="isNew"
               status="NEW"
               source-menu="RECEIPT UNSCHEDULE"
+              :factory-code="filter.FactoryCode"
               :supplier-code="filter.SupplierCode"
               v-model="filter.ReceiptId"
               :errors="errors?.ReceiptId"
@@ -274,6 +275,7 @@ export default {
       Id: null,
       ReceiptNo: "",
       DNNumber: "",
+      FactoryCode: null,
       SupplierCode: null,
       DNDate: null,
       BCNumber: "",
@@ -307,6 +309,9 @@ export default {
     },
   },
   watch: {
+    "filter.FactoryCode": function () {
+      this.items = [];
+    },
     "filter.SupplierCode": function () {
       this.items = [];
     },
@@ -350,6 +355,7 @@ export default {
         Id: null,
         ReceiptNo: "",
         DNNumber: "",
+        FactoryCode: null,
         SupplierCode: null,
         DNDate: null,
         BCNumber: "",
@@ -428,6 +434,7 @@ export default {
       }
 
       this.model.Id = this.filter.ReceiptId;
+      this.model.FactoryCode = this.filter.FactoryCode;
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = this.items;
 

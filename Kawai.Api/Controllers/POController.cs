@@ -42,9 +42,9 @@ public class POController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string ids)
     {
-        var results = await _poRepository.GetDDL(keyword, supplier, typeDate, periodFrom, periodUntil, showOptionAll);
+        var results = await _poRepository.GetDDL(keyword, factory, supplier, typeDate, periodFrom, periodUntil, showOptionAll, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

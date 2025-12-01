@@ -15,10 +15,11 @@ public interface IReceiptRepository
     Task Update(Receipt receipt, string userId);
     Task Remove(long id);
     Task PrintLabel(long id, string userId);
+    Task<List<ReceiptInquiryDto>> Inquiry(RequestParameter parameter);
     #endregion
 
     #region MOBILE
-    Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo);
+    Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo, string userId);
     Task Verify(MobileReceipt payload, string userId);
     #endregion
 
@@ -31,8 +32,8 @@ public interface IReceiptRepository
     Task<List<ReceiptAndonDto>> GetListNSummary();
     #endregion
 
-    Task<List<ReceiptDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu);
-    Task<List<ReceiptDto>> DDLSearchReceipt(string keyword);
+    Task<List<ReceiptDto>> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string userId);
+    Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string userId);
 
 
     Task<Dictionary<string, object>> Capture(long id);

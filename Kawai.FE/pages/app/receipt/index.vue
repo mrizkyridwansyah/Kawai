@@ -1,13 +1,44 @@
 <template>
   <v-frame title="Part Receipt Material Inquiry" icon="receipt">
     <template #frame-content>
-      <!-- <v-button-add :add="add" cClass="mr-1" /> -->
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 col-12">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Factory</label>
+            <input-factory-privileges v-model="filter.FactoryCode" />
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 col-12">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Supplier</label>
+            <input-trade
+              placeholder="Search Supplier"
+              v-model="filter.SupplierCode"
+              :show-option-all="true"
+            />
+          </div>
+        </div>
+        <div
+          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12 mt-2"
+        >
+          <label class="form-label">Receipt Date</label>
+          <div class="mr-1" style="width: 100%; display: flex">
+            <input-date v-model="filter.PeriodFrom" />
+            <label class="form-label ml-2 mr-2 mt-2">s/d</label>
+            <input-date v-model="filter.PeriodUntil" class="ml-2 mr-2" />
+            <v-button-search-reset
+              class="ml-2 ms-1"
+              :search="search"
+              :reset="reset"
+            />
+          </div>
+        </div>
+      </div>
 
       <v-table
         :filter="filter"
         :export-excel="false"
         :export-excel-action="exportExcel"
-        :data-items="ds.data.Items"
         :ds="ds"
         ref="vtable"
       >
@@ -19,42 +50,40 @@
           >
             <thead>
               <tr>
-                <th class="text-center">Action</th>
                 <th class="text-center">Receipt No</th>
-                <th class="text-center">Receipt Date</th>
                 <th class="text-center">Supplier</th>
+                <th class="text-center">Delivery Date</th>
+                <th class="text-center">Item Code</th>
+                <th class="text-center">Description</th>
                 <th class="text-center">DN Number</th>
-                <th class="text-center">BC Number</th>
+                <th class="text-center">PO Number</th>
                 <th class="text-center">BC Type</th>
-                <th class="text-center">Vehicle No</th>
-                <th class="text-center">Transport</th>
-                <th class="text-center">Remarks</th>
-                <th class="text-center">Last User</th>
-                <th class="text-center">Last Update</th>
+                <th class="text-center">BC No</th>
+                <th class="text-center">BC Date</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">Unit</th>
+                <th class="text-center">Currency</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Amount</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, idx) in ds.data.Items" :key="idx">
-                <td class="text-center" v-if="item.IsComplete"></td>
-                <td class="text-center" v-else>
-                  <font-awesome-icon
-                    style="cursor: pointer"
-                    class="ml-2 text-primary"
-                    icon="eye"
-                    @click="view(item)"
-                  />
-                </td>
+              <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
                 <td>{{ item.ReceiptNo }}</td>
-                <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                 <td>{{ item.SupplierName }}</td>
+                <td>{{ $func.formatDate(item.DNDate) }}</td>
+                <td>{{ item.ItemCode }}</td>
+                <td>{{ item.ItemName }}</td>
                 <td>{{ item.DNNumber }}</td>
-                <td>{{ item.BCNumber }}</td>
+                <td>{{ item.PONumber }}</td>
                 <td>{{ item.BCType }}</td>
-                <td>{{ item.VehicleNo }}</td>
-                <td>{{ item.Transport }}</td>
-                <td>{{ item.Remarks }}</td>
-                <td>{{ item.LastUser }}</td>
-                <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                <td>{{ item.BCNumber }}</td>
+                <td>{{ $func.formatDate(item.BCDate) }}</td>
+                <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
+                <td>{{ item.UnitClsDescription }}</td>
+                <td>{{ item.Currency }}</td>
+                <td class="text-right">{{ $func.formatMoney(item.Price) }}</td>
+                <td class="text-right">{{ $func.formatMoney(item.Amount) }}</td>
               </tr>
             </tbody>
           </table>
@@ -62,26 +91,6 @@
       </v-table>
     </template>
   </v-frame>
-
-  <v-modal
-    ref="modalPartReceipt"
-    id="modal-form-part-receipt"
-    :title="title"
-    :fullscreen="true"
-    @hidden="
-      () => {
-        this.$refs.formPartReceipt.resetForm();
-        modalMode = '';
-      }
-    "
-  >
-    <modal-form-part-receipt
-      ref="formPartReceipt"
-      :id="idSelected"
-      :mode="modalMode"
-      @submitted="close"
-    />
-  </v-modal>
 </template>
 
 <script>
@@ -94,6 +103,10 @@ export default {
     filter: {
       keyword: null,
       keywordKey: "ReceiptNo",
+      FactoryCode: null,
+      SupplierCode: null,
+      PeriodFrom: null,
+      PeriodUntil: null,
       sorts: {
         ReceiptNo: "asc",
       },
@@ -110,65 +123,92 @@ export default {
           selected: false,
           direction: "asc",
         },
+        {
+          label: "Item",
+          value: "ItemName",
+          selected: false,
+          direction: "asc",
+        },
+        {
+          label: "Delivery Date",
+          value: "DNDate",
+          selected: false,
+          direction: "asc",
+        },
       ],
     },
-    modalVisible: false,
-    idSelected: null,
-    title: "",
-    modalMode: "",
     debounce: null,
+    lists: [],
   }),
   computed: {
     ds: function () {
-      return useReceipt();
-    },
-    notif: function () {
-      return useNotification();
+      return useReceiptInquiry();
     },
   },
   watch: {
-    filter: {
-      deep: true,
-      handler: function (after) {
-        if (this.debounce) clearTimeout(this.debounce);
-
-        this.debounce = setTimeout(() => {
-          var filter = [];
-
-          if (after.keywordKey != "" && after)
-            filter.push({ Keyword: after.keyword || "" });
-
-          this.ds.setSort(after.sorts);
-          this.ds.setFilter(filter);
-          this.ds.load();
-        }, 800);
-      },
+    "filter.FactoryCode": function () {
+      this.resetGrid();
     },
-    "notif.newNotif": function () {
-      this.ds.load();
+    "filter.SupplierCode": function () {
+      this.resetGrid();
+    },
+    "filter.PeriodFrom": function () {
+      this.resetGrid();
+    },
+    "filter.PeriodUntil": function () {
+      this.resetGrid();
+    },
+    "filter.keyword": function () {
+      this.search();
+    },
+    "filter.sorts": function () {
+      this.search();
     },
   },
   mounted: function () {
-    this.ds.setSort(this.filter.sorts);
-    this.ds.setFilter([]);
-    this.ds.load();
+    let today = new Date();
+    this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.filter.PeriodUntil = today;
+    this.search();
   },
   methods: {
-    add: function () {
-      this.title = "Add Part Receipt Material";
-      this.modalMode = "add";
-      this.idSelected = null;
-      this.$bvModal.show("modal-form-part-receipt");
+    resetGrid: function () {
+      this.ds.setFilter([]);
+      this.ds.setPage(1);
+      this.ds.setLength(10);
+      this.ds.data.Items = [];
     },
-    view: function (dt) {
-      this.title = "View Part Receipt Material";
-      this.modalMode = "view";
-      this.idSelected = dt.Id;
-      this.$bvModal.show("modal-form-part-receipt");
+    search: function () {
+      this.ds.setSort(this.filter.sorts);
+      let filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          FactoryCode: this.filter.FactoryCode,
+          SupplierCode: this.filter.SupplierCode,
+          PeriodFrom: this.$func.asUtcStringDateOnly(
+            new Date(this.filter.PeriodFrom)
+          ),
+          PeriodUntil: this.$func.asUtcStringDateOnly(
+            new Date(this.filter.PeriodUntil)
+          ),
+        },
+      ];
+
+      this.ds.setFilter(filters);
+      this.ds.load().then((dt) => (this.lists = dt.Data.Items));
     },
-    close: function () {
-      document.getElementById("close-modal-form-part-receipt").click();
-      this.ds.load();
+    reset: function () {
+      this.filter.FactoryCode = null;
+      this.filter.SupplierCode = null;
+
+      let today = new Date();
+      this.filter.PeriodFrom = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+      this.filter.PeriodUntil = today;
+      this.search();
     },
     exportExcel: function () {
       return new Promise((resolve, reject) => {

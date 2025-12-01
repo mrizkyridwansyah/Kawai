@@ -202,6 +202,10 @@ export default {
       this.ds.setFilter(filters);
       this.ds.load();
     },
+    reset: function () {
+      this.filter.factory = null;
+      this.search();
+    },
     add: function () {
       if (this.filter.factory) {
         this.title = "Add Warehouse";

@@ -54,6 +54,7 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "factoryCode",
     "supplierCode",
     "typeDate",
     "periodFrom",
@@ -78,6 +79,9 @@ export default {
       this.load("", after);
     },
     tempValue: function (after) {
+      if (!after) this.$emit("update:modelValue", null);
+    },
+    factoryCode: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
     supplierCode: function (after) {
@@ -122,16 +126,16 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/po/ddlsearch?keyword=${q || ""}&ids=${d || ""}&supplier=${
-              this.supplierCode || ""
-            }${
+            `/po/ddlsearch?keyword=${q || ""}&ids=${d || ""}&factory=${
+              this.factoryCode
+            }&supplier=${this.supplierCode}${
               this.typeDate
                 ? "&typeDate=" +
                   this.typeDate +
                   "&periodFrom=" +
-                  this.periodFrom +
+                  this.$func.asUtcStringDateOnly(new Date(this.periodFrom)) +
                   "&periodUntil=" +
-                  this.periodUntil
+                  this.$func.asUtcStringDateOnly(new Date(this.periodUntil))
                 : ""
             }&showOptionAll=${this.showOptionAll || false}`
           )

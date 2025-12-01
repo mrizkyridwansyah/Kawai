@@ -23,6 +23,7 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
         {
             receipt.ReceiptNo,
             receipt.DNNumber,
+            receipt.FactoryCode,
             receipt.SupplierCode,
             receipt.DNDate,
             receipt.BCNumber,
@@ -43,6 +44,7 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
         {
             receipt.Id,
             receipt.DNNumber,
+            receipt.FactoryCode,
             receipt.SupplierCode,
             receipt.DNDate,
             receipt.BCNumber,

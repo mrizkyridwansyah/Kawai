@@ -91,9 +91,9 @@ public class ReceiptController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string ids)
     {
-        var results = await _receiptRepository.DDLSearch(keyword, supplier, periodFrom, periodUntil, status, sourceMenu);
+        var results = await _receiptRepository.DDLSearch(keyword, factory, supplier, periodFrom, periodUntil, status, sourceMenu, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -126,31 +126,12 @@ public class ReceiptController : HahaController
         return Success(after);
     }
 
-    /*
-    [HttpPost("create-using-rabbitmq")]
-    //[Idempotent]
-    public async Task<IActionResult> CreateUsingRabbitMQ([FromBody] Receipt model)
+    [HttpPost("inquiry")]
+    public async Task<IActionResult> Inquiry([FromBody] RequestParameter parameter)
     {
-        var message = new StockTransactionMessage<Receipt>
-        {
-            AuthUserId = Auth.User.UserID,
-            TimeStamp = EpochDateTime.Now,
-            TransactionType = "RECEIPT",
-            FormatMessage = "Receipt DN No. : " + model.DNNumber,
-            Payload = model,
-            LogContext = new LogContext
-            {
-                Method = HttpContext.Request.Method,
-                RequestPath = HttpContext.Request.Path,
-                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
-                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
-                UserID = Auth.User.UserID,
-                FullName = Auth.User.FullName
-            }
-        };
-
-        _transactionProducer.Publish<Receipt>(message);
-        return Pending(message);
+        var results = await _receiptRepository.Inquiry(parameter);
+        return DataTableResult(parameter, results);
     }
-    */
+
+
 }

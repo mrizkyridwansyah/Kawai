@@ -54,6 +54,7 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "factoryCode",
     "supplierCode",
     "status",
     "sourceMenu",
@@ -78,6 +79,9 @@ export default {
       this.load("", after);
     },
     tempValue: function (after) {
+      if (!after) this.$emit("update:modelValue", null);
+    },
+    factoryCode: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
     supplierCode: function (after) {
@@ -125,12 +129,14 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/receipt/ddlsearch?keyword=${q || ""}&ids=${d || ""}&supplier=${
-              this.supplierCode || ""
-            }&status=${this.status || ""}&sourceMenu=${this.sourceMenu || ""}${
-              this.periodFrom ? "&periodFrom=" + this.periodFrom : ""
+            `/receipt/ddlsearch?keyword=${q || ""}&ids=${d || ""}&factory=${
+              this.factoryCode
+            }&supplier=${this.supplierCode || ""}&status=${
+              this.status || ""
+            }&sourceMenu=${this.sourceMenu || ""}${
+              this.periodFrom ? "&periodFrom=" + this.$func.asUtcStringDateOnly(new Date(this.periodFrom)) : ""
             }
-                  ${this.periodUntil ? "&periodUntil=" + this.periodUntil : ""}`
+                  ${this.periodUntil ? "&periodUntil=" + this.$func.asUtcStringDateOnly(new Date(this.periodUntil)) : ""}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

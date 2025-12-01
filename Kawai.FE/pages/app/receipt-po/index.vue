@@ -5,7 +5,10 @@
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
           <div class="mr-1" style="width: 100%">
             <label class="form-label">Factory</label>
-            <input-factory-privileges v-model="filter.FactoryCode" />
+            <input-factory-privileges
+              v-model="filter.FactoryCode"
+              :disabled="filter.ReceiptId != null"
+            />
           </div>
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -64,6 +67,7 @@
             <label class="form-label">PO Number</label>
             <input-po
               v-model="filter.PONumber"
+              :factory-code="filter.FactoryCode"
               :supplier-code="filter.SupplierCode"
               :type-date="filter.TypeDate"
               :period-from="filter.PeriodFrom"
@@ -85,6 +89,7 @@
               :disabled="isNew"
               status="NEW"
               source-menu="RECEIPT PO"
+              :factory-code="filter.FactoryCode"
               :supplier-code="filter.SupplierCode"
               v-model="filter.ReceiptId"
               :errors="errors?.ReceiptId"
@@ -276,6 +281,7 @@ export default {
       Id: null,
       ReceiptNo: "",
       DNNumber: "",
+      FactoryCode: null,
       SupplierCode: null,
       DNDate: null,
       BCNumber: "",
@@ -308,10 +314,41 @@ export default {
     "filter.PONumber": function () {
       this.listPODetail = [];
     },
+    "filter.FactoryCode": function () {
+      this.listPODetail = [];
+    },
     "filter.SupplierCode": function () {
       this.listPODetail = [];
     },
     "filter.ReceiptId": function () {
+      this.model = {
+        Id: null,
+        ReceiptNo: "",
+        DNNumber: "",
+        FactoryCode: null,
+        SupplierCode: null,
+        DNDate: null,
+        BCNumber: "",
+        BCType: "",
+        BCDate: null,
+        VehicleNo: "",
+        Transport: null,
+        RegisterNo: null,
+        Remarks: null,
+        Details: [],
+        IsManual: true,
+        SourceMenu: "RECEIPT PO",
+      };
+      this.listPODetail = [];
+      let today = new Date();
+      this.filter.PeriodFrom = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+      this.filter.PeriodUntil = today;
+      this.filter.PONumber = null;
+
       if (this.filter.ReceiptId) this.getReceipt();
     },
   },
@@ -341,6 +378,7 @@ export default {
         Id: null,
         ReceiptNo: "",
         DNNumber: "",
+        FactoryCode: null,
         SupplierCode: null,
         DNDate: null,
         BCNumber: "",
@@ -352,7 +390,7 @@ export default {
         Remarks: null,
         Details: [],
         IsManual: true,
-        SourceMenu: "RECEIPT PO"
+        SourceMenu: "RECEIPT PO",
       };
       this.listPODetail = [];
       let today = new Date();
@@ -383,7 +421,7 @@ export default {
           this.errors = err?.Errors;
           toastDanger(err?.Message);
         })
-        .finally(() => (this.isLoading = false));      
+        .finally(() => (this.isLoading = false));
     },
     printReport: function () {},
     submit: function () {
@@ -398,6 +436,7 @@ export default {
       }
 
       this.model.Id = this.filter.ReceiptId;
+      this.model.FactoryCode = this.filter.FactoryCode;
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = details.map((p) => {
         return {
@@ -419,6 +458,7 @@ export default {
     getReceipt: function () {
       this.ds.loadDetail(this.filter.ReceiptId).then((dt) => {
         this.model = this.deepClone(dt.Data || {});
+        this.filter.FactoryCode = this.model.FactoryCode;
         this.filter.SupplierCode = this.model.SupplierCode;
         this.filter.PeriodFrom = this.model.DeliveryDatePOFrom;
         this.filter.PeriodUntil = this.model.DeliveryDatePOUntil;
@@ -435,6 +475,7 @@ export default {
       let filters = { ...this.ds.filter };
       filters.Filters = [
         {
+          FactoryCode: this.filter.FactoryCode,
           ReceiptId: this.filter.ReceiptId?.toString() || "0",
           PONumber: this.filter.PONumber,
           SupplierCode: this.filter.SupplierCode,

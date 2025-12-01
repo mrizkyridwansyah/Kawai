@@ -13,6 +13,10 @@ public class ReceiptUnschedule
     [MaxLength(50, ErrorMessage = "DN Number tidak boleh lebih dari 50 karakter")]
     public string DNNumber { get; set; }
 
+    [Required(ErrorMessage = "Factory Code tidak boleh kosong")]
+    [MaxLength(25, ErrorMessage = "Factory Code tidak boleh lebih dari 15 karakter")]
+    public string FactoryCode { get; set; }
+
     [Required(ErrorMessage = "Supplier Code tidak boleh kosong")]
     [MaxLength(15, ErrorMessage = "Supplier Code tidak boleh lebih dari 15 karakter")]
     public string SupplierCode { get; set; }
