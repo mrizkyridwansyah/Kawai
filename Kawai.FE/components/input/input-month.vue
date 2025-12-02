@@ -11,10 +11,13 @@
         format="MM/yyyy"
         mask="##/####"
         :input-id="key"
+        :disabled="disabled"
         v-model:open-pop-up="isOpen"
         :flow="['year', 'month']"
       />
-      <span class="input-group-text btn btn-primary" @click="open">
+      <span class="input-group-text btn btn-primary"
+        @click="() => (this.disabled ? null : open())"
+      >
         <v-icon name="calendar" width="16" />
       </span>
     </div>
@@ -29,7 +32,9 @@
       <template #title><span class="text-danger">Invalid</span></template>
       {{ errors[0] }}
     </b-popover> -->
-    <small class="form-text text-muted" v-if="description">{{description}}</small>
+    <small class="form-text text-muted" v-if="description">{{
+      description
+    }}</small>
   </div>
   <div v-else :class="col ? ('form-group col-' + col) : 'form-group'">
     <label class="d-block">{{(label)}}</label>
@@ -46,9 +51,12 @@
         :input-id="key"
         v-model:open-pop-up="isOpen"
         :placeholder="placeholder || 'MM/yyyy'"
+        :disabled="disabled"
         :flow="['year', 'month']"
       />
-      <span class="input-group-text btn btn-primary" @click="open">
+      <span class="input-group-text btn btn-primary" 
+        @click="() => (this.disabled ? null : open())"
+      >
         <v-icon name="calendar" width="16" />
       </span>
     </div>

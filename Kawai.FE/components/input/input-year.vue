@@ -10,11 +10,14 @@
         type="year"
         format="yyyy"
         :input-id="key"
+        :disabled="disabled"
         v-model:open-pop-up="isOpen"
         :flow="['year']"
         mask="####"
       />
-      <span class="input-group-text btn btn-primary" @click="open">
+      <span class="input-group-text btn btn-primary" 
+        @click="() => (this.disabled ? null : open())"
+      >
         <v-icon name="calendar" width="16" />
       </span>
     </div>
@@ -45,10 +48,13 @@
         :input-id="key"
         v-model:open-pop-up="isOpen"
         placeholder="yyyy"
+        :disabled="disabled"
         :flow="['year']"
         mask="####"
       />
-      <span class="input-group-text btn btn-primary" @click="open">
+      <span class="input-group-text btn btn-primary" 
+        @click="() => (this.disabled ? null : open())"
+      >
         <v-icon name="calendar" width="16" />
       </span>
     </div>

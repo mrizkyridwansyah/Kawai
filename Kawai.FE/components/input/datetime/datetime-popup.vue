@@ -2,50 +2,79 @@
   <div class="vdatetime-popup">
     <div class="vdatetime-popup__header">
       <div class="vdatetime-popup__title" v-if="title">{{ title }}</div>
-      <div class="vdatetime-popup__year" @click="showYear" v-if="type !== 'time'">{{ year }}</div>
-      <div class="vdatetime-popup__date" @click="showMonth" v-if="type !== 'time'">{{ dateFormatted }}</div>
+      <div
+        class="vdatetime-popup__year"
+        @click="showYear"
+        v-if="type !== 'time'"
+      >
+        {{ year }}
+      </div>
+      <div
+        class="vdatetime-popup__date"
+        @click="showMonth"
+        v-if="type !== 'time'"
+      >
+        {{
+          type == "month" || this.type == "year"
+            ? monthFormatted
+            : dateFormatted
+        }}
+      </div>
     </div>
     <div class="vdatetime-popup__body">
       <datetime-year-picker
-          v-if="step === 'year'"
-          @change="onChangeYear"
-          :min-date="minDatetime"
-          :max-date="maxDatetime"
-          :year="year"></datetime-year-picker>
+        v-if="step === 'year'"
+        @change="onChangeYear"
+        :min-date="minDatetime"
+        :max-date="maxDatetime"
+        :year="year"
+      ></datetime-year-picker>
       <datetime-month-picker
-          v-if="step === 'month'"
-          @change="onChangeMonth"
-          :min-date="minDatetime"
-          :max-date="maxDatetime"
-          :year="year"
-          :month="month"></datetime-month-picker>
+        v-if="step === 'month'"
+        @change="onChangeMonth"
+        :min-date="minDatetime"
+        :max-date="maxDatetime"
+        :year="year"
+        :month="month"
+      ></datetime-month-picker>
       <datetime-calendar
-          v-if="step === 'date'"
-          @change="onChangeDate"
-          :year="year"
-          :month="month"
-          :day="day"
-          :min-date="minDatetime"
-          :max-date="maxDatetime"
-          :week-start="weekStart"
+        v-if="step === 'date'"
+        @change="onChangeDate"
+        :year="year"
+        :month="month"
+        :day="day"
+        :min-date="minDatetime"
+        :max-date="maxDatetime"
+        :week-start="weekStart"
       ></datetime-calendar>
       <datetime-time-picker
-          v-if="step === 'time'"
-          @change="onChangeTime"
-          :hour="hour"
-          :minute="minute"
-          :use12-hour="use12Hour"
-          :hour-step="hourStep"
-          :minute-step="minuteStep"
-          :min-time="minTime"
-          :max-time="maxTime"></datetime-time-picker>
+        v-if="step === 'time'"
+        @change="onChangeTime"
+        :hour="hour"
+        :minute="minute"
+        :use12-hour="use12Hour"
+        :hour-step="hourStep"
+        :minute-step="minuteStep"
+        :min-time="minTime"
+        :max-time="maxTime"
+      ></datetime-time-picker>
     </div>
     <div class="vdatetime-popup__actions">
-      <div class="vdatetime-popup__actions__button vdatetime-popup__actions__button--cancel" @click="cancel">
-        <slot name="button-cancel__internal" v-bind:step="step">{{ phrases.cancel }}</slot>
+      <div
+        class="vdatetime-popup__actions__button vdatetime-popup__actions__button--cancel"
+        @click="cancel"
+      >
+        <slot name="button-cancel__internal" v-bind:step="step">{{
+          phrases.cancel
+        }}</slot>
       </div>
-      <div class="vdatetime-popup__actions__button vdatetime-popup__actions__button--confirm" @click="confirm">
-        <slot name="button-confirm__internal" v-bind:step="step">{{ phrases.ok }}</slot>
+      <div
+        class="vdatetime-popup__actions__button vdatetime-popup__actions__button--confirm"
+        @click="confirm"
+      >
+        <slot name="button-confirm__internal" v-bind:step="step">{{
+          phrases.ok
+        }}</slot>
       </div>
     </div>
   </div>
@@ -60,9 +89,9 @@ import DatetimeYearPicker from './datetime-year-picker'
 import DatetimeMonthPicker from './datetime-month-picker'
 import { TopologyFullHierarchyIcon } from 'vue-tabler-icons'
 
-const KEY_TAB = 9
-const KEY_ENTER = 13
-const KEY_ESC = 27
+const KEY_TAB = 9;
+const KEY_ENTER = 13;
+const KEY_ESC = 27;
 
 export default {
   components: {
@@ -163,6 +192,11 @@ export default {
     minute () {
       return this.newDatetime.minute
     },
+    monthFormatted() {
+      return this.newDatetime.toLocaleString({
+        month: "long",
+      });
+    },
     dateFormatted () {
       return this.newDatetime.toLocaleString({
         month: 'long',
@@ -196,13 +230,17 @@ export default {
         this.$emit('confirm', this.newDatetime)
       }
     },
-    showYear () {
-      this.step = 'year'
-      this.flowManager.diversion('date')
+    showYear() {
+      this.step = "year";
+      if (this.type != "month" && this.type != "year") {
+        this.flowManager.diversion("date");
+      }
     },
-    showMonth () {
-      this.step = 'month'
-      this.flowManager.diversion('date')
+    showMonth() {
+      this.step = "month";
+      if (this.type != "month" && this.type != "year") {
+        this.flowManager.diversion("date");
+      }
     },
     confirm () {
       this.nextStep()
