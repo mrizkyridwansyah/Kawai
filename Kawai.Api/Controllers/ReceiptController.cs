@@ -1,4 +1,6 @@
-﻿using Kawai.Api.Services;
+﻿using ClosedXML.Excel;
+using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -67,6 +69,7 @@ public class ReceiptController : HahaController
             After = after,
             Action = DataLogAction.Create
         });
+
         return Success(after);
     }
 
@@ -133,5 +136,63 @@ public class ReceiptController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("export/excel-inquiry")]
+    public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
+    {
+        var results = await _receiptRepository.Inquiry(parameter);
+        if (results == null || !results.Any()) return NoContent();
 
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 1;
+
+        List<string> headers = ["Supplier", "Delivery Date", "Item Code", "Description", "DN Number", "PO Number", "BC Type", "BC Number", "BC Date", "Qty", "Unit", "Currency", "Price", "Amount"];
+        ExcelHelper.SetHeader(ws, rowIdx, headers);
+
+        foreach (var result in results)
+        {
+            rowIdx++;
+            var row = ws.Row(rowIdx);
+            int colIdx = 1;
+
+            ExcelHelper.SetCell(row, colIdx, result.SupplierName);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.DNDate.ToString("dd MMM yyyy"));
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.ItemCode);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.ItemName);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.DNNumber);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.PONumber);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.BCType);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.BCNumber);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.BCDate.ToString("dd MMM yyyy"));
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Qty);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Currency);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Price);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Amount);
+        }
+
+        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
+
+        var range = ws.Range(1, 1, rowIdx, headers.Count);
+        ExcelHelper.SetBorders(range);
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms);
+        var fileBytes = ms.ToArray();
+        var base64File = Convert.ToBase64String(fileBytes);
+
+        return Success(base64File);
+    }
 }

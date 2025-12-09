@@ -14,7 +14,7 @@
     :disabled="disabled"
   >
     <font-awesome-icon icon="rotate-left" />
-    <span class="ml-2">Reset</span>
+    <span class="ml-2">Clear</span>
     
   </button>
 </template>

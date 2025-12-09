@@ -6,7 +6,11 @@
           <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
             <div class="mr-1" style="width: 100%">
               <label class="form-label">Trade</label>
-              <input-trade class="form-control" v-model="filter.supplier" />
+              <input-trade
+                class="form-control"
+                v-model="filter.supplier"
+                :trade-cls="['2', '3']"
+              />
             </div>
           </div>
           <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">

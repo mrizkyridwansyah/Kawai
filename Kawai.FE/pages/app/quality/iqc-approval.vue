@@ -23,6 +23,7 @@
             <input-trade
               placeholder="Search Supplier"
               v-model="filter.SupplierCode"
+              :trade-cls="['2', '3']"
               :show-option-all="true"
             />
           </div>

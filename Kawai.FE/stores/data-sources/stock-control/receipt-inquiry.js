@@ -74,7 +74,7 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
           Sorts: {},
         };
 
-        app.$http.post(`/receipt/export/excel`, filterExport)
+        app.$http.post(`/receipt/export/excel-inquiry`, filterExport)
           .then(({ data }) => {
             if (data.Data) {
               const byteCharacters = atob(data.Data); // decode base64
@@ -88,7 +88,7 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.setAttribute('download', 'List_Receipt.xlsx');
+              link.setAttribute('download', 'Receipt_Inquiry.xlsx');
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);

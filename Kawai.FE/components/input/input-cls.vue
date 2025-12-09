@@ -61,7 +61,7 @@ export default {
   }),
   computed: {
     cClass: function () {
-      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+      return (this["class"] ?? "") + (this.errors ? " is-invalid" : "");
     },
   },
   watch: {

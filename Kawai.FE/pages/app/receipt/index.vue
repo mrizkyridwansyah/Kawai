@@ -13,6 +13,7 @@
             <label class="form-label">Supplier</label>
             <input-trade
               placeholder="Search Supplier"
+              :trade-cls="['2', '3']"
               v-model="filter.SupplierCode"
               :show-option-all="true"
             />
@@ -37,7 +38,7 @@
 
       <v-table
         :filter="filter"
-        :export-excel="false"
+        :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
         ref="vtable"
@@ -211,9 +212,23 @@ export default {
       this.search();
     },
     exportExcel: function () {
+      let filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          FactoryCode: this.filter.FactoryCode,
+          SupplierCode: this.filter.SupplierCode,
+          PeriodFrom: this.$func.asUtcStringDateOnly(
+            new Date(this.filter.PeriodFrom)
+          ),
+          PeriodUntil: this.$func.asUtcStringDateOnly(
+            new Date(this.filter.PeriodUntil)
+          ),
+        },
+      ];
+
       return new Promise((resolve, reject) => {
         this.ds
-          .exportExcel()
+          .exportExcel(filters)
           .then((_) => {
             resolve();
           })

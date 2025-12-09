@@ -68,6 +68,7 @@
         <input-trade
           placeholder="Supplier"
           v-model="model.SupplierCode"
+          :trade-cls="['2', '3']"
           :disabled="!isManual || mode === 'view'"
           :errors="errors?.SupplierCode"
         />

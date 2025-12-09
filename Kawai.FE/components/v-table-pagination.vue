@@ -148,6 +148,7 @@ export default {
     },
   },
   mounted: function () {
+    console.log(this.table)
     this.model.Page = this.table.Page;
     this.model.Length = this.table.Length;
     this.model.Filtered = this.table.Filtered;

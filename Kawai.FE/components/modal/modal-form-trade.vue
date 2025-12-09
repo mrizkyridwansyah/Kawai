@@ -57,6 +57,7 @@
               placeholder="Search Trade Cls"
               class="form-control"
               v-model="model.Trade_Cls"
+              :errors="errors?.Trade_Cls"
             />
           </div>
         </div>
@@ -541,7 +542,12 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">BC Type</label>
-            <input-cls class="form-control" v-model="model.Type_BC" type-data="BCType_Cls" placeholder="Search BC Type Cls" />
+            <input-cls
+              class="form-control"
+              v-model="model.Type_BC"
+              type-data="BCType_Cls"
+              placeholder="Search BC Type Cls"
+            />
           </div>
         </div>
         <div class="col-12 col-md-2">
@@ -642,7 +648,7 @@ export default {
       Type_BC: "",
       No_Izin: "",
       CODE_KPPBC: "",
-      NoIzin_Date: "",
+      NoIzin_Date: null,
       NITKU: "",
     },
     errorResponse: {},
@@ -724,7 +730,7 @@ export default {
         Type_BC: "",
         No_Izin: "",
         CODE_KPPBC: "",
-        NoIzin_Date: "",
+        NoIzin_Date: null,
         NITKU: "",
       };
       this.errors = {}; // Reset errors

@@ -1,34 +1,36 @@
 <template>
   <v-frame title="Area" icon="database">
     <template #frame-content>
-      <div class="d-flex">
-        <div class="d-flex flex-fill">
-          <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
-            <div class="mr-1" style="width: 100%">
-              <label class="form-label">Warehouse</label>
-              <input-warehouse
-                class="form-control"
-                v-model="filter.warehouse"
-              />
-            </div>
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+          <div class="" style="width: 100%">
+            <label class="form-label">Factory</label>
+            <input-factory-privileges
+              class="form-control"
+              v-model="filter.factory"
+            />
           </div>
-          <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
-            <label class="form-label">&nbsp;</label>
-            <br />
-            <div class="mr-1" style="width: 100%">
-              <v-button-search-reset
-                class="ms-1"
-                :search="search"
-                :reset="reset"
-              />
-            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Warehouse</label>
+            <input-warehouse-privileges
+              class="form-control"
+              v-model="filter.warehouse"
+              :factory-code="filter.factory"
+            />
           </div>
         </div>
       </div>
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
           <v-button-add :add="add" cClass="mr-1" />
-          <v-button-print :print="print" :is-loading="isLoadingPrint" />
+          <v-button-print
+            :print="print"
+            cClass="mr-1"
+            :is-loading="isLoadingPrint"
+          />
+          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
       </div>
       <v-table
@@ -40,7 +42,7 @@
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle"
-            style="min-width: 100%; width: max-content; "
+            style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >
             <thead>
@@ -136,6 +138,7 @@ export default {
     ],
     filter: {
       keyword: null,
+      factory: 0,
       warehouse: null,
       sorts: {
         AreaName: "asc",
@@ -167,6 +170,10 @@ export default {
     },
   },
   watch: {
+    "filter.factory": function () {
+      this.selectedPrint = [];
+      this.ds.data.Items = [];
+    },
     "filter.warehouse": function () {
       this.selectedPrint = [];
       this.ds.data.Items = [];

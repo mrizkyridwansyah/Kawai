@@ -46,7 +46,7 @@
           !ds.isServerError
         "
         class="mt-3"
-        :table="ds.data.Items"
+        :table="ds.data"
         :page-change="ds.setPage"
         :length-change="ds.setLength"
       />
@@ -75,7 +75,7 @@
 
 <script>
 export default {
-  props: ["data", "actions", "list", "filters"],
+  props: ["data", "actions", "list", "filters", "refresh"],
   data: () => ({
     lists: [],
     filter: {
@@ -92,6 +92,11 @@ export default {
         this.ds.setFilter(newVal);
         this.ds.load();
       },
+    },
+    refresh: function () {
+      this.ds.setSort(this.filter.sorts);
+      this.ds.setFilter(this.filters);
+      this.ds.load();
     },
   },
   computed: {

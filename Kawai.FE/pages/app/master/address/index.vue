@@ -2,16 +2,29 @@
   <v-frame title="Address" icon="database">
     <template #frame-content>
       <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Warehouse</label>
-            <input-warehouse class="form-control" v-model="filter.warehouse" />
+        <div class="col-lg-4 col-md-4 col-sm-12 mt-1">
+          <div class="" style="width: 100%">
+            <label class="form-label">Factory</label>
+            <input-factory-privileges
+              class="form-control"
+              v-model="filter.factory"
+            />
           </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
+        <div class="col-lg-4 col-md-4 col-sm-12 mt-1">
+          <div class="mr-1" style="width: 100%">
+            <label class="form-label">Warehouse</label>
+            <input-warehouse-privileges
+              class="form-control"
+              v-model="filter.warehouse"
+              :factory-code="filter.factory"
+            />
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 mt-1">
           <div class="" style="width: 100%">
             <label class="form-label">Area</label>
-            <input-area
+            <input-area-privileges
               class="form-control"
               v-model="filter.area"
               :warehouse="filter.warehouse"
@@ -40,7 +53,7 @@
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle"
-            style="min-width: 100%; width: max-content; "
+            style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >
             <thead>
@@ -141,6 +154,7 @@ export default {
       },
     ],
     filter: {
+      factory: null,
       warehouse: null,
       area: null,
       address: null,
@@ -175,6 +189,9 @@ export default {
     },
   },
   watch: {
+    "filter.factory": function () {
+      this.ds.data.Items = [];
+    },
     "filter.warehouse": function () {
       this.ds.data.Items = [];
     },

@@ -17,7 +17,11 @@
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 mt-2">
           <div class="mr-1" style="width: 100%">
             <label class="form-label">Supplier</label>
-            <input-trade placeholder="Supplier" v-model="filter.SupplierCode" />
+            <input-trade
+              placeholder="Supplier"
+              v-model="filter.SupplierCode"
+              :trade-cls="['2', '3']"
+            />
           </div>
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 mt-2">
@@ -217,7 +221,7 @@
               class="mt-3"
               v-if="
                 !dsReceipt.isLoading &&
-                model?.Details?.length == 0 &&
+                items.length == 0 &&
                 !dsReceipt.isNetworkError &&
                 !dsReceipt.isServerError
               "
@@ -246,6 +250,7 @@
     <shared-item-list
       :filters="[{ SupplierCode: this.filter.SupplierCode }]"
       :list="this.dsItemSupplier"
+      :refresh="refreshItemList"
       :actions="[
         {
           href: 'javascript:void(0);',
@@ -293,6 +298,7 @@ export default {
     debounce: null,
     isLoading: false,
     errors: {},
+    refreshItemList: 0,
   }),
   computed: {
     ds: function () {
@@ -318,8 +324,25 @@ export default {
     "filter.ReceiptId": function () {
       if (this.filter.ReceiptId) this.getReceipt();
       else {
-        this.reset();
-        this.isNew = false;
+        this.isNew = true;
+        this.items = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          Id: null,
+          ReceiptNo: "",
+          DNNumber: "",
+          FactoryCode: null,
+          SupplierCode: null,
+          DNDate: null,
+          BCNumber: "",
+          BCType: "",
+          BCDate: null,
+          VehicleNo: "",
+          Transport: null,
+          RegisterNo: null,
+          Remarks: null,
+          Details: [],
+        };
       }
     },
   },
@@ -338,8 +361,8 @@ export default {
         ItemName: null,
         UnitClsCode: null,
         UnitClsName: null,
-        ReceiptQty: null,
-        TotalPacking: null,
+        ReceiptQty: 0,
+        TotalPacking: 0,
         QtyPacking: null,
       };
 
@@ -369,10 +392,32 @@ export default {
       };
     },
     changeNew: function (e) {
-      if (e.target.checked) this.reset();
+      if (e.target.checked) {
+        this.isNew = true;
+        this.items = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          Id: null,
+          ReceiptNo: "",
+          DNNumber: "",
+          FactoryCode: null,
+          SupplierCode: null,
+          DNDate: null,
+          BCNumber: "",
+          BCType: "",
+          BCDate: null,
+          VehicleNo: "",
+          Transport: null,
+          RegisterNo: null,
+          Remarks: null,
+          Details: [],
+        };
+        // this.reset();
+      }
     },
     loadItem: function (idx) {
       this.idxItemLoad = idx;
+      this.refreshItemList++;
       this.$bvModal.show("shared-item-list");
     },
     selectItem(dt) {
@@ -415,7 +460,9 @@ export default {
         .printLabel(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
@@ -454,7 +501,9 @@ export default {
         .create(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
@@ -467,7 +516,9 @@ export default {
         .update(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;

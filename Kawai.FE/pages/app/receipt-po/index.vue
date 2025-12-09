@@ -23,6 +23,7 @@
             <input-trade
               placeholder="Supplier"
               v-model="filter.SupplierCode"
+              :trade-cls="['2', '3']"
               :disabled="filter.ReceiptId != null"
             />
           </div>
