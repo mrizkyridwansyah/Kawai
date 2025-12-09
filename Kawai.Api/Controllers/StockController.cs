@@ -29,6 +29,13 @@ public class StockController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("inquiry/category")]
+    public async Task<IActionResult> InquiryByCategory([FromBody] RequestParameter parameter)
+    {
+        var results = await _stockRepository.InquiryByCategory(parameter);
+        return DataTableResult(parameter, results);
+    }
+
     [HttpPost("inquiry/detail")]
     public async Task<IActionResult> List([FromBody] RequestParameter parameter)
     {

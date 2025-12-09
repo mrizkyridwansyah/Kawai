@@ -20,6 +20,7 @@ public class StockDto: DataTableDto
     public double CurrentQty { get; set; }
     public DateTime LastUpdate { get; set; }
     public string LastUser { get; set; }
+    public string Category { get; set; }
 }
 
 public class StockMasterDto: DataTableDto
