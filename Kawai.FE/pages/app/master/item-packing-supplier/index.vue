@@ -1,33 +1,23 @@
 <template>
   <v-frame title="Item Packing Supplier" icon="database">
     <template #frame-content>
-      <div class="d-flex">
-        <div class="d-flex flex-fill">
-          <div class="col-xl-6 col-lg-8 col-md-8 col-sm-8 col-8">
-            <div class="mr-1" style="width: 100%">
-              <label class="form-label">Trade</label>
-              <input-trade
-                class="form-control"
-                v-model="filter.supplier"
-                :trade-cls="['2', '3']"
-              />
-            </div>
-          </div>
-          <div class="col-xl-6 col-lg-4 col-md-4 col-sm-4 col-4 ml-3">
-            <label class="form-label">&nbsp;</label>
-            <div class="mr-1" style="width: 100%">
-              <v-button-search-reset
-                class="ms-1"
-                :search="search"
-                :reset="reset"
-              />
-            </div>
-          </div>
+      <div class="row">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Trade</label
+        >
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
+          <filter-trade
+            class="form-control"
+            v-model="filter.supplier"
+            :trade-cls="['2', '3']"
+          />
         </div>
       </div>
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
           <v-button-add :add="add" cClass="mr-1" />
+          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
       </div>
       <v-table

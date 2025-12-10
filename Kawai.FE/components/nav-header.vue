@@ -4,7 +4,7 @@
     <div class="navbar-header">
       <v-app-link class="navbar-brand" to="/"
         ><span class="navbar-logo"></span
-        ><b class="me-3px">TOS</b> Admin</v-app-link
+        ><b class="me-3px">EZR</b> WMS</v-app-link
       >
       <button
         type="button"

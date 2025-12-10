@@ -95,6 +95,7 @@
                 placeholder="Item Name"
                 v-model="model.DeliveryPlaceCode"
                 :errors="errors?.DeliveryPlaceCode"
+                :trade="model.SupplierCode"
               />
             </div>
             <div class="mb-3">

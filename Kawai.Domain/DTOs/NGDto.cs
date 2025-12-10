@@ -7,4 +7,5 @@ public class NGDto: DataTableDto
     public DateTime? LastUpdate { get; set; }
     public string Lastuser { get; set; }
     public bool IsCommon { get; set; }
+    public string DDLDescription { get; set; }
 }

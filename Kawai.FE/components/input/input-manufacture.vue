@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Manufacture`"
       :searchable="true"
-      label="ManufactureName"
+      label="DDLDescription"
       track-by="ManufactureCode"
       trackBy="ManufactureCode"
       :hide-selected="true"

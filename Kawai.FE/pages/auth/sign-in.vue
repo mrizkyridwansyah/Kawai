@@ -10,7 +10,7 @@
           :style="{
             backgroundImage: `url('${
               useAppConfig().baseURL || ''
-            }/img/login-bg/login-bg-11.jpg')`,
+            }/img/login-bg/pohon.jpg')`,
           }"
         ></div>
         <div class="news-caption">

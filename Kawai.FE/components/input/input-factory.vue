@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Factory`"
       :searchable="true"
-      label="CompanyName"
+      label="DDLDescription"
       track-by="CompanyCode"
       trackBy="CompanyCode"
       :hide-selected="true"

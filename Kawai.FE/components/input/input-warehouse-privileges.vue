@@ -9,7 +9,7 @@
       open-direction="bottom" 
       :placeholder="placeholder || `Search Warehouse`"
       :searchable="true" 
-      label="WarehouseName" 
+      label="DDLDescription" 
       track-by="WarehouseCode" 
       trackBy="WarehouseCode" 
       :hide-selected="true"

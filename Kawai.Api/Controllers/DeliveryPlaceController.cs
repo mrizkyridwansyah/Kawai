@@ -76,29 +76,6 @@ public class DeliveryPlaceController : HahaController
             Action = DataLogAction.Create
         });
 
-
-        /*
-         *  INI CONTOH KALO MAU PAKE NOTIF SETELAH API BIKIN SESUATU
-
-            List<string> receivers = ["ossas"];
-            Notification notification = new Notification
-            {
-                Title = "Master Warehouse Created",
-                Description = $"Warehouse {model.WarehouseCode} - {model.WarehouseName} has been created.",
-                NotifType = "INFO",
-                Priority = "LOW",
-                Sender = Auth.User.UserID
-            };
-
-            foreach (var reciver in receivers)
-            {
-                notification.Receiver = reciver;
-                await _notificationRepository.SaveNotification(notification);
-            }
-
-            await _notificationService.BroadCastOnlyTo(receivers, "NewNotification", new { Count = 1 });         
-         */
-
         return Success(after);
     }
 

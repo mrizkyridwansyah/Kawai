@@ -1,35 +1,47 @@
 <template>
-  <div>
-    <input-multiselect
-      v-model="tempValue"
-      :options="list"
-      :close-on-select="true"
-      :clear-on-select="false"
-      :preserve-search="true"
-      open-direction="bottom"
-      :placeholder="placeholder || `Search Warehouse`"
-      :searchable="true"
-      label="DDLDescription"
-      track-by="WarehouseCode"
-      trackBy="WarehouseCode"
-      :hide-selected="true"
-      :internal-search="false"
-      :loading="isLoading"
-      @search-change="search"
-      @open="open"
-      :select="change"
-      :class="cClass || 'input-wrapper'"
-      :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false"
-      select-label=""
-      deselect-label=""
-    />
-    <div class="invalid-feedback d-block" v-if="errors">
-      {{ errors[0] }}
+  <div class="row">
+    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+      <input-multiselect
+        v-model="tempValue"
+        :options="list"
+        :close-on-select="true"
+        :clear-on-select="false"
+        :preserve-search="true"
+        open-direction="bottom"
+        :placeholder="placeholder || `Search Warehouse`"
+        :searchable="true"
+        :label="displayLabel"
+        track-by="WarehouseCode"
+        trackBy="WarehouseCode"
+        :hide-selected="true"
+        :internal-search="false"
+        :loading="isLoading"
+        @search-change="search"
+        @open="open"
+        :select="change"
+        :class="cClass || 'input-wrapper'"
+        :multiple="multiple !== undefined || false"
+        :disabled="
+          (disabled !== undefined || disabled === true) && disabled !== false
+        "
+        select-label=""
+        deselect-label=""
+      />
+      <div class="invalid-feedback d-block" v-if="errors">
+        {{ errors[0] }}
+      </div>
+      <small class="form-text text-muted" v-if="description">{{
+        description
+      }}</small>
     </div>
-    <small class="form-text text-muted" v-if="description">{{
-      description
-    }}</small>
+    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
+      <input
+        type="text"
+        disabled
+        :value="selectedItem?.WarehouseName || ''"
+        class="w-100 form-control"
+      />
+    </div>
   </div>
 </template>
 
@@ -64,6 +76,12 @@ export default {
   computed: {
     cClass: function () {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+    },
+    selectedItem: function () {
+      return this.list.find((x) => x.WarehouseCode === this.tempValue) || null;
+    },
+    displayLabel() {
+      return this.tempValue ? "WarehouseCode" : "DDLDescription";
     },
   },
   watch: {
@@ -120,11 +138,14 @@ export default {
             }
 
             this.list =
-              (this.showOptionAll || false) && (q || "") == "" && p.data.Data.length > 0
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
                 ? [
                     {
                       WarehouseCode: "ALL",
                       WarehouseName: "ALL",
+                      DDLDescription: "ALL",
                     },
                     ...p.data.Data,
                   ]
@@ -139,9 +160,23 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .input-wrapper {
   min-width: 10em;
   width: 100%;
+}
+
+.row-wrapper {
+  display: flex;
+  gap: 1rem; /* jarak antar elemen */
+  align-items: center; /* biar vertikalnya rapih */
+}
+
+.input-ddl {
+  flex: 1; /* biar bagian kiri melebar */
+}
+
+.fucking-info {
+  width: 65%; /* bebas mau diset berapa */
 }
 </style>

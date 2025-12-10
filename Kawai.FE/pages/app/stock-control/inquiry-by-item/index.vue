@@ -2,36 +2,42 @@
   <v-frame title="Stock Inquiry By Item" icon="boxes-stacked">
     <template #frame-content>
       <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-          <div class="" style="width: 100%">
-            <label class="form-label">Item</label>
-            <input-item-by-stock
-              class="form-control"
-              placeholder="Search Item"
-              v-model="filter.item"
-              warehouse="ALL"
-              area="ALL"
-              address="ALL"
-              :show-option-all="false"
-            />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Item</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-item-by-stock
+            class="form-control"
+            placeholder="Search Item"
+            v-model="filter.item"
+            warehouse="ALL"
+            area="ALL"
+            address="ALL"
+            :show-option-all="false"
+          />
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Warehouse</label>
-            <input-warehouse-by-stock
-              class="form-control"
-              placeholder="Search Warehouse"
-              v-model="filter.warehouse"
-              :item-code="filter.item"
-              :show-option-all="true"
-            />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Warehouse</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-warehouse-by-stock
+            class="form-control"
+            placeholder="Search Warehouse"
+            v-model="filter.warehouse"
+            :item-code="filter.item"
+            :show-option-all="true"
+          />
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Area</label>
-            <input-area-by-stock
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Area</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+            <filter-area-by-stock
               class="form-control"
               placeholder="Search Area"
               v-model="filter.area"
@@ -39,12 +45,13 @@
               :item="filter.item"
               :show-option-all="true"
             />
-          </div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-12 mt-2">
-          <div class="" style="width: 100%">
-            <label class="form-label">Lot No</label>
-            <input-lot-by-stock
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Lot No</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+            <filter-lot-by-stock
               class="form-control"
               placeholder="Search Lot No"
               v-model="filter.lotno"
@@ -54,7 +61,6 @@
               :item="filter.item"
               :show-option-all="true"
             />
-          </div>
         </div>
       </div>
       <div class="d-flex mt-3">

@@ -6,4 +6,5 @@ public class ManufactureLineDto: DataTableDto
     public string ManufactureName { get; set; }
     public string LineCode { get; set; }
     public string LineName { get; set; }
+    public string DDLDescription { get; set; }
 }

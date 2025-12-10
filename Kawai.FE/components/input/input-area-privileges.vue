@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Area`"
       :searchable="true"
-      label="AreaName"
+      label="Trade_Code"
       track-by="AreaCode"
       trackBy="AreaCode"
       :hide-selected="true"

@@ -10,5 +10,6 @@ public class DeliveryPlaceDto: DataTableDto
     public DateTime? Last_Update { get; set; }
     public string Last_User { get; set; }
     public DateTime? Register_Date { get; set; }
+    public string DDLDescription { get; set; }
 
 }

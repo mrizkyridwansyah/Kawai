@@ -7,11 +7,11 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Trade`"
+      :placeholder="placeholder || `Search Lot No `"
       :searchable="true"
-      label="DDLDescription"
-      track-by="Trade_Code"
-      trackBy="Trade_Code"
+      label="LotNo"
+      track-by="LotNo"
+      trackBy="LotNo"
       :hide-selected="true"
       :internal-search="false"
       :loading="isLoading"
@@ -20,9 +20,7 @@
       :select="change"
       :class="cClass || 'input-wrapper'"
       :multiple="multiple !== undefined || false"
-      :disabled="
-        (disabled !== undefined || disabled === true) && disabled !== false
-      "
+      :disabled="disabled !== undefined || false"
       select-label=""
       deselect-label=""
     />
@@ -44,7 +42,6 @@ export default {
   emits: ["update:modelValue"],
   props: [
     "modelValue",
-    "tradeCls",
     "type",
     "label",
     "col",
@@ -55,6 +52,10 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "warehouse",
+    "area",
+    "address",
+    "item",
     "showOptionAll",
   ],
   data: () => ({
@@ -76,6 +77,22 @@ export default {
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
+    },
+    warehouse: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    area: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    address: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    item: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
     },
   },
   mounted: function () {
@@ -99,41 +116,28 @@ export default {
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
-
-      var tradeFlags = Array.isArray(this.tradeCls)
-        ? this.tradeCls.map((p) => "&tradecls=" + p)
-        : [];
-
       if (this.debounce != null) clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/trade/ddlsearch?keyword=${q || ""}${
-              tradeFlags.length == 0
-                ? this.tradeCls
-                  ? "&tradecls=" + this.tradeCls
-                  : ""
-                : tradeFlags.join("")
-            }&ids=${d || ""}`
+            `/stock/ddl-lot-no-search?keyword=${q || ""}&ids=${
+              d || ""
+            }&warehouse=${this.warehouse}&area=${this.area}&address=${
+              this.address
+            }&item=${this.item || ""}`
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.Trade_Code;
-            }
-
             this.list =
               (this.showOptionAll || false) &&
               (q || "") == "" &&
               p.data.Data.length > 0
-                ? [
-                    {
-                      Trade_Code: "ALL",
-                      Trade_Name: "ALL",
-                    },
-                    ...p.data.Data,
-                  ]
+                ? [{ LotNo: "ALL" }, ...p.data.Data]
                 : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.LotNo;
+            }
           })
           .finally(() => (this.isLoading = false));
 
