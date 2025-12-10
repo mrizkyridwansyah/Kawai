@@ -93,6 +93,12 @@
         @click="$bvModal.show('change-password')"
         >Change Password</a
       >
+      <a
+        class="dropdown-item"
+        href="javascript:void(0)"
+        @click="changeFactory"
+        >Change Factory</a
+      >
       <div class="dropdown-divider"></div>
       <li>
         <a class="dropdown-item" href="javascript:void(0)" @click="signOut"
@@ -213,6 +219,9 @@ export default {
       localStorage.clear();
       location.href = "/auth/sign-in";
     },
+    changeFactory: function() {
+      location.href = "/auth/factory";
+    }
   },
 };
 </script>

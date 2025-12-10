@@ -46,13 +46,14 @@
               class="form-control h-45px fs-13px"
               placeholder="Username"
               v-model="model.UserName"
+              @keyup.enter="signIn"
             />
             <v-label class="d-flex align-items-center fs-13px text-gray-600"
               >Username</v-label
             >
           </div>
           <div class="invalid-feedback d-block" v-if="errors?.UserName">
-            {{ errors?.UserName }}
+            {{ errors?.UserName[0] }}
           </div>
           <div class="form-floating mt-5">
             <input
@@ -60,6 +61,7 @@
               class="form-control h-45px fs-13px"
               placeholder="Password"
               v-model="model.Password"
+              @keyup.enter="signIn"
             />
             <label
               for="password"
@@ -68,7 +70,7 @@
             >
           </div>
           <div class="invalid-feedback d-block" v-if="errors?.Password">
-            {{ errors?.Password }}
+            {{ errors?.Password[0] }}
           </div>
           <div class="text-right mb-30px">
             <!-- <v-app-link to="/auth/forgot-password"
@@ -136,7 +138,7 @@ export default {
             localStorage.setItem("UserPhoto", p.Data.UserPhoto);
           if (this.$router.currentRoute.query?.continue)
             location.href = this.$router.currentRoute.query?.continue;
-          else location.href = "/app";
+          else location.href = "/auth/factory";
         })
         .catch((err) => {
           this.isLoading = false;

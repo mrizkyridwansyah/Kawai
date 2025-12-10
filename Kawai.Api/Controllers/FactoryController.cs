@@ -1,5 +1,7 @@
-﻿using Kawai.Domain;
+﻿using Kawai.Data.Repositories;
+using Kawai.Domain;
 using Kawai.Domain.Interfaces;
+using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +19,13 @@ public class FactoryController : HahaController
     {
         _factoryRepository = factoryRepository;
         _logger = logger;
+    }
+
+    [HttpGet("list")]
+    public async Task<IActionResult> List()
+    {
+        var results = await _factoryRepository.GetAllFactoryIncludePrivileges(Auth.User.UserID);
+        return Success(results);
     }
 
     [HttpGet("ddlsearch")]

@@ -21,9 +21,7 @@
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
-        :disabled="
-          (disabled !== undefined || disabled === true) && disabled !== false
-        "
+        :disabled="true"
         select-label=""
         deselect-label=""
       />
@@ -79,14 +77,19 @@ export default {
       return this.list.find((x) => x.CompanyCode === this.tempValue) || null;
     },
     displayLabel() {
-      // Jika dropdown dibuka, pakai description
-      // Kalau ada selected value, pakai CompanyCode
       return this.tempValue ? "CompanyCode" : "DDLDescription";
     },
   },
   watch: {
     modelValue: function (after, before) {
-      console.log(after);
+      const selected = localStorage.getItem("SelectedFactory");
+      if (selected) {
+        this.tempValue = selected;
+        this.load("", selected);
+        this.$emit("update:modelValue", selected);
+        return;
+      }
+
       if (!after) this.tempValue = null;
 
       this.load("", after);
@@ -96,7 +99,14 @@ export default {
     },
   },
   mounted: function () {
-    this.load("", this.modelValue);
+    const selected = localStorage.getItem("SelectedFactory");
+    if (selected) {
+      this.tempValue = selected;
+      this.load("", selected);
+      this.$emit("update:modelValue", selected);
+    } else {
+      this.load("", this.modelValue); // fallback
+    }
   },
   methods: {
     change: function (v) {
