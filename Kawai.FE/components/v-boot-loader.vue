@@ -2,10 +2,10 @@
   <div class="v-boot-loader">
     <div class="row">
       <div class="col-lg-12 text-center mb-3">
-        <img 
+        <!-- <img 
           src="/panasonic-login.png" alt="" 
           style="width: 320px" 
-        />
+        /> -->
       </div>
       <div class="col-lg-12 text-center mt-5">
         <v-loading-2 />
