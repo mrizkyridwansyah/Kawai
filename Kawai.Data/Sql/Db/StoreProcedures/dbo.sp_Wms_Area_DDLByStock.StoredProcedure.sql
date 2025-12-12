@@ -12,17 +12,18 @@ as
 begin
 	select * From 
 	(
-		select 'TMP' AreaCode, 'Temporary' AreaName 
+		select 'TMP' AreaCode, 'Temporary' AreaName, 'TMP | Temporary' DDLDescription
 		where isnull(@WarehouseCode, '') <> ''
 		union all
-		select distinct a.AreaCode, b.AreaName From StockDetail a
+		select distinct a.AreaCode, b.AreaName , a.AreaCode +' | '+ b.AreaName DDLDescription
+		From StockDetail a
 		inner join MS_Area b on a.AreaCode = b.AreaCode
 		where 1=1
-		and a.WarehouseCode = @WarehouseCode
+		and (@WarehouseCode = 'ALL' or a.WarehouseCode = @WarehouseCode)
 		and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 		and Qty > 0
 	) res
 	where 1=1
-	and AreaName like '%' + @Keyword + '%'
+	and (AreaCode like '%' + @Keyword + '%' or AreaName like '%' + @Keyword + '%')
 end
 GO

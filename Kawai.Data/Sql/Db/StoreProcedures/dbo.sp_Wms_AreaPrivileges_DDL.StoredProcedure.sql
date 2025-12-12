@@ -11,7 +11,7 @@ create   procedure [sp_Wms_AreaPrivileges_DDL]
 as
 begin
 	select 
-		a.AreaCode, a.AreaName
+		a.AreaCode, a.AreaName, a.AreaCode +' | '+ a.AreaName DDLDescription
 	From MS_Area a
 	inner join
 	(
@@ -19,7 +19,7 @@ begin
 	) b on a.AreaCode = b.AreaCode
 	where 1=1
 	and 1 = case when isnull(@WarehouseCode, '') = '' or WarehouseCode = @WarehouseCode then 1 else 0 end
-	and AreaName like '%'+ @Keyword +'%'
+	and (a.AreaCode like '%'+ @Keyword +'%' or a.AreaName like '%'+ @Keyword +'%')
 end
 
 GO

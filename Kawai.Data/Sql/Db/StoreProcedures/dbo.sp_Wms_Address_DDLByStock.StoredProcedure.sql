@@ -11,12 +11,15 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Address_DDLByStock]
 	@ItemCode		varchar(25)
 as
 begin
-	select distinct a.AddressCode, b.AddressName From StockDetail a
+	select distinct a.AddressCode, b.AddressName, a.AddressCode +' | '+ b.AddressName DDLDescription 
+	From StockDetail a
 	inner join MS_Address b on a.AddressCode = b.AddressCode
 	where 1=1
 	and a.WarehouseCode = @WarehouseCode
 	and a.AreaCode = @AreaCode
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0
+	and (a.AddressCode like '%'+ @Keyword +'%' or b.AddressName like '%'+ @Keyword +'%')
+
 end
 GO

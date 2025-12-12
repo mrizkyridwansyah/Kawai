@@ -13,7 +13,9 @@ create   procedure [sp_Wms_WarehousePrivileges_DDLByStock]
 	@ItemCode		varchar(25)
 as
 begin
-	select distinct a.WarehouseCode, b.WarehouseName From StockDetail a
+	select 
+		distinct a.WarehouseCode, b.WarehouseName, a.WarehouseCode + ' | ' + b.WarehouseName DDLDescription
+	From StockDetail a
 	inner join 
 	(
 		select wh.* From 
@@ -23,7 +25,7 @@ begin
 		inner join vw_WarehouseLine wh on priv.WarehouseCode = wh.WarehouseCode
 	) b on a.WarehouseCode = b.WarehouseCode
 	where 1=1
-	and b.WarehouseName like '%' + @Keyword + '%'
+	and (a.WarehouseCode like '%' + @Keyword + '%' or b.WarehouseName like '%' + @Keyword + '%')
 	and (@FactoryCode = 'ALL' or b.FactoryCode = @FactoryCode)
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0

@@ -11,10 +11,10 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Trade_DDL]
 as
 begin
 	select 
-		RTRIM(Trade_Code) Trade_Code, Trade_Name, Trade_Cls
+		RTRIM(Trade_Code) Trade_Code, Trade_Name, Trade_Cls, RTRIM(Trade_Code) + ' | ' + Trade_Name DDLDescription
 	From Trade_Master
 	where 1=1
-	and Trade_Name like '%'+ @Keyword +'%'
+	and (Trade_Code like '%'+ @Keyword +'%' or Trade_Name like '%'+ @Keyword +'%')
 end
 
 GO

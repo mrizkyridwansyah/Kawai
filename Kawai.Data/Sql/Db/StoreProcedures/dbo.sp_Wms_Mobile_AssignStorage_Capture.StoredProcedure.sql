@@ -1,0 +1,27 @@
+USE [Kawaii]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_AssignStorage_Capture]    Script Date: 12/12/2025 9:57:56 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[sp_Wms_Mobile_AssignStorage_Capture]
+	@RefNo varchar(50)
+as
+
+select 
+	a.RefNo, a.WarehouseCode, a.AreaCode, a.ItemCode, a.LotNo, 
+	a.LMPreMonth, a.LMReceipt, a.LMSupply, a.LMLossReject, a.LMCurrent, a.LMInventory, 
+	a.TMPreMonth, a.TMReceipt, a.TMSupply, a.TMLossReject, a.TMCurrent, a.TMInventory, 
+	a.NMPreMonth, a.NMReceipt, a.NMSupply, a.NMLossReject, a.NMCurrent, a.NMInventory, 
+	a.LMReason, a.TMReason, a.NMReason, a.Adjustment 
+from StockHeader a 
+where RefNo = @RefNo
+
+select 
+	a.RefNo, a.WarehouseCode, a.AreaCode, a.AddressCode, a.BarcodeNo, a.ItemCode, a.LotNo, a.SublotNo, a.Qty, a.InventoryQty, 
+	a.ExpiredDate, a.ProductionDate, a.ReceiptDate, a.Supplier, a.PrintCls, a.DisposalCls 
+from StockDetail a 
+where RefNo = @RefNo
+and Qty > 0
+GO

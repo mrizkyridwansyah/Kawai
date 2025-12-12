@@ -19,7 +19,11 @@ begin
 	insert into @tblAreaPrivileges
 	select AreaCode From SS_UserAreaPrivilege where UserID = @UserId and AllowAccess = 1
 
-	select distinct a.AddressCode, b.AddressName From StockDetail a
+	select 
+		distinct 
+		a.AddressCode, b.AddressName,
+		a.AddressCode + ' | ' + b.AddressName DDLDescription
+	From StockDetail a
 	inner join MS_Address b on a.AddressCode = b.AddressCode
 	inner join @tblAreaPrivileges xx on a.AreaCode = xx.area
 	where 1=1
@@ -27,5 +31,7 @@ begin
 	and a.AreaCode = @AreaCode
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0
+	and (a.AddressCode like '%'+ @Keyword +'%' or b.AddressName like '%'+ @Keyword +'%')
+
 end
 GO
