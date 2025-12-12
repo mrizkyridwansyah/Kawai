@@ -6,6 +6,7 @@ GO
 CREATE   procedure [sp_Wms_ReceiptUnschedule_Update]
 	@Id				bigint,
 	@DNNumber		varchar(50),
+	@FactoryCode	varchar(25),
 	@SupplierCode	varchar(25),
 	@DNDate			date,
 	@BCNumber		varchar(50),
@@ -40,9 +41,16 @@ begin
 		return
 	end
 
+	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
+	begin
+		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
+		return
+	end
+
 	-- UPDATE DATA RECEIPT HEADER
 	update PartReceiptHeader 
 	set 
+		CompanyCode = @FactoryCode,
 		DNNumber	= @DNNumber, 
 		DNDate		= @DNDate, 
 		BCNumber	= @BCNumber, 
@@ -63,7 +71,7 @@ begin
 	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
 	select @Id, @ReceiptDate, null, a.ItemCode, mi.UnitCls, 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / mi.QtyPacking), a.ReceiptQty, '' 
 	from @Details a
-	inner join ItemSupplierPacking mi on a.ItemCode = mi.ItemCode
+	inner join ItemSupplierPacking mi on a.ItemCode = mi.ItemCode and mi.SupplierCode = @SupplierCode
 
 	-- HAPUS DETAIL LAMA DI PART RECEIPT EZR
 	DELETE FROM Part_Receipt WHERE RefWMSReceiptId = @Id

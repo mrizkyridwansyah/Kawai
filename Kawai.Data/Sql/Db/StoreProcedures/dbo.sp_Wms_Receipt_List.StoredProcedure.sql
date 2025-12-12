@@ -10,6 +10,7 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Receipt_List]
 
 	-- PARAMETER OPSIONAL
 	@Keyword varchar(max) = '',
+	@FactoryCode varchar(25) = null,
 	@SupplierCode varchar(25) = null,
 	@PeriodFrom date = null,
 	@PeriodUntil date = null
@@ -63,8 +64,8 @@ begin
 			OR b.Trade_Name LIKE '%' + @Keyword + '%'
 		)
 		and ReceiptDate between @PeriodFrom and @PeriodUntil
-		and (@SupplierCode is null or @SupplierCode = SupplierCode)
-		--and isnull(a.HasValid, 0) = 1
+		and 1 = case when @SupplierCode = 'ALL' THEN 1 WHEN @SupplierCode = SupplierCode THEN 1 ELSE 0 END
+		and 1 = case when @FactoryCode = 'ALL' THEN 1 WHEN @FactoryCode = a.CompanyCode THEN 1 ELSE 0 END
 	)
 
 	DECLARE @sql NVARCHAR(MAX) = N'
@@ -95,7 +96,8 @@ begin
 				a.ReceiptNo LIKE ''%'' + @Keyword + ''%'' OR
 				b.Trade_Name LIKE ''%'' + @Keyword + ''%'')
 			AND a.ReceiptDate BETWEEN @PeriodFrom AND @PeriodUntil
-			AND (@SupplierCode IS NULL OR a.SupplierCode = @SupplierCode)
+			and 1 = case when @SupplierCode = ''ALL'' THEN 1 WHEN @SupplierCode = SupplierCode THEN 1 ELSE 0 END
+			and 1 = case when @FactoryCode = ''ALL'' THEN 1 WHEN @FactoryCode = CompanyCode THEN 1 ELSE 0 END
 			
 		' +
 		CASE 
@@ -109,8 +111,9 @@ begin
 
 	EXEC sp_executesql
 		@sql,
-		N'@Keyword VARCHAR(MAX), @SupplierCode VARCHAR(25), @PeriodFrom DATE, @PeriodUntil DATE, @Offset INT, @Length INT, @TotalRow INT',
+		N'@Keyword VARCHAR(MAX), @FactoryCode VARCHAR(25), @SupplierCode VARCHAR(25), @PeriodFrom DATE, @PeriodUntil DATE, @Offset INT, @Length INT, @TotalRow INT',
 		@Keyword = @Keyword,
+		@FactoryCode = @FactoryCode,
 		@SupplierCode = @SupplierCode,
 		@PeriodFrom = @PeriodFrom,
 		@PeriodUntil = @PeriodUntil,

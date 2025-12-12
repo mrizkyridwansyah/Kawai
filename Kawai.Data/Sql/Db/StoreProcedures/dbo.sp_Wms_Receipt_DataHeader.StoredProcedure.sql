@@ -16,6 +16,8 @@ begin
 		a.ReceiptNo, 
 		a.ReceiptDate,
 		a.DNNumber,
+		a.CompanyCode FactoryCode,
+		fak.Company_Name FactoryName,
 		a.SupplierCode,
 		b.Trade_Name AS SupplierName,
 		a.DNDate,
@@ -33,6 +35,7 @@ begin
 	FROM PartReceiptHeader a
 	LEFT JOIN trade_master b ON a.SupplierCode = b.Trade_Code
 	left join ss_usersetup c on isnull(a.LastUser, a.RegisterUser) = c.UserID	
+	left join Company_Profile fak on a.CompanyCode = fak.Company_Code
 	WHERE a.Id = @ReceiptId
 end
 GO

@@ -119,7 +119,7 @@ begin
 					group by sdt.RefNo, sdt.WarehouseCode, sdt.AreaCode, sdt.AddressCode, sdt.ItemCode, mw.WarehouseName, isnull(ml.AreaName, ''Temporary''), isnull(mx.AddressName, ''Temporary''), mi.Item_Name, sdt.LotNo
 				) res
 			) xx 
-			on sd.RefNo = xx.RefNo, sd.WarehouseCode = xx.WarehouseCode and sd.AreaCode = xx.AreaCode and sd.AddressCode = xx.AddressCode  
+			on sd.RefNo = xx.RefNo and sd.WarehouseCode = xx.WarehouseCode and sd.AreaCode = xx.AreaCode and sd.AddressCode = xx.AddressCode  
 			and sd.ItemCode = xx.ItemCode and sd.LotNo = xx.LotNo
 			where sd.qty > 0
 			group by 
@@ -133,7 +133,7 @@ begin
 		outer apply
 		(
 			select * From StockHeader sm2 
-			where sm2.RefNo = sd.RefNo, sm2.WarehouseCode = sd.WarehouseCode AND sm2.AreaCode = sd.AreaCode 
+			where sm2.RefNo = sd.RefNo and sm2.WarehouseCode = sd.WarehouseCode AND sm2.AreaCode = sd.AreaCode 
 			and sm2.ItemCode = sd.ItemCode and sm2.LotNo = sd.LotNo
 		) sm
 		order by sd.ItemName, sd.WarehouseName, sd.AreaName, sd.AddressName, sd.LotNo

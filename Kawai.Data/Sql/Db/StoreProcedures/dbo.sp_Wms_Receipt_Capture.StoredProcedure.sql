@@ -8,7 +8,7 @@ CREATE   procedure [sp_Wms_Receipt_Capture]
 as
 
 select 
-	Id, ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, StatusReceipt, IsManual, Transport 
+	Id, ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, StatusReceipt, IsManual, Transport, CompanyCode [FactoryCode]
 From PartReceiptHeader where Id = @Id
 
 select * From PartReceiptDetail where ReceiptId = @Id

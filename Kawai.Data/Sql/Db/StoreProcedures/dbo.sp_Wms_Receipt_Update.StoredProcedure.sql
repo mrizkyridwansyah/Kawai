@@ -6,6 +6,7 @@ GO
 CREATE   procedure [sp_Wms_Receipt_Update]
 	@Id				bigint,
 	@DNNumber		varchar(50),
+	@FactoryCode	varchar(25),
 	@SupplierCode	varchar(25),
 	@DNDate			date,
 	@BCNumber		varchar(50),
@@ -41,9 +42,40 @@ begin
 		return
 	end
 
+	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
+	begin
+		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
+		return
+	end
+
+	declare @overReceiptPO varchar(max) = 
+	(
+		select STRING_AGG(a.PO_No, ', ') From PurchaseOrder_Detail a
+		inner join Item_Master mi on a.Item_Code = mi.Item_Code
+		left join 
+		(
+			select 
+				prd.PONumber, prd.ItemCode, sum(prd.ReceiptQty) ReceiptQty 
+			from PartReceiptDetail prd
+			inner join @Details dl on prd.PONumber = dl.PONumber and prd.ItemCode = dl.ItemCode
+			where prd.ReceiptId <> isnull(@Id, 0)
+			group by prd.PONumber, prd.ItemCode
+		) rcpSum on a.PO_No = rcpSum.PONumber and a.Item_Code = rcpSum.ItemCode
+		inner join @Details dtl on a.PO_No = dtl.PONumber and a.Item_Code = dtl.ItemCode
+		where a.Qty - (isnull(rcpSum.ReceiptQty, 0) + dtl.ReceiptQty) < 0
+	)
+
+	if isnull(@overReceiptPO, '') <> ''
+	begin
+		declare @errors varchar(max) = 'Over Qty ('+@overReceiptPO+')!'
+		raiserror(@errors, 16, 1)
+		return
+	end
+
 	-- UPDATE DATA RECEIPT HEADER
 	update PartReceiptHeader 
 	set 
+		CompanyCode = @FactoryCode,
 		DNNumber	= @DNNumber, 
 		DNDate		= @DNDate, 
 		BCNumber	= @BCNumber, 
@@ -63,8 +95,9 @@ begin
 
 	-- INSERT DETAIL BARU
 	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
-	select @Id, @ReceiptDate, PONumber, ItemCode, UnitClsCode, ExpectedQty, TotalPacking, ReceiptQty, @Remarks 
-	from @Details
+	select 
+		@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, a.TotalPacking, a.ReceiptQty, @Remarks
+	from @Details a 
 
 	-- HAPUS DETAIL LAMA DI PART RECEIPT EZR
 	DELETE FROM Part_Receipt WHERE RefWMSReceiptId = @Id

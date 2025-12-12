@@ -15,6 +15,12 @@ begin
 		return
 	end
 
+	if not exists (select 1 from StockDetail where RefNo = @RefNo and Qty > 0 and StatusReceipt = 'OK')
+	begin
+		raiserror('Status Stock belum OK!', 16,1)
+		return
+	end
+
 	if isnull((select sum(Qty) from StockDetail where RefNo = @RefNo), 0) = 0
 	begin
 		raiserror('Qty Stock sudah habis!', 16,1)
@@ -82,7 +88,7 @@ begin
 		getdate(), @UserId
 	from @tbl
 
-	exec sp_Wms_Stock_MovingRef @RefNo, @ToWarehouseCode, @ToAreaCode, @AddressCode, @UserId
+	exec sp_Wms_Stock_MovingRef @RefNo, @ToWarehouseCode, @ToAreaCode, @AddressCode, NULL, @UserId
 
 	insert into ReceiptSupplyHistory 
 	(
@@ -99,5 +105,16 @@ begin
 		getdate(), @UserId
 	from @tbl
 
+	-- ubah status nya jadi COMPLETE biar ilang dari andon
+	update prh 
+	set  
+		StatusReceipt = 'COMPLETE', LastUpdate = getdate(), LastUser = @UserId 
+	From PartReceiptHeader prh 
+	inner join 
+	(
+		select distinct x.ReceiptId From PartReceiptDetailBarcode x
+		inner join @tbl y on x.ItemCode = y.ItemCode and x.BarcodeNo = y.BarcodeNo and x.LotNo = y.LotNo 
+	) dtl on prh.Id = dtl.ReceiptId
+	where StatusReceipt IN ('OK', 'NG')
 end
 GO

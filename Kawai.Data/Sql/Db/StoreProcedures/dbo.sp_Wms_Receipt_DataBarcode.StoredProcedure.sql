@@ -3,7 +3,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE   procedure [sp_Wms_Receipt_DataBarcode]
-	@BarcodeNo varchar(100) 
+	@BarcodeNo varchar(100),
+	@UserId varchar(25)
 as
 begin
 	if not exists (select 1 from PartReceiptDetailBarcode where BarcodeNo = @BarcodeNo)
@@ -19,6 +20,22 @@ begin
 	end
 
 	declare @ReceiptId bigint = (SELECT ReceiptId fROM PartReceiptDetailBarcode WHERE BarcodeNo = @BarcodeNo)
+
+	if not exists 
+	(
+		select * From 
+		(
+			select * from PartReceiptDetailBarcode where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo
+		) a 
+		inner join 
+		(
+			select * from SS_UserWarehousePrivilege where UserID = @UserId and isnull(AllowAccess, 0) = 1
+		) b on a.WarehouseCode = b.WarehouseCode
+	)
+	begin
+		raiserror('User tidak memiliki hak akses ke warehouse ini!', 16, 1)
+		return
+	end
 
 	SELECT
 		a.Id, a.ReceiptDetailId, a.ReceiptId, hd.DNNumber, hd.SupplierCode, sp.Trade_Name SupplierName,
