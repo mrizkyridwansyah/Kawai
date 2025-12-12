@@ -48,6 +48,7 @@
             <div>
               <v-table-pagination
                 v-if="
+                  usePaging &&
                   !ds.isLoading &&
                   (dsData || ds.data).Items.length > 0 &&
                   !ds.isNetworkError &&
@@ -96,6 +97,10 @@ export default {
     filter: Object,
     keywordKeys: Array,
     exportExcel: Boolean,
+    usePaging: {
+      type: Boolean,
+      default: true
+    },
     exportExcelAction: Function,
     dataItems: {
       type: Array,

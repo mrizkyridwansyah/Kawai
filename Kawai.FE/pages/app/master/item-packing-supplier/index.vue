@@ -185,7 +185,7 @@ export default {
         () =>
           new Promise((resolve, reject) => {
             this.ds
-              .remove(item.ItemCode)
+              .remove(item.SupplierCode, item.ItemCode)
               .then((_) => {
                 this.ds.load();
                 toastSuccess("Data Deleted successfully!");

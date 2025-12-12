@@ -13,5 +13,5 @@ public class NG
     public string Description { get; set; }
 
     [Required(ErrorMessage = "Flag Common tidak boleh kosong")]
-    public bool IsCommon { get; set; }
+    public bool? IsCommon { get; set; }
 }

@@ -164,7 +164,7 @@ export default {
               .remove(this.$route.query.trade_code, item.Location_Code)
               .then((_) => {
                 this.ds.load();
-                toastSuccess("Success");
+                toastSuccess("Data deleted successfully!");
                 resolve();
               })
               .catch((err) => {

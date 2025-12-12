@@ -162,7 +162,7 @@ export default {
       this.ds
         .create(data)
         .then((datas) => {
-          toastSuccess("success");
+          toastSuccess("Data saved successfully!");
           this.$emit("submitted");
         })
         .catch((err) => {

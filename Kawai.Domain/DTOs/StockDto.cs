@@ -22,6 +22,11 @@ public class StockDto: DataTableDto
     public DateTime LastUpdate { get; set; }
     public string LastUser { get; set; }
     public string Category { get; set; }
+
+    /// <summary>
+    /// NOT_YET_SO, OK, DIFFERENT
+    /// </summary>
+    public string StatusSO { get; set; }
 }
 
 public class StockMasterDto: DataTableDto
