@@ -34,6 +34,7 @@ export default {
     isLoading: false,
     model: {
       SupplierCode: "",
+      PrevItemCode: "",
       ItemCode: "",
       QtyPacking: 0,
     },
@@ -66,9 +67,10 @@ export default {
   },
   methods: {
     loadDetail: function () {
-      this.ds
-        .loadDetail(this.supplier, this.id)
-        .then((dt) => (this.model = dt.Data));
+      this.ds.loadDetail(this.supplier, this.id).then((dt) => {
+        this.model = dt.Data;
+        this.model.PrevItemCode = this.model.ItemCode;
+      });
     },
     resetForm: function () {
       if (this.mode === "edit") {
@@ -77,6 +79,7 @@ export default {
         // Kosongkan form untuk mode Add
         this.model = {
           SupplierCode: this.supplier || "",
+          PrevItemCode: "",
           ItemCode: "",
           QtyPacking: 0,
         };

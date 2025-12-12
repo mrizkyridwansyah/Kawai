@@ -43,6 +43,7 @@ public class ItemPackingSupplierRepository : IItemPackingSupplierRepository
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
             model.SupplierCode,
+            model.PrevItemCode,
             model.ItemCode,
             model.QtyPacking,
             UpdateBy = userId

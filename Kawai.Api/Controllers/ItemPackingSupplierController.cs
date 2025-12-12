@@ -57,6 +57,21 @@ public class ItemPackingSupplierController : HahaController
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] ItemPackingSupplier model)
     {
+        if(model.ItemCode != model.PrevItemCode)
+        {
+            var existing = await _itemPackingSupplierRepository.Capture(model.SupplierCode, model.PrevItemCode);
+            await _logger.SaveDataLog(new DataLogDto
+            {
+                DocumentType = "Item Packing Supplier",
+                EntityId = model.SupplierCode + "|" + model.PrevItemCode,
+                ReferenceId = model.SupplierCode + "|" + model.PrevItemCode,
+                Action = DataLogAction.Update,
+                Activity = "Ganti Item Packing Supplier ke Item Lain",
+                Before = existing,
+                After = null
+            });
+        }
+
         var before = await _itemPackingSupplierRepository.Capture(model.SupplierCode, model.ItemCode);
         await _itemPackingSupplierRepository.Update(model, Auth.User.UserID);
         var after = await _itemPackingSupplierRepository.Capture(model.SupplierCode, model.ItemCode);
