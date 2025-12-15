@@ -70,7 +70,10 @@ public class ReceiptAndonDto : DataTableDto
     public string SupplierName { get; set; }
     public string DNNumber { get; set; }
     public string ItemName { get; set; }
+    public double ReceiptQtyUnit { get; set; }
+    public double ReceiptQtyPack { get; set; }
     public string StatusReceipt { get; set; }
+    public string StatusReceiptName { get; set; }
 }
 
 public class ReceiptInquiryDto: DataTableDto

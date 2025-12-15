@@ -13,7 +13,7 @@
             class="p-2 header-summary-content"
             style="background-color: #8d56a9"
           >
-            <span class="title-summary">Total Receipt (In Complete)</span>
+            <span class="title-summary">Total Receipt (Unprocessed to storage)</span>
             <br />
             <span class="qty-summary">{{
               $func.formatMoney(this.summary.total)
@@ -25,7 +25,7 @@
             class="p-2 header-summary-content"
             style="background-color: #888"
           >
-            <span class="title-summary">Pending QC</span>
+            <span class="title-summary">QC Inprogress</span>
             <br />
             <span class="qty-summary">{{
               $func.formatMoney(this.summary.pending)
@@ -35,7 +35,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
           <div
             class="p-2 header-summary-content"
-            style="background-color: #49a0bc"
+            style="background-color: #18B2E0"
           >
             <span class="title-summary">Passed QC</span>
             <br />
@@ -47,7 +47,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
           <div
             class="p-2 header-summary-content"
-            style="background-color: #51ac83"
+            style="background-color: #0db951"
           >
             <span class="title-summary">NG QC</span>
             <br />
@@ -63,43 +63,52 @@
           <div class="panel panel-inverse">
             <div class="panel-heading ui-sortable-handle">
               <font-awesome-icon
-                icon="pencil"
-                class="text-primary icon-title"
+                icon="file-pen"
+                class="text-white icon-title"
               />
-              <span style="font-size: 1.05em" class="ml-3">Total Receipt</span>
+              <span style="font-size: 1.05em" class="ml-3">Pending Receipt Check</span>
             </div>
             <div class="panel-body">
               <div class="v-table-wrapper">
                 <table
-                  class="table table-striped mb-0 align-middle w-100 v-fixed-table"
+                  class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
                   <thead>
                     <tr>
-                      <th class="text-center">No.</th>
+                      <th class="text-center">No</th>
                       <th class="text-center">Date</th>
                       <th class="text-center">Supplier</th>
                       <th class="text-center">DN</th>
                       <th class="text-center">Item</th>
+                      <th class="text-center">Qty(Unit)</th>
+                      <th class="text-center">Qty(Pack)</th>
                       <th class="text-center">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(item, i) in list">
-                      <td class="text-right">{{ i + 1 }}.</td>
+                      <!-- <td class="text-right">{{ i + 1 }}.</td>-->
+                      <td class="text-center">{{ item.ReceiptNo }}</td>
                       <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                       <td>{{ item.SupplierName }}</td>
                       <td>{{ item.DNNumber }}</td>
                       <td>{{ item.ItemName }}</td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                      </td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(item.ReceiptQtyPack) }}
+                      </td>
                       <td
                         :class="{
-                          'text-success': item.StatusReceipt === 'OK',
-                          'text-danger': item.StatusReceipt === 'NG',
-                          'text-warning': item.StatusReceipt === 'PENDING',
-                          'text-primary': item.StatusReceipt === 'NEW',
+                          'text-success': item.StatusReceiptName === 'Passed QC',
+                          'text-danger': item.StatusReceiptName === 'NG QC',
+                          'text-warning': item.StatusReceiptName === 'QC Inprogres',
+                          'text-primary': item.StatusReceiptName === 'New',
                         }"
                       >
-                        {{ item.StatusReceipt }}
+                        {{ item.StatusReceiptName }}
                       </td>
                     </tr>
                   </tbody>
@@ -116,26 +125,38 @@
                 class="text-warning icon-title"
                 icon="hourglass-start"
               />
-              <span style="font-size: 1.05em" class="ml-3">Pending QC</span>
+              <span style="font-size: 1.05em" class="ml-3">QC Inprogress</span>
             </div>
             <div class="panel-body">
-              <table class="table table-striped mb-0 align-middle w-100">
+              
+                <table
+                  class="table mb-0 align-middle w-100 v-fixed-table"
+                  ref="table"
+                >
                 <thead>
                   <tr>
-                    <th class="text-center">No.</th>
+                    <th class="text-center">No</th>
                     <th class="text-center">Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">DN</th>
                     <th class="text-center">Item</th>
+                    <th class="text-center">Qty(Unit)</th>
+                    <th class="text-center">Qty(Pack)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in listPending">
-                    <td class="text-right">{{ i + 1 }}.</td>
+                     <td class="text-center">{{ item.ReceiptNo }}</td>
                     <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
                     <td>{{ item.ItemName }}</td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                    </td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.ReceiptQtyPack) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -153,33 +174,33 @@
               <span style="font-size: 1.05em" class="ml-3">Passed QC</span>
             </div>
             <div class="panel-body">
-              <table class="table table-striped mb-0 align-middle w-100">
+               <table
+                  class="table mb-0 align-middle w-100 v-fixed-table"
+                  ref="table"
+                >
                 <thead>
-                  <tr>
-                    <th class="text-center">No.</th>
+                  <tr >
+                    <th class="text-center">No</th>
                     <th class="text-center">Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">DN</th>
                     <th class="text-center">Item</th>
-                    <th class="text-center">Status</th>
+                    <th class="text-center">Qty(Unit)</th>
+                    <th class="text-center">Qty(Pack)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in listPassed">
-                    <td class="text-right">{{ i + 1 }}.</td>
+                     <td class="text-center">{{ item.ReceiptNo }}</td>
                     <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
                     <td>{{ item.ItemName }}</td>
-                    <td
-                      :class="{
-                        'text-success': item.StatusReceipt === 'OK',
-                        'text-danger': item.StatusReceipt === 'NG',
-                        'text-warning': item.StatusReceipt === 'PENDING',
-                        'text-primary': item.StatusReceipt === 'NEW',
-                      }"
-                    >
-                      {{ item.StatusReceipt }}
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                    </td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.ReceiptQtyPack) }}
                     </td>
                   </tr>
                 </tbody>
@@ -195,23 +216,34 @@
               <span style="font-size: 1.05em" class="ml-3">NG QC</span>
             </div>
             <div class="panel-body">
-              <table class="table table-striped mb-0 align-middle w-100">
+               <table
+                  class="table mb-0 align-middle w-100 v-fixed-table"
+                  ref="table"
+                >
                 <thead>
-                  <tr>
-                    <th class="text-center">No.</th>
+                  <tr class="datatable-color">
+                    <th class="text-center">No</th>
                     <th class="text-center">Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">DN</th>
                     <th class="text-center">Item</th>
+                    <th class="text-center">Qty(Unit)</th>
+                    <th class="text-center">Qty(Pack)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in listNG">
-                    <td class="text-right">{{ i + 1 }}.</td>
+                     <td class="text-center">{{ item.ReceiptNo }}</td>
                     <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
                     <td>{{ item.ItemName }}</td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                    </td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.ReceiptQtyPack) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -264,7 +296,7 @@ export default {
           console.log(dt);
           this.list = dt.data.Data;
           this.listPending = this.list.filter(
-            (p) => p.StatusReceipt === "NEW" || p.StatusReceipt === "PENDING"
+            (p) => p.StatusReceipt === "PENDING"
           );
           this.listPassed = this.list.filter((p) => p.StatusReceipt === "OK");
           this.listNG = this.list.filter((p) => p.StatusReceipt === "NG");
@@ -314,16 +346,20 @@ export default {
 .v-fixed-table {
   width: max-content; /* agar scroll horizontal muncul */
   min-width: 100%;
+  border: 1px solid gainsboro !important;
   /* border-collapse: separate; */
   /* border-spacing: 0; */
+  font-size: 0.9em;
+   
 }
 
 .v-fixed-table th,
 .v-fixed-table td {
   white-space: nowrap;
   padding: 8px 16px;
-  /* border: 1px solid #dee2e6; */
+  border: 1px solid #dee2e6;
   background: #fff;
+  
 }
 
 /* Sticky Header (atas) */
@@ -331,7 +367,7 @@ export default {
   position: sticky;
   top: 0;
   z-index: 20; /* harus lebih tinggi dari sticky kiri */
-  background: #f8f9fa;
+  background: lightblue !important;
 }
 
 /* Sticky Columns (kiri) */

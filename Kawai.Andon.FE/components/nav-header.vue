@@ -4,8 +4,8 @@
     <div class="navbar-header">
       <span class="navbar-brand">
         <span class="navbar-logo"></span
-        ><b class="me-3px" style="color: white">TOS</b>
-        <span style="color: white">ANDON</span>
+        ><b class="me-3px" style="color: white">ANDON</b>
+        <span style="color: white">WMS</span>
       </span>
     </div>
     <!-- END navbar-header -->
