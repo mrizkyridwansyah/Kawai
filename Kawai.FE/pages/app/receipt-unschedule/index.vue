@@ -2,115 +2,139 @@
   <v-frame title="Part Receipt Material Unschedule" icon="receipt">
     <template #frame-content>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Factory</label>
-            <input-factory-privileges v-model="filter.FactoryCode" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Factory</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-factory-privileges
+            class="form-control"
+            v-model="filter.FactoryCode"
+            :disabled="filter.ReceiptId != null"
+          />
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">BC Number</label>
-            <input-text v-model="model.BCNumber" :errors="errors?.BCNumber" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >BC Number</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-text v-model="model.BCNumber" :errors="errors?.BCNumber" />
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Supplier</label>
-            <input-trade placeholder="Supplier" v-model="filter.SupplierCode" />
-          </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Supplier</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-trade
+            class="form-control"
+            placeholder="Supplier"
+            v-model="filter.SupplierCode"
+            :trade-cls="['2', '3']"
+            :disabled="filter.ReceiptId != null"
+          />
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 mt-2">
-          <div class="mb-3">
-            <label class="form-label">BC Type</label>
-            <input-cls
-              type-data="BCType_Cls"
-              placeholder="BC Type"
-              v-model="model.BCType"
-              :errors="errors?.BCType"
-            />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >BC Type</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-cls
+            class="form-control"
+            type-data="BCType_Cls"
+            placeholder="BC Type"
+            v-model="model.BCType"
+            :errors="errors?.BCType"
+          />
         </div>
-        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-8 col-8 mt-2">
-          <div class="mb-3">
-            <label class="form-label">Receipt No</label>
-            <input-receipt
-              :disabled="isNew"
-              status="NEW"
-              source-menu="RECEIPT UNSCHEDULE"
-              :factory-code="filter.FactoryCode"
-              :supplier-code="filter.SupplierCode"
-              v-model="filter.ReceiptId"
-              :errors="errors?.ReceiptId"
-            />
-          </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Receipt No</label
+        >
+        <div class="col-xl-4 col-lg-4 col-md-9 col-sm-9 col-xs-11">
+          <input-receipt
+            class="form-control"
+            :disabled="isNew"
+            status="NEW"
+            source-menu="RECEIPT UNSCHEDULE"
+            :factory-code="filter.FactoryCode"
+            :supplier-code="filter.SupplierCode"
+            v-model="filter.ReceiptId"
+            :errors="errors?.ReceiptId"
+          />
         </div>
-        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-4 col-4 mt-4">
-          <div class="mb-3">
-            <label class="form-label"></label>
-            <input-checkbox
-              label="New"
-              v-model="isNew"
-              @click="(e) => changeNew(e)"
-            />
-          </div>
+        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
+          <input-checkbox
+            label="New"
+            v-model="isNew"
+            @click="(e) => changeNew(e)"
+          />
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">BC Date</label>
-            <input-date v-model="model.BCDate" :errors="errors?.BCDate" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >BC Date</label
+        >
+        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
+          <input-date v-model="model.BCDate" :errors="errors?.BCDate" />
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">DN Date</label>
-            <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >DN Date</label
+        >
+        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
+          <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">DN Number</label>
-            <input-text v-model="model.DNNumber" :errors="errors?.DNNumber" />
-          </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >DN Number</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-text v-model="model.DNNumber" :errors="errors?.DNNumber" />
         </div>
-        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-4 col-4 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Police No</label>
-            <input-text v-model="model.VehicleNo" :errors="errors?.VehicleNo" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Transport By</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-cls
+            class="form-control"
+            type-data="Transport_Cls"
+            placeholder="Transport"
+            v-model="model.Transport"
+            :errors="errors?.Transport"
+          />
         </div>
-
-        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-4 col-4 mt-2">
-          <div class="mb-3">
-            <label class="form-label">Transport By</label>
-            <input-cls
-              type-data="Transport_Cls"
-              placeholder="Transport"
-              v-model="model.Transport"
-              :errors="errors?.Transport"
-            />
-          </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Police No</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-text v-model="model.VehicleNo" :errors="errors?.VehicleNo" />
         </div>
-        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-4 col-4 mt-7">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label"></label>
-            <button
-              class="btn btn-sm btn-blue btn-elevate mr-1"
-              @click="search"
-              :disabled="isLoading"
+        <!-- <div class="col-xl-2 col-lg-2 col-md-8 col-sm-8 col-xs-10">
+          <button
+            class="btn btn-sm btn-blue btn-elevate mr-1"
+            @click="searchPoDetail"
+            :disabled="isLoading"
+          >
+            <div
+              class="spinner-border spinner-border-sm text-light"
+              role="status"
+              v-if="isLoading"
             >
-              <div
-                class="spinner-border spinner-border-sm text-light"
-                role="status"
-                v-if="isLoading"
-              >
-                <span class="visually-hidden">Loading...</span>
-              </div>
-              <font-awesome-icon v-else icon="search" />
-              <span class="ml-2">Search</span>
-            </button>
-          </div>
-        </div>
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <font-awesome-icon v-else icon="search" />
+            <span class="ml-2">Search</span>
+          </button>
+        </div> -->
       </div>
       <hr />
       <div class="d-flex mt-3">
@@ -217,7 +241,7 @@
               class="mt-3"
               v-if="
                 !dsReceipt.isLoading &&
-                model?.Details?.length == 0 &&
+                items.length == 0 &&
                 !dsReceipt.isNetworkError &&
                 !dsReceipt.isServerError
               "
@@ -246,6 +270,7 @@
     <shared-item-list
       :filters="[{ SupplierCode: this.filter.SupplierCode }]"
       :list="this.dsItemSupplier"
+      :refresh="refreshItemList"
       :actions="[
         {
           href: 'javascript:void(0);',
@@ -293,6 +318,7 @@ export default {
     debounce: null,
     isLoading: false,
     errors: {},
+    refreshItemList: 0,
   }),
   computed: {
     ds: function () {
@@ -318,8 +344,25 @@ export default {
     "filter.ReceiptId": function () {
       if (this.filter.ReceiptId) this.getReceipt();
       else {
-        this.reset();
-        this.isNew = false;
+        this.isNew = true;
+        this.items = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          Id: null,
+          ReceiptNo: "",
+          DNNumber: "",
+          FactoryCode: null,
+          SupplierCode: null,
+          DNDate: null,
+          BCNumber: "",
+          BCType: "",
+          BCDate: null,
+          VehicleNo: "",
+          Transport: null,
+          RegisterNo: null,
+          Remarks: null,
+          Details: [],
+        };
       }
     },
   },
@@ -338,8 +381,8 @@ export default {
         ItemName: null,
         UnitClsCode: null,
         UnitClsName: null,
-        ReceiptQty: null,
-        TotalPacking: null,
+        ReceiptQty: 0,
+        TotalPacking: 0,
         QtyPacking: null,
       };
 
@@ -369,10 +412,32 @@ export default {
       };
     },
     changeNew: function (e) {
-      if (e.target.checked) this.reset();
+      if (e.target.checked) {
+        this.isNew = true;
+        this.items = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          Id: null,
+          ReceiptNo: "",
+          DNNumber: "",
+          FactoryCode: null,
+          SupplierCode: null,
+          DNDate: null,
+          BCNumber: "",
+          BCType: "",
+          BCDate: null,
+          VehicleNo: "",
+          Transport: null,
+          RegisterNo: null,
+          Remarks: null,
+          Details: [],
+        };
+        // this.reset();
+      }
     },
     loadItem: function (idx) {
       this.idxItemLoad = idx;
+      this.refreshItemList++;
       this.$bvModal.show("shared-item-list");
     },
     selectItem(dt) {
@@ -415,7 +480,9 @@ export default {
         .printLabel(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
@@ -454,7 +521,9 @@ export default {
         .create(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
@@ -467,7 +536,9 @@ export default {
         .update(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;

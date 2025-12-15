@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Address`"
       :searchable="true"
-      label="AddressName"
+      label="DDLDescription"
       track-by="AddressCode"
       trackBy="AddressCode"
       :hide-selected="true"

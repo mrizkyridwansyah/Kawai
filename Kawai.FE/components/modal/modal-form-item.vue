@@ -84,6 +84,7 @@
               <label class="form-label">Supplier</label>
               <input-trade
                 placeholder="Supplier"
+                :trade-cls="['2', '3']"
                 v-model="model.SupplierCode"
                 :errors="errors?.SupplierCode"
               />
@@ -94,6 +95,7 @@
                 placeholder="Item Name"
                 v-model="model.DeliveryPlaceCode"
                 :errors="errors?.DeliveryPlaceCode"
+                :trade="model.SupplierCode"
               />
             </div>
             <div class="mb-3">

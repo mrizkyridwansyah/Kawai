@@ -13,7 +13,7 @@ create   procedure [sp_Wms_WarehousePrivileges_DDL]
 as
 begin
 	select 
-		RTRIM(a.WH_Code) WarehouseCode, a.WH_Name WarehouseName
+		RTRIM(a.WH_Code) WarehouseCode, a.WH_Name WarehouseName, RTRIM(a.WH_Code) + ' | ' + a.WH_Name DDLDescription
 	From WareHouse_Master a
 	inner join
 	(
@@ -21,7 +21,7 @@ begin
 	) priv on a.WH_Code = priv.WarehouseCode
 	where 1=1
 	and (@FactoryCode = 'ALL' or Company_Code = @FactoryCode)
-	and WH_Name like '%'+ @Keyword +'%'
+	and (a.WH_Code like '%'+ @Keyword +'%' or WH_Name like '%'+ @Keyword +'%')
 
 end
 

@@ -7,11 +7,11 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Working Time Cls`"
+      :placeholder="placeholder || `Search Lot No `"
       :searchable="true"
-      label="Description"
-      track-by="ClsCode"
-      trackBy="ClsCode"
+      label="LotNo"
+      track-by="LotNo"
+      trackBy="LotNo"
       :hide-selected="true"
       :internal-search="false"
       :loading="isLoading"
@@ -52,6 +52,11 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "warehouse",
+    "area",
+    "address",
+    "item",
+    "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -72,6 +77,22 @@ export default {
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
+    },
+    warehouse: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    area: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    address: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    item: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
     },
   },
   mounted: function () {
@@ -100,15 +121,23 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/cls/ddlsearch?keyword=${
-              q || ""
-            }&typedata="WorkingLossTime_Cls"&ids=${d || ""}`
+            `/stock/ddl-lot-no-search-by-stock?keyword=${q || ""}&ids=${
+              d || ""
+            }&warehouse=${this.warehouse}&area=${this.area}&address=${
+              this.address
+            }&item=${this.item}`
           )
           .then((p) => {
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [{ LotNo: "ALL" }, ...p.data.Data]
+                : p.data.Data;
+
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.ClsCode;
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.LotNo;
             }
-            this.list = p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 

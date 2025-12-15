@@ -53,164 +53,176 @@
               id="default-tab-1"
               role="tabpanel"
             >
-              <table
-                class="table table-striped table-bordered mb-0 align-middle"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center" style="vertical-align: middle">
-                      Menu Group
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Menu ID
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Description
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Access</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox @click="(e) => allowAllAccessMenu(e)" />
-                      </div>
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Update</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox @click="(e) => allowAllUpdateMenu(e)" />
-                      </div>
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Price</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox @click="(e) => allowAllPriceMenu(e)" />
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, idx) in allowed.menu">
-                    <td>{{ item.MenuGroup }}</td>
-                    <td>{{ item.MenuID }}</td>
-                    <td>{{ item.MenuDescription }}</td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowAccess"
-                          @click="(e) => allowAccessMenu(e, item)"
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowUpdate"
-                          @click="(e) => allowUpdateMenu(e, item)"
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowPrice"
-                          @click="(e) => allowPriceMenu(e, item)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="vertical-align: middle">
+                        Menu Group
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Menu ID
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Description
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Access</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllAccessMenu(e)"
+                          />
+                        </div>
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Update</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllUpdateMenu(e)"
+                          />
+                        </div>
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Price</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllPriceMenu(e)"
+                          />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, idx) in allowed.menu">
+                      <td>{{ item.MenuGroup }}</td>
+                      <td>{{ item.MenuID }}</td>
+                      <td>{{ item.MenuDescription }}</td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowAccess"
+                            @click="(e) => allowAccessMenu(e, item)"
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowUpdate"
+                            @click="(e) => allowUpdateMenu(e, item)"
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowPrice"
+                            @click="(e) => allowPriceMenu(e, item)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- END tab-pane -->
             <!-- BEGIN tab-pane FACTORY -->
             <div class="tab-pane fade" id="default-tab-2" role="tabpanel">
-              <table
-                class="table table-striped table-bordered mb-0 align-middle"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center" style="vertical-align: middle">
-                      Factory Code
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Factory Name
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Show</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox
-                          @click="(e) => allowAllAccessFactory(e)"
-                        />
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, idx) in allowed.factory">
-                    <td>{{ item.FactoryCode }}</td>
-                    <td>{{ item.FactoryName }}</td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowAccess"
-                          @click="(e) => allowAccessFactory(e, item)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="vertical-align: middle">
+                        Factory Code
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Factory Name
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Show</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllAccessFactory(e)"
+                          />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, idx) in allowed.factory">
+                      <td>{{ item.FactoryCode }}</td>
+                      <td>{{ item.FactoryName }}</td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowAccess"
+                            @click="(e) => allowAccessFactory(e, item)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- END tab-pane -->
             <!-- BEGIN tab-pane WAREHOUSE -->
             <div class="tab-pane fade" id="default-tab-3" role="tabpanel">
-              <table
-                class="table table-striped table-bordered mb-0 align-middle"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center" style="vertical-align: middle">
-                      Factory Code
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Factory Name
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Warehouse Code
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Warehouse Name
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Show</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox
-                          @click="(e) => allowAllAccessWarehouse(e)"
-                        />
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(item, idx) in allowed.warehouse.filter(
-                      (x) => x.AllowedAccessFactory
-                    )"
-                  >
-                    <td>{{ item.FactoryCode }}</td>
-                    <td>{{ item.FactoryName }}</td>
-                    <td>{{ item.WarehouseCode }}</td>
-                    <td>{{ item.WarehouseName }}</td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowAccess"
-                          @click="(e) => allowAccessWarehouse(e, item)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="vertical-align: middle">
+                        Factory Code
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Factory Name
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Warehouse Code
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Warehouse Name
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Show</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllAccessWarehouse(e)"
+                          />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, idx) in allowed.warehouse.filter(
+                        (x) => x.AllowedAccessFactory
+                      )"
+                    >
+                      <td>{{ item.FactoryCode }}</td>
+                      <td>{{ item.FactoryName }}</td>
+                      <td>{{ item.WarehouseCode }}</td>
+                      <td>{{ item.WarehouseName }}</td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowAccess"
+                            @click="(e) => allowAccessWarehouse(e, item)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- END tab-pane -->
             <!-- BEGIN tab-pane AREA -->
@@ -305,11 +317,6 @@
             <!-- END tab-pane -->
           </div>
           <!-- END tab-content -->
-          <!-- BEGIN hljs-wrapper -->
-          <div class="hljs-wrapper rounded-0 rounded-bottom mb-4">
-            <pre><code class="html hljs language-xml" data-url="../assets/data/ui-tabs-accordions/code-1.json" data-highlighted="yes"></code></pre>
-          </div>
-          <!-- END hljs-wrapper -->
         </div>
       </div>
     </template>
@@ -494,6 +501,13 @@ thead {
   background-color: #007bff !important; /* Ganti dengan warna yang kamu mau */
   color: white !important; /* Warna teks di tab aktif */
   border-color: #007bff #007bff #fff; /* Biar matching */
+}
+
+.v-table-wrapper {
+  overflow: auto;
+  max-height: 60vh;
+  /* border: 1px solid #ddd; */
+  position: relative;
 }
 
 /* thead tr th {

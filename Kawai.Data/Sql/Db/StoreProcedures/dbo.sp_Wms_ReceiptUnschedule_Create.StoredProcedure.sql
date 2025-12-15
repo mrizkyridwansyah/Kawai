@@ -7,6 +7,7 @@ GO
 CREATE   procedure [sp_Wms_ReceiptUnschedule_Create]
 	@ReceiptNo		varchar(50),
 	@DNNumber		varchar(50),
+	@FactoryCode	varchar(25),
 	@SupplierCode	varchar(25),
 	@DNDate			date,
 	@BCNumber		varchar(50),
@@ -29,21 +30,27 @@ begin
 		return
 	end
 
+	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @RegisterBy and isnull(AllowAccess, 0) = 1)
+	begin
+		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
+		return
+	end
+
 	declare @ReceiptDate date = getdate()
 
 	begin transaction receiptTransaction
 	begin try
 		insert into PartReceiptHeader 
-		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu)
+		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode)
 		values 
-		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, '', 'RECEIPT UNSCHEDULE')
+		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, '', 'RECEIPT UNSCHEDULE', @FactoryCode)
 
 		declare @newid bigint = (select SCOPE_IDENTITY())
 
 		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
 		select @newid, @ReceiptDate, NULL, a.ItemCode, mi.UnitCls, 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / mi.QtyPacking), a.ReceiptQty, '' 
 		from @Details a
-		inner join ItemSupplierPacking mi on a.ItemCode = mi.ItemCode
+		inner join ItemSupplierPacking mi on a.ItemCode = mi.ItemCode and mi.SupplierCode = @SupplierCode
 
 		declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
 

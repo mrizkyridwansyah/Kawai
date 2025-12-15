@@ -9,11 +9,11 @@ create or alter procedure [dbo].[sp_Wms_Warehouse_DDLWarehouseLine]
 as
 begin
 	select 
-		wh.WarehouseCode, wh.WarehouseName
+		wh.WarehouseCode, wh.WarehouseName, wh.WarehouseCode + ' | ' + wh.WarehouseName DDLDescription
 	From vw_WarehouseLine wh 
 	where 1=1
 	and (@FactoryCode = 'ALL' or wh.FactoryCode = @FactoryCode)
-	and wh.WarehouseName like '%'+ @Keyword +'%'
+	and (wh.WarehouseCode like '%'+ @Keyword +'%' or wh.WarehouseName like '%'+ @Keyword +'%')
 
 end
 

@@ -46,7 +46,7 @@ export default {
     model: {
       NGCode: "",
       Description: "",
-      IsCommon: "",
+      IsCommon: null,
     },
     errorResponse: {},
     errors: {},
@@ -81,7 +81,7 @@ export default {
       this.model = {
         NGCode: "",
         Description: "",
-        IsCommon: "",
+        IsCommon: null,
       };
       this.errors = {}; // Reset errors
     },
@@ -93,7 +93,7 @@ export default {
       this.ds
         .create(this.model)
         .then((datas) => {
-          toastSuccess("success");
+          toastSuccess("Data saved successfully");
           this.$emit("submitted");
         })
         .catch((err) => {
@@ -105,7 +105,7 @@ export default {
       this.ds
         .update(this.model)
         .then((datas) => {
-          toastSuccess("success");
+          toastSuccess("Data saved successfully");
           this.$emit("submitted");
         })
         .catch((err) => {

@@ -6,6 +6,6 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Receipt_CaptureHeader]
 	@Id bigint
 as
 
-select Id, ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, StatusReceipt, IsManual, Transport  
+select Id, ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, StatusReceipt, IsManual, Transport, CompanyCode [FactoryCode] 
 From PartReceiptHeader where Id = @Id
 GO

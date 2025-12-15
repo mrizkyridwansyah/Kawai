@@ -6,7 +6,7 @@
           <v-card rounded="md" elevation="10" class="px-sm-1 px-0 withbg mx-auto" max-width="500">
             <v-card-item class="pa-sm-8">
               <div class="d-flex justify-center py-4">
-                <img class="mb-4" src="/panasonic-login.png" alt="" width="202" />
+                <!-- <img class="mb-4" src="/panasonic-login.png" alt="" width="202" /> -->
               </div>
               <div class="alert alert-success mt-3" role="alert"
                 v-if="isSuccess"

@@ -1,7 +1,6 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
-using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 
 namespace Kawai.Data.Repositories;
@@ -23,6 +22,11 @@ public class StockRepository : IStockRepository
     public async Task<List<StockDto>> InquiryByArea(RequestParameter parameter)
     {
         string sp = "sp_Wms_StockInquiry_InquiryByArea";
+        return (await _dbExecutor.QueryListAsync<StockDto>(sp, parameter.ToQueryObject())).ToList();
+    }
+    public async Task<List<StockDto>> InquiryByCategory(RequestParameter parameter)
+    {
+        string sp = "sp_Wms_StockInquiry_InquiryByCategory";
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, parameter.ToQueryObject())).ToList();
     }
     public async Task<List<StockDto>> InquiryDetail(RequestParameter parameter)

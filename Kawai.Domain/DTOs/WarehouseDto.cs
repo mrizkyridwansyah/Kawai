@@ -15,4 +15,5 @@ public class WarehouseDto: DataTableDto
     public DateTime? UseEndDate { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string Lastuser { get; set; }
+    public string DDLDescription { get; set; }
 }

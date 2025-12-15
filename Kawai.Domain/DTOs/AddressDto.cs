@@ -12,4 +12,6 @@ public class AddressDto: DataTableDto
     public string RegisterUser { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
+
+    public string DDLDescription { get; set; }
 }

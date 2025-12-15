@@ -2,62 +2,74 @@
   <v-frame title="Receipt / Supply Inquiry" icon="receipt">
     <template #frame-content>
       <div class="row">
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="mr-1">
-            <label class="form-label">Warehouse</label>
-            <input-warehouse class="form-control" v-model="filter.warehouse" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Warehouse</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-warehouse-privileges
+            class="form-control"
+            v-model="filter.warehouse"
+            factory-code="ALL"
+          />
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="mr-1">
-            <label class="form-label">Area</label>
-            <input-area
-              class="form-control"
-              v-model="filter.area"
-              :warehouse="filter.warehouse"
-              :include-temp="true"
-            />
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="mr-1">
-            <label class="form-label">Item</label>
-            <input-item class="form-control" v-model="filter.item" />
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="mr-1">
-            <label class="form-label">Lot No</label>
-            <input-lot-no
-              class="form-control"
-              v-model="filter.lotno"
-              :warehouse="filter.warehouse"
-              area="ALL"
-              address="ALL"
-              :show-option-all="true"
-              :item="filter.item"
-            />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Area</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-area-privileges
+            class="form-control"
+            placeholder="Search Area"
+            v-model="filter.area"
+            :warehouse="filter.warehouse"
+          />
         </div>
       </div>
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-          <div>
-            <label class="form-label">Period</label>
-            <input-month
-              v-model="filter.period"
-              class="mr-1"
-              placeholder="Period"
-            />
-          </div>
-          <div>
-            <label class="form-label">&nbsp;</label>
-            <br />
-            <v-button-search-reset :search="search" :reset="reset" />
-          </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Item</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-item
+            class="form-control"
+            placeholder="Search Item"
+            v-model="filter.item"
+          />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Lot No</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-lot-no
+            class="form-control"
+            v-model="filter.lotno"
+            :warehouse="filter.warehouse"
+            area="ALL"
+            address="ALL"
+            :show-option-all="true"
+            :item="filter.item"
+          />
         </div>
       </div>
-
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Period</label
+        >
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-6">
+          <input-month
+            v-model="filter.period"
+            class="mr-1"
+            placeholder="Period"
+          />
+        </div>
+        <div class="col-xl-5 col-lg-5 col-md-4 col-sm-4 col-xs-5">
+          <v-button-search-reset :search="search" :reset="reset" />
+        </div>
+      </div>
       <div ref="historyContent" class="mt-4">
         <div class="elevated-tree-container shadow-sm bg-white rounded">
           <v-tree

@@ -11,9 +11,8 @@ CREATE   procedure [sp_Wms_Receipt_ListPODetail]
 	@DateUntil datetime
 as
 begin
-	
-
-	IF @PONumber <> 'ALL'
+		
+	IF ISNULL(@PONumber, '') <> 'ALL'
 	BEGIN
 		SELECT 
 			rcp.ReceiptId [ReceiptId],
@@ -68,7 +67,7 @@ begin
 		select PONumber, ItemCode, sum(ReceiptQty) ReceiptQty from PartReceiptDetail a
 		inner join 
 		(
-			select * From PurchaseOrder_Master 
+			select * From PurchaseOrder_Master x
 			where Delivery_Date between @DateFrom and @DateUntil and Supplier_Code = @SupplierCode
 		) po on a.PONumber = po.PO_No
 		where ReceiptId <> isnull(@ReceiptId, 0) 
@@ -97,6 +96,10 @@ begin
 			us.FullName [LastUser]
 		FROM PurchaseOrder_Master a
 		inner join PurchaseOrder_Detail b on a.PO_No = b.PO_No
+		inner join 
+		(
+			select WarehouseCode From vw_WarehouseLine where FactoryCode = @FactoryCode
+		) y on a.WHTo = y.WarehouseCode
 		left join trade_master c on a.Supplier_Code = c.Trade_Code
 		left join Item_Master d on b.Item_Code = d.Item_Code
 		left join Unit_Cls e on b.Unit_Cls = e.Unit_Cls

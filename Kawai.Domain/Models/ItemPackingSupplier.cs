@@ -9,6 +9,8 @@ public class ItemPackingSupplier
     [MaxLength(15, ErrorMessage = "Supplier Code tidak boleh lebih dari 15 karakter")]
     public string SupplierCode { get; set; }
 
+    public string PrevItemCode { get; set; }
+
     [Required(ErrorMessage = "Item Code tidak boleh kosong")]
     [MaxLength(25, ErrorMessage = "Item Code tidak boleh lebih dari 25 karakter")]
     public string ItemCode { get; set; }

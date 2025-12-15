@@ -9,7 +9,7 @@
       open-direction="bottom" 
       :placeholder="placeholder || `Search Warehouse`"
       :searchable="true" 
-      label="WarehouseName" 
+      label="DDLDescription" 
       track-by="WarehouseCode" 
       trackBy="WarehouseCode" 
       :hide-selected="true"
@@ -95,7 +95,7 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/warehouse/ddlsearch-privileges?keyword=${q || ''}&ids=${d || ''}&factoryCode=${this.factoryCode || ""}`)
+        this.$http.get(`/warehouse/ddlsearch-privileges?keyword=${q || ''}&ids=${d || ''}&factoryCode=${this.factoryCode}`)
           .then(p => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.WarehouseCode;

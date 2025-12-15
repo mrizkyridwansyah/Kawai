@@ -40,6 +40,8 @@ public class ReceiptDetailDto : DataTableDto
     public double QtyPacking { get; set; }
     public double ReceiptQty { get; set; }
     public string IQCResult { get; set; }
+    public DateTime? LastUpdate { get; set; }
+    public string LastUser { get; set; }
 }
 
 // INI DIPAKE DI MOBILE

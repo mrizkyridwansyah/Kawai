@@ -32,11 +32,17 @@ begin
 		InspectionResult = @InspectionResult, InspectionResultApproval = @UserId, InspectionResultDate = getdate(), LastUpdate = getdate() 
 	where InspectionID = @InspectionId
 
+	declare @status varchar(50) = case when @InspectionResult = 'Accepted' then 'OK'  when @InspectionResult = 'Rejected' then 'NG' else 'HOLD' end
+
 	if @Source = 'Incoming Material'
-	begin
+	begin		
+		-- update status receipt yg dari SAMPLING SAJA! biar ketika di Material Storage ke Address diubah jadi COMPLETE dan HILANG dr ANDON RECEIVING
+		update PartReceiptHeader set StatusReceipt = @status, LastUpdate = getdate(), LastUser = @UserId where Id = @ReceiptId 
+
+		-- UPDATE Stock yg ada di receipt tersebut, QC Receiving.
 		update sd 
 		set 
-			StatusReceipt = 'OK',
+			StatusReceipt = @status,
 			Lastupdate = getdate(),
 			LastUser = @UserId
 		From StockDetail sd
@@ -48,9 +54,10 @@ begin
 	end
 	else if @Source = 'Material NG'
 	begin
+		-- UPDATE Stock yg ada disampling NG aja karna ini adalah NG diluar receiving
 		update sd 
 		set 
-			StatusReceipt = 'NG',
+			StatusReceipt = @status,
 			Lastupdate = getdate(),
 			LastUser = @UserId
 		From StockDetail sd

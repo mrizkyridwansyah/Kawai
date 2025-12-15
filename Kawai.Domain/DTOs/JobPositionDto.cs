@@ -10,4 +10,5 @@ public class JobPositionDto
 {
     public string JobPositionCode { get; set; }
     public string JobPositionDescs { get; set; }
+    public string DDLDescription { get; set; }
 }

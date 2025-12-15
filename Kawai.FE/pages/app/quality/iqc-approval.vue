@@ -2,72 +2,72 @@
   <v-frame title="IQC Result Approval" icon="list-check">
     <template #frame-content>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 col-12">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Factory</label>
-            <input-factory-privileges v-model="filter.FactoryCode" />
-          </div>
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 col-12">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Status</label>
-            <input-iqc-status
-              placeholder="Search Status"
-              v-model="filter.Status"
-            />
-          </div>
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 col-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Supplier</label>
-            <input-trade
-              placeholder="Search Supplier"
-              v-model="filter.SupplierCode"
-              :show-option-all="true"
-            />
-          </div>
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 col-12 mt-2">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Source</label>
-            <input-iqc-source
-              placeholder="Search Source"
-              v-model="filter.Source"
-            />
-          </div>
-        </div>
-        <div class="col-12"></div>
-        <div
-          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12 mt-2"
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Factory</label
         >
-          <label class="form-label">Trans Date</label>
-          <div class="mr-1" style="width: 100%; display: flex">
-            <input-date v-model="filter.PeriodFrom" />
-            <label class="form-label ml-2 mr-2 mt-2">s/d</label>
-            <input-date v-model="filter.PeriodUntil" class="ml-2" />
-            <div class="d-flex ml-2">
-              <div class="d-flex flex-fill">
-                <button
-                  class="btn btn-sm btn-blue btn-elevate mr-1"
-                  @click="search"
-                  :disabled="isLoading"
-                >
-                  <div
-                    class="spinner-border spinner-border-sm text-light"
-                    role="status"
-                    v-if="isLoading"
-                  >
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                  <font-awesome-icon v-else icon="search" />
-                  <span class="ml-2">Search</span>
-                </button>
-              </div>
-            </div>
-          </div>
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-factory-privileges
+            class="form-control"
+            v-model="filter.FactoryCode"
+          />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Status</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-iqc-status
+            placeholder="Search Status"
+            v-model="filter.Status"
+          />
         </div>
       </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Supplier</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-trade
+            placeholder="Search Supplier"
+            class="form-control"
+            v-model="filter.SupplierCode"
+            :trade-cls="['2', '3']"
+            :show-option-all="true"
+          />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Source</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-iqc-source
+            placeholder="Search Source"
+            v-model="filter.Source"
+          />
+        </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Receipt Date</label
+        >
+        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
+          <input-date v-model="filter.PeriodFrom" />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Until Date</label
+        >
+        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
+          <input-date v-model="filter.PeriodUntil" />
+        </div>
 
+        <div class="col-xl-11 col-lg-11 col-md-6 col-sm-6 col-xs-6 mt-1">
+          <v-button-search-reset :search="search" :reset="resetFilter" />
+        </div>
+      </div>
       <v-table-input :data-items="lists" :frozen-column-left="3" ref="vtable">
         <template #table-content>
           <div class="detail-content">

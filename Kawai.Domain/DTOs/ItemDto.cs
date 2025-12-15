@@ -113,4 +113,5 @@ public class ItemDto : DataTableDto
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
     public DateTime RegisterDate { get; set; }
+    public string DDLDescription { get; set; }
 }

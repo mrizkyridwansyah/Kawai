@@ -13,10 +13,10 @@ CREATE OR ALTER PROCEDURE [sp_Wms_DeliveryPlace_DDL]
 as
 begin
 	select 
-		RTRIM(Location_Code) Location_Code, Location_Name
+		RTRIM(Location_Code) Location_Code, Location_Name, rtrim(Location_Code) + ' | ' + Location_Name DDLDescription
 	From Delivery_Place
 	where 1=1 and Trade_Code = @Trade_Code
-	and Location_Name like '%'+ @Keyword +'%'
+	and (Location_Code like '%'+ @Keyword +'%' or Location_Name like '%'+ @Keyword +'%')
 end
 
 GO

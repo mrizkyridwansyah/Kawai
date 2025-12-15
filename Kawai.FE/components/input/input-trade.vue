@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Trade`"
       :searchable="true"
-      label="Trade_Name"
+      label="DDLDescription"
       track-by="Trade_Code"
       trackBy="Trade_Code"
       :hide-selected="true"

@@ -2,21 +2,41 @@
   <v-frame title="Address" icon="database">
     <template #frame-content>
       <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="mr-1" style="width: 100%">
-            <label class="form-label">Warehouse</label>
-            <input-warehouse class="form-control" v-model="filter.warehouse" />
-          </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Factory</label
+        >
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
+          <filter-factory-privileges
+            class="form-control"
+            v-model="filter.factory"
+          />
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 mt-1">
-          <div class="" style="width: 100%">
-            <label class="form-label">Area</label>
-            <input-area
-              class="form-control"
-              v-model="filter.area"
-              :warehouse="filter.warehouse"
-            />
-          </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Warehouse</label
+        >
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
+          <filter-warehouse-privileges
+            class="form-control"
+            v-model="filter.warehouse"
+            :factory-code="filter.factory"
+          />
+        </div>
+      </div>
+      <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Area</label
+        >
+        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
+          <filter-area-privileges
+            class="form-control"
+            v-model="filter.area"
+            :warehouse="filter.warehouse"
+          />
         </div>
       </div>
       <div class="d-flex mt-3">
@@ -40,7 +60,7 @@
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle"
-            style="min-width: 100%; width: max-content; "
+            style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >
             <thead>
@@ -141,6 +161,7 @@ export default {
       },
     ],
     filter: {
+      factory: null,
       warehouse: null,
       area: null,
       address: null,
@@ -175,6 +196,9 @@ export default {
     },
   },
   watch: {
+    "filter.factory": function () {
+      this.ds.data.Items = [];
+    },
     "filter.warehouse": function () {
       this.ds.data.Items = [];
     },

@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Cls`"
       :searchable="true"
-      label="Description"
+      label="DDLDescription"
       track-by="ClsCode"
       trackBy="ClsCode"
       :hide-selected="true"
@@ -61,7 +61,7 @@ export default {
   }),
   computed: {
     cClass: function () {
-      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+      return (this["class"] ?? "") + (this.errors ? " is-invalid" : "");
     },
   },
   watch: {

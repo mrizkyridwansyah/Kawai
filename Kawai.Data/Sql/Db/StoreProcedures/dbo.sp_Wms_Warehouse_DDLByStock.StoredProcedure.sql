@@ -10,10 +10,12 @@ create or alter procedure [dbo].[sp_Wms_Warehouse_DDLByStock]
 	@ItemCode		varchar(25)
 as
 begin
-	select distinct a.WarehouseCode, b.WarehouseName From StockDetail a
+	select 
+		distinct b.WarehouseCode, b.WarehouseName, b.WarehouseCode + ' | ' + b.WarehouseName DDLDescription
+	From StockDetail a
 	inner join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
 	where 1=1
-	and b.WarehouseName like '%' + @Keyword + '%'
+	and (a.WarehouseCode like '%' + @Keyword + '%' or b.WarehouseName like '%' + @Keyword + '%')
 	and (@FactoryCode = 'ALL' or b.FactoryCode = @FactoryCode)
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0

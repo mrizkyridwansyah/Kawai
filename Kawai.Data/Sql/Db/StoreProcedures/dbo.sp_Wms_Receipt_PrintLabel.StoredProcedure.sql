@@ -14,6 +14,22 @@ begin
 		return
 	end
 
+	if not exists 
+	(
+		select * From 
+		(
+			select * from PartReceiptHeader where Id = @ReceiptId
+		) a 
+		inner join 
+		(
+			select * from SS_UserFactoryPrivilege where UserID = @UserId and isnull(AllowAccess, 0) = 1
+		) b on a.CompanyCode = b.FactoryCode
+	)
+	begin
+		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
+		return
+	end
+
 	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @ReceiptId)
 	begin
 		update PartReceiptDetailBarcode set PrintStatus = null, PrintDate = null, PrintUser = @UserId 
@@ -38,27 +54,28 @@ begin
 			[Id] bigint,
 			[PONumber] [varchar](50) ,
 			[ItemCode] [varchar](25) ,
-			[WarehouseCode] [varchar](25) ,
 			[ReceiptQty] [numeric](18,9),
-			[QtyPacking] [numeric](18, 9)
+			[QtyPacking] [numeric](18, 9),
+			[WarehouseCode] [varchar](25)
 		)
 	
 		insert into @partReceiptDetail
-		select ROW_NUMBER() over (order by Id), Id, PONumber, a.ItemCode, c.WH_Code, a.ReceiptQty, b.QtyPacking
+		select ROW_NUMBER() over (order by Id), Id, a.PONumber, a.ItemCode, a.ReceiptQty, b.QtyPacking, isnull(po.WHTo, mi.WH_Code)
 		From PartReceiptDetail a
 		inner join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-		inner join Item_Master c on a.ItemCode = c.Item_Code
+		left join PurchaseOrder_Master po on a.PONumber = po.PO_No
+		inner join Item_Master mi on a.ItemCode = mi.Item_Code
 		where ReceiptId = @ReceiptId
 
 		while @i <= (select count(1) from @partReceiptDetail)
 		begin
 			declare 
-				@ReceiptDetailId bigint, @PONumber varchar(50), @ItemCode varchar(25), @WarehouseCode varchar(25), 
-				@ReceiptQty numeric(18,9), @QtyPacking numeric(18,9)
+				@ReceiptDetailId bigint, @PONumber varchar(50), @ItemCode varchar(25), 
+				@ReceiptQty numeric(18,9), @QtyPacking numeric(18,9), @WarehouseCode varchar(25)
 
 			select 
-				@ReceiptDetailId = Id, @PONumber = PONumber, @ItemCode = ItemCode, @WarehouseCode = WarehouseCode, 
-				@ReceiptQty = ReceiptQty, @QtyPacking = QtyPacking 
+				@ReceiptDetailId = Id, @PONumber = PONumber, @ItemCode = ItemCode,
+				@ReceiptQty = ReceiptQty, @QtyPacking = QtyPacking, @WarehouseCode = WarehouseCode
 			From @partReceiptDetail where Urutan = @i
 
 			while @ReceiptQty > 0
@@ -75,8 +92,8 @@ begin
 					set @tempQty = @ReceiptQty
 				end
 
-				insert into PartReceiptDetailBarcode (ReceiptDetailId, ReceiptId, ReceiptDate, PONumber,ItemCode, BarcodeNo, LotNo, SublotNo, Qty)
-				values (@ReceiptDetailId, @ReceiptId, @ReceiptDate, isnull(@PONumber, ''), @ItemCode, @NewBarcode, @NewLot, @SublotNo, @tempQty)
+				insert into PartReceiptDetailBarcode (ReceiptDetailId, ReceiptId, ReceiptDate, PONumber,ItemCode, BarcodeNo, LotNo, SublotNo, Qty, WarehouseCode)
+				values (@ReceiptDetailId, @ReceiptId, @ReceiptDate, isnull(@PONumber, ''), @ItemCode, @NewBarcode, @NewLot, @SublotNo, @tempQty, @WarehouseCode)
 
 				set @ReceiptQty -= @tempQty
 			end

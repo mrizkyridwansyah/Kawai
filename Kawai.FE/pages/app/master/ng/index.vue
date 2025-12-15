@@ -168,7 +168,7 @@ export default {
               .remove(item.NGCode)
               .then((_) => {
                 this.ds.load();
-                toastSuccess("success");
+                toastSuccess("Data deleted successfully");
                 resolve();
               })
               .catch((err) => {

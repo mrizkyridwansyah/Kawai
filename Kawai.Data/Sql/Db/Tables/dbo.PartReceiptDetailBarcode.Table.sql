@@ -19,6 +19,7 @@ CREATE TABLE [PartReceiptDetailBarcode](
 	[PrintStatus] [bit] NULL,
 	[PrintDate] [datetime] NULL,
 	[PrintUser] [varchar](50) NULL,
+	[WarehouseCode] [varchar](25) NULL,
  CONSTRAINT [PK_PartReceiptDetailBarcode_1] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

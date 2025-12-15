@@ -1,5 +1,5 @@
 <template>
-  <div class="vdatetime" style="max-width: 80%">
+  <div class="vdatetime" style="max-width: 60%">
     <slot name="before"></slot>
     <input
       v-if="type !== 'month'"

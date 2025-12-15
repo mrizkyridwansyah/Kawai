@@ -4,6 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE OR ALTER PROCEDURE [sp_Wms_ItemPackingSupplier_Update]
 	@SupplierCode varchar(15),
+	@PrevItemCode varchar(25),
 	@ItemCode varchar(25),
 	@QtyPacking numeric(18,9),
 	@UpdateBy varchar(25)
@@ -21,14 +22,25 @@ begin
 		return
 	end
 
-	if not exists (select 1 from ItemSupplierPacking where SupplierCode = @SupplierCode and ItemCode = @ItemCode)
+	if not exists (select 1 from ItemSupplierPacking where SupplierCode = @SupplierCode and ItemCode = @PrevItemCode)
 	begin
 		raiserror('Data Packing Item didn''t exists!',16,1)
 		return
 	end
 
+	if @PrevItemCode <> @ItemCode and exists (select 1 from ItemSupplierPacking where SupplierCode = @SupplierCode and ItemCode = @ItemCode)
+	begin
+		raiserror('Data Packing Item already exists in this supplier!',16,1)
+		return
+	end
+
 	update ItemSupplierPacking 
-	set QtyPacking = @QtyPacking, LastUpdate = getdate(), LastUser = @UpdateBy
-	where SupplierCode = @SupplierCode and ItemCode = @ItemCode
+	set 
+		ItemCode = @ItemCode, 
+		QtyPacking = @QtyPacking, 
+		LastUpdate = getdate(), 
+		LastUser = @UpdateBy
+	where SupplierCode = @SupplierCode 
+	and ItemCode = @PrevItemCode
 end
 GO

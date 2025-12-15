@@ -9,9 +9,9 @@
       open-direction="bottom" 
       :placeholder="placeholder || `Search Delivery Place`"
       :searchable="true" 
-      label="DeliveryPlaceName" 
-      track-by="DeliveryPlaceCode" 
-      trackBy="DeliveryPlaceCode" 
+      label="DDLDescription" 
+      track-by="Location_Code" 
+      trackBy="Location_Code" 
       :hide-selected="true"
       :internal-search="false"
        :loading="isLoading" 
@@ -40,7 +40,7 @@ export default {
   props: [
     'modelValue', 'type', 'label', 'col', 'description',
     'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class'
+    , 'disabled', 'multiple', 'class', 'trade'
   ],
   data: () => ({
     isLoading: false,
@@ -91,10 +91,10 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/delivery-place/ddlsearch?keyword=${q || ''}&ids=${d || ''}`)
+        this.$http.get(`/deliveryplace/ddlsearch?keyword=${q || ''}&trade_code=${this.trade}&ids=${d || ''}`)
           .then(p => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.DeliveryCode;
+              this.tempValue = p.data.Data[0]?.Location_Code;
             }
             this.list = p.data.Data;
           })

@@ -49,6 +49,27 @@ as
 		RETURN
 	END
 
+	declare @invalidBarcodes varchar(max) = 
+	(
+		select STRING_AGG(a.BarcodeNo, ', ') From 
+		(
+			select dtl.ReceiptId, dtl.WarehouseCode, dtl.BarcodeNo from PartReceiptDetailBarcode dtl
+			inner join @Details x on dtl.Id = x.ReceiptDetailBarcodeId 
+		) a 
+		left join 
+		(
+			select * from SS_UserWarehousePrivilege where UserID = @VerifiedBy and isnull(AllowAccess, 0) = 1
+		) b on a.WarehouseCode = b.WarehouseCode
+		where b.WarehouseCode is null
+	)
+
+	if isnull(@invalidBarcodes, '') <> ''
+	begin
+		declare @errors varchar(max) = 'User tidak memiliki hak akses ke warehouse dari salah satu barcode!'
+		raiserror(@errors, 16, 1)
+		return
+	end
+
 	DECLARE @TransDate date = GETDATE()
 
 	declare @i int = 1
@@ -63,14 +84,19 @@ as
 
 		UPDATE PartReceiptDetailBarcode SET Qty = @QtyVerify, VerifiedBy = @VerifiedBy, IsVerified = 1, VerifiedDate = GETDATE() WHERE Id = @Id
 
-		DECLARE @ReceiptId bigint = (SELECT ReceiptId FROM PartReceiptDetailBarcode WHERE Id = @Id)
-		UPDATE PartReceiptHeader SET StatusReceipt = 'PENDING', LastUpdate = GETDATE(), LastUser = @VerifiedBy WHERE Id = @ReceiptId
-
-		DECLARE @WarehouseCode varchar(25), @ItemCode varchar(25), @LotNo varchar(100),
+		DECLARE @ReceiptId bigint, @WarehouseCode varchar(25), @ItemCode varchar(25), @LotNo varchar(100), 
 				@AreaCode varchar(25) = 'TMP', @AddressCode varchar(25) = 'TMP'
 
-		SELECT @ItemCode = ItemCode, @LotNo = LotNo fROM PartReceiptDetailBarcode WHERE Id = @Id
-		SELECT @WarehouseCode = WH_Code fROM Item_Master WHERE Item_Code = @ItemCode
+		SELECT 
+			@ReceiptId = ReceiptId, @WarehouseCode = isnull(po.WHTo, mi.WH_Code), @ItemCode = ItemCode, @LotNo = LotNo
+		FROM 
+		(
+			select * From PartReceiptDetailBarcode WHERE Id = @Id
+		) pr
+		inner join Item_Master mi on pr.ItemCode = mi.Item_Code
+		left join PurchaseOrder_Master po on pr.PONumber = po.PO_No
+
+		UPDATE PartReceiptHeader SET StatusReceipt = 'PENDING', LastUpdate = GETDATE(), LastUser = @VerifiedBy WHERE Id = @ReceiptId
 
 		EXEC sp_Wms_Stock_UpSertStockDetail @RefNo, @WarehouseCode, @AreaCode, @AddressCode, @ItemCode, @BarcodeNo, @LotNo, @QtyVerify, NULL, NULL, @VerifiedBy, 'HOLD'
 		EXEC sp_Wms_Stock_UpSertStockHeader @TransDate, @RefNo, @WarehouseCode, @AddressCode, @ItemCode, @LotNo, @QtyVerify, NULL, 'R', @VerifiedBy

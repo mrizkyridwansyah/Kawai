@@ -4,9 +4,17 @@ namespace Kawai.Domain.Models;
 
 public class Trade
 {
+    [Required(ErrorMessage = "Trade Code tidak boleh kosong")]
+    [MaxLength(15, ErrorMessage = "Trade Code tidak boleh lebih dari 15 karakter")]
     public string Trade_Code { get; set; }
+
+    [Required(ErrorMessage = "Trade Cls tidak boleh kosong")]
     public string Trade_Cls { get; set; }
+
+    [Required(ErrorMessage = "Trade Name tidak boleh kosong")]
+    [MaxLength(70, ErrorMessage = "Trade Name tidak boleh lebih dari 70 karakter")]
     public string Trade_Name { get; set; }
+
     public string Trade_Abbr { get; set; }
     public string Contact_Person { get; set; }
     public string Address1 { get; set; }
@@ -54,5 +62,5 @@ public class Trade
     public string CODE_KPPBC { get; set; }
     public DateTime? NoIzin_Date { get; set; }
     public string NITKU { get; set; }
- 
+
 }

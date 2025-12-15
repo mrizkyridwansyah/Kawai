@@ -9,7 +9,7 @@
       open-direction="bottom" 
       :placeholder="placeholder || `Search Item Group`"
       :searchable="true" 
-      label="ItemGroupName" 
+      label="DDLDescription" 
       track-by="ItemGroupCode" 
       trackBy="ItemGroupCode" 
       :hide-selected="true"

@@ -12,6 +12,7 @@ begin
 			ItemCode, LotNo, SUM(Qty) TotalQty, COUNT(BarcodeNo) TotalItem 
 		FROM StockDetail
 		WHERE WarehouseCode = @WarehouseCode and AreaCode = 'TMP' and AddressCode = 'TMP' and Qty > 0	
+		AND StatusReceipt = 'OK'
 		GROUP BY ItemCode, LotNo
 	) res
 	LEFT JOIN Item_Master mi on res.ItemCode = mi.Item_Code

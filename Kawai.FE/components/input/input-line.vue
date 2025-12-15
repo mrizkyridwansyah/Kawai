@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `Search Line`"
       :searchable="true"
-      label="LineName"
+      label="DDLDescription"
       track-by="LineCode"
       trackBy="LineCode"
       :hide-selected="true"

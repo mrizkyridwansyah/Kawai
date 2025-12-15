@@ -9,7 +9,7 @@
       open-direction="bottom"
       :placeholder="placeholder || `JobPosition`"
       :searchable="true"
-      label="JobPositionDescs"
+      label="DDLDescription"
       track-by="JobPositionCode"
       trackBy="JobPositionCode"
       :hide-selected="true"
