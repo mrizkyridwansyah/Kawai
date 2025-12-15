@@ -2,7 +2,7 @@
   <div class="mt-4">
     <div class="panel panel-inverse">
       <!-- BEGIN panel-header -->
-      <div class="panel-heading ui-sortable-handle" style="background-color: #333;">
+      <div class="panel-heading ui-sortable-handle" style="background-color: #333;" v-if="useHeader">
         <v-button-sort
           class="mr-1"
           v-model="this.filter.sorts"
@@ -98,6 +98,10 @@ export default {
     keywordKeys: Array,
     exportExcel: Boolean,
     usePaging: {
+      type: Boolean,
+      default: true
+    },
+    useHeader: {
       type: Boolean,
       default: true
     },

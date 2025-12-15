@@ -65,10 +65,10 @@
           <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
       </div>
-      <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+      <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds" >
         <template #table-content>
           <table
-            class="table table-striped mb-0 align-middle"
+            class="table table-striped mb-0 align-middle v-fixed-table"
             style="width: 100%"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >
