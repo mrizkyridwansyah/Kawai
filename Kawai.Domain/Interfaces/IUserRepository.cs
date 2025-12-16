@@ -2,6 +2,7 @@
 using Kawai.Api.Models;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Shared;
+using System.Data;
 
 namespace Kawai.Domain.Interfaces;
 
@@ -16,4 +17,9 @@ public interface IUserRepository
     Task Remove(string userId, string deleteUser);
     Task<Dictionary<string, object>> Capture(string userId);
     Task ChangePassword(string userId, string password);
+
+    #region Import
+    Task<List<UserImport>> ValidateImport(DataTable datas);
+    Task Import(DataTable datas, string userId);
+    #endregion
 }

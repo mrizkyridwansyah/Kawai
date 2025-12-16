@@ -1,9 +1,11 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Kawai.Domain.Shared;
 using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
 
 namespace Kawai.Api.Services;
 
@@ -219,4 +221,135 @@ public static class ExcelHelper
             .MoveTo(ws.Cell(row, col), (int)xOffset, (int)yOffset)
             .WithSize(size, size);
     }
+
+    #region METOD BACA EXCEL UNTUK IMPORT
+    public static List<T> ReadAndValidate<T>(IFormFile file)
+            where T : ImportBase, new()
+    {
+        var result = new List<T>();
+
+        if (file == null || file.Length == 0)
+            return result;
+
+        using var stream = new MemoryStream();
+        file.CopyTo(stream);
+
+        using var workbook = new XLWorkbook(stream);
+        var ws = workbook.Worksheet(1);
+
+        var props = typeof(T)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        var colMap = new Dictionary<int, PropertyInfo>();
+
+        var firstRow = ws.FirstRowUsed().RowNumber();
+        var lastRow = ws.LastRowUsed().RowNumber();
+        var firstCol = ws.FirstColumnUsed().ColumnNumber();
+        var lastCol = ws.LastColumnUsed().ColumnNumber();
+
+        // HEADER
+        var headerRow = ws.Row(firstRow);
+        for (int col = firstCol; col <= lastCol; col++)
+        {
+            var header = headerRow.Cell(col).GetString().Trim();
+            if (string.IsNullOrWhiteSpace(header))
+                continue;
+
+            var prop = props.FirstOrDefault(p =>
+                string.Equals(p.Name, header, StringComparison.OrdinalIgnoreCase));
+
+            if (prop != null)
+                colMap[col] = prop;
+        }
+
+        // DATA ROWS
+        for (int row = firstRow + 1; row <= lastRow; row++)
+        {
+            var xlRow = ws.Row(row);
+            var item = new T { RowNumber = row };
+            bool allEmpty = true;
+
+            foreach (var kv in colMap)
+            {
+                var cell = xlRow.Cell(kv.Key);
+                var prop = kv.Value;
+
+                string value = cell.GetValue<string>()?.Trim() ?? "";
+
+                if (!string.IsNullOrEmpty(value))
+                    allEmpty = false;
+
+                if (string.IsNullOrEmpty(value))
+                    continue;
+
+                if (!TryConvertCell(value, prop.PropertyType, out var converted))
+                {
+                    item.Errors += $"Row {row}, Kolom '{prop.Name}' format tidak valid";
+                    continue;
+                }
+
+                prop.SetValue(item, converted);
+            }
+
+            if (allEmpty)
+                continue;
+
+            // 🔥 VALIDASI OTOMATIS
+            item.IsValid();
+
+            result.Add(item);
+        }
+
+        return result;
+    }
+
+    private static bool TryConvertCell(string value, Type type, out object? result)
+    {
+        result = null;
+
+        if (type == typeof(string))
+        {
+            result = value;
+            return true;
+        }
+
+        if (type == typeof(bool) || type == typeof(bool?))
+        {
+            if (value.Equals("YA", StringComparison.OrdinalIgnoreCase))
+            {
+                result = true;
+                return true;
+            }
+            if (value.Equals("TIDAK", StringComparison.OrdinalIgnoreCase))
+            {
+                result = false;
+                return true;
+            }
+            return false;
+        }
+
+        if (type == typeof(int) || type == typeof(int?))
+            return int.TryParse(value, out var i) && (result = i) != null;
+
+        if (type == typeof(decimal) || type == typeof(decimal?))
+            return decimal.TryParse(value, out var d) && (result = d) != null;
+
+        if (type == typeof(double) || type == typeof(double?))
+            return double.TryParse(value, out var db) && (result = db) != null;
+
+        if (type == typeof(DateTime) || type == typeof(DateTime?))
+            return DateTime.TryParse(value, out var dt) && (result = dt) != null;
+
+        try
+        {
+            result = Convert.ChangeType(value, type);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    #endregion
+
 }

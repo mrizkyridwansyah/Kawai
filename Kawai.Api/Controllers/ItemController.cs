@@ -12,12 +12,12 @@ namespace Kawai.Api.Controllers;
 [Authorize]
 [Route("api/item")]
 [ApiController]
-public class IItemController : HahaController
+public class ItemController : HahaController
 {
     private readonly IItemRepository _itemRepository;
     private readonly DataLogger _logger;
 
-    public IItemController(IItemRepository itemRepository, DataLogger logger)
+    public ItemController(IItemRepository itemRepository, DataLogger logger)
     {
         _itemRepository = itemRepository;
         _logger = logger;

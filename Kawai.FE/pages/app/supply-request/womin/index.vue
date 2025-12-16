@@ -1,7 +1,24 @@
 <template>
-  <v-frame title="Part Receipt Material Inquiry" icon="receipt">
+  <v-frame title="Part Material Supply Request (WOMIN)" icon="cart-flatbed">
     <template #frame-content>
       <div class="row">
+        <label
+          style="white-space: nowrap"
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Schedule Date</label
+        >
+        <div class="col-xl-2 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-date v-model="filter.PeriodFrom" />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Until Date</label
+        >
+        <div class="col-xl-2 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-date v-model="filter.PeriodUntil" />
+        </div>
+      </div>
+      <div class="row mt-1">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
           >Factory</label
@@ -14,46 +31,55 @@
         </div>
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Supplier</label
+          >Line</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade
+          <filter-manufacture
             class="form-control"
-            placeholder="Search Supplier"
-            :trade-cls="['2', '3']"
-            v-model="filter.SupplierCode"
-            :show-option-all="true"
+            v-model="filter.ManufactureCode"
           />
         </div>
       </div>
       <div class="row mt-1">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Receipt Date</label
+          >Machine</label
         >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodFrom" />
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-line-factory
+            class="form-control"
+            :company="filter.FactoryCode"
+            :manufacture="filter.ManufactureCode"
+            v-model="filter.LineCode"
+          />
         </div>
         <label
+          style="white-space: nowrap"
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Until Date</label
+          >Remaining Cls</label
         >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodUntil" />
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-remaining-cls
+            class="form-control"
+            placeholder="Search Remaining Cls"
+            v-model="filter.RemainingCls"
+          />
         </div>
-
+      </div>
+      <div class="row mt-1">
         <div class="col-xl-11 col-lg-11 col-md-6 col-sm-6 col-xs-6 mt-1">
           <v-button-search-reset :search="search" :reset="reset" />
         </div>
       </div>
+
       <v-table
         :filter="filter"
         :export-excel="true"
         :export-excel-action="exportExcel"
-        :frozen-column-left="3"
-        :data-items="ds.data.Items"
         :ds="ds"
         ref="vtable"
+        :use-paging="false"
+        :use-header="false"
       >
         <template #table-content>
           <table
@@ -63,32 +89,28 @@
           >
             <thead>
               <tr>
-                <th class="text-center">Receipt No</th>
-                <th class="text-center">Supplier</th>
-                <th class="text-center">Delivery Date</th>
+                <th class="text-center"></th>
+                <th class="text-center">Schedule Date</th>
                 <th class="text-center">Item Code</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">DN Number</th>
-                <th class="text-center">PO Number</th>
-                <th class="text-center">BC Type</th>
-                <th class="text-center">BC No</th>
-                <th class="text-center">BC Date</th>
-                <th class="text-center">Qty</th>
+                <th class="text-center">Item Name / Request No</th>
                 <th class="text-center">Unit</th>
-                <th class="text-center">Currency</th>
-                <th class="text-center">Price</th>
-                <th class="text-center">Amount</th>
+                <th class="text-center">Plan Qty</th>
+                <th class="text-center">Request Qty</th>
+                <th class="text-center">Remaining Qty</th>
+                <th class="text-center">Request User</th>
+                <th class="text-center">Request Date</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
+                <td><input-checkbox /></td>
+                <td>{{ item.PONumber }}</td>
                 <td>{{ item.ReceiptNo }}</td>
                 <td>{{ item.SupplierName }}</td>
                 <td>{{ $func.formatDate(item.DNDate) }}</td>
                 <td>{{ item.ItemCode }}</td>
                 <td>{{ item.ItemName }}</td>
                 <td>{{ item.DNNumber }}</td>
-                <td>{{ item.PONumber }}</td>
                 <td>{{ item.BCType }}</td>
                 <td>{{ item.BCNumber }}</td>
                 <td>{{ $func.formatDate(item.BCDate) }}</td>
@@ -117,9 +139,11 @@ export default {
       keyword: null,
       keywordKey: "ReceiptNo",
       FactoryCode: null,
-      SupplierCode: null,
+      ManufactureCode: null,
       PeriodFrom: null,
       PeriodUntil: null,
+      LineCode: null,
+      RemainingCls: null,
       sorts: {
         ReceiptNo: "asc",
       },
@@ -162,7 +186,13 @@ export default {
     "filter.FactoryCode": function () {
       this.resetGrid();
     },
-    "filter.SupplierCode": function () {
+    "filter.ManufactureCode": function () {
+      this.resetGrid();
+    },
+    "filter.LineCode": function () {
+      this.resetGrid();
+    },
+    "filter.RemainingCls": function () {
       this.resetGrid();
     },
     "filter.PeriodFrom": function () {
@@ -197,7 +227,9 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           FactoryCode: this.filter.FactoryCode,
-          SupplierCode: this.filter.SupplierCode,
+          ManufactureCode: this.filter.ManufactureCode,
+          LineCode: this.filter.LineCode,
+          RemainingCls: this.filter.RemainingCls,
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom)
           ),
@@ -212,7 +244,9 @@ export default {
     },
     reset: function () {
       this.filter.FactoryCode = null;
-      this.filter.SupplierCode = null;
+      this.filter.ManufactureCode = null;
+      this.filter.LineCode = null;
+      this.filter.RemainingCls = null;
 
       let today = new Date();
       this.filter.PeriodFrom = new Date(
@@ -228,7 +262,9 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           FactoryCode: this.filter.FactoryCode,
-          SupplierCode: this.filter.SupplierCode,
+          ManufactureCode: this.filter.ManufactureCode,
+          LineCode: this.filter.LineCode,
+          RemainingCls: this.filter.RemainingCls,
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom)
           ),

@@ -2,7 +2,7 @@
 
 public enum DataLogAction
 {
-    Create, Update, Delete
+    Create, Update, Delete, Import
 }
 
 public class DataLogDto

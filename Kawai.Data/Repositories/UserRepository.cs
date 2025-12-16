@@ -4,6 +4,7 @@ using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
+using System.Data;
 
 namespace Kawai.Data.Repositories;
 
@@ -96,6 +97,22 @@ public class UserRepository : IUserRepository
         {
             UserID = userId,
             Password = newPassword,
+        });
+    }
+
+    public async Task<List<UserImport>> ValidateImport(DataTable datas)
+    {
+        string sql = @"sp_Wms_User_ValidateImport";
+        return (await _dbExecutor.QueryListAsync<UserImport>(sql, new { UserDataImport = datas })).ToList();
+    }
+
+    public async Task Import(DataTable datas, string userId)
+    {
+        string sql = @"sp_Wms_User_Import";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            UserDataImport = datas,
+            UserID = userId,
         });
     }
 }

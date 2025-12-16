@@ -20,6 +20,7 @@
         >
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
           <filter-trade
+            class="form-control"
             placeholder="Search Process"
             v-model="filter.supplier"
             :trade-cls="['1']"
@@ -33,6 +34,7 @@
         >
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
           <filter-line-factory
+            class="form-control"
             :company="filter.factory"
             :manufacture="filter.supplier"
             v-model="filter.linecode"
@@ -65,7 +67,7 @@
           <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
       </div>
-      <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds" >
+      <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
         <template #table-content>
           <table
             class="table table-striped mb-0 align-middle v-fixed-table"

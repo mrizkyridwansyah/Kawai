@@ -5,7 +5,7 @@ using Kawai.Domain.DTOs.Log;
 
 namespace Kawai.Api.Controllers.Mobile;
 
-[Route("api/physical-inventory")]
+[Route("api/mobile/physical-inventory")]
 [ApiController]
 public class MobilePhysicalInventoryController : HahaController
 {
@@ -35,8 +35,9 @@ public class MobilePhysicalInventoryController : HahaController
                 x.BarcodeNo,
                 x.LotNo,
                 x.SublotNo,
-                Qty = x.CurrentQty,
-                x.InventoryQty
+                x.CurrentQty,
+                x.InventoryQty,
+                x.StatusSO
             }).ToList()
         })
         .ToList();

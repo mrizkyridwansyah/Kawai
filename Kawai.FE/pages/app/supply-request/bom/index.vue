@@ -1,7 +1,23 @@
 <template>
-  <v-frame title="Part Receipt Material Inquiry" icon="receipt">
+  <v-frame title="Part Material Supply Request (By BOM)" icon="cart-flatbed">
     <template #frame-content>
       <div class="row">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >PO Date</label
+        >
+        <div class="col-xl-2 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-date v-model="filter.PeriodFrom" />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Until Date</label
+        >
+        <div class="col-xl-2 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-date v-model="filter.PeriodUntil" />
+        </div>
+      </div>
+      <div class="row mt-1">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
           >Factory</label
@@ -29,31 +45,59 @@
       <div class="row mt-1">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Receipt Date</label
+          >PO Number</label
         >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodFrom" />
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-po
+            class="form-control"
+            v-model="filter.PONumber"
+            :factory-code="filter.FactoryCode"
+            :supplier-code="filter.SupplierCode"
+            type-date="PO"
+            :period-from="filter.PeriodFrom"
+            :period-until="filter.PeriodUntil"
+            :show-option-all="true"
+          />
         </div>
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Until Date</label
+          >WH Subcon</label
         >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodUntil" />
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-warehouse-privileges
+            class="form-control"
+            placeholder="Search Subcon"
+            :factory-code="filter.FactoryCode"
+            v-model="filter.Warehouse"
+          />
         </div>
-
+      </div>
+      <div class="row mt-1">
+        <label
+          style="white-space: nowrap"
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Remaining Cls</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <input-remaining-cls
+            class="form-control"
+            placeholder="Search Remaining Cls"
+            v-model="filter.RemainingCls"
+          />
+        </div>
         <div class="col-xl-11 col-lg-11 col-md-6 col-sm-6 col-xs-6 mt-1">
           <v-button-search-reset :search="search" :reset="reset" />
         </div>
       </div>
+
       <v-table
         :filter="filter"
         :export-excel="true"
         :export-excel-action="exportExcel"
-        :frozen-column-left="3"
-        :data-items="ds.data.Items"
         :ds="ds"
         ref="vtable"
+        :use-paging="false"
+        :use-header="false"
       >
         <template #table-content>
           <table
@@ -63,32 +107,29 @@
           >
             <thead>
               <tr>
-                <th class="text-center">Receipt No</th>
-                <th class="text-center">Supplier</th>
-                <th class="text-center">Delivery Date</th>
-                <th class="text-center">Item Code</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">DN Number</th>
+                <th class="text-center"></th>
+                <th class="text-center">PO Date</th>
                 <th class="text-center">PO Number</th>
-                <th class="text-center">BC Type</th>
-                <th class="text-center">BC No</th>
-                <th class="text-center">BC Date</th>
-                <th class="text-center">Qty</th>
+                <th class="text-center">Item Code</th>
+                <th class="text-center">Item Name / Request No</th>
                 <th class="text-center">Unit</th>
-                <th class="text-center">Currency</th>
-                <th class="text-center">Price</th>
-                <th class="text-center">Amount</th>
+                <th class="text-center">Plan Qty</th>
+                <th class="text-center">Request Qty</th>
+                <th class="text-center">Remaining Qty</th>
+                <th class="text-center">Request User</th>
+                <th class="text-center">Request Date</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
+                <td><input-checkbox /></td>
+                <td>{{ item.PONumber }}</td>
                 <td>{{ item.ReceiptNo }}</td>
                 <td>{{ item.SupplierName }}</td>
                 <td>{{ $func.formatDate(item.DNDate) }}</td>
                 <td>{{ item.ItemCode }}</td>
                 <td>{{ item.ItemName }}</td>
                 <td>{{ item.DNNumber }}</td>
-                <td>{{ item.PONumber }}</td>
                 <td>{{ item.BCType }}</td>
                 <td>{{ item.BCNumber }}</td>
                 <td>{{ $func.formatDate(item.BCDate) }}</td>
@@ -120,6 +161,9 @@ export default {
       SupplierCode: null,
       PeriodFrom: null,
       PeriodUntil: null,
+      PONumber: null,
+      Warehouse: null,
+      RemainingCls: null,
       sorts: {
         ReceiptNo: "asc",
       },
@@ -171,6 +215,15 @@ export default {
     "filter.PeriodUntil": function () {
       this.resetGrid();
     },
+    "filter.Warehouse": function () {
+      this.resetGrid();
+    },
+    "filter.RemainingCls": function () {
+      this.resetGrid();
+    },
+    "filter.PONumber": function () {
+      this.resetGrid();
+    },
     "filter.keyword": function () {
       this.search();
     },
@@ -198,6 +251,9 @@ export default {
           Keyword: this.filter.keyword || "",
           FactoryCode: this.filter.FactoryCode,
           SupplierCode: this.filter.SupplierCode,
+          PONumber: this.filter.PONumber,
+          RemainingCls: this.filter.RemainingCls,
+          Warehouse: this.filter.Warehouse,
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom)
           ),
@@ -213,6 +269,9 @@ export default {
     reset: function () {
       this.filter.FactoryCode = null;
       this.filter.SupplierCode = null;
+      this.filter.Warehouse = null;
+      this.filter.PONumber = null;
+      this.filter.RemainingCls = null;
 
       let today = new Date();
       this.filter.PeriodFrom = new Date(
@@ -229,6 +288,9 @@ export default {
           Keyword: this.filter.keyword || "",
           FactoryCode: this.filter.FactoryCode,
           SupplierCode: this.filter.SupplierCode,
+          PONumber: this.filter.PONumber,
+          RemainingCls: this.filter.RemainingCls,
+          Warehouse: this.filter.Warehouse,
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom)
           ),

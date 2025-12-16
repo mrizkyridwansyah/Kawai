@@ -30,6 +30,7 @@ public static class ApplicationExtension
         services.AddSwagger();
         services.AddCronJobs();
         services.AddHealthChecks();
+        services.AddDataImports();
     }
 
     static void AddSwagger(this IServiceCollection services)

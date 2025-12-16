@@ -1,10 +1,14 @@
-﻿using Kawai.Api.Models;
+﻿using DocumentFormat.OpenXml.EMMA;
+using Kawai.Api.Models;
+using Kawai.Api.Services;
+using Kawai.Data;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Converters;
 
 namespace Kawai.Api.Controllers;
 
@@ -213,4 +217,49 @@ public class UserController : HahaController
         });
         return Success(after);
     }
+
+    [HttpPost("import")]
+    public async Task<IActionResult> Import(ImportModel payload)
+    {
+        // ambil data dari file & convert jadi List class import
+        var list = ExcelHelper.ReadAndValidate<UserImport>(payload.File);
+        // kalo ada error dari hasil convert ke class
+        var invalidRows = list.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
+        if (invalidRows.Any())
+            return Invalid("DATA IMPORT TIDAK VALID", list);
+
+        // ubah jadi datatable disini, biar ga berkali-kali.
+        var dtTable = DataTableHelper.ToDataTable(list);
+
+        // get data setelah validasi
+        var resultAfter = await _userRepository.ValidateImport(dtTable);
+        // kalo ada error setelah validasi
+        invalidRows = resultAfter.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
+        if (invalidRows.Any())
+            return Invalid("DATA IMPORT TIDAK VALID", resultAfter);
+
+        // kalo aksi nya execute maka langsung ke table. kalo cuma testing jangan.
+        if (payload.Action == "EXECUTE")
+        {
+            await _userRepository.Import(dtTable, Auth.User.UserID);
+
+            var after = await _userRepository.Capture(Auth.User.UserID);
+
+            await _logger.SaveDataLog(new DataLogDto
+            {
+                DocumentType = "Master User",
+                EntityId = Auth.User.UserID,
+                ReferenceId = Auth.User.UserID,
+                Action = DataLogAction.Import,
+                Activity = "Import User",
+                Before = null,
+                After = after
+            });
+
+            return Success(after);
+        }
+
+        return Success(list);
+    }
+
 }

@@ -1,46 +1,44 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-        <input-multiselect
-          v-model="tempValue"
-          :options="list"
-          :close-on-select="true"
-          :clear-on-select="false"
-          :preserve-search="true"
-          open-direction="bottom"
-          :placeholder="placeholder || `Search Line`"
-          :searchable="true"
-          :label="displayLabel"
-          track-by="LineCode"
-          trackBy="LineCode"
-          :hide-selected="true"
-          :internal-search="false"
-          :loading="isLoading"
-          @search-change="search"
-          @open="open"
-          :select="change"
-          :class="cClass || 'input-wrapper'"
-          :multiple="multiple !== undefined || false"
-          :disabled="disabled !== undefined || false"
-          select-label=""
-          deselect-label=""
-        />
-        <div class="invalid-feedback d-block" v-if="errors">
-          {{ errors[0] }}
-        </div>
-        <small class="form-text text-muted" v-if="description">{{
-          description
-        }}</small>
+  <div class="row">
+    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+      <input-multiselect
+        v-model="tempValue"
+        :options="list"
+        :close-on-select="true"
+        :clear-on-select="false"
+        :preserve-search="true"
+        open-direction="bottom"
+        :placeholder="placeholder || `Search Manufacture`"
+        :searchable="true"
+        :label="displayLabel"
+        track-by="ManufactureCode"
+        trackBy="ManufactureCode"
+        :hide-selected="true"
+        :internal-search="false"
+        :loading="isLoading"
+        @search-change="search"
+        @open="open"
+        :select="change"
+        :class="cClass || 'input-wrapper'"
+        :multiple="multiple !== undefined || false"
+        :disabled="disabled !== undefined || false"
+        select-label=""
+        deselect-label=""
+      />
+      <div class="invalid-feedback d-block" v-if="errors">
+        {{ errors[0] }}
       </div>
-      <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
-        <input
-          type="text"
-          disabled
-          :value="selectedItem?.LineName || ''"
-          class="w-100 form-control"
-        />
-      </div>
+      <small class="form-text text-muted" v-if="description">{{
+        description
+      }}</small>
+    </div>
+    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
+      <input
+        type="text"
+        disabled
+        :value="selectedItem?.ManufactureName || ''"
+        class="w-100 form-control"
+      />
     </div>
   </div>
 </template>
@@ -64,8 +62,6 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "company",
-    "manufacture",
   ],
   data: () => ({
     isLoading: false,
@@ -78,10 +74,12 @@ export default {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
-      return this.list.find((x) => x.LineCode === this.tempValue) || null;
+      return (
+        this.list.find((x) => x.ManufactureCode === this.tempValue) || null
+      );
     },
     displayLabel() {
-      return this.tempValue ? "LineCode" : "DDLDescription";
+      return this.tempValue ? "ManufactureCode" : "DDLDescription";
     },
   },
   watch: {
@@ -89,14 +87,6 @@ export default {
       if (!after) this.tempValue = null;
 
       this.load("", after);
-    },
-    company: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    manufacture: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
@@ -125,15 +115,13 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/workstationsetting/ddl-linecompany-search?keyword=${
-              q || ""
-            }&companycode=${this.company}&manufacture=${this.manufacture}&ids=${
+            `/manufactureline/ddl-manufacture-search?keyword=${q || ""}&ids=${
               d || ""
             }`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.LineCode;
+              this.tempValue = p.data.Data[0]?.ManufactureCode;
             }
             this.list = p.data.Data;
           })
