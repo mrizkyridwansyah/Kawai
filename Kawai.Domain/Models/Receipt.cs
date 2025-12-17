@@ -43,8 +43,6 @@ public class Receipt
     [Required(ErrorMessage = "Transport tidak boleh kosong")]
     [MaxLength(15, ErrorMessage = "Transport tidak boleh lebih dari 15 karakter")]
     public string Transport { get; set; }
-
-    [Required(ErrorMessage = "Remarks tidak boleh kosong")]
     public string Remarks { get; set; }
     public string RegisterNo { get; set; }
 

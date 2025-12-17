@@ -9,6 +9,8 @@ using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
+using OpenTelemetry;
+using System.Diagnostics;
 
 namespace Kawai.Api.Controllers;
 
@@ -19,12 +21,14 @@ public class UserController : HahaController
 {
     private readonly IUserRepository _userRepository;
     private readonly IMenuRepository _menuRepository;
+    private readonly IImportRepository _importRepository;
     private readonly DataLogger _logger;
 
-    public UserController(IUserRepository userRepository, IMenuRepository menuRepository, DataLogger logger)
+    public UserController(IUserRepository userRepository, IMenuRepository menuRepository, IImportRepository importRepository, DataLogger logger)
     {
         _userRepository = userRepository;
         _menuRepository = menuRepository;
+        _importRepository = importRepository;
         _logger = logger;
     }
 
@@ -221,12 +225,20 @@ public class UserController : HahaController
     [HttpPost("import")]
     public async Task<IActionResult> Import(ImportModel payload)
     {
+        Stopwatch Timer = new();
+
+        Timer.Start();
+
         // ambil data dari file & convert jadi List class import
         var list = ExcelHelper.ReadAndValidate<UserImport>(payload.File);
         // kalo ada error dari hasil convert ke class
         var invalidRows = list.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
         if (invalidRows.Any())
+        {
+            Timer.Stop();
+            SaveImportHistory(payload, Timer, list, "FAILED");
             return Invalid("DATA IMPORT TIDAK VALID", list);
+        }
 
         // ubah jadi datatable disini, biar ga berkali-kali.
         var dtTable = DataTableHelper.ToDataTable(list);
@@ -236,7 +248,11 @@ public class UserController : HahaController
         // kalo ada error setelah validasi
         invalidRows = resultAfter.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
         if (invalidRows.Any())
+        {
+            Timer.Stop();
+            SaveImportHistory(payload, Timer, resultAfter, "FAILED");
             return Invalid("DATA IMPORT TIDAK VALID", resultAfter);
+        }
 
         // kalo aksi nya execute maka langsung ke table. kalo cuma testing jangan.
         if (payload.Action == "EXECUTE")
@@ -256,10 +272,36 @@ public class UserController : HahaController
                 After = after
             });
 
+            Timer.Stop();
+            SaveImportHistory(payload, Timer, resultAfter, "SUCCESS");
             return Success(after);
         }
 
+        Timer.Stop();
+
         return Success(list);
+    }
+
+    private void SaveImportHistory(ImportModel payload, Stopwatch timer, List<UserImport> result, string status)
+    {
+        var history = new ImportHistory
+        {
+            Id = Guid.NewGuid().UniqueId(),
+            Template = "UserImport",
+            UserId = Auth.User.UserID,
+            FileName = payload.File.FileName,
+            ContentType = payload.File.ContentType,
+            SizeFile = payload.File.Length,
+            RowsCount = result.Count,
+            ValidRowsCount = result.Where(p => String.IsNullOrEmpty(p.Errors)).Count(),
+            InvalidRowsCount = result.Where(p => !String.IsNullOrEmpty(p.Errors)).Count(),
+            Key = Guid.NewGuid().UniqueId(100),
+            Status = status,
+            ProcessDuration = timer.ElapsedMilliseconds
+        };
+
+        _importRepository.SaveHistory(history);
+        FileStorage.SaveToImports(history.Id, payload.File);
     }
 
 }

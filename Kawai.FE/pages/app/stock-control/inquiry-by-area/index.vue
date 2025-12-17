@@ -43,6 +43,7 @@
             :warehouse="filter.warehouse"
             :area="filter.area"
             address="ALL"
+            category="ALL"
             :show-option-all="true"
           />
         </div>
@@ -58,6 +59,7 @@
             :warehouse="filter.warehouse"
             :area="filter.area"
             address="ALL"
+            category="ALL"
             :item="filter.item"
             :show-option-all="true"
           />

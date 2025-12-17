@@ -14,6 +14,7 @@
             warehouse="ALL"
             area="ALL"
             address="ALL"
+            category="ALL"
             :show-option-all="false"
           />
         </div>
@@ -37,30 +38,31 @@
           >Area</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-            <filter-area-by-stock
-              class="form-control"
-              placeholder="Search Area"
-              v-model="filter.area"
-              :warehouse="filter.warehouse"
-              :item="filter.item"
-              :show-option-all="true"
-            />
+          <filter-area-by-stock
+            class="form-control"
+            placeholder="Search Area"
+            v-model="filter.area"
+            :warehouse="filter.warehouse"
+            :item="filter.item"
+            :show-option-all="true"
+          />
         </div>
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
           >Lot No</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-            <filter-lot-by-stock
-              class="form-control"
-              placeholder="Search Lot No"
-              v-model="filter.lotno"
-              :warehouse="filter.warehouse"
-              :area="filter.area"
-              address="ALL"
-              :item="filter.item"
-              :show-option-all="true"
-            />
+          <filter-lot-by-stock
+            class="form-control"
+            placeholder="Search Lot No"
+            v-model="filter.lotno"
+            :warehouse="filter.warehouse"
+            :area="filter.area"
+            address="ALL"
+            :item="filter.item"
+            category="ALL"
+            :show-option-all="true"
+          />
         </div>
       </div>
       <div class="d-flex mt-3">

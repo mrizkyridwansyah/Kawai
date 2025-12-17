@@ -24,7 +24,7 @@ public class ItemRepository : IItemRepository
         string sp = "sp_Wms_Item_DDL";
         return (await _dbExecutor.QueryListAsync<ItemDto>(sp, new { Keyword = keyword ?? "" })).ToList();
     }
-    public async Task<List<ItemDto>> DDLItemSearchByStock(string keyword, string warehouse, string area, string address)
+    public async Task<List<ItemDto>> DDLItemSearchByStock(string keyword, string warehouse, string area, string address, string category)
     {
         string sp = "sp_Wms_Item_DDLByStock";
         return (await _dbExecutor.QueryListAsync<ItemDto>(sp,
@@ -33,7 +33,8 @@ public class ItemRepository : IItemRepository
                 Keyword = keyword ?? "",
                 WarehouseCode = !String.IsNullOrEmpty(warehouse) ? warehouse : "ALL",
                 AreaCode = !String.IsNullOrEmpty(area) ? area : "ALL",
-                AddressCode = !String.IsNullOrEmpty(address) ? address : "ALL"
+                AddressCode = !String.IsNullOrEmpty(address) ? address : "ALL",
+                Category = !String.IsNullOrEmpty(category) ? category : "ALL"
             })).ToList();
     }
     public async Task<List<WarehouseDto>> GetWarehouseDDL(string keyword)

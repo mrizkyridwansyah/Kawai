@@ -46,7 +46,7 @@ public class StockRepository : IStockRepository
             ItemCode = !String.IsNullOrEmpty(item) ? item : "ALL"
         })).ToList();
     }
-    public async Task<List<StockDto>> DDLLotNoByStock(string keyword, string warehouse, string area, string address, string item)
+    public async Task<List<StockDto>> DDLLotNoByStock(string keyword, string warehouse, string area, string address, string item, string category)
     {
         string sp = "sp_Wms_StockInquiry_DDLLotNoByStock";
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, new
@@ -55,7 +55,8 @@ public class StockRepository : IStockRepository
             WarehouseCode = !String.IsNullOrEmpty(warehouse) ? warehouse : "ALL",
             AreaCode = !String.IsNullOrEmpty(area) ? area : "ALL",
             AddressCode = !String.IsNullOrEmpty(address) ? address : "ALL",
-            ItemCode = !String.IsNullOrEmpty(item) ? item : "ALL"
+            ItemCode = !String.IsNullOrEmpty(item) ? item : "ALL",
+            Category = !String.IsNullOrEmpty(category) ? category : "ALL"
         })).ToList();
     }
 

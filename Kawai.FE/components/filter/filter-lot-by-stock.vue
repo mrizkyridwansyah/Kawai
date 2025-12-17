@@ -56,10 +56,12 @@ export default {
     "area",
     "address",
     "item",
+    "category",
     "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -94,6 +96,10 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
+    category: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
   },
   mounted: function () {
     this.load("", this.modelValue);
@@ -125,7 +131,7 @@ export default {
               d || ""
             }&warehouse=${this.warehouse}&area=${this.area}&address=${
               this.address
-            }&item=${this.item}`
+            }&item=${this.item}&category=${this.category}`
           )
           .then((p) => {
             this.list =

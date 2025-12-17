@@ -18,6 +18,7 @@
         :loading="isLoading"
         @search-change="search"
         @open="open"
+        @close="close"
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
@@ -69,6 +70,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -78,11 +80,18 @@ export default {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
+      if (this.tempValue === "ALL") {
+        return {
+          Trade_Code: "ALL",
+          Trade_Name: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
       return this.list.find((x) => x.Trade_Code === this.tempValue) || null;
     },
     displayLabel() {
-      // Jika dropdown dibuka, pakai description
-      // Kalau ada selected value, pakai CompanyCode
+      if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "Trade_Code" : "DDLDescription";
     },
   },
@@ -109,11 +118,12 @@ export default {
       this.load(q, null);
     },
     open: function () {
+      this.isOpen = true;
       this.load("", this.modelValue);
     },
-    // refresh: function () {
-    //   this.load('', this.modelValue);
-    // },
+    close: function() {
+      this.isOpen = false;
+    },
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;

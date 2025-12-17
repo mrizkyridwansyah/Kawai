@@ -44,9 +44,9 @@ public class ItemController : HahaController
     }
 
     [HttpGet("ddl-item-search-by-stock")]
-    public async Task<IActionResult> DDLItemSearchByStock(string keyword, string ids, string warehouse, string area, string address)
+    public async Task<IActionResult> DDLItemSearchByStock(string keyword, string ids, string warehouse, string area, string address, string category)
     {
-        var results = await _itemRepository.DDLItemSearchByStock(keyword, warehouse, area, address);
+        var results = await _itemRepository.DDLItemSearchByStock(keyword, warehouse, area, address, category);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

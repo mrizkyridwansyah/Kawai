@@ -60,6 +60,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,

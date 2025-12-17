@@ -18,6 +18,7 @@
         :loading="isLoading"
         @search-change="search"
         @open="open"
+        @close="close"
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
@@ -71,6 +72,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -80,9 +82,18 @@ export default {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
+      if (this.tempValue === "ALL") {
+        return {
+          AddressCode: "ALL",
+          AddressName: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
       return this.list.find((x) => x.AddressCode === this.tempValue) || null;
     },
     displayLabel() {
+      if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "AddressCode" : "DDLDescription";
     },
   },
@@ -121,7 +132,11 @@ export default {
       this.load(q, null);
     },
     open: function () {
+      this.isOpen = true;
       this.load("", null);
+    },
+    close: function() {
+      this.isOpen = false;
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -139,7 +154,7 @@ export default {
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.AreaCode;
+              this.tempValue = p.data.Data[0]?.AddressCode;
             }
 
             this.list =
@@ -148,8 +163,9 @@ export default {
               p.data.Data.length > 0
                 ? [
                     {
-                      AreaCode: "ALL",
-                      AreaName: "ALL",
+                      AddressCode: "ALL",
+                      AddressName: "ALL",
+                      DDLDescription: "ALL",
                     },
                     ...p.data.Data,
                   ]

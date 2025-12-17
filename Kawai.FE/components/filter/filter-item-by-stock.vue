@@ -18,6 +18,7 @@
         :loading="isLoading"
         @search-change="search"
         @open="open"
+        @close="close"
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
@@ -67,10 +68,12 @@ export default {
     "warehouse",
     "area",
     "address",
+    "category",
     "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     fuckingDescription: "",
@@ -81,6 +84,7 @@ export default {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     displayLabel() {
+      if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "ItemCode" : "DDLDescription";
     },
   },
@@ -105,6 +109,10 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
+    category: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
   },
   mounted: function () {
     this.load("", this.modelValue);
@@ -122,11 +130,12 @@ export default {
       this.load(q, null);
     },
     open: function () {
+      this.isOpen = true;
       this.load("", this.modelValue);
     },
-    // refresh: function () {
-    //   this.load('', this.modelValue);
-    // },
+    close: function() {
+      this.isOpen = false;
+    },
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
@@ -139,7 +148,7 @@ export default {
               d || ""
             }&warehouse=${this.warehouse}&area=${this.area}&address=${
               this.address
-            }`
+            }&category=${this.category}`
           )
           .then((p) => {
             this.list =

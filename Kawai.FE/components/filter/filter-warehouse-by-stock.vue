@@ -18,6 +18,7 @@
         :loading="isLoading"
         @search-change="search"
         @open="open"
+        @close="close"
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
@@ -69,6 +70,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -78,9 +80,18 @@ export default {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
+      if (this.tempValue === "ALL") {
+        return {
+          WarehouseCode: "ALL",
+          WarehouseName: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
       return this.list.find((x) => x.WarehouseCode === this.tempValue) || null;
     },
     displayLabel() {
+      if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "WarehouseCode" : "DDLDescription";
     },
   },
@@ -108,14 +119,17 @@ export default {
   methods: {
     change: function (v) {
       if (this.onSelect) this.onSelect(v);
-
       this.$emit("update:modelValue", v);
     },
     search: function (q) {
       this.load(q, null);
     },
     open: function () {
+      this.isOpen = true;
       this.load("", this.modelValue);
+    },
+    close: function() {
+      this.isOpen = false;
     },
     // refresh: function () {
     //   this.load('', this.modelValue);

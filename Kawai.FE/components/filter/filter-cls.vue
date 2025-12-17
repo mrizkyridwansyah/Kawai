@@ -18,6 +18,7 @@
         :loading="isLoading"
         @search-change="search"
         @open="open"
+        @close="close"
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
@@ -67,6 +68,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -79,6 +81,7 @@ export default {
       return this.list.find((x) => x.ClsCode === this.tempValue) || null;
     },
     displayLabel() {
+      if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "ClsCode" : "DDLDescription";
     },
   },
@@ -105,11 +108,12 @@ export default {
       this.load(q, null);
     },
     open: function () {
+      this.isOpen = true;
       this.load("", this.modelValue);
     },
-    // refresh: function () {
-    //   this.load('', this.modelValue);
-    // },
+    close: function() {
+      this.isOpen = false;
+    },
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;

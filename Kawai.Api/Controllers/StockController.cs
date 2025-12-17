@@ -57,9 +57,9 @@ public class StockController : HahaController
     }
 
     [HttpGet("ddl-lot-no-search-by-stock")]
-    public async Task<IActionResult> DDLLotSearchByStock(string keyword, string ids, string warehouse, string area, string address, string item)
+    public async Task<IActionResult> DDLLotSearchByStock(string keyword, string ids, string warehouse, string area, string address, string item, string category)
     {
-        var results = await _stockRepository.DDLLotNoByStock(keyword, warehouse, area, address, item);
+        var results = await _stockRepository.DDLLotNoByStock(keyword, warehouse, area, address, item, category);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
