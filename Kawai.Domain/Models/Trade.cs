@@ -21,28 +21,28 @@ public class Trade
     public string Address2 { get; set; }
     public string City { get; set; }
     public string Country { get; set; }
-    public string Country_Cls { get; set; }
-    public string Epte_Cls { get; set; }
-    public string Region_Cls { get; set; }
+    public string? Country_Cls { get; set; }
+    public string? Epte_Cls { get; set; }
+    public string? Region_Cls { get; set; }
     public string Postal_Code { get; set; }
     public string Telephone { get; set; }
     public string Fax { get; set; }
     public string Closing_Day { get; set; }
     public string Pay_Day { get; set; }
-    public string InvoicePay_Days { get; set; }
-    public string Affiliate_Cls { get; set; }
-    public string Insurance_Cls { get; set; }
+    public double? InvoicePay_Days { get; set; }
+    public string? Affiliate_Cls { get; set; }
+    public string? Insurance_Cls { get; set; }
     public string NPWP_No { get; set; }
     public string NPWP_Name { get; set; }
     public string NPWP_Address { get; set; }
     public string NPWP_City { get; set; }
     public string NPPKP_No { get; set; }
     public string Invoice_To { get; set; }
-    public string PO_Cls { get; set; }
-    public string Price_Condition { get; set; }
-    public string POPayment_Day { get; set; }
-    public string POPayment_Terms { get; set; }
-    public string Transportation_Cls { get; set; }
+    public string? PO_Cls { get; set; }
+    public string? Price_Condition { get; set; }
+    public double? POPayment_Day { get; set; }
+    public string? POPayment_Terms { get; set; }
+    public string? Transportation_Cls { get; set; }
     public string POCaseMark1 { get; set; }
     public string POCaseMark2 { get; set; }
     public string POCaseMark3 { get; set; }
@@ -55,7 +55,7 @@ public class Trade
     public string POMarking5 { get; set; }
     public string POMarking6 { get; set; }
     public string Subcon_WH_Code { get; set; }
-    public string NG_Cls { get; set; }
+    public string? NG_Cls { get; set; }
     public string SAP_Code { get; set; }
     public string Type_BC { get; set; }
     public string No_Izin { get; set; }

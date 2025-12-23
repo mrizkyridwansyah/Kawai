@@ -6,9 +6,9 @@
         v-model="tempValue"
         :options="list"
         :loading="isLoading"
-        :placeholder="placeholder || 'Search Cls'"
+        :placeholder="placeholder || 'Search Warehouse'"
         :label="displayLabel"
-        track-by="ClsCode"
+        track-by="WarehouseCode"
         :multiple="multiple === true"
         :disabled="disabled === true"
         @search-change="search"
@@ -28,7 +28,7 @@
         type="text"
         disabled
         class="form-control w-100"
-        :value="selectedItem?.Description || ''"
+        :value="selectedItem?.WarehouseName || ''"
       />
     </div>
   </div>
@@ -39,7 +39,6 @@ export default {
   emits: ["update:modelValue"],
   props: {
     modelValue: null,
-    typeData: String,
     placeholder: String,
     errors: Array,
     disabled: Boolean,
@@ -48,7 +47,7 @@ export default {
     /* === WIDTH CONTROL === */
     ddlWidth: {
       type: String,
-      default: "300px",
+      default: "150px",
     },
     descWidth: {
       type: String,
@@ -67,11 +66,11 @@ export default {
 
   computed: {
     selectedItem() {
-      return this.list.find((x) => x.ClsCode === this.tempValue) || null;
+      return this.list.find((x) => x.WarehouseCode === this.tempValue) || null;
     },
 
     displayLabel() {
-      return this.tempValue ? "ClsCode" : "DDLDescription";
+      return this.tempValue ? "WarehouseCode" : "DDLDescription";
     },
 
     leftStyle() {
@@ -126,13 +125,11 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/cls/ddlsearch?keyword=${q}&typedata=${this.typeData}&ids=${
-              d || ""
-            }`
+            `/warehouse/ddlsearch?keyword=${q}&ids=${d || ""}&factoryCode=ALL`
           )
           .then((r) => {
             if (d && r.data.Data.length) {
-              this.tempValue = r.data.Data[0].ClsCode;
+              this.tempValue = r.data.Data[0].WarehouseCode;
             }
             this.list = r.data.Data;
           })
