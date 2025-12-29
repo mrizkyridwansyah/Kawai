@@ -49,6 +49,27 @@ export const useTrade = defineStore('Trade', {
           .finally(_ => this.isLoading = false);
       })
     },
+     loadDelivery: function (tradecode) {
+            this.isLoading = true;
+            this.isNetworkError = this.isServerError = false;
+            return new Promise((resolve, reject) => {
+                app.$http.get(`/trade/listdeliveryplace?trade_code=${tradecode}`)
+                    .then(({ data }) => {
+                        this.data = data.Data;
+                        resolve(data);
+                    })
+                    .catch(err => {
+                        if (err.code == 'ERR_NETWORK')
+                            this.isNetworkError = true;
+
+                        if (err.code == 'ERR_BAD_RESPONSE')
+                            this.isServerError = true;
+
+                        reject(err);
+                    })
+                    .finally(_ => this.isLoading = false);
+            })
+        },
     loadDetail: function (id) {
       this.isLoadingDetail = true;
       return new Promise((resolve, reject) => {
@@ -86,6 +107,18 @@ export const useTrade = defineStore('Trade', {
       this.filter.Length = v;
       this.load();
     },
+            submit: function (data) {
+            this.isLoading = true;
+            return new Promise((resolve, reject) => {
+                app.$http.post(`/trade/save`, data)
+                    .then(({ data }) => {
+                        resolve(data);
+                    })
+                    .catch((err) => reject(err.response?.data))
+                    .finally(_ => this.isLoading = false);
+            })
+
+        },
     create: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {

@@ -23,7 +23,7 @@ public class TradeDto: DataTableDto
     public string Fax { get; set; }
     public string Closing_Day { get; set; }
     public string Pay_Day { get; set; }
-    public string InvoicePay_Days { get; set; }
+    public double InvoicePay_Days { get; set; }
     public string Affiliate_Cls { get; set; }
     public string Affiliate_Cls_Descs { get; set; }
     public string Insurance_Cls { get; set; }
@@ -38,7 +38,7 @@ public class TradeDto: DataTableDto
     public string PO_Cls_Descs { get; set; }
     public string Price_Condition { get; set; }
     public string Price_Condition_Descs { get; set; }
-    public string POPayment_Day { get; set; }
+    public double POPayment_Day { get; set; }
     public string POPayment_Terms { get; set; }
     public string Transportation_Cls { get; set; }
     public string Transportation_Cls_Descs { get; set; }
@@ -68,5 +68,19 @@ public class TradeDto: DataTableDto
     public string Last_User { get; set; }
     public DateTime? Register_Date { get; set; }
     public string DDLDescription { get; set; }
+
+}
+
+public class ListDeliveryPlaceDto
+{
+    public string Trade_Code { get; set; }
+    public string Location_Code { get; set; }
+    public string Location_Name { get; set; }
+     public string RegisterUser { get; set; }
+    public DateTime? RegisterDate { get; set; }
+    public string LastUser { get; set; }
+    public DateTime? LastUpdate { get; set; }
+ 
+
 
 }

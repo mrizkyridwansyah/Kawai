@@ -1,9 +1,10 @@
-﻿using Kawai.Data.SqlConnections;
+﻿using Kawai.Api.Models;
+using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
-
+using System.Data;
 namespace Kawai.Data.Repositories;
 
 public class TradeRepository : ITradeRepository
@@ -21,6 +22,13 @@ public class TradeRepository : ITradeRepository
         return (await _dbExecutor.QueryListAsync<TradeDto>(sp, param.ToQueryObject())).ToList();
     }
 
+    public async Task<List<ListDeliveryPlaceDto>> GetDeliveryList(string trade_code)
+    {
+        string sp = "sp_Wms_TradeDeliveryPlace_Detail";
+        return (await _dbExecutor.QueryListAsync<ListDeliveryPlaceDto>(sp, new { Trade_Code = trade_code })).ToList();
+    }
+
+
     public async Task<TradeDto> GetData(string trade_Code)
     {
         string sp = "sp_Wms_Trade_GetDetail";
@@ -33,7 +41,94 @@ public class TradeRepository : ITradeRepository
         return (await _dbExecutor.QueryListAsync<TradeDto>(sp, new { Keyword = keyword ?? "" })).ToList();
     }
 
-    
+
+    public async Task SaveTradeDelivery(TradeSaveDelivery tradedeliverylist,string userId)
+    {
+
+        var commands = new List<(string, object?, CommandType)>();  // 1️⃣ SAVE / UPDATE TRADE (HEADER)
+        commands.Add(("sp_Wms_Trade_InsUpd", new
+        {
+            tradedeliverylist.Trade_Code,
+            tradedeliverylist.Trade_Cls,
+            tradedeliverylist.Trade_Name,
+            tradedeliverylist.Trade_Abbr,
+            tradedeliverylist.Contact_Person,
+            tradedeliverylist.Address1,
+            tradedeliverylist.Address2,
+            tradedeliverylist.City,
+            tradedeliverylist.Country,
+            tradedeliverylist.Country_Cls,
+            tradedeliverylist.Epte_Cls,
+            tradedeliverylist.Region_Cls,
+            tradedeliverylist.Postal_Code,
+            tradedeliverylist.Telephone,
+            tradedeliverylist.Fax,
+            tradedeliverylist.Closing_Day,
+            tradedeliverylist.Pay_Day,
+            tradedeliverylist.InvoicePay_Days,
+            tradedeliverylist.Affiliate_Cls,
+            tradedeliverylist.Insurance_Cls,
+            tradedeliverylist.NPWP_No,
+            tradedeliverylist.NPWP_Name,
+            tradedeliverylist.NPWP_Address,
+            tradedeliverylist.NPWP_City,
+            tradedeliverylist.NPPKP_No,
+            tradedeliverylist.Invoice_To,
+            tradedeliverylist.PO_Cls,
+            tradedeliverylist.Price_Condition,
+            tradedeliverylist.POPayment_Day,
+            tradedeliverylist.POPayment_Terms,
+            tradedeliverylist.Transportation_Cls,
+            tradedeliverylist.POCaseMark1,
+            tradedeliverylist.POCaseMark2,
+            tradedeliverylist.POCaseMark3,
+            tradedeliverylist.POCaseMark4,
+            tradedeliverylist.POCaseMark5,
+            tradedeliverylist.POMarking1,
+            tradedeliverylist.POMarking2,
+            tradedeliverylist.POMarking3,
+            tradedeliverylist.POMarking4,
+            tradedeliverylist.POMarking5,
+            tradedeliverylist.POMarking6,
+            tradedeliverylist.Subcon_WH_Code,
+            tradedeliverylist.NG_Cls,
+            tradedeliverylist.SAP_Code,
+            tradedeliverylist.Type_BC,
+            tradedeliverylist.No_Izin,
+            tradedeliverylist.CODE_KPPBC,
+            tradedeliverylist.NoIzin_Date,
+            tradedeliverylist.NITKU,
+            RegisterBy = userId
+        }, CommandType.StoredProcedure));
+
+        // 2️⃣ DELETE DELIVERY LAMA
+        commands.Add(("sp_WMS_TradeDelivery_Delete", new
+        {
+            Trade_Code = tradedeliverylist.Trade_Code
+        }, CommandType.StoredProcedure));
+
+        // 3️⃣ INSERT / UPDATE DELIVERY BARU
+        if (tradedeliverylist.DeliveryList != null)
+        {
+            foreach (var wsSet in tradedeliverylist.DeliveryList)
+            {
+                commands.Add(("sp_WMS_TradeDelivery_Upd", new
+                {
+                    Trade_Code = tradedeliverylist.Trade_Code,
+                    wsSet.Location_Code,
+                    wsSet.Location_Name,
+                    UserID = userId
+                }, CommandType.StoredProcedure));
+            }
+        }
+
+        // 4️⃣ EXECUTE SEMUA DALAM 1 TRANSAKSI
+        await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
+    }
+
+
+
+
 
     public async Task Create(Trade trade, string userId)
     {

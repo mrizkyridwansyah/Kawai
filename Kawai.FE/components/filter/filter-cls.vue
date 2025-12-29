@@ -48,11 +48,11 @@ export default {
     /* === WIDTH CONTROL === */
     ddlWidth: {
       type: String,
-      default: "300px",
+      default: "20%",
     },
     descWidth: {
       type: String,
-      default: "1fr",
+      default: "80%",
     },
   },
 

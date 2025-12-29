@@ -31,6 +31,39 @@ public class TradeController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpGet("listdeliveryplace")]
+    public async Task<IActionResult> ListDeliveryPlace(string trade_code)
+    {
+        var delivery_list = await _tradeRepository.GetDeliveryList(trade_code);
+
+        var result = new
+        {
+            Trade_Code = trade_code,
+            DeliveryList = delivery_list
+        };
+
+        return Success(result);
+    }
+
+    [HttpPost("save")]
+    public async Task<IActionResult> Save(TradeSaveDelivery model)
+    {
+        var before = await _tradeRepository.Capture(model.Trade_Code);
+        await _tradeRepository.SaveTradeDelivery(model, Auth.User.UserID);
+        var after = await _tradeRepository.Capture(model.Trade_Code);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Master Trade",
+            EntityId = model.Trade_Code,
+            ReferenceId = model.Trade_Code,
+            Action = DataLogAction.Update,
+            Before = before,
+            After = after
+        });
+        return Success(after);
+    }
+
     [HttpGet("ddlsearch")]
     public async Task<IActionResult> DDLSearch([FromQuery] string keyword, [FromQuery] string[] tradecls, [FromQuery] string ids)
     {
