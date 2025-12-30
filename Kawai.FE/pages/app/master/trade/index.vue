@@ -1,12 +1,11 @@
 <template>
-  <v-frame title="Trade Master" icon="database">
+  <v-frame title="Trade Master Inquiry" icon="database">
     <template #frame-content>
-      <v-button-add :add="add" cClass="mr-1" />
       <v-table
         :filter="filter"
         :export-excel="true"
         :export-excel-action="exportExcel"
-        :data-items="ds.data.Items"
+        :data-items="ds.data.Items || []"
         :frozen-column-left="4"
         :ds="ds"
       >
@@ -40,7 +39,6 @@
                 <th class="text-center">NPWP Name</th>
                 <th class="text-center">NPWP Address</th>
                 <th class="text-center">NPWP City</th>
-                <th class="text-center">Delivery Place</th>
               </tr>
             </thead>
             <tbody>
@@ -49,7 +47,12 @@
                   <font-awesome-icon
                     class="mr-2 text-success"
                     icon="pencil"
-                    @click="edit(item)"
+                    @click="
+                      () =>
+                        this.$router.push(
+                          `trade/create?tradecode=${item.Trade_Code}`
+                        )
+                    "
                   />
                   <font-awesome-icon
                     class="ml-2 mr-2 text-danger"
@@ -80,18 +83,6 @@
                 <td>{{ item.NPWP_Name }}</td>
                 <td>{{ item.NPWP_Address }}</td>
                 <td>{{ item.NPWP_City }}</td>
-                <td class="text-center">
-                  <font-awesome-icon
-                    icon="eye"
-                    class="mr-2 text-info"
-                    @click="
-                      () =>
-                        this.$router.push(
-                          `trade/detail?trade_code=${item.Trade_Code}`
-                        )
-                    "
-                  />
-                </td>
               </tr>
             </tbody>
           </table>
