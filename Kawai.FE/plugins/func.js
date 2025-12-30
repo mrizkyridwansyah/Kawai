@@ -57,6 +57,19 @@ export default defineNuxtPlugin(nuxtApp => {
       parts[0] = parts[0].split(',').slice(0, -1).join(',');
       return parts.join(".");
     },
+    formatDecimal(value, digit = 2) {
+      if (value === null || value === undefined || value === '') {
+        return '0.00';
+      }
+
+      const num = Number(value);
+
+      if (Math.abs(num) < Math.pow(10, -digit)) {
+        return num.toString(); // tampilkan apa adanya
+      }
+
+      return num.toFixed(digit);
+    },
     formatDateDay: function (date) {
       if (date == null) return null;
       return moment(date).format("dddd, D MMMM YYYY");
