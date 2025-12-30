@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+      <div class="fuking-class-code">
         <input-multiselect
           v-model="tempValue"
           :options="list"

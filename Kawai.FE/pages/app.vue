@@ -8,12 +8,12 @@
 <script setup>
 definePageMeta({
   layout: "app",
-  middleware: 'auth',
+  middleware: "auth",
 });
 </script>
 
 <style>
-.nav-tabs>.nav-item {
+.nav-tabs > .nav-item {
   margin-left: 10px;
 }
 
@@ -70,8 +70,13 @@ definePageMeta({
   transform: translateY(0);
 }
 
-.fa-pencil, .fa-trash {
-  cursor: pointer
+.fa-pencil,
+.fa-trash {
+  cursor: pointer;
+}
+
+.form-control, .multiselect, .btn, .multiselect-single-label-text {
+  font-size: 0.6rem !important;
 }
 
 </style>

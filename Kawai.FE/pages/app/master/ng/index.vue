@@ -57,7 +57,7 @@
     ref="modalNG"
     id="modal-form-ng"
     :title="title"
-    size="800"
+    size="md"
     @hidden="
       () => {
         this.$refs.formNG.resetForm();

@@ -1,29 +1,36 @@
 <template>
   <v-frame title="Warehouse" icon="database">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-2"
-          >Factory</label
-        >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
-          <filter-factory-privileges
-            class="form-control"
-            v-model="filter.factory"
-          />
-        </div>
-      </div>
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-          <v-button-add :add="add" cClass="mr-1 ml-1" />
-          <v-button-print
-            :print="print"
-            cClass="mr-1"
-            :is-loading="isLoadingPrint"
-          />
-          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-        </div>
-      </div>
+      <table class="ml-2">
+        <tr>
+          <td><label class="form-label">Factory</label></td>
+          <td style="padding-left: 15px">
+            <filter-factory-privileges
+              class="form-control"
+              v-model="filter.factory"
+              style-code="width: 110px"
+              style-desc="width: 250px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="d-flex flex-fill mt-1">
+              <v-button-add :add="add" cClass="mr-1" />
+              <v-button-print
+                :print="print"
+                cClass=""
+                :is-loading="isLoadingPrint"
+              />
+              <v-button-search-reset
+                class="ms-1"
+                :search="search"
+                :reset="reset"
+              />
+            </div>
+          </td>
+        </tr>
+      </table>
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
@@ -97,7 +104,7 @@
     ref="modalWarehouse"
     id="modal-form-warehouse"
     :title="title"
-    size="md"
+    size="lg"
     @hidden="
       () => {
         this.$refs.formWarehouse.resetForm();

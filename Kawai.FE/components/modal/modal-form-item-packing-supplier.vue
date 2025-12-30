@@ -1,26 +1,52 @@
 <template>
-  <div class="mb-3">
-    <label class="form-label">Supplier Code</label>
-    <input-trade
-      v-model="model.SupplierCode"
-      disabled="true"
-      :trade-cls="['2', '3']"
-    />
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Item Code</label>
-    <input-item v-model="model.ItemCode" :errors="errors?.ItemCode" />
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Qty Packing</label>
-    <input-money
-      placeholder="Qty Packing"
-      v-model="model.QtyPacking"
-      :errors="errors?.QtyPacking"
-    />
-  </div>
-  <div class="mt-4 mb-3">
-    <v-button-submit-modal
+  <table>
+    <tr>
+      <td><label class="form-label">Supplier Code</label></td>
+      <td style="padding-left: 15px">
+        <input-trade
+          v-model="model.SupplierCode"
+          disabled="true"
+          :trade-cls="['2', '3']"
+          style-code="width: 120px"
+          style-desc="width: 250px"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Item Code</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <input-item
+          v-model="model.ItemCode"
+          :errors="errors?.ItemCode"
+          style-code="width: 160px"
+          style-desc="width: 250px"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Qty Packing</label>
+      </td>
+      <td
+        style="
+          padding-top: 5px;
+          padding-left: 15px;
+          white-space: nowrap !important;
+        "
+      >
+        <input-money
+          placeholder="Qty Packing"
+          v-model="model.QtyPacking"
+          :errors="errors?.QtyPacking"
+          style="width: 100px"
+        />
+      </td>
+    </tr>
+  </table>
+  <div style="float: right" class="mt-4 mb-3">
+    <v-button-submit
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"

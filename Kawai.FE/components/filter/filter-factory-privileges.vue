@@ -1,46 +1,50 @@
 <template>
-  <div class="row">
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-      <input-multiselect
-        v-model="tempValue"
-        :options="list"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        open-direction="bottom"
-        :placeholder="placeholder || `Search Factory`"
-        :searchable="true"
-        :label="displayLabel"
-        track-by="CompanyCode"
-        trackBy="CompanyCode"
-        :hide-selected="true"
-        :internal-search="false"
-        :loading="isLoading"
-        @search-change="search"
-        @open="open"
-        :select="change"
-        :class="cClass || 'input-wrapper'"
-        :multiple="multiple !== undefined || false"
-        :disabled="true"
-        select-label=""
-        deselect-label=""
-      />
-      <div class="invalid-feedback d-block" v-if="errors">
-        {{ errors[0] }}
-      </div>
-      <small class="form-text text-muted" v-if="description">{{
-        description
-      }}</small>
-    </div>
-    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
-      <input
-        type="text"
-        disabled
-        :value="selectedItem?.CompanyName || ''"
-        class="w-100 form-control"
-      />
-    </div>
-  </div>
+  <table>
+    <tr>
+      <td :style="this.styleCode">
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || `Search Factory`"
+          :searchable="true"
+          :label="displayLabel"
+          track-by="CompanyCode"
+          trackBy="CompanyCode"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          :select="change"
+          :class="cClass || 'input-wrapper'"
+          :multiple="multiple !== undefined || false"
+          :disabled="true"
+          select-label=""
+          deselect-label=""
+        />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
+      </td>
+      <td :style="this.styleDesc" style="padding-left: 5px">
+        <div>
+          <input
+            type="text"
+            disabled
+            :value="selectedItem?.CompanyName || ''"
+            class="w-100 form-control"
+          />
+        </div>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -62,6 +66,8 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "styleCode",
+    "styleDesc",
   ],
   data: () => ({
     isLoading: false,

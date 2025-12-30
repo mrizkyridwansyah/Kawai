@@ -112,7 +112,7 @@ export default {
 }
 
 .multiselect-dropdown {
-  width: max-content;
-  min-width: 100%;
+  width: max-content !important;
+  min-width: 100% !important;
 }
 </style>

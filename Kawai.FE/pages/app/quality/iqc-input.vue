@@ -1,156 +1,168 @@
 <template>
   <v-frame title="IQC Result Input" icon="list-check">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Factory</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-factory-privileges
-            class="form-control"
-            v-model="filter.FactoryCode"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Status</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-iqc-status
-            placeholder="Search Status"
-            v-model="filter.Status"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Supplier</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade
-            placeholder="Search Supplier"
-            class="form-control"
-            v-model="filter.SupplierCode"
-            :trade-cls="['2', '3']"
-            :show-option-all="true"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Source</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-iqc-source
-            placeholder="Search Source"
-            v-model="filter.Source"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Receipt Date</label
-        >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodFrom" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Until Date</label
-        >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodUntil" />
-        </div>
-
-        <div class="col-xl-11 col-lg-11 col-md-6 col-sm-6 col-xs-6 mt-1">
-          <v-button-search-reset :search="search" :reset="resetFilter" />
-        </div>
-      </div>
-      <v-table-input :data-items="lists" :frozen-column-left="3" ref="vtable">
-        <template #table-content>
-          <div class="detail-content">
-            <table
-              class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
-              v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-              ref="table"
-            >
-              <thead>
-                <tr>
-                  <th class="text-center">Source</th>
-                  <th class="text-center">Supplier</th>
-                  <th class="text-center">DN Number</th>
-                  <th class="text-center">DN Date</th>
-                  <th class="text-center">Item Code</th>
-                  <th class="text-center">Item Name</th>
-                  <th class="text-center">Unit</th>
-                  <th class="text-center">Sample Qty</th>
-                  <th class="text-center">NG Qty</th>
-                  <th class="text-center">Result Input & View</th>
-                  <th class="text-center">Register User</th>
-                  <th class="text-center">Register Date</th>
-                  <th class="text-center">Inspection User</th>
-                  <th class="text-center">Inspection Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, idx) in lists || []" :key="idx">
-                  <td class="text-center">
-                    {{
-                      item.Source == "Incoming Material"
-                        ? "IQC Sample"
-                        : item.Source
-                    }}
-                  </td>
-                  <td>{{ item.SupplierName }}</td>
-                  <td>{{ item.DNNumber }}</td>
-                  <td>{{ $func.formatDate(item.DNDate) }}</td>
-                  <td>{{ item.ItemCode }}</td>
-                  <td>{{ item.ItemName }}</td>
-                  <td>{{ item.UnitClsDescription }}</td>
-                  <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
-                  <td class="text-right">
-                    {{ $func.formatMoney(item.QtyNG) }}
-                  </td>
-                  <td class="text-center">
-                    <a
-                      href="javascript:void(0);"
-                      v-if="
-                        item.InspectionResult != null &&
-                        item.InspectionResult != ''
-                      "
-                      @click="() => showModal(item, 'VIEW')"
-                    >
-                      View
-                    </a>
-                    <a
-                      href="javascript:void(0);"
-                      v-else
-                      @click="() => showModal(item, 'INPUT')"
-                    >
-                      Input
-                    </a>
-                  </td>
-                  <td>{{ item.RegisterUserName }}</td>
-                  <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
-                  <td>{{ item.InspectorName }}</td>
-                  <td>{{ $func.formatDateTime(item.InspectionDate) }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <v-data-empty
-              class="mt-3"
-              v-if="
-                !ds.isLoading &&
-                lists?.length == 0 &&
-                !ds.isNetworkError &&
-                !ds.isServerError
-              "
+      <table>
+        <tr>
+          <td><label class="form-label">Factory</label></td>
+          <td style="padding-left: 15px" colspan="3">
+            <filter-factory-privileges
+              class="form-control"
+              v-model="filter.FactoryCode"
+              style-code="width: 110px;"
+              style-desc="width: 250px;"
             />
-          </div>
-        </template>
-      </v-table-input>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Supplier</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <filter-trade-2
+              placeholder=" "
+              class="form-control"
+              v-model="filter.SupplierCode"
+              :trade-cls="['2', '3']"
+              :show-option-all="true"
+              style-code="width: 140px;"
+              style-desc="width: 250px;"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Status</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <input-iqc-status
+              placeholder=" "
+              class="form-control"
+              v-model="filter.Status"
+              style="width: 110px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Source</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <input-iqc-source
+              placeholder=" "
+              class="form-control"
+              v-model="filter.Source"
+              style="width: 140px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Receipt Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-date v-model="filter.PeriodFrom" style-date="width:100px" />
+          </td>
+          <td style="padding-top: 5px">
+            <label class="form-label">To</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-date v-model="filter.PeriodUntil" style-date="width:100px" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4" style="padding-top: 5px">
+            <v-button-search-reset :search="search" :reset="resetFilter" />
+          </td>
+        </tr>
+      </table>
+
+      <div style="width: 1150px">
+        <v-table-input :data-items="lists" :frozen-column-left="3" ref="vtable">
+          <template #table-content>
+            <div class="detail-content">
+              <table
+                class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+                ref="table"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center">Source</th>
+                    <th class="text-center">Supplier</th>
+                    <th class="text-center">DN Number</th>
+                    <th class="text-center">DN Date</th>
+                    <th class="text-center">Item Code</th>
+                    <th class="text-center">Item Name</th>
+                    <th class="text-center">Unit</th>
+                    <th class="text-center">Sample Qty</th>
+                    <th class="text-center">NG Qty</th>
+                    <th class="text-center">Result Input & View</th>
+                    <th class="text-center">Register User</th>
+                    <th class="text-center">Register Date</th>
+                    <th class="text-center">Inspection User</th>
+                    <th class="text-center">Inspection Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, idx) in lists || []" :key="idx">
+                    <td class="text-center">
+                      {{
+                        item.Source == "Incoming Material"
+                          ? "IQC Sample"
+                          : item.Source
+                      }}
+                    </td>
+                    <td>{{ item.SupplierName }}</td>
+                    <td>{{ item.DNNumber }}</td>
+                    <td>{{ $func.formatDate(item.DNDate) }}</td>
+                    <td>{{ item.ItemCode }}</td>
+                    <td>{{ item.ItemName }}</td>
+                    <td>{{ item.UnitClsDescription }}</td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.Qty) }}
+                    </td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.QtyNG) }}
+                    </td>
+                    <td class="text-center">
+                      <a
+                        href="javascript:void(0);"
+                        v-if="
+                          item.InspectionResult != null &&
+                          item.InspectionResult != ''
+                        "
+                        @click="() => showModal(item, 'VIEW')"
+                      >
+                        View
+                      </a>
+                      <a
+                        href="javascript:void(0);"
+                        v-else
+                        @click="() => showModal(item, 'INPUT')"
+                      >
+                        Input
+                      </a>
+                    </td>
+                    <td>{{ item.RegisterUserName }}</td>
+                    <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
+                    <td>{{ item.InspectorName }}</td>
+                    <td>{{ $func.formatDateTime(item.InspectionDate) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <v-data-empty
+                class="mt-3"
+                v-if="
+                  !ds.isLoading &&
+                  lists?.length == 0 &&
+                  !ds.isNetworkError &&
+                  !ds.isServerError
+                "
+              />
+            </div>
+          </template>
+        </v-table-input>
+      </div>
     </template>
   </v-frame>
 

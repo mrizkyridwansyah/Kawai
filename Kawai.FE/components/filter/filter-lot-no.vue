@@ -1,36 +1,42 @@
 <template>
-  <div>
-    <input-multiselect
-      v-model="tempValue"
-      :options="list"
-      :close-on-select="true"
-      :clear-on-select="false"
-      :preserve-search="true"
-      open-direction="bottom"
-      :placeholder="placeholder || `Search Lot No `"
-      :searchable="true"
-      label="LotNo"
-      track-by="LotNo"
-      trackBy="LotNo"
-      :hide-selected="true"
-      :internal-search="false"
-      :loading="isLoading"
-      @search-change="search"
-      @open="open"
-      :select="change"
-      :class="cClass || 'input-wrapper'"
-      :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false"
-      select-label=""
-      deselect-label=""
-    />
-    <div class="invalid-feedback d-block" v-if="errors">
-      {{ errors[0] }}
-    </div>
-    <small class="form-text text-muted" v-if="description">{{
-      description
-    }}</small>
-  </div>
+  <table>
+    <tr>
+      <td :style="this.style">
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || `Search Lot No `"
+          :searchable="true"
+          label="LotNo"
+          track-by="LotNo"
+          trackBy="LotNo"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          :select="change"
+          :class="cClass || ''"
+          :multiple="multiple !== undefined || false"
+          :disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
+          select-label=""
+          deselect-label=""
+        />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -57,6 +63,7 @@ export default {
     "address",
     "item",
     "showOptionAll",
+    "style",
   ],
   data: () => ({
     isLoading: false,

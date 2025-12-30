@@ -11,6 +11,7 @@
         :input-id="key"
         :disabled="disabled"
         v-model:open-pop-up="isOpen"
+        :style-date="styleDate"
       />
       <span
         class="input-group-text btn btn-primary"
@@ -48,6 +49,7 @@
         v-model:open-pop-up="isOpen"
         placeholder="dd/MM/yyyy"
         :disabled="disabled"
+        :style-date="styleDate"
       />
       <span
         class="input-group-text btn btn-primary"
@@ -90,6 +92,7 @@ export default {
     "no-group",
     "disabled",
     "style",
+    "styleDate",
   ],
   components: { DatePicker },
   data: () => ({

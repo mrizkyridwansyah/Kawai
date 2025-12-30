@@ -75,7 +75,8 @@ public class AreaController : HahaController
             results.Add(new AreaDto
             {
                 AreaCode = "TMP",
-                AreaName = "Temporary"
+                AreaName = "Temporary",
+                DDLDescription = "TMP | Temporary",
             });
         }
 

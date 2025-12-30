@@ -1,64 +1,103 @@
 <template>
-  <div>
-    <div class="mb-3">
-      <label class="form-label">Factory</label>
-      <input-factory
-        class="form-control"
-        v-model="model.FactoryCode"
-        disabled="true"
-      />
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Warehouse Code</label>
-      <input-text
-        placeholder="Warehouse Code"
-        v-model="model.WarehouseCode"
-        :disabled="mode === 'edit'"
-        :errors="errors?.WarehouseCode"
-      />
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Warehouse Name</label>
-      <input-text
-        placeholder="Warehouse Name"
-        v-model="model.WarehouseName"
-        :errors="errors?.WarehouseName"
-      />
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Adm Group</label>
-      <input-trade
-        placeholder="Adm Group"
-        v-model="model.AdmGroup"
-        :trade-cls="['1', '2', '3']"
-        :errors="errors?.AdmGroup"
-      />
-    </div>
-    <div class="mb-4">
-      <label class="form-label">Use End Date</label>
-      <input-date v-model="model.UseEndDate" :errors="errors?.UseEndDate" />
-    </div>
-    <div class="mb-3">
-      <div class="row">
-        <div class="col-sm-6">
-          <input-checkbox
-            label="Stock Control Cls"
-            v-model="model.StockControlCls"
-            :errors="errors?.StockControlCls"
-          />
-        </div>
-        <div class="col-sm-6">
-          <input-checkbox
-            label="NG Cls"
-            v-model="model.NGCls"
-            :errors="errors?.NGCls"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-  <div>
-    <v-button-submit-modal
+  <table>
+    <tr>
+      <td><label class="form-label">Factory</label></td>
+      <td style="padding-left: 15px" colspan="5">
+        <input-factory
+          class="form-control"
+          v-model="model.FactoryCode"
+          disabled="true"
+          style-code="width: 110px"
+          style-desc="width: 250px"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Warehouse Code</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px" colspan="5">
+        <input-text
+          placeholder="Warehouse Code"
+          v-model="model.WarehouseCode"
+          :disabled="mode === 'edit'"
+          :errors="errors?.WarehouseCode"
+          :maxlength="15"
+          style="width: 130px"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Warehouse Name</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px" colspan="5">
+        <input-text
+          placeholder="Warehouse Name"
+          v-model="model.WarehouseName"
+          :errors="errors?.WarehouseName"
+          :disabled="mode === 'edit'"
+          :maxlength="50"
+          style="width: 370px"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Adm Group</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px" colspan="5">
+        <input-trade
+          placeholder="Adm Group"
+          v-model="model.AdmGroup"
+          :trade-cls="['1', '2', '3']"
+          :errors="errors?.AdmGroup"
+          style-code="width: 130px"
+          style-desc="width: 250px"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Use End Date</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <input-date
+          v-model="model.UseEndDate"
+          :errors="errors?.UseEndDate"
+          style-date="width: 120px"
+        />
+      </td>
+      <td style="padding-top: 5px;">
+        <label class="form-label">Stock Cls</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <input-cls
+          type-data="ItemStockControlCls"
+          placeholder="Stock Cls"
+          v-model="model.StockControlCls"
+          :errors="errors?.StockControlCls"
+          style-code="width: 100px"
+          style-desc="width: 50px"
+        />
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <label class="form-label">NG Cls</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <input-cls
+          type-data="NGCls"
+          placeholder="NG Cls"
+          v-model="model.NGCls"
+          :errors="errors?.NGCls"
+          style-code="width: 100px"
+          style-desc="width: 50px"
+        />
+      </td>
+    </tr>
+  </table>
+  <div style="float: right" class="mt-6">
+    <v-button-submit
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"
@@ -76,8 +115,8 @@ export default {
       WarehouseName: "",
       AdmGroup: "",
       UseEndDate: null,
-      StockControlCls: false,
-      NGCls: false,
+      StockControlCls: "",
+      NGCls: "",
     },
     errorResponse: {},
     errors: {},
@@ -110,8 +149,6 @@ export default {
     loadDetail: function () {
       this.ds.loadDetail(this.id).then((dt) => {
         this.model = dt.Data;
-        this.model.StockControlCls = this.model.StockControlCls == "01";
-        this.model.NGCls = this.model.NGCls == "01";
       });
     },
     resetForm: function () {
@@ -122,8 +159,8 @@ export default {
         WarehouseName: "",
         AdmGroup: "",
         UseEndDate: null,
-        StockControlCls: false,
-        NGCls: false,
+        StockControlCls: "",
+        NGCls: "",
       };
       this.errors = {}; // Reset errors
     },
@@ -133,8 +170,6 @@ export default {
       else this.update();
     },
     create: function () {
-      this.model.StockControlCls = this.model.StockControlCls ? "01" : "02";
-      this.model.NGCls = this.model.NGCls ? "01" : "02";
       this.ds
         .create(this.model)
         .then((datas) => {
@@ -147,8 +182,6 @@ export default {
         });
     },
     update: function () {
-      this.model.StockControlCls = this.model.StockControlCls ? "01" : "02";
-      this.model.NGCls = this.model.NGCls ? "01" : "02";
       this.ds
         .update(this.model)
         .then((datas) => {

@@ -9,7 +9,7 @@
           :clear-on-select="false"
           :preserve-search="true"
           open-direction="bottom"
-          :placeholder="placeholder || ``"
+          :placeholder="placeholder || `Search Cls`"
           :searchable="true"
           :label="displayLabel"
           track-by="ClsCode"
@@ -21,7 +21,7 @@
           @open="open"
           @close="close"
           :select="change"
-          :class="cClass"
+          :class="cClass || 'input-wrapper'"
           :multiple="multiple !== undefined || false"
           :disabled="
             (disabled !== undefined || disabled === true) && disabled !== false
@@ -29,29 +29,14 @@
           select-label=""
           deselect-label=""
         />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
         <small class="form-text text-muted" v-if="description">{{
           description
         }}</small>
       </td>
       <td :style="this.styleDesc" style="padding-left: 5px">
-        <input
-          v-if="!this.descNewRow"
-          type="text"
-          disabled
-          :value="selectedItem?.Description || ''"
-          class="w-100 form-control"
-        />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <div class="invalid-feedback d-block" v-if="errors">
-          {{ errors[0] }}
-        </div>
-      </td>
-    </tr>
-    <tr v-if="this.descNewRow">
-      <td colspan="2" style="padding-top: 2px">
         <input
           type="text"
           disabled
@@ -84,7 +69,6 @@ export default {
     "class",
     "styleCode",
     "styleDesc",
-    "descNewRow",
   ],
   data: () => ({
     isLoading: false,
@@ -162,6 +146,21 @@ export default {
 </script>
 
 <style scoped>
+.input-wrapper {
+  min-width: 10em;
+  width: 100%;
+}
+
+.row-wrapper {
+  display: flex;
+  gap: 1rem; /* jarak antar elemen */
+  align-items: center; /* biar vertikalnya rapih */
+}
+
+.input-ddl {
+  flex: 1; /* biar bagian kiri melebar */
+}
+
 .fucking-info {
   width: 65%; /* bebas mau diset berapa */
 }

@@ -1,37 +1,60 @@
 <template>
-  <div class="mb-3">
-    <label class="form-label">NG Code</label>
-    <input-text
-      placeholder="NG Code"
-      v-model="model.NGCode"
-      :disabled="mode === 'edit'"
-      :errors="errors?.NGCode"
-    />
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Description</label>
-    <input-text
-      placeholder="Description"
-      v-model="model.Description"
-      :errors="errors?.Description"
-    />
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Common</label>
-    <input-dropdown
-      :options="[
-        { value: true, text: 'Yes' },
-        { value: false, text: 'No' },
-      ]"
-      textField="text"
-      valueField="value"
-      placeholder="Common"
-      v-model="model.IsCommon"
-      :errors="errors?.IsCommon"
-    />
-  </div>
-  <div class="mt-4 mb-3">
-    <v-button-submit-modal
+  <table>
+    <tr>
+      <td><label class="form-label">NG Code</label></td>
+      <td style="padding-left: 15px">
+        <input-text
+          placeholder="NG Code"
+          v-model="model.NGCode"
+          :disabled="mode === 'edit'"
+          :errors="errors?.NGCode"
+          style="width: 200px;"
+          maxlength="25"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Description</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <input-text
+          placeholder="Description"
+          v-model="model.Description"
+          :errors="errors?.Description"
+          style="width: 350px;"
+          maxlength="400"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Common</label>
+      </td>
+      <td
+        style="
+          padding-top: 5px;
+          padding-left: 15px;
+          white-space: nowrap !important;
+        "
+      >
+        <input-dropdown
+          :options="[
+            { value: true, text: 'Yes' },
+            { value: false, text: 'No' },
+          ]"
+          textField="text"
+          valueField="value"
+          placeholder="Common"
+          v-model="model.IsCommon"
+          :errors="errors?.IsCommon"
+          style="width: 100px;"
+        />
+      </td>
+    </tr>
+  </table>
+  <div style="float: right" class="mt-4 mb-3">
+    <v-button-submit
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"

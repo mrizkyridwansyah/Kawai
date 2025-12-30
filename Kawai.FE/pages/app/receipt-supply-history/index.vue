@@ -1,75 +1,91 @@
 <template>
   <v-frame title="Receipt / Supply Inquiry" icon="receipt">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Warehouse</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-warehouse-privileges
-            class="form-control"
-            v-model="filter.warehouse"
-            factory-code="ALL"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Area</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-area-privileges
-            class="form-control"
-            placeholder="Search Area"
-            v-model="filter.area"
-            :warehouse="filter.warehouse"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Item</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-item
-            class="form-control"
-            placeholder="Search Item"
-            v-model="filter.item"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Lot No</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-lot-no
-            class="form-control"
-            v-model="filter.lotno"
-            :warehouse="filter.warehouse"
-            area="ALL"
-            address="ALL"
-            :show-option-all="true"
-            :item="filter.item"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Period</label
-        >
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-6">
-          <input-month
-            v-model="filter.period"
-            class="mr-1"
-            placeholder="Period"
-          />
-        </div>
-        <div class="col-xl-5 col-lg-5 col-md-4 col-sm-4 col-xs-5">
-          <v-button-search-reset :search="search" :reset="reset" />
-        </div>
-      </div>
+      <table>
+        <tr>
+          <td><label class="form-label">Warehouse</label></td>
+          <td style="padding-left: 15px">
+            <filter-warehouse-privileges
+              class="form-control"
+              v-model="filter.warehouse"
+              factory-code="ALL"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Area</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-area-privileges
+              class="form-control"
+              placeholder="Search Area"
+              v-model="filter.area"
+              :warehouse="filter.warehouse"
+              :include-temp="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Item</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-item
+              class="form-control"
+              placeholder="Search Item"
+              v-model="filter.item"
+              style-code="width: 160px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Lot No</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-lot-no
+              class="form-control"
+              v-model="filter.lotno"
+              :warehouse="filter.warehouse"
+              area="ALL"
+              address="ALL"
+              :show-option-all="true"
+              :item="filter.item"
+              style="width: 200px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Period</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-month
+              v-model="filter.period"
+              class="mr-1"
+              placeholder="Period"
+              style="width: 150px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px" colspan="2">
+            <div class="d-flex flex-fill">
+              <v-button-search-reset
+                class="mr-1"
+                :search="search"
+                :reset="reset"
+              />
+            </div>
+          </td>
+        </tr>
+      </table>
       <div ref="historyContent" class="mt-4">
         <div class="elevated-tree-container shadow-sm bg-white rounded">
           <v-tree

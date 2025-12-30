@@ -17,6 +17,6 @@ public class Address
     public string AddressCode { get; set; }
 
     [Required(ErrorMessage = "Address Name tidak boleh kosong")]
-    [MaxLength(100, ErrorMessage = "Address Name tidak boleh lebih dari 100 karakter")]
+    [MaxLength(200, ErrorMessage = "Address Name tidak boleh lebih dari 200 karakter")]
     public string AddressName { get; set; }
 }

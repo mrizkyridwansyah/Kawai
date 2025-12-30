@@ -1,38 +1,58 @@
 <template>
-  <div>
-    <input-multiselect
-      v-model="tempValue"
-      :options="list"
-      :close-on-select="true"
-      :clear-on-select="false"
-      :preserve-search="true"
-      open-direction="bottom"
-      :placeholder="placeholder || `Search Trade`"
-      :searchable="true"
-      label="DDLDescription"
-      track-by="Trade_Code"
-      trackBy="Trade_Code"
-      :hide-selected="true"
-      :internal-search="false"
-      :loading="isLoading"
-      @search-change="search"
-      @open="open"
-      :select="change"
-      :class="cClass || 'input-wrapper'"
-      :multiple="multiple !== undefined || false"
-      :disabled="
-        (disabled !== undefined || disabled === true) && disabled !== false
-      "
-      select-label=""
-      deselect-label=""
-    />
-    <div class="invalid-feedback d-block" v-if="errors">
-      {{ errors[0] }}
-    </div>
-    <small class="form-text text-muted" v-if="description">{{
-      description
-    }}</small>
-  </div>
+  <table>
+    <tr>
+      <td :style="this.styleCode">
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || `Search Trade`"
+          :searchable="true"
+          :label="displayLabel"
+          track-by="Trade_Code"
+          trackBy="Trade_Code"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          @close="close"
+          :select="change"
+          :class="cClass"
+          :multiple="multiple !== undefined || false"
+          :disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
+          select-label=""
+          deselect-label=""
+          :style="styleCode"
+        />
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
+      </td>
+      <td :style="this.styleDesc" style="padding-left: 5px">
+        <div>
+        <input
+          type="text"
+          disabled
+          :value="selectedItem?.Trade_Name || ''"
+          class="w-100 form-control"
+        />
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -56,9 +76,12 @@ export default {
     "multiple",
     "class",
     "showOptionAll",
+    "styleCode",
+    "styleDesc",
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -66,6 +89,21 @@ export default {
   computed: {
     cClass: function () {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+    },
+    selectedItem: function () {
+      if (this.tempValue === "ALL") {
+        return {
+          Trade_Code: "ALL",
+          Trade_Name: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
+      return this.list.find((x) => x.Trade_Code === this.tempValue) || null;
+    },
+    displayLabel() {
+      if (this.isOpen) return "DDLDescription";
+      return this.tempValue ? "Trade_Code" : "DDLDescription";
     },
   },
   watch: {
@@ -91,11 +129,12 @@ export default {
       this.load(q, null);
     },
     open: function () {
+      this.isOpen = true;
       this.load("", this.modelValue);
     },
-    // refresh: function () {
-    //   this.load('', this.modelValue);
-    // },
+    close: function () {
+      this.isOpen = false;
+    },
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
@@ -130,6 +169,7 @@ export default {
                     {
                       Trade_Code: "ALL",
                       Trade_Name: "ALL",
+                      DDLDescription: "ALL",
                     },
                     ...p.data.Data,
                   ]
@@ -144,9 +184,8 @@ export default {
 };
 </script>
 
-<style>
-.input-wrapper {
-  min-width: 10em;
-  width: 100%;
+<style scoped>
+.fucking-info {
+  width: 65%; /* bebas mau diset berapa */
 }
 </style>

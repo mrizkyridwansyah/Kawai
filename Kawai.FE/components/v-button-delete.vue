@@ -1,6 +1,6 @@
 <template>
   <button
-    class="btn btn-sm btn-primary btn-elevate"
+    class="btn btn-sm btn-blue btn-elevate"
     :class="cClass"
     @click="submit"
     :disabled="

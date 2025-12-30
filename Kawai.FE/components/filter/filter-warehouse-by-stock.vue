@@ -1,49 +1,51 @@
 <template>
-  <div class="row">
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-      <input-multiselect
-        v-model="tempValue"
-        :options="list"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        open-direction="bottom"
-        :placeholder="placeholder || `Search Warehouse`"
-        :searchable="true"
-        :label="displayLabel"
-        track-by="WarehouseCode"
-        trackBy="WarehouseCode"
-        :hide-selected="true"
-        :internal-search="false"
-        :loading="isLoading"
-        @search-change="search"
-        @open="open"
-        @close="close"
-        :select="change"
-        :class="cClass || 'input-wrapper'"
-        :multiple="multiple !== undefined || false"
-        :disabled="
-          (disabled !== undefined || disabled === true) && disabled !== false
-        "
-        select-label=""
-        deselect-label=""
-      />
-      <div class="invalid-feedback d-block" v-if="errors">
-        {{ errors[0] }}
-      </div>
-      <small class="form-text text-muted" v-if="description">{{
-        description
-      }}</small>
-    </div>
-    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
-      <input
-        type="text"
-        disabled
-        :value="selectedItem?.WarehouseName || ''"
-        class="w-100 form-control"
-      />
-    </div>
-  </div>
+  <table>
+    <tr>
+      <td :style="this.styleCode">
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || `Search Warehouse`"
+          :searchable="true"
+          :label="displayLabel"
+          track-by="WarehouseCode"
+          trackBy="WarehouseCode"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          @close="close"
+          :select="change"
+          :class="cClass || 'input-wrapper'"
+          :multiple="multiple !== undefined || false"
+          :disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
+          select-label=""
+          deselect-label=""
+        />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
+      </td>
+      <td :style="this.styleDesc" style="padding-left: 5px">
+        <input
+          type="text"
+          disabled
+          :value="selectedItem?.WarehouseName || ''"
+          class="w-100 form-control"
+        />
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -67,6 +69,8 @@ export default {
     "class",
     "itemCode",
     "showOptionAll",
+    "styleCode",
+    "styleDesc",
   ],
   data: () => ({
     isLoading: false,
@@ -90,7 +94,7 @@ export default {
 
       return this.list.find((x) => x.WarehouseCode === this.tempValue) || null;
     },
-    displayLabel() {
+    displayLabel: function () {
       if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "WarehouseCode" : "DDLDescription";
     },
@@ -128,12 +132,9 @@ export default {
       this.isOpen = true;
       this.load("", this.modelValue);
     },
-    close: function() {
+    close: function () {
       this.isOpen = false;
     },
-    // refresh: function () {
-    //   this.load('', this.modelValue);
-    // },
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;

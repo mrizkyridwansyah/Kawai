@@ -1,5 +1,5 @@
 <template>
-  <div class="vdatetime" style="max-width: 60%">
+  <div class="vdatetime" style="max-width: 60%" :style="this.styleDate">
     <slot name="before"></slot>
     <input
       v-if="type !== 'month'"
@@ -90,6 +90,9 @@ export default {
   props: {
     modelValue: {
       type: String,
+    },
+    styleDate: {
+      type: String
     },
     valueZone: {
       type: String,

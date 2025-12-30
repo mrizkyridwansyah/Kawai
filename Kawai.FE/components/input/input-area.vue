@@ -1,36 +1,50 @@
 <template>
-  <div>
-    <input-multiselect
-      v-model="tempValue"
-      :options="list"
-      :close-on-select="true"
-      :clear-on-select="false"
-      :preserve-search="true"
-      open-direction="bottom"
-      :placeholder="placeholder || `Search Area`"
-      :searchable="true"
-      label="DDLDescription"
-      track-by="AreaCode"
-      trackBy="AreaCode"
-      :hide-selected="true"
-      :internal-search="false"
-      :loading="isLoading"
-      @search-change="search"
-      @open="open"
-      :select="change"
-      :class="cClass || 'input-wrapper'"
-      :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false"
-      select-label=""
-      deselect-label=""
-    />
-    <div class="invalid-feedback d-block" v-if="errors">
-      {{ errors[0] }}
-    </div>
-    <small class="form-text text-muted" v-if="description">{{
-      description
-    }}</small>
-  </div>
+  <table>
+    <tr>
+      <td :style="this.styleCode">
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || `Search Area`"
+          :searchable="true"
+          :label="displayLabel"
+          track-by="AreaCode"
+          trackBy="AreaCode"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          :select="change"
+          :class="cClass || 'input-wrapper'"
+          :multiple="multiple !== undefined || false"
+          :disabled="disabled !== undefined || false"
+          select-label=""
+          deselect-label=""
+        />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
+      </td>
+      <td :style="this.styleDesc" style="padding-left: 5px">
+        <div>
+          <input
+            type="text"
+            disabled
+            :value="selectedItem?.AreaName || ''"
+            class="w-100 form-control"
+          />
+        </div>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -53,7 +67,9 @@ export default {
     "multiple",
     "class",
     "warehouse",
-    "includeTemp"
+    "includeTemp",
+    "styleCode",
+    "styleDesc",
   ],
   data: () => ({
     isLoading: false,
@@ -65,6 +81,12 @@ export default {
     cClass: function () {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
+    selectedItem: function () {
+      return this.list.find((x) => x.AreaCode === this.tempValue) || null;
+    },
+    displayLabel() {
+      return this.tempValue ? "AreaCode" : "DDLDescription";
+    },
   },
   watch: {
     modelValue: function (after, before) {
@@ -72,9 +94,9 @@ export default {
 
       this.load("", after);
     },
-    warehouse: function(after) {
+    warehouse: function (after) {
       this.tempValue = null;
-      this.load('', this.modelValue);
+      this.load("", this.modelValue);
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
@@ -103,9 +125,9 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/area/ddlsearch?keyword=${q || ""}&ids=${
-              d || ""
-            }&warehouseCode=${this.warehouse || "ALL"}${this.includeTemp ? "&includeTemp=true": "&includeTemp=false"}`
+            `/area/ddlsearch?keyword=${q || ""}&ids=${d || ""}&warehouseCode=${
+              this.warehouse || "ALL"
+            }${this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

@@ -22,13 +22,13 @@ public class ItemDto : DataTableDto
     public string MakerItemName { get; set; }
     public string PartCls { get; set; }
     public string PartClsDesc { get; set; }
-    public bool ReserveCls { get; set; }
+    public string ReserveCls { get; set; }
     public string ReserveClsDesc { get; set; }
-    public bool SupplyCls { get; set; }
+    public string SupplyCls { get; set; }
     public string SupplyClsDesc { get; set; }
-    public bool ProvisionCls { get; set; }
+    public string ProvisionCls { get; set; }
     public string ProvisionClsDesc { get; set; }
-    public bool ProductionCls { get; set; }
+    public string ProductionCls { get; set; }
     public string ProductionClsDesc { get; set; }
     public string MaterialCls { get; set; }
     public string MaterialClsDesc { get; set; }
@@ -92,7 +92,7 @@ public class ItemDto : DataTableDto
     public string ExplosionClsDesc { get; set; }
     public string PersonInChargeCls { get; set; }
     public string PersonInChargeClsDesc { get; set; }
-    public bool StockControlCls { get; set; }
+    public string StockControlCls { get; set; }
     public string StockControlClsDesc { get; set; }
     public string SupplyIssueCls { get; set; }
     public string SupplyIssueClsDesc { get; set; }

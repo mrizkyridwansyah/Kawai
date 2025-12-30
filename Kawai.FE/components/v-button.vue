@@ -1,18 +1,26 @@
 <template>
-
-    <button class="bg-light" @click="() => $router.push(to)" v-if="!featureId || profile.allowed(featureId)"
-        style="display: flex;">
-        <v-icon :name="icon" width="14px" />
-        <span class="ml-1">{{ this.label }}</span>
-    </button>
+  <button
+    class="btn btn-sm btn-elevate"
+    :class="cClass"
+    @click="action"
+    :disabled="
+      (disabled !== undefined && disabled !== false) || isLoading
+    "
+  >
+    <div
+      class="spinner-border spinner-border-sm text-light"
+      role="status"
+      v-if="isLoading"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <font-awesome-icon v-else :icon="icon || 'save'" />
+    <span class="ml-2">{{ label || "" }}</span>
+  </button>
 </template>
+
 <script>
 export default {
-    props: ['to', 'featureId', 'icon', 'label'],
-    computed: {
-        profile: function () {
-            return useProfile()
-        },
-    },
-}
+  props: ["label", "action", "icon", "cClass", "isLoading", "disabled"],
+};
 </script>

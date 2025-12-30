@@ -51,13 +51,13 @@ public class Item
     [AllowedValues(["01", "02", "03", "04"])]
     public string PartCls { get; set; }
 
-    public bool ReserveCls { get; set; }
-    public bool SupplyCls { get; set; }
-    public bool ProvisionCls { get; set; }
-    public bool ProductionCls { get; set; }
+    public string ReserveCls { get; set; }
+    public string SupplyCls { get; set; }
+    public string ProvisionCls { get; set; }
+    public string ProductionCls { get; set; }
 
     [Required(ErrorMessage = "Stock Control Cls tidak boleh kosong")]
-    public bool StockControlCls { get; set; }
+    public string StockControlCls { get; set; }
 
 
     [MaxLength(2, ErrorMessage = "Material Cls tidak boleh lebih dari 2 karakter")]

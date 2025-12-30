@@ -1,159 +1,165 @@
 <template>
   <v-frame title="Part Receipt Material Unschedule" icon="receipt">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Factory</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-factory-privileges
-            class="form-control"
-            v-model="filter.FactoryCode"
-            :disabled="filter.ReceiptId != null"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >BC Number</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-text v-model="model.BCNumber" :errors="errors?.BCNumber" />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Supplier</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade
-            class="form-control"
-            placeholder="Supplier"
-            v-model="filter.SupplierCode"
-            :trade-cls="['2', '3']"
-            :disabled="filter.ReceiptId != null"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >BC Type</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            class="form-control"
-            type-data="BCType_Cls"
-            placeholder="BC Type"
-            v-model="model.BCType"
-            :errors="errors?.BCType"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Receipt No</label
-        >
-        <div class="col-xl-4 col-lg-4 col-md-9 col-sm-9 col-xs-11">
-          <input-receipt
-            class="form-control"
-            :disabled="isNew"
-            status="NEW"
-            source-menu="RECEIPT UNSCHEDULE"
-            :factory-code="filter.FactoryCode"
-            :supplier-code="filter.SupplierCode"
-            v-model="filter.ReceiptId"
-            :errors="errors?.ReceiptId"
-          />
-        </div>
-        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
-          <input-checkbox
-            label="New"
-            v-model="isNew"
-            @click="(e) => changeNew(e)"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >BC Date</label
-        >
-        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
-          <input-date v-model="model.BCDate" :errors="errors?.BCDate" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >DN Date</label
-        >
-        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
-          <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >DN Number</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-text v-model="model.DNNumber" :errors="errors?.DNNumber" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Transport By</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            class="form-control"
-            type-data="Transport_Cls"
-            placeholder="Transport"
-            v-model="model.Transport"
-            :errors="errors?.Transport"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Police No</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-text v-model="model.VehicleNo" :errors="errors?.VehicleNo" />
-        </div>
-        <!-- <div class="col-xl-2 col-lg-2 col-md-8 col-sm-8 col-xs-10">
-          <button
-            class="btn btn-sm btn-blue btn-elevate mr-1"
-            @click="searchPoDetail"
-            :disabled="isLoading"
-          >
-            <div
-              class="spinner-border spinner-border-sm text-light"
-              role="status"
-              v-if="isLoading"
-            >
-              <span class="visually-hidden">Loading...</span>
+      <table>
+        <tr>
+          <td><label class="form-label">Factory</label></td>
+          <td style="padding-left: 15px">
+            <filter-factory-privileges
+              class="form-control"
+              v-model="filter.FactoryCode"
+              :disabled="filter.ReceiptId != null"
+              style-code="width: 110px"
+              style-desc="width: 250px"
+            />
+          </td>
+          <td style="padding-left: 15px">
+            <label class="form-label">BC Number</label>
+          </td>
+          <td style="padding-left: 15px" colspan="3">
+            <input-text
+              v-model="model.BCNumber"
+              :errors="errors?.BCNumber"
+              style="width: 360px"
+              maxlength="50"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Supplier</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px">
+            <filter-trade-2
+              class="form-control"
+              placeholder="Supplier"
+              v-model="filter.SupplierCode"
+              :trade-cls="['2', '3']"
+              :disabled="filter.ReceiptId != null"
+              style-code="width: 120px"
+              style-desc="width: 240px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">BC Type</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+            <filter-cls-2
+              class="form-control"
+              type-data="BCType_Cls"
+              placeholder="BC Type"
+              v-model="model.BCType"
+              :errors="errors?.BCType"
+              style-code="width: 120px"
+              style-desc="width: 240px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Receipt No</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <table>
+              <tr>
+                <td>
+                  <input-receipt
+                    class="form-control"
+                    :disabled="isNew"
+                    status="NEW"
+                    source-menu="RECEIPT PO"
+                    :factory-code="filter.FactoryCode"
+                    :supplier-code="filter.SupplierCode"
+                    v-model="filter.ReceiptId"
+                    :errors="errors?.ReceiptId"
+                    style="width: 300px"
+                  />
+                </td>
+                <td style="padding-left: 15px">
+                  <input-checkbox
+                    label="New"
+                    v-model="isNew"
+                    @click="(e) => changeNew(e)"
+                  />
+                </td>
+              </tr>
+            </table>
+            <div class="d-flex-fill"></div>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">BC Date</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px">
+            <input-date v-model="model.BCDate" style-date="width: 115px" />
+          </td>
+          <td style="padding-top: 5px">
+            <label class="form-label">DN Date</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px">
+            <input-date v-model="model.DNDate" style-date="width: 115px" />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">DN Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-text
+              v-model="model.DNNumber"
+              :errors="errors?.DNNumber"
+              style="width: 360px"
+              maxlength="50"
+            />
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px">
+            <label class="form-label">Transport By</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+            <filter-cls-2
+              class="form-control"
+              type-data="Transport_Cls"
+              placeholder="Transport"
+              v-model="model.Transport"
+              :errors="errors?.Transport"
+              style-code="width: 120px"
+              style-desc="width: 240px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Police No</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px">
+            <input-text
+              v-model="model.VehicleNo"
+              :errors="errors?.VehicleNo"
+              style="width: 130px"
+              maxlength="15"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding-top: 5px">
+            <div class="d-flex flex-fill">
+              <v-button-add :add="add" cClass="mr-1" />
+              <v-button-submit
+                :submit="submit"
+                cClass="mr-1"
+                :is-loading="isLoading"
+              />
+              <v-button-print
+                label="Print Label"
+                class="mr-1"
+                :print="printLabel"
+                :is-loading="isLoading"
+              />
             </div>
-            <font-awesome-icon v-else icon="search" />
-            <span class="ml-2">Search</span>
-          </button>
-        </div> -->
-      </div>
-      <hr />
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-          <v-button-add :add="add" cClass="mr-1" />
-          <v-button-submit
-            :submit="submit"
-            cClass="mr-1"
-            :is-loading="isLoading"
-          />
-          <v-button-print
-            label="Print Label"
-            class="mr-1"
-            :print="printLabel"
-            :is-loading="isLoading"
-          />
-        </div>
-      </div>
+          </td>
+        </tr>
+      </table>
 
+      <div style="width: 1150px">
       <v-table-input :data-items="items" ref="vtable">
         <template #table-content>
           <div class="detail-content">
@@ -249,6 +255,7 @@
           </div>
         </template>
       </v-table-input>
+      </div>
 
       <div
         class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2"

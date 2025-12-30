@@ -1,51 +1,61 @@
 <template>
   <v-frame title="Part Receipt Material Inquiry" icon="receipt">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Factory</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-factory-privileges
-            class="form-control"
-            v-model="filter.FactoryCode"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Supplier</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade
-            class="form-control"
-            placeholder="Search Supplier"
-            :trade-cls="['2', '3']"
-            v-model="filter.SupplierCode"
-            :show-option-all="true"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Receipt Date</label
-        >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodFrom" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Until Date</label
-        >
-        <div class="col-xl-2 col-lg-4 col-md-10 col-sm-10 col-xs-12">
-          <input-date v-model="filter.PeriodUntil" />
-        </div>
+      <table>
+        <tr>
+          <td><label class="form-label">Factory</label></td>
+          <td style="padding-left: 15px" colspan="3">
+            <filter-factory-privileges
+              class="form-control"
+              v-model="filter.FactoryCode"
+              style-code="width: 110px"
+              style-desc="width: 250px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Supplier</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <filter-trade-2
+              class="form-control"
+              placeholder="Search Supplier"
+              :trade-cls="['2', '3']"
+              v-model="filter.SupplierCode"
+              :show-option-all="true"
+              style-code="width: 140px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Receipt Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 160px;">
+            <input-date
+              v-model="filter.PeriodFrom"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px">
+            <label class="form-label">To</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px;">
+            <input-date
+              v-model="filter.PeriodUntil"
+              style-date="width: 100px !important"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4" style="padding-top: 5px">
+            <v-button-search-reset :search="search" :reset="reset" />
+          </td>
+        </tr>
+      </table>
 
-        <div class="col-xl-11 col-lg-11 col-md-6 col-sm-6 col-xs-6 mt-1">
-          <v-button-search-reset :search="search" :reset="reset" />
-        </div>
-      </div>
       <v-table
         :filter="filter"
         :export-excel="true"

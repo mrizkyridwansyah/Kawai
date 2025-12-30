@@ -1,73 +1,86 @@
 <template>
   <v-frame title="Stock Inquiry By Category" icon="boxes-stacked">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Category</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            class="form-control"
-            type-data="ClasificationPart_Cls"
-            placeholder=" Search Category"
-            v-model="filter.category"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Item</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-item-by-stock
-            class="form-control"
-            placeholder="Search Item"
-            v-model="filter.item"
-            warehouse="ALL"
-            area="ALL"
-            address="ALL"
-            :category="filter.category"
-            :show-option-all="true"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Warehouse</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-warehouse-by-stock
-            class="form-control"
-            placeholder="Search Warehouse"
-            v-model="filter.warehouse"
-            :item-code="filter.item"
-            :show-option-all="true"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Lot No</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-lot-by-stock
-            class="form-control"
-            placeholder="Search Lot No"
-            v-model="filter.lotno"
-            warehouse="ALL"
-            area="ALL"
-            address="ALL"
-            :item="filter.item"
-            :category="filter.category"
-            :show-option-all="true"
-          />
-        </div>
-      </div>
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-        </div>
-      </div>
+      <table>
+        <tr>
+          <td><label class="form-label">Category</label></td>
+          <td style="padding-left: 15px">
+            <filter-cls-2
+              class="form-control"
+              type-data="ClasificationPart_Cls"
+              placeholder=" Search Category"
+              v-model="filter.category"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Item</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-item-by-stock
+              class="form-control"
+              placeholder="Search Item"
+              v-model="filter.item"
+              warehouse="ALL"
+              area="ALL"
+              address="ALL"
+              :category="filter.category"
+              :show-option-all="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Warehouse</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-warehouse-by-stock
+              class="form-control"
+              placeholder="Search Warehouse"
+              v-model="filter.warehouse"
+              :item-code="filter.item"
+              :show-option-all="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Lot No</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-lot-by-stock
+              class="form-control"
+              placeholder="Search Lot No"
+              v-model="filter.lotno"
+              warehouse="ALL"
+              area="ALL"
+              address="ALL"
+              :item="filter.item"
+              :category="filter.category"
+              :show-option-all="true"
+              style="width: 200px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px" colspan="2">
+            <div class="d-flex flex-fill">
+              <v-button-search-reset
+                class="mr-1"
+                :search="search"
+                :reset="reset"
+              />
+            </div>
+          </td>
+        </tr>
+      </table>
       <v-tree-group
         :tree-data="treeData"
         :columns="columns"

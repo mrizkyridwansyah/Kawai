@@ -9,11 +9,11 @@
           :clear-on-select="false"
           :preserve-search="true"
           open-direction="bottom"
-          :placeholder="placeholder || ``"
+          :placeholder="placeholder || `Search Trade`"
           :searchable="true"
           :label="displayLabel"
-          track-by="ClsCode"
-          trackBy="ClsCode"
+          track-by="Trade_Code"
+          trackBy="Trade_Code"
           :hide-selected="true"
           :internal-search="false"
           :loading="isLoading"
@@ -21,7 +21,7 @@
           @open="open"
           @close="close"
           :select="change"
-          :class="cClass"
+          :class="cClass || 'input-wrapper'"
           :multiple="multiple !== undefined || false"
           :disabled="
             (disabled !== undefined || disabled === true) && disabled !== false
@@ -29,33 +29,18 @@
           select-label=""
           deselect-label=""
         />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
         <small class="form-text text-muted" v-if="description">{{
           description
         }}</small>
       </td>
       <td :style="this.styleDesc" style="padding-left: 5px">
         <input
-          v-if="!this.descNewRow"
           type="text"
           disabled
-          :value="selectedItem?.Description || ''"
-          class="w-100 form-control"
-        />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <div class="invalid-feedback d-block" v-if="errors">
-          {{ errors[0] }}
-        </div>
-      </td>
-    </tr>
-    <tr v-if="this.descNewRow">
-      <td colspan="2" style="padding-top: 2px">
-        <input
-          type="text"
-          disabled
-          :value="selectedItem?.Description || ''"
+          :value="selectedItem?.Trade_Name || ''"
           class="w-100 form-control"
         />
       </td>
@@ -72,7 +57,8 @@ export default {
   emits: ["update:modelValue"],
   props: [
     "modelValue",
-    "typeData",
+    "tradeCls",
+    "type",
     "label",
     "col",
     "description",
@@ -82,9 +68,9 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "showOptionAll",
     "styleCode",
     "styleDesc",
-    "descNewRow",
   ],
   data: () => ({
     isLoading: false,
@@ -95,14 +81,22 @@ export default {
   }),
   computed: {
     cClass: function () {
-      return (this["class"] ?? "") + (this.errors ? " is-invalid" : "");
+      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
-      return this.list.find((x) => x.ClsCode === this.tempValue) || null;
+      if (this.tempValue === "ALL") {
+        return {
+          Trade_Code: "ALL",
+          Trade_Name: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
+      return this.list.find((x) => x.Trade_Code === this.tempValue) || null;
     },
     displayLabel() {
       if (this.isOpen) return "DDLDescription";
-      return this.tempValue ? "ClsCode" : "DDLDescription";
+      return this.tempValue ? "Trade_Code" : "DDLDescription";
     },
   },
   watch: {
@@ -137,20 +131,42 @@ export default {
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
+
+      var tradeFlags = Array.isArray(this.tradeCls)
+        ? this.tradeCls.map((p) => "&tradecls=" + p)
+        : [];
+
       if (this.debounce != null) clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/cls/ddlsearch?keyword=${q || ""}&typedata=${this.typeData}&ids=${
-              d || ""
-            }`
+            `/trade/ddlsearch?keyword=${q || ""}${
+              tradeFlags.length == 0
+                ? this.tradeCls
+                  ? "&tradecls=" + this.tradeCls
+                  : ""
+                : tradeFlags.join("")
+            }&ids=${d || ""}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.ClsCode;
+              this.tempValue = p.data.Data[0]?.Trade_Code;
             }
-            this.list = p.data.Data;
+
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [
+                    {
+                      Trade_Code: "ALL",
+                      Trade_Name: "ALL",
+                      DDLDescription: "ALL",
+                    },
+                    ...p.data.Data,
+                  ]
+                : p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 
@@ -162,6 +178,21 @@ export default {
 </script>
 
 <style scoped>
+.input-wrapper {
+  min-width: 10em;
+  width: 100%;
+}
+
+.row-wrapper {
+  display: flex;
+  gap: 1rem; /* jarak antar elemen */
+  align-items: center; /* biar vertikalnya rapih */
+}
+
+.input-ddl {
+  flex: 1; /* biar bagian kiri melebar */
+}
+
 .fucking-info {
   width: 65%; /* bebas mau diset berapa */
 }
