@@ -6,7 +6,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Address_List]
+CREATE   procedure [sp_Wms_Address_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -14,8 +14,8 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Address_List]
 
 	-- PARAMETER OPSIONAL
 	@Keyword varchar(max) = '',
-	@WarehouseCode varchar(max) = 'AG01',
-	@AreaCode varchar(max) = 'AG01/001'
+	@WarehouseCode varchar(max),
+	@AreaCode varchar(max)
 as
 begin
 	declare @sqlSort varchar(max) = ''

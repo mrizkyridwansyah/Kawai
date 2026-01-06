@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_ManufactureLine_LineDDL]
+
+create   procedure [sp_Wms_ManufactureLine_LineDDL]
 	@Keyword varchar(max),
 	@ManufactureCode varchar(10)
 as

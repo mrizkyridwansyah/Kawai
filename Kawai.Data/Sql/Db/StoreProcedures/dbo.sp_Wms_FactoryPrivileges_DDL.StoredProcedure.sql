@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE   procedure [sp_Wms_FactoryPrivileges_DDL]
+
+create   procedure [sp_Wms_FactoryPrivileges_DDL]
 	@UserId varchar(25) = '',
 	@Keyword varchar(max)
 as

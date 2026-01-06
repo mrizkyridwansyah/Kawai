@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_WMS_User_Search]
+create   procedure [sp_WMS_User_Search]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,

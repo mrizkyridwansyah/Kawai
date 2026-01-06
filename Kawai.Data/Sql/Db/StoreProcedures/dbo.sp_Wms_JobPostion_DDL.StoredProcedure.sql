@@ -5,7 +5,8 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_JobPostion_DDL]
+
+create   procedure [sp_Wms_JobPostion_DDL]
 	@Keyword varchar(max) = ''
 as
 begin

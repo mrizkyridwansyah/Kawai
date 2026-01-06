@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Cls_DDL]
+
+create   procedure [sp_Wms_Cls_DDL]
 	@TypeData varchar(50),
 	@Keyword varchar(max)
 as

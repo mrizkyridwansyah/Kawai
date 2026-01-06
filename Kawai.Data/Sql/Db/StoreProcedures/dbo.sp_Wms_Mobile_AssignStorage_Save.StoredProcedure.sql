@@ -1,11 +1,8 @@
-USE [Kawaii]
-GO
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_AssignStorage_Save]    Script Date: 12/12/2025 9:57:56 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE procedure [dbo].[sp_Wms_Mobile_AssignStorage_Save]
+CREATE procedure [sp_Wms_Mobile_AssignStorage_Save]
 	@RefNo varchar(50),
 	@AddressCode varchar(25),
 	@UserId varchar(25)

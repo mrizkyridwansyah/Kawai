@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER VIEW [vw_TypeAccs]
+create   view [vw_TypeAccs]
 as
 
 select '01' Code, 'Set' Description 

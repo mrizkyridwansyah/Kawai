@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Warehouse_Create]
+CREATE   procedure [sp_Wms_Warehouse_Create]
 	@FactoryCode varchar(25),
 	@WarehouseCode varchar(25),
 	@WarehouseName varchar(200),

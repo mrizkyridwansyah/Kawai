@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Address_Delete]
+create   procedure [sp_Wms_Address_Delete]
 	@AddressCode varchar(25)
 as
 begin

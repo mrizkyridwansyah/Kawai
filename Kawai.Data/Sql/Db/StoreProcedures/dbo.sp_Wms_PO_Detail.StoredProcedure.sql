@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_PO_Detail]
+create   procedure [sp_Wms_PO_Detail]
 	@PONumber varchar(50)
 as
 begin

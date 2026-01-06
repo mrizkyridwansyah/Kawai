@@ -1,9 +1,8 @@
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_MaterialStorage_SaveMerge]    Script Date: 11/28/2025 10:55:47 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE procedure [dbo].[sp_Wms_Mobile_MaterialStorage_SaveMerge]
+CREATE procedure [sp_Wms_Mobile_MaterialStorage_SaveMerge]
 	@RefNo varchar(50),
 	@AddressCode varchar(25),
 	@ListBarcodes tvp_MaterialMergeStorage READONLY,

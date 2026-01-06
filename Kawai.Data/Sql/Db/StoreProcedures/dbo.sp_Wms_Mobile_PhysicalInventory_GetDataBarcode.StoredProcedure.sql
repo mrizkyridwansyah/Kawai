@@ -12,7 +12,7 @@ begin
 	FROM StockDetail sd
 	LEFT JOIN Item_Master mi on sd.ItemCode = mi.Item_Code
 	LEFT JOIN StockOpname so on sd.BarcodeNo = so.BarcodeNo
-	WHERE AddressCode = @AddressCode
+	WHERE sd.AddressCode = @AddressCode
 	and sd.BarcodeNo = @BarcodeNo and sd.Qty > 0	
 end
 GO

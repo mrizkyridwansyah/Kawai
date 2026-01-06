@@ -3,7 +3,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-create or alter procedure [dbo].[sp_Wms_Warehouse_DDLWarehouseLine]
+
+create   procedure [sp_Wms_Warehouse_DDLWarehouseLine]
 	@FactoryCode varchar(25),
 	@Keyword varchar(max) = ''
 as
@@ -16,6 +17,5 @@ begin
 	and (wh.WarehouseCode like '%'+ @Keyword +'%' or wh.WarehouseName like '%'+ @Keyword +'%')
 
 end
-
 
 GO

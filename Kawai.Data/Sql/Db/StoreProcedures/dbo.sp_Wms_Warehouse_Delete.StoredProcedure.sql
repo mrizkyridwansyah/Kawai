@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Warehouse_Delete]
+create   procedure [sp_Wms_Warehouse_Delete]
 	@WarehouseCode varchar(25)
 as
 begin

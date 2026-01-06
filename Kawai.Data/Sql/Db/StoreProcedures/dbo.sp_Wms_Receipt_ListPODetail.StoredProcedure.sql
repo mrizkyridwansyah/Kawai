@@ -4,11 +4,12 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   procedure [sp_Wms_Receipt_ListPODetail]
+	@FactoryCode varchar(25),
 	@ReceiptId bigint,
 	@PONumber varchar(25),
 	@SupplierCode varchar(25),
 	@DateFrom datetime,
-	@DateUntil datetime
+	@DateUntil datetime 
 as
 begin
 		

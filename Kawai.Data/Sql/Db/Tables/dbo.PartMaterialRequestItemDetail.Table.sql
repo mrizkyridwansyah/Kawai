@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [PartMaterialRequestItemDetail](
 	[IDSeq] [bigint] IDENTITY(1,1) NOT NULL,
-	[RequestDetailNo] [varchar](50) NOT NULL,
+	[RequestDetailID] [bigint] NOT NULL,
 	[ItemCode] [char](25) NOT NULL,
 	[unit_Cls] [char](2) NOT NULL,
 	[ChildRequirement_Qty] [numeric](9, 2) NOT NULL,

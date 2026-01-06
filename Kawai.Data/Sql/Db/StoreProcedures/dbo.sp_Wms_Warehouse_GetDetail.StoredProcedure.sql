@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Warehouse_GetDetail]
+CREATE procedure [sp_Wms_Warehouse_GetDetail]
 	@WarehouseCode varchar(25)
 as
 begin

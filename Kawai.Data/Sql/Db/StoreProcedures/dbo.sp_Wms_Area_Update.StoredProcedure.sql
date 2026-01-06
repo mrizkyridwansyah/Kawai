@@ -7,7 +7,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Area_Update]
+create   procedure [sp_Wms_Area_Update]
 	@WarehouseCode varchar(25),
 	@AreaCode varchar(25),
 	@AreaName varchar(200),

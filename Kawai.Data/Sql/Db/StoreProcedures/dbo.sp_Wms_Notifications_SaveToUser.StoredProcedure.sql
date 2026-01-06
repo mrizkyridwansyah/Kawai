@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Notifications_SaveToUser]
+create   procedure [sp_Wms_Notifications_SaveToUser]
 	@Title varchar(100), 
 	@Description varchar(max), 
 	@NotifType varchar(10), 

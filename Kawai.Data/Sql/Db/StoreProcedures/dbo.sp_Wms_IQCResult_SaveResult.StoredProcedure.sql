@@ -1,9 +1,8 @@
-/****** Object:  StoredProcedure [dbo].[sp_Wms_IQCResult_SaveResult]    Script Date: 11/28/2025 10:55:47 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE   procedure [dbo].[sp_Wms_IQCResult_SaveResult]
+CREATE   procedure [sp_Wms_IQCResult_SaveResult]
 	@InspectionId bigint,
 	@QtyNG numeric(18,2),
 	@Remarks varchar(max),

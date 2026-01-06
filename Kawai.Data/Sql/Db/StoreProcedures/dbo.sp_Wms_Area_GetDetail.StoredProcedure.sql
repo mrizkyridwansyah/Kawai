@@ -6,7 +6,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Area_GetDetail]
+create   procedure [sp_Wms_Area_GetDetail]
 	@AreaCode varchar(25)
 as
 begin

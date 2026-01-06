@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Login_GetUserMenuMobile]
+CREATE procedure [sp_Wms_Login_GetUserMenuMobile]
 --declare
     @UserId VARCHAR(20) = 'ridwansyah2'
 AS
@@ -20,6 +20,7 @@ BEGIN
 			ImageName,
 			cast(1 as bit) AllowAccess
 		FROM SS_UserMenuMobile 
+		--where MenuID <> 'M-06'
 		ORDER BY MenuIndex
 	end 
 	else 

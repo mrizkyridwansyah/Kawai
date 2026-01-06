@@ -2,8 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [sp_Wms_Mobile_MaterialStorage_GetSummaryStorage]
-	@WarehouseCode varchar(25) 
+CREATE procedure [sp_Wms_Mobile_MaterialStorage_GetSummaryStorage]
+	@WarehouseCode varchar(25)
 as
 begin
 	SELECT @WarehouseCode WarehouseCode, res.*, mi.Item_Name ItemName fROM

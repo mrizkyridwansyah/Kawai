@@ -1,11 +1,8 @@
-USE [Kawaii]
-GO
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_AssignStorage_GetDataBarcode]    Script Date: 12/12/2025 9:57:56 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE procedure [dbo].[sp_Wms_Mobile_AssignStorage_GetDataBarcode]
+CREATE procedure [sp_Wms_Mobile_AssignStorage_GetDataBarcode]
 	@BarcodeNo varchar(100) 
 as
 begin

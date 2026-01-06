@@ -6,7 +6,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_NG_Create]
+CREATE   procedure [sp_Wms_NG_Create]
 	@NGCode varchar(25),
 	@Description varchar(200),
 	@IsCommon Bit,

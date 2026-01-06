@@ -2,15 +2,16 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create   procedure [sp_Wms_Mobile_PhysicalInventory_Save]
+CREATE   procedure [sp_Wms_Mobile_PhysicalInventory_Save]
 	@AddressCode varchar(25),
 	@BarcodeNo varchar(50),
 	@InventoryQty numeric(18,9),
 	@UserId varchar(25)
 as
 begin
-	declare @areaCode varchar(25), @areaName varchar(100), @allowed bit
-	select @areaCode = a.AreaCode, @areaName = b.AreaName, @allowed = isnull(priv.AllowAccess, 0)
+	-- ambil data warehouse & area dari address tsb sebagai default
+	declare @warehouseCode varchar(25), @areaCode varchar(25), @areaName varchar(100), @allowed bit
+	select @warehouseCode = b.WarehouseCode, @areaCode = a.AreaCode, @areaName = b.AreaName, @allowed = isnull(priv.AllowAccess, 0)
 	from MS_Address a 
 	inner join MS_Area b on a.AreaCode = b.AreaCode 
 	left join 
@@ -35,10 +36,27 @@ begin
 		return
 	end
 
+	-- ambil warehouse & area dari stock
+	DECLARE @warehouse varchar(25), @area varchar(25), @refNo varchar(50)
+	select @warehouse = WarehouseCode, @area = AreaCode, @refNo = RefNo
+	From StockDetail 
+	where BarcodeNo = @BarcodeNo and AddressCode = @AddressCode and Qty > 0
+
+	/*
+		untuk SO ke table terpisah, dengan PK BarcodeNo aja. 
+		jadi di StockDetail ga perlu update2 kolom InventoryQty & di StokHeader ga perlu update2 kolom TMInventory. 
+		nanti pas CLOSING, baru disinkronisasikan aja dgn StockDetail & kalkulasi untuk TMInventory StockHeader. 
+	*/
+
 	if exists (select 1 from StockOpname where BarcodeNo = @BarcodeNo)
 	begin
+		-- set warehouse & area dari data stock dulu, kalo null maka ambil dari master address nya.
 		update StockOpname
 		set 
+			RefNo = isnull(@refNo, ''), 
+			WarehouseCode = isnull(@warehouse, @warehouseCode), 
+			AreaCode = isnull(@area, @areaCode), 
+			AddressCode = @AddressCode,
 			InventoryQty = @InventoryQty,
 			LastUpdate = getdate(),
 			LastUser = @UserId
@@ -46,9 +64,10 @@ begin
 	end
 	else 
 	begin
-		insert into StockOpname(BarcodeNo, LotNo, ItemCode, InventoryQty, RegisterDate, RegisterUser)
-		select BarcodeNo, LotNo, ItemCode, @InventoryQty, getdate(), @UserId 
-		From StockDetail where BarcodeNo = @BarcodeNo and AddressCode = @AddressCode and Qty > 0
+		insert into StockOpname(BarcodeNo, LotNo, ItemCode, RefNo, WarehouseCode, AreaCode, AddressCode, InventoryQty, RegisterDate, RegisterUser)
+		select BarcodeNo, LotNo, ItemCode, isnull(@refNo, ''), isnull(@warehouse, @warehouseCode), isnull(@area, @areaCode), @AddressCode, @InventoryQty, getdate(), @UserId 
+		From StockDetail 
+		where BarcodeNo = @BarcodeNo and AddressCode = @AddressCode and Qty > 0
 	end
 end
 GO

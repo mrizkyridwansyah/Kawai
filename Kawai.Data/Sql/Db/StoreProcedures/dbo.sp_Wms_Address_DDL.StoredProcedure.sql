@@ -3,7 +3,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Address_DDL]
+
+
+create   procedure [sp_Wms_Address_DDL]
 	@Keyword varchar(max) = '',
 	@WarehouseCode varchar(25) = '',
 	@AreaCode varchar(25) = ''

@@ -1,10 +1,9 @@
-/****** Object:  StoredProcedure [dbo].[sp_Wms_IQCResult_List]    Script Date: 11/28/2025 10:55:47 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE   procedure [dbo].[sp_Wms_IQCResult_List]
+CREATE   procedure [sp_Wms_IQCResult_List]
 	@SupplierCode varchar(25) = null,
 	@Source varchar(25) = null,
 	@StatusInspection varchar(20) = null,-- ALL, OK, NG

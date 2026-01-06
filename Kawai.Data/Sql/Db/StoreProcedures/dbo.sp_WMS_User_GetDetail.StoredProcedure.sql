@@ -5,7 +5,7 @@ GO
 
 
 --exec sp_Wms_User_GetDetail @UserID=N'2019001'
-CREATE OR ALTER PROCEDURE [sp_WMS_User_GetDetail]
+create   procedure [sp_WMS_User_GetDetail]
 	@UserID varchar(25)
 as
 begin

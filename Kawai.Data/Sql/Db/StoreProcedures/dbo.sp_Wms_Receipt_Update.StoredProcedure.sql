@@ -3,6 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 CREATE   procedure [sp_Wms_Receipt_Update]
 	@Id				bigint,
 	@DNNumber		varchar(50),

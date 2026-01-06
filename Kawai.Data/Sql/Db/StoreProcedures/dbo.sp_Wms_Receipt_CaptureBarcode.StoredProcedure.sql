@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-create   procedure [sp_Wms_Receipt_CaptureBarcode]
+CREATE   procedure [sp_Wms_Receipt_CaptureBarcode]
 	@RefNo varchar(50)
 as
 

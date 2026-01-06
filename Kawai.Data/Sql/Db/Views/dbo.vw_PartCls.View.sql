@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER VIEW [vw_PartCls]
+create   view [vw_PartCls]
 as
 select '01' Code, '01' Description
 union all

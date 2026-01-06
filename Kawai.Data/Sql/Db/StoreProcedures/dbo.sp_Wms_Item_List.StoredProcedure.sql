@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Item_List]
+CREATE   procedure [sp_Wms_Item_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -59,13 +59,13 @@ begin
 			MakerItemName			= '''',
 			PartCls					= mi.Part_Cls,
 			PartClsDesc				= b.Description,
-			ReserveCls				= case when isnull(mi.Reserve_Cls, ''02'') = ''01'' then cast(1 as bit) else cast(0 as bit) end,
+			ReserveCls				= mi.Reserve_Cls,
 			ReserveClsDesc			= c.Description,
-			SupplyCls				= case when isnull(mi.Suply_Cls, ''02'') = ''01'' then cast(1 as bit) else cast(0 as bit) end,
+			SupplyCls				= mi.Suply_Cls,
 			SupplyClsDesc			= d.Description,
-			ProvisionCls			= case when isnull(mi.Provision_Cls, ''02'') = ''01'' then cast(1 as bit) else cast(0 as bit) end,
+			ProvisionCls			= mi.Provision_Cls,
 			ProvisionClsDesc		= e.Description,
-			ProductionCls			= case when isnull(mi.Production_Cls, ''02'') = ''01'' then cast(1 as bit) else cast(0 as bit) end,
+			ProductionCls			= mi.Production_Cls,
 			ProductionClsDesc		= f.Description,
 			MaterialCls				= mi.Material_Cls,
 			MaterialClsDesc			= mc.Description,
@@ -97,7 +97,7 @@ begin
 			ExplosionClsDesc		= i.Description,
 			PersonInChargeCls		= mi.PersonInCharge_Cls,
 			PersonInChargeClsDesc	= pic.Description,
-			StockControlCls			= case when isnull(mi.StockControl_Cls, ''02'') = ''01'' then cast(1 as bit) else cast(0 as bit) end,
+			StockControlCls			= mi.StockControl_Cls,
 			StockControlClsDesc		= g.Description,
 			SupplyIssueCls			= mi.SupplyIssue_Cls,
 			SupplyIssueClsDesc		= '''',

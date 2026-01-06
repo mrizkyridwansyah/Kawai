@@ -6,7 +6,8 @@ GO
 
 
 
-create   procedure [sp_Wms_AreaPrivileges_DDLByStock]
+
+CREATE   procedure [sp_Wms_AreaPrivileges_DDLByStock]
 	@UserId varchar(25) = '',
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),

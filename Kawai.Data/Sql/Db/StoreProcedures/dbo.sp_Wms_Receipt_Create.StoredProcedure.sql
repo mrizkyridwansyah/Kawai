@@ -2,7 +2,9 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Receipt_Create]
+
+
+CREATE   procedure [sp_Wms_Receipt_Create]
 	@ReceiptNo		varchar(50),
 	@DNNumber		varchar(50),
 	@FactoryCode	varchar(25),

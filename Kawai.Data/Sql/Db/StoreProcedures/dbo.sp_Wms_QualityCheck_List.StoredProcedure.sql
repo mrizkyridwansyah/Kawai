@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_QualityCheck_List]
+CREATE   procedure [sp_Wms_QualityCheck_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,

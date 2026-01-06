@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_NG_GetDetail]
+create procedure [sp_Wms_NG_GetDetail]
 	@NGCode varchar(25)
 as
 begin

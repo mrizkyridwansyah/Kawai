@@ -3,8 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
-create or alter procedure [dbo].[sp_Wms_Warehouse_DDLByStock]
+create   procedure [sp_Wms_Warehouse_DDLByStock]
 	@FactoryCode varchar(25),
 	@Keyword		varchar(max) = '',
 	@ItemCode		varchar(25)

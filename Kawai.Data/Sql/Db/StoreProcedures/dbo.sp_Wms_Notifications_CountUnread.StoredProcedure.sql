@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Notifications_CountUnread]
+create   procedure [sp_Wms_Notifications_CountUnread]
 	@Receiver varchar(25) 
 as
 begin

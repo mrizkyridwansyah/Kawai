@@ -1,9 +1,8 @@
-/****** Object:  StoredProcedure [dbo].[sp_Wms_IQCResult_ListPaging]    Script Date: 11/28/2025 10:55:47 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create procedure [dbo].[sp_Wms_IQCResult_ListPaging]
+create procedure [sp_Wms_IQCResult_ListPaging]
 --declare
 	-- PARAMETER WAJIB
 	@Page int = 1,

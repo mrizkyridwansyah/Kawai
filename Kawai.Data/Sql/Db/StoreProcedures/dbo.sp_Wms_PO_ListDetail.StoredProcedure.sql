@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_PO_ListDetail]
+CREATE   procedure [sp_Wms_PO_ListDetail]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,

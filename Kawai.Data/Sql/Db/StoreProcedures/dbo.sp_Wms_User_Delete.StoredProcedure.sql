@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_User_Delete]
+create   procedure [sp_Wms_User_Delete]
 	@UserID varchar(25)
 as
 begin

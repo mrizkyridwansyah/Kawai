@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Login_GetUserMenu]
+create   procedure [sp_Wms_Login_GetUserMenu]
 --declare
     @UserId VARCHAR(20) = 'ridwansyah2'
 AS

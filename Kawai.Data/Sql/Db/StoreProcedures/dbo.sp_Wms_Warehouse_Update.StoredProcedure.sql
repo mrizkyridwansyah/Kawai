@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Warehouse_Update]
+CREATE   procedure [sp_Wms_Warehouse_Update]
 	@FactoryCode varchar(25),
 	@WarehouseCode varchar(25),
 	@WarehouseName varchar(200),
@@ -23,7 +23,7 @@ begin
 
 	if @UseEndDate is null
 	begin
-		set @UseEndDate = cast('9999-12-31' as date)
+		set @UseEndDate = cast('9999-12-31' as date)		
 	end
 
 	update WareHouse_Master 

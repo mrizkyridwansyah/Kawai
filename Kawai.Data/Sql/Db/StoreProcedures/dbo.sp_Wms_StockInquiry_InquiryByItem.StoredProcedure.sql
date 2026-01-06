@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_StockInquiry_InquiryByItem]
+
+create   procedure [sp_Wms_StockInquiry_InquiryByItem]
 --declare
 	-- PARAMETER WAJIB
 	@Page int = 1,

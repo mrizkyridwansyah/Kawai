@@ -3,7 +3,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER VIEW [vw_Cls]
+
+CREATE view [vw_Cls]
 as
 select rtrim('BCType_Cls') TypeData, BCType_Cls ClsCode, BCType_Cls Description from BCType_Cls			
 union all
@@ -100,6 +101,8 @@ union all
 select 'ItemProductionCls' TypeData, Code, Description from vw_ProductionCls
 union all
 select 'ItemStockControlCls' TypeData, Code, Description from vw_StockControlCls 
+union all
+select 'NGCls' TypeData, Code, Description from vw_NGCls 
 union all
 select 'ItemMakeOrBuyCls' TypeData, Code, Description from vw_MakeOrBuyCls 
 union all

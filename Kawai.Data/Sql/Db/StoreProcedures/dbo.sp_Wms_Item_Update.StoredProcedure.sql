@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Item_Update]
+CREATE   procedure [sp_Wms_Item_Update]
 	@ItemCode varchar(25),
 	@ItemName varchar(75),
 	@FinishGoodPartCls varchar(2),
@@ -16,10 +16,10 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Item_Update]
 	@LineCode varchar(15),
 	@MakerItemCode varchar(30),
 	@PartCls varchar(2),
-	@ReserveCls bit,
-	@SupplyCls bit,
-	@ProvisionCls bit,
-	@ProductionCls bit,
+	@ReserveCls varchar(2),
+	@SupplyCls varchar(2),
+	@ProvisionCls varchar(2),
+	@ProductionCls varchar(2),
 	@MaterialCls varchar(2),
 	@Thickness numeric(18,5),
 	@Width numeric(18,5),
@@ -116,9 +116,9 @@ begin
 		, Line_Code						= @LineCode
 		, Part_Cls						= @PartCls
 		, MakerItem_Code				= @MakerItemCode
-		, Reserve_Cls					= case when @ReserveCls	  = 1 then '01' else '02' end
-		, Suply_Cls						= case when @SupplyCls	  = 1 then '01' else '02' end
-		, Provision_Cls					= case when @ProvisionCls = 1 then '01' else '02' end
+		, Reserve_Cls					= @ReserveCls
+		, Suply_Cls						= @SupplyCls
+		, Provision_Cls					= @ProvisionCls
 		, Material_Cls					= @MaterialCls
 		, Thickness						= @Thickness
 		, Width							= @Width
@@ -146,9 +146,9 @@ begin
 		, Product_ReadTime				= @ProductReadTime
 		, Yield_Percentage				= @YieldPercentage
 		, Number_Entering				= @NumberEntering
-		, PackingStyle_Cls				= CASE WHEN @PackingStyleCls = 1 then '01' else '02' end
+		, PackingStyle_Cls				= @PackingStyleCls 
 		, Group_Cls						= @GroupCls
-		, Production_Cls				= CASE WHEN @ProductionCls = 1 then '01' else '02' end
+		, Production_Cls				= @ProductionCls 
 		, Standard_Stock				= @StandardStock
 		, Safety_Stock					= @SafetyStock
 		, Max_Stock						= @MaxStock
@@ -164,7 +164,7 @@ begin
 		, Accounting_Code				= @AccountingCode
 		, Explosion_Cls					= @ExplosionCls
 		, PersonInCharge_Cls			= @PersonInChargeCls
-		, StockControl_Cls				= CASE WHEN @StockControlCls = 1 then '01' else '02' end
+		, StockControl_Cls				= @StockControlCls
 		, SupplyIssue_Cls				= @SupplyIssueCls
 		, Use_EndDay					= @UseEndDay
 		, HS_Code						= @HSCode

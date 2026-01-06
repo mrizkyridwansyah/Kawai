@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_WMS_UserSetup_UserPrivilege]
+create   procedure [sp_WMS_UserSetup_UserPrivilege]
 	@UserID varchar(25)
 as 
 

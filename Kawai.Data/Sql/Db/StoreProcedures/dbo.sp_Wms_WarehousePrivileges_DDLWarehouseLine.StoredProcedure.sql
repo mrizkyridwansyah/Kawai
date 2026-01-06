@@ -4,6 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
+
 create   procedure [sp_Wms_WarehousePrivileges_DDLWarehouseLine]
 	@FactoryCode varchar(25),
 	@UserId varchar(25) = '',

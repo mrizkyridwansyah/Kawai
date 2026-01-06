@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-create   procedure [sp_Wms_Andon_ReceiptGetList]
+CREATE   procedure [sp_Wms_Andon_ReceiptGetList]
 as
 begin
 	select ph.ReceiptNo, ph.ReceiptDate, tm.Trade_Name [SupplierName], ph.DNNumber, mi.Item_Name [ItemName], ph.StatusReceipt 

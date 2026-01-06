@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Receipt_ListDetail]
+CREATE   PROCEDURE [sp_Wms_Receipt_ListDetail]
 	@ReceiptId bigint
 as
 begin

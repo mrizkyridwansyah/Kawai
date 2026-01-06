@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_NG_Capture]
+create   procedure [sp_Wms_NG_Capture]
 	@NGCode varchar(25)
 as
 select * From MS_NG where NGCode = @NGCode

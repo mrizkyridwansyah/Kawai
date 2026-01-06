@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Item_Capture]
+create   procedure [sp_Wms_Item_Capture]
 	@ItemCode varchar(25)
 as
 select * From Item_Master where Item_Code = @ItemCode

@@ -4,7 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Address_GenerateCode]
+create   procedure [sp_Wms_Address_GenerateCode]
 	@WarehouseCode varchar(25),
 	@AreaCode varchar(25)
 as

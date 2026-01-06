@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_DeliveryNote_ListDetail] 
+CREATE   procedure [sp_Wms_DeliveryNote_ListDetail] 
 	@DNNumber varchar(20)
 as
 begin

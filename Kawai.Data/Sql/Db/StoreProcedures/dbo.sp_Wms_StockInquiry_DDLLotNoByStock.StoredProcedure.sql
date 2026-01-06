@@ -4,15 +4,20 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_StockInquiry_DDLLotNoByStock]
+CREATE   procedure [sp_Wms_StockInquiry_DDLLotNoByStock]
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
 	@AddressCode	varchar(25),
-	@ItemCode		varchar(25)
+	@ItemCode		varchar(25),
+	@Category		varchar(25)
 as
 begin
 	select distinct a.LotNo From StockDetail a
+	inner join 
+	(
+		select * from Item_Master where (@Category = 'ALL' or ClasificationPart_Cls = @Category)
+	) mi on a.ItemCode = mi.Item_Code
 	where 1=1
 	and a.LotNo like '%' + @Keyword + '%'
 	and (@WarehouseCode = 'ALL' or a.WarehouseCode = @WarehouseCode)

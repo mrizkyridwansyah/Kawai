@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Item_Create]
+CREATE   procedure [sp_Wms_Item_Create]
 	@ItemCode varchar(25),
 	@ItemName varchar(75),
 	@FinishGoodPartCls varchar(2),

@@ -192,6 +192,20 @@ begin
 	and isnull(Qty, 0) > 0
 	group by RefNo, WarehouseCode, AreaCode, ItemCode, LotNo
 
+	update so 
+		set 
+			RefNo = sd.RefNo, 
+			WarehouseCode = sd.WarehouseCode, 
+			AreaCode = sd.AreaCode, 
+			AddressCode = sd.AddressCode, 
+			LastUpdate = getdate(), 
+			LastUser = @UserId
+	from StockOpname so
+	inner join 
+	(
+		select * From StockDetail where RefNo = @RefNo and isnull(Qty, 0) > 0
+	) sd on so.BarcodeNo = sd.BarcodeNo and so.LotNo = sd.LotNo and so.ItemCode = sd.ItemCode	
+
 	set @i = 1
 	while @i <= (select count(1) from @tblStockHeader)
 	begin

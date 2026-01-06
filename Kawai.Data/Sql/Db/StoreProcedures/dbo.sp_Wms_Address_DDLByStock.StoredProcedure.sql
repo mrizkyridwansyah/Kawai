@@ -4,7 +4,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Address_DDLByStock]
+
+
+create   procedure [sp_Wms_Address_DDLByStock]
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),

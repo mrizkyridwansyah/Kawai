@@ -6,7 +6,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Area_List] 
+create   procedure [sp_Wms_Area_List] 
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,

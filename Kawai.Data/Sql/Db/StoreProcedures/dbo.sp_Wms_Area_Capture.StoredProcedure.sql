@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Area_Capture]
+CREATE   procedure [sp_Wms_Area_Capture]
 	@AreaCode varchar(25)
 as
 begin

@@ -4,11 +4,13 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Item_DDLByStock]
+
+CREATE   procedure [sp_Wms_Item_DDLByStock]
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
-	@AddressCode	varchar(25)
+	@AddressCode	varchar(25),
+	@Category		varchar(25)
 as
 begin
 	select distinct a.ItemCode, b.Item_Name ItemName, RTRIM(Item_Code) + ' | ' + Item_Name DDLDescription 
@@ -19,6 +21,7 @@ begin
 	and (@WarehouseCode = 'ALL' or WarehouseCode = @WarehouseCode)
 	and (@AreaCode = 'ALL' or AreaCode = @AreaCode)
 	and (@AddressCode = 'ALL' or AddressCode = @AddressCode)
+	and (@Category = 'ALL' or ClasificationPart_Cls = @Category)
 	and Qty > 0
 end
 GO

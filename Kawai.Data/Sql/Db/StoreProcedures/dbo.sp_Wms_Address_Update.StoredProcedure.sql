@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [sp_Wms_Address_Update]
+create   procedure [sp_Wms_Address_Update]
 	@WarehouseCode varchar(25),
 	@AreaCode varchar(25),
 	@AddressCode varchar(25),

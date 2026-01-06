@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER VIEW [vw_FinishGoodCls]
+create   view [vw_FinishGoodCls]
 as
 select '01' Code, 'Finish Goods' Description
 union all

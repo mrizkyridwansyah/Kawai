@@ -5,7 +5,7 @@ GO
 
 
 
-CREATE OR ALTER PROCEDURE [sp_Wms_User_Create]
+create   procedure [sp_Wms_User_Create]
     @UserID Varchar(25),
     @FullName varchar(200),
     @Password Nvarchar(200),

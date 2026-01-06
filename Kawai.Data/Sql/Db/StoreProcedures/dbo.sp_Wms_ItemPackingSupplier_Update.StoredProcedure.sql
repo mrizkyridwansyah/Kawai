@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_ItemPackingSupplier_Update]
+CREATE   PROCEDURE [sp_Wms_ItemPackingSupplier_Update]
 	@SupplierCode varchar(15),
 	@PrevItemCode varchar(25),
 	@ItemCode varchar(25),

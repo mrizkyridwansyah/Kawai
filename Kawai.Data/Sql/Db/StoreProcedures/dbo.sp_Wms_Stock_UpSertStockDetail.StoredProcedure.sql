@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [sp_Wms_Stock_UpSertStockDetail]
+
+CREATE   procedure [sp_Wms_Stock_UpSertStockDetail]
 	@RefNo			varchar(50),
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
@@ -34,5 +35,15 @@ begin
 		insert into StockDetail (RefNo, WarehouseCode, AreaCode, AddressCode, BarcodeNo, ItemCode, LotNo, SublotNo, Qty, InventoryQty, StatusReceipt, RegisterDate, RegisterUser)
 		values (@RefNo, @WarehouseCode, @AreaCode, @AddressCode, @BarcodeNo, @ItemCode, @LotNo, @SublotNo, @QtyAfter, @InventoryQty, @StatusReceipt, getdate(), @UserId)
 	end
+
+	update StockOpname 
+		set 
+			RefNo = @RefNo, 
+			WarehouseCode = @WarehouseCode, 
+			AreaCode = @AreaCode, 
+			AddressCode = AddressCode, 
+			LastUpdate = getdate(), 
+			LastUser = @UserId
+	where BarcodeNo = @BarcodeNo and LotNo = @LotNo and ItemCode = @ItemCode
 end
 GO

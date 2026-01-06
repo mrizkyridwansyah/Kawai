@@ -4,6 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
+
 create   procedure [sp_Wms_AreaPrivileges_DDL]
 	@UserId varchar(25) = '',
 	@Keyword varchar(max) = '',
