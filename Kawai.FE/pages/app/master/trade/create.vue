@@ -51,8 +51,8 @@
                     </td>
 
                     <td></td>
-                    <td></td>
-                    <td>
+
+                    <td colspan="2" style="text-align: right">
                       <label>SAP Code</label>
                     </td>
                     <td colspan="3">

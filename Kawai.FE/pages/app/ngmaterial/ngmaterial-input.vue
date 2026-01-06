@@ -8,7 +8,6 @@
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
           <filter-trade
-            class="form-control"
             placeholder="Supplier"
             v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
