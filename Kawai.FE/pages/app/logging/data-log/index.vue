@@ -34,17 +34,17 @@
             <td>{{ item.ReferenceId }}</td>
             <td>
               <span
-                v-if="item.Activity == 'Create'"
+                v-if="item.Action == 'Create'"
                 class="fw-bold text-success"
                 >{{ item.Activity }}</span
               >
               <span
-                v-else-if="item.Activity == 'Update'"
+                v-else-if="item.Action == 'Update'"
                 class="fw-bold text-primary"
                 >{{ item.Activity }}</span
               >
               <span
-                v-else-if="item.Activity == 'Delete'"
+                v-else-if="item.Action == 'Delete'"
                 class="fw-bold text-danger"
                 >{{ item.Activity }}</span
               >

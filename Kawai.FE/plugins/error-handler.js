@@ -27,7 +27,6 @@ export default defineNuxtPlugin(nuxtApp => {
       //   ResponseBody: error.request.responseText
       // }
       // nuxtApp.$http.post(`/logging/network-error/create`, payload)
-      // console.log('hoho', nuxtApp)
       return Promise.reject(error);
     }
   );

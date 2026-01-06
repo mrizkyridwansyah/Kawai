@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="fuking-class-code">
+  <table>
+    <tr>
+      <td :style="this.styleCode">
         <input-multiselect
           v-model="tempValue"
           :options="list"
@@ -23,7 +23,9 @@
           :select="change"
           :class="cClass || 'input-wrapper'"
           :multiple="multiple !== undefined || false"
-          :disabled="disabled !== undefined || false"
+          :disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
           select-label=""
           deselect-label=""
         />
@@ -33,17 +35,17 @@
         <small class="form-text text-muted" v-if="description">{{
           description
         }}</small>
-      </div>
-      <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
+      </td>
+      <td :style="this.styleDesc" style="padding-left: 5px">
         <input
           type="text"
           disabled
           :value="selectedItem?.LineName || ''"
           class="w-100 form-control"
         />
-      </div>
-    </div>
-  </div>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -67,6 +69,8 @@ export default {
     "class",
     "company",
     "manufacture",
+    "styleCode",
+    "styleDesc",
   ],
   data: () => ({
     isLoading: false,

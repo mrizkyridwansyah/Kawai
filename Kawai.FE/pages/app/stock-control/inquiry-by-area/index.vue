@@ -313,7 +313,6 @@ export default {
       this.detail.address = row.children[0].AddressCode;
       this.detail.item = row.children[0].ItemCode;
       this.detail.lotno = row.children[0].LotNo;
-      console.log(this.detail);
       this.$bvModal.show("modal-detail");
     },
   },

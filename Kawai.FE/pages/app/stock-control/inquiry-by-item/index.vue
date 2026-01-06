@@ -177,10 +177,8 @@ export default {
       this.treeData = [];
     },
     "ds.data.Items": function () {
-      console.log(this.ds.data.Items);
       this.rawData = this.ds.data.Items;
       this.treeData = this.buildTree(this.rawData);
-      console.log(this.treeData);
     },
   },
   methods: {

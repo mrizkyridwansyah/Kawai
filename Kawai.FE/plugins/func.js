@@ -34,7 +34,6 @@ export default defineNuxtPlugin(nuxtApp => {
 
       // Cek apakah bentuk eksponensial (ada huruf 'e' atau 'E')
       if (str.includes("e") || str.includes("E")) {
-        console.log(str);
         return Number(val).toFixed(9); // konversi ke desimal string
       }
 
@@ -144,7 +143,6 @@ export default defineNuxtPlugin(nuxtApp => {
       return parseInt((t2-t1)/(24*3600*1000*7));
     },
     dateDiffInMonths: function(d1, d2) {
-      console.log(d1, d2)
       if(!(d1 instanceof Date))
         return null;
       
