@@ -6,3 +6,6 @@ Kawai.Data/bin/
 Kawai.Data/obj/
 Kawai.Domain/bin/
 Kawai.Domain/obj/
+Kawai.Andon.FE/package.json
+Kawai.Api/appsettings.json
+Kawai.FE/package.json

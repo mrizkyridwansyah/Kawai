@@ -222,6 +222,14 @@ public static class ExcelHelper
             .WithSize(size, size);
     }
 
+    public static string FormatPeriod(string yyyymm)
+    {
+        var year = int.Parse(yyyymm.Substring(0, 4));
+        var month = int.Parse(yyyymm.Substring(4, 2));
+
+        return new DateTime(year, month, 1).ToString("MMM-yy");
+    }
+
     #region METOD BACA EXCEL UNTUK IMPORT
     public static List<T> ReadAndValidate<T>(IFormFile file)
             where T : ImportBase, new()
