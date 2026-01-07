@@ -18,12 +18,12 @@ SELECT			Stock_Year,Stock_Month,
 				--LastUpdate = TBL.LastUpdate,
 				LastUser = ISNULL(US.FullName,'')
         FROM    ( 
-				 /* /*Belum ada StockHistory*/
-				 SELECT     Stock_Year ,
-                            Stock_Month ,
-                            AreaCode,
-                            WarehouseCode ,
-                            ItemCode,
+			
+				 SELECT     Stock_Year  = CAST(ISNULL(LEFT(Period,4),'0') AS INT),
+                            Stock_Month  = CAST(ISNULL(RIGHT(Period,2),'0') AS INT),
+                            AreaCode = AreaCode,
+                            Warehouse_Code = WarehouseCode ,
+                            ItemCode = ItemCode,
                             Lot_No = LotNo ,
                             PreMonth ,
                             Receipt ,
@@ -34,12 +34,12 @@ SELECT			Stock_Year,Stock_Month,
 							Differences = CASE WHEN  ISNULL(CAST(Inventory AS VARCHAR(100)),'') = '' THEN NULL 
 											   WHEN  ISNULL(CAST(Inventory AS VARCHAR(100)),'') <> '' THEN ISNULL(Inventory, [Current]) - [Current] END,
                             Reason,
-							LastUpdate = COALESCE(LastUpdate,RegisterDate,NULL),
-							LastUser = ISNULL(LastUser,''),
+							LastUpdate = COALESCE(RegisterUpdate,NULL),
+							LastUser = ISNULL(RegisterUser,''),
 							Conditon = 'SH'
-                  FROM      dbo.StockHistory WITH (NOLOCK)
+                  FROM      dbo.StockHeaderHistory WITH (NOLOCK)
                   UNION ALL
-				  */
+				  
                   SELECT    Stock_Year = YEAR(IC.Period) ,
                             Stock_Month = MONTH(IC.Period) ,
 							AreaCode = SM.AreaCode,
@@ -155,4 +155,8 @@ SELECT			Stock_Year,Stock_Month,
 				(ISNULL(TBL.Reason,'')),
 				--TBL.LastUpdate,
 				ISNULL(US.FullName,'')
-GO	
+
+GO
+
+
+

@@ -60,18 +60,18 @@
           >
             <thead>
               <tr>
-                <th>Warehouse</th>
-                <th>Product Code</th>
-                <th>Product Name</th>
-                <th>Lot No</th>
-                <th class="text-end">Pre Month</th>
-                <th class="text-end">Receipt</th>
-                <th class="text-end">Supply</th>
-                <th class="text-end">Loss / Reject</th>
-                <th class="text-end">Current</th>
-                <th class="text-end">Inventory</th>
-                <th>Remarks</th>
-                <th>User</th>
+                <th class="text-center">Warehouse</th>
+                <th class="text-center">Product Code</th>
+                <th class="text-center">Product Name</th>
+                <th class="text-center">Lot No</th>
+                <th class="text-center">Pre Month</th>
+                <th class="text-center">Receipt</th>
+                <th class="text-center">Supply</th>
+                <th class="text-center">Loss / Reject</th>
+                <th class="text-center">Current</th>
+                <th class="text-center">Inventory</th>
+                <th class="text-center">Remarks</th>
+                <th class="text-center">User</th>
               </tr>
             </thead>
 
@@ -197,8 +197,16 @@ export default {
       this.search();
     },
 
-    exportExcel(filters) {
-      return this.ds.exportExcel(filters);
+    exportExcel() {
+      const filters = [
+          {
+            WarehouseCode: this.filter.warehouse || "",
+            AreaCode: this.filter.area || "",
+            Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
+            Keyword: this.filter.keyword || "",
+          },
+        ];
+        return this.ds.exportExcel(filters);
     },
   },
 };
