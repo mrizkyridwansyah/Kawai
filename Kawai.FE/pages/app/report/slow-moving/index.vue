@@ -1,51 +1,60 @@
 <template>
     <v-frame title="Slow Moving Report (Red Stock, Yellow Stock)" icon="table">
         <template #frame-content>
-
-            <!-- FILTER -->
-            <div class="row">
-                <label
-                class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-                >Factory</label
-                >
-                <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          
+          <!-- FILTER -->
+          <table>
+            <tr>
+              <td style="padding-top: 5px">
+                <label class="form-label">Factory</label>
+              </td>
+              <td style="padding-top: 5px; padding-left: 15px;" colspan="3">
                 <filter-factory-privileges
-                class="form-control"
-                    v-model="filter.factoryCode"
-                    :disabled="null"
+                  class="form-control"
+                      v-model="filter.factoryCode"
+                      :disabled="null"
+                      style-code="width: 170px"
+                      style-desc="width: 250px"
+                  />
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top: 5px">
+                <label class="form-label">WareHouse</label>
+              </td>
+              <td style="padding-top: 5px; padding-left: 15px;" colspan="3">
+                <filter-warehouse-privileges
+                    class="form-control"
+                    v-model="filter.warehouseCode"
+                    factory-code="ALL"
+                    style-code="width: 170px"
+                    style-desc="width: 250px"
                 />
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top: 5px">
+                <label class="form-label">Period</label>
+              </td>
+              <td style="padding-top: 5px; padding-left: 15px; width: 200px">
+                <input-month
+                    v-model="filter.period"
+                    class="mr-1"
+                    placeholder="Period"
+                    style="width: 215px"
+                />
+              </td>
+              
+              <td colspan="4" style="padding-top: 5px">
+                <div style="margin-left: -40px">
+                  <v-button-search-reset :search="search" :reset="reset" />
                 </div>
-            </div>
-
-            <div class="row mt-1">
-                <label class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1">
-                    Warehouse
-                </label>
-                <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-                    <filter-warehouse-privileges
-                        class="form-control"
-                        v-model="filter.warehouseCode"
-                        factory-code="ALL"
-                    />
-                </div>
-            </div>
-
-            <div class="row mt-1">
-                <label class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1">
-                    Period
-                </label>
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-6">
-                    <input-month
-                        v-model="filter.period"
-                        class="mr-1"
-                        placeholder="Period"
-                    />
-                </div>
-
-                <div class="col-xl-5 col-lg-5 col-md-4 col-sm-4 col-xs-5">
-                    <v-button-search-reset :search="search" :reset="reset" />
-                </div>
-            </div>
+              </td>
+            </tr>
+            <tr>
+            </tr>
+          </table>
+          
             
             <!-- TABLE -->
             <v-table
