@@ -6,41 +6,43 @@ using Kawai.Domain.Shared;
 
 namespace Kawai.Data.Repositories;
 
-public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepository
+public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepository
 {
 
     private readonly DbExecutor _dbExecutor;
 
-    public PartMaterialRequestWominRepository(DbExecutor dbExecutor)
+    public PartMaterialRequestBomRepository(DbExecutor dbExecutor)
     {
         _dbExecutor = dbExecutor;
     }
 
-    public async Task<List<PartMaterialRequestWominDto>> GetListHeader(RequestParameter param)
+    public async Task<List<PartMaterialRequestBomDto>> GetListHeader(RequestParameter param)
     {
         var paramPeriodFrom = param.GetParam("PeriodFrom");
         var paramPeriodUntil = param.GetParam("PeriodUntil");
         var paramFactory = param.GetParam("FactoryCode");
-        var paramProcess = param.GetParam("ManufactureCode");
-        var paramLine = param.GetParam("LineCode");
+        var paramSupplier = param.GetParam("SupplierCode");
+        var paramPONumber = param.GetParam("PONumber");
+        var paramWarehouse = param.GetParam("WarehouseCode");
         var paramRemainingFuckingCls = param.GetParam("RemainingCls");
 
-        string sp = "sp_Wms_PartMaterialRequestWomin_GetListHeader";
-        return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDto>(sp, new
+        string sp = "sp_Wms_PartMaterialRequestBom_GetListHeader";
+        return (await _dbExecutor.QueryListAsync<PartMaterialRequestBomDto>(sp, new
         {
             PeriodFrom = paramPeriodFrom,
             PeriodUntil = paramPeriodUntil,
             FactoryCode = paramFactory,
-            ProcessCode = paramProcess,
-            LineCode = paramLine,
+            SupplierCode = paramSupplier,
+            PONumber = paramPONumber,
+            WarehouseCode = paramWarehouse,
             RemainingCls = paramRemainingFuckingCls == "ALL" ? (bool?)null : paramRemainingFuckingCls == "YES"
         })).ToList();
     }
 
-    public async Task<List<PartMaterialRequestWominDetilDto>> GetListDetail(List<PartMaterialRequestWominModel> models)
+    public async Task<List<PartMaterialRequestBomDetilDto>> GetListDetail(List<PartMaterialRequestBomModel> models)
     {
-        string sp = "sp_Wms_PartMaterialRequestWomin_GetListDetail";
-        return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+        string sp = "sp_Wms_PartMaterialRequestBom_GetListDetail";
+        return (await _dbExecutor.QueryListAsync<PartMaterialRequestBomDetilDto>(sp, new
         {
             models[0].LineCode,
             NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"])
@@ -52,9 +54,9 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, param.ToQueryObject())).ToList();
     }
 
-    public async Task Save(List<PartMaterialRequestWominModel> models, string userId)
+    public async Task Save(List<PartMaterialRequestBomModel> models, string userId)
     {
-        string sp = "sp_Wms_PartMaterialRequestWomin_Save";
+        string sp = "sp_Wms_PartMaterialRequestBom_Save";
         await _dbExecutor.ExecuteAsync(sp, new
         {
             models[0].LineCode,
@@ -65,7 +67,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
 
     public async Task Remove(long requestId, string userId)
     {
-        string sp = "sp_Wms_PartMaterialRequestWomin_Delete";
+        string sp = "sp_Wms_PartMaterialRequestBom_Delete";
         await _dbExecutor.ExecuteAsync(sp, new
         {
             RequestId = requestId,
@@ -76,7 +78,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
     public async Task<Dictionary<string, object>> Capture(long productionId)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
-            "sp_Wms_PartMaterialRequestWomin_Capture",
+            "sp_Wms_PartMaterialRequestBom_Capture",
             param: new { ProductionId = productionId },
             async multi =>
             {
@@ -96,14 +98,14 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
 
         return new Dictionary<string, object>
         {
-            { "Part Material Request Womin", result },
+            { "Part Material Request Bom", result },
         };
     }
 
     public async Task<Dictionary<string, object>> CaptureRequest(long requestId)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
-            "sp_Wms_PartMaterialRequestWomin_CaptureRequest",
+            "sp_Wms_PartMaterialRequestBom_CaptureRequest",
             param: new { RequestId = requestId },
             async multi =>
             {
@@ -117,9 +119,9 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
 
         return new Dictionary<string, object>
         {
-            { "Part Material Request Womin Header", result.header },
-            { "Part Material Request Womin Details", result.details },
-            { "Part Material Request Womin Detail Items", result.detailItems },
+            { "Part Material Request Bom Header", result.header },
+            { "Part Material Request Bom Details", result.details },
+            { "Part Material Request Bom Detail Items", result.detailItems },
         };
     }
 }

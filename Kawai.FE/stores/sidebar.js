@@ -27,7 +27,7 @@ export const useSidebar = defineStore('sidebar', {
             return this.activeSubMenus.has(subMenu)
         },
     },
-    persist: true // ⬅️ Optional: tambahkan agar tetap tersimpan di localStorage
+    // persist: true // ⬅️ Optional: tambahkan agar tetap tersimpan di localStorage
 })
 
 

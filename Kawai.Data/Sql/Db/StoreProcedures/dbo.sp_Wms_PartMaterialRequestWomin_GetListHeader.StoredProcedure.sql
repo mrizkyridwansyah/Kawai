@@ -16,7 +16,7 @@ begin
 		select 
 			dp.ProductionId, dp.Schedule_Date ScheduleDate, dp.Item_code ItemCode, mi.Item_Name ItemName, mi.Unit_Cls UnitCls, mu.Description UnitClsDesc, 
 			dp.Qty PlanQty, pmrh.RequestID, pmrh.RequestNo, pmrh.RequestDate, pmrh.RequestSetQty, pmrh.RegisterUser, pmrh.RegisterDate, 
-			RemainingQty = dp.Qty - isnull(pmrh.RequestSetQty , 0)
+			RemainingQty = dp.Qty - isnull((select sum(RequestSetQty) from PartMaterialRequestHeader x where x.ProductionId = dp.ProductionId) , 0)
 		From 
 		(
 			select 

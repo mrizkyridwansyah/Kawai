@@ -1,8 +1,10 @@
-﻿using Kawai.Data.SqlConnections;
+﻿using Kawai.Api.Models;
+using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
+using System.Data;
 
 namespace Kawai.Data.Repositories;
 
@@ -61,6 +63,17 @@ public class WarehouseRepository : IWarehouseRepository
     public async Task<List<WarehouseDto>> GetDDLPrivileges(string keyword, string factoryCode, string userId)
     {
         string sp = "sp_Wms_WarehousePrivileges_DDL";
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
+            UserId = userId
+        })).ToList();
+    }
+
+    public async Task<List<WarehouseDto>> GetDDLSubconPrivileges(string keyword, string factoryCode, string userId)
+    {
+        string sp = "sp_Wms_WarehouseSubConPrivileges_DDL";
         return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
         {
             Keyword = keyword ?? "",
@@ -145,5 +158,20 @@ public class WarehouseRepository : IWarehouseRepository
     {
         string sp = "sp_WMS_UserSetup_UserPrivilegeWarehouse";
         return (await _dbExecutor.QueryListAsync<WarehousePrivilegesDto>(sp, new { UserID = userId })).ToList();
+    }
+    public async Task<List<WarehouseImport>> ValidateImport(DataTable datas)
+    {
+        string sql = @"sp_Wms_Warehouse_ValidateImport";
+        return (await _dbExecutor.QueryListAsync<WarehouseImport>(sql, new { DataImport = datas })).ToList();
+    }
+
+    public async Task Import(DataTable datas, string userId)
+    {
+        string sql = @"sp_Wms_Warehouse_Import";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            UserDataImport = datas,
+            UserID = userId,
+        });
     }
 }

@@ -271,7 +271,7 @@ export default {
       );
 
       if (rangePeriodDays > 30) {
-        toastWarning("Range Period only 30 days for performance purposes.");
+        toastWarning("Range Period only 30 days.");
         return;
       }
 

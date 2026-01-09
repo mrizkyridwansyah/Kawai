@@ -46,7 +46,7 @@ export const useProfile = defineStore('Profile', {
             );
         },
     },
-    persist: true
+    // persist: true
 });
 
 if (import.meta.hot) {

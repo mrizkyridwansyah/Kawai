@@ -1,6 +1,9 @@
 ﻿using ClosedXML.Excel;
 using Kawai.Api.Hub;
+using Kawai.Api.Models;
 using Kawai.Api.Services;
+using Kawai.Data.Repositories;
+using Kawai.Data;
 using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -8,6 +11,7 @@ using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Kawai.Api.Controllers;
 
@@ -16,12 +20,14 @@ namespace Kawai.Api.Controllers;
 [ApiController]
 public class WarehouseController : HahaController
 {
+    private readonly IImportRepository _importRepository;
     private readonly IWarehouseRepository _warehouseRepository;
     private readonly DataLogger _logger;
 
-    public WarehouseController(IWarehouseRepository warehouseRepository, DataLogger logger)
+    public WarehouseController(IWarehouseRepository warehouseRepository, IImportRepository importRepository, DataLogger logger)
     {
         _warehouseRepository = warehouseRepository;
+        _importRepository = importRepository;
         _logger = logger;
     }
 
@@ -75,6 +81,19 @@ public class WarehouseController : HahaController
     public async Task<IActionResult> DDLPrivilegesSearch(string keyword, string factoryCode, string ids)
     {
         var results = await _warehouseRepository.GetDDLPrivileges(keyword, factoryCode, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
+    [HttpGet("ddlsearch-subcon-privileges")]
+    public async Task<IActionResult> DDLSubconPrivilegesSearch(string keyword, string factoryCode, string ids)
+    {
+        var results = await _warehouseRepository.GetDDLSubconPrivileges(keyword, factoryCode, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -270,5 +289,87 @@ public class WarehouseController : HahaController
         var base64File = Convert.ToBase64String(fileBytes);
 
         return Success(base64File);
+    }
+
+    [HttpPost("import")]
+    public async Task<IActionResult> Import(ImportModel payload)
+    {
+        Stopwatch Timer = new();
+
+        Timer.Start();
+
+        // ambil data dari file & convert jadi List class import
+        var list = ExcelHelper.ReadAndValidate<WarehouseImport>(payload.File);
+        // kalo ada error dari hasil convert ke class
+        var invalidRows = list.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
+        if (invalidRows.Any())
+        {
+            Timer.Stop();
+            SaveImportHistory(payload, Timer, list, "FAILED");
+            return Invalid("DATA IMPORT TIDAK VALID", list);
+        }
+
+        // ubah jadi datatable disini, biar ga berkali-kali.
+        var dtTable = DataTableHelper.ToDataTable(list);
+
+        // get data setelah validasi
+        var resultAfter = await _warehouseRepository.ValidateImport(dtTable);
+        // kalo ada error setelah validasi
+        invalidRows = resultAfter.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
+        if (invalidRows.Any())
+        {
+            Timer.Stop();
+            SaveImportHistory(payload, Timer, resultAfter, "FAILED");
+            return Invalid("DATA IMPORT TIDAK VALID", resultAfter);
+        }
+
+        // kalo aksi nya execute maka langsung ke table. kalo cuma testing jangan.
+        if (payload.Action == "EXECUTE")
+        {
+            await _warehouseRepository.Import(dtTable, Auth.User.UserID);
+
+            var after = await _warehouseRepository.Capture(Auth.User.UserID);
+
+            await _logger.SaveDataLog(new DataLogDto
+            {
+                DocumentType = "Master User",
+                EntityId = Auth.User.UserID,
+                ReferenceId = Auth.User.UserID,
+                Action = DataLogAction.Import,
+                Activity = "Import User",
+                Before = null,
+                After = after
+            });
+
+            Timer.Stop();
+            SaveImportHistory(payload, Timer, resultAfter, "SUCCESS");
+            return Success(after);
+        }
+
+        Timer.Stop();
+
+        return Success(list);
+    }
+
+    private void SaveImportHistory(ImportModel payload, Stopwatch timer, List<WarehouseImport> result, string status)
+    {
+        var history = new ImportHistory
+        {
+            Id = Guid.NewGuid().UniqueId(),
+            Template = "WarehouseImport",
+            UserId = Auth.User.UserID,
+            FileName = payload.File.FileName,
+            ContentType = payload.File.ContentType,
+            SizeFile = payload.File.Length,
+            RowsCount = result.Count,
+            ValidRowsCount = result.Where(p => String.IsNullOrEmpty(p.Errors)).Count(),
+            InvalidRowsCount = result.Where(p => !String.IsNullOrEmpty(p.Errors)).Count(),
+            Key = Guid.NewGuid().UniqueId(100),
+            Status = status,
+            ProcessDuration = timer.ElapsedMilliseconds
+        };
+
+        _importRepository.SaveHistory(history);
+        FileStorage.SaveToImports(history.Id, payload.File);
     }
 }

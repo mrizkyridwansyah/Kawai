@@ -8,11 +8,13 @@
         :data-items="ds.data.Items || []"
         :frozen-column-left="4"
         :ds="ds"
+        ref="vtable"
       >
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="vtable"
           >
             <thead>
               <tr>

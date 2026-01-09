@@ -75,7 +75,7 @@
             <label class="form-label">WH Subcon</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-warehouse-privileges
+            <filter-warehouse-subcon-privileges
               class="form-control"
               placeholder=" "
               :factory-code="filter.FactoryCode"
