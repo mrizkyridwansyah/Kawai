@@ -84,7 +84,8 @@ N'SELECT
     [Current]   = (ISNULL(TBL.[Current], 0)),
     [Inventory] = (ISNULL(TBL.[Inventory], 0)),
     [Remarks]   = ISNULL(TBL.Remarks, ''''),
-    LastUser    = ISNULL(TBL.LastUser, '''')
+    LastUser    = ISNULL(TBL.LastUser, ''''),
+	[TotalRows] = '''+CAST(@TotalRow AS VARCHAR)+'''
 FROM dbo.vw_StockHeader TBL
 WHERE TBL.Stock_Year  = YEAR(@Period) AND TBL.Stock_Month = MONTH(@Period)
     AND 1 = CASE
