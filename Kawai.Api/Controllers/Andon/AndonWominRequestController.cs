@@ -7,17 +7,18 @@ namespace Kawai.Api.Controllers.Andon;
 [ApiController]
 public class AndonWominRequestController : HahaController
 {
-    private readonly IReceiptRepository _receiptRepository;
+    private readonly IAndonWominRequestRepository _andonWominRequest;
 
-    public AndonWominRequestController(IReceiptRepository receiptRepository)
+    public AndonWominRequestController(IAndonWominRequestRepository repo)
     {
-        _receiptRepository = receiptRepository;
+        _andonWominRequest = repo;
     }
 
-    [HttpPost("list")]
-    public async Task<IActionResult> List()
+
+    [HttpGet("list")]
+    public async Task<IActionResult> List(string Area)
     {
-        var results = await _receiptRepository.GetListNSummary();
+        var results = await _andonWominRequest.GetListNSummary(Area);
         return Success(results);
     }
 }

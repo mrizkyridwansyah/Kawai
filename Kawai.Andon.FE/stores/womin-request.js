@@ -17,14 +17,15 @@ export const useWominRequest = defineStore('WominRequest', {
     },
   }),
   actions: {
-    load: function () {
+    load: function (filterParams = null) {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.get(`/andon/womin-request/list`)
-          .then(v => {
-            this.data = v?.Data;
-            resolve(v);
+        app.$http.get(`/andon/womin-request/list?area=${filterParams || ""}`)
+          .then(({ data }) => {
+            this.data = data.Data;
+            //console.log(data);  
+            resolve(data);
           })
           .catch(err => {
             if (err.code == 'ERR_NETWORK')
@@ -38,27 +39,33 @@ export const useWominRequest = defineStore('WominRequest', {
           .finally(_ => this.isLoading = false);
       })
     },
-    loadSummary: function () {
-      this.isLoading = true;
-      this.isNetworkError = this.isServerError = false;
-      return new Promise((resolve, reject) => {
-        app.$http.get(`/andon/womin-request/summary`)
-          .then(v => {
-            this.data = v?.Data;
-            resolve(v);
-          })
-          .catch(err => {
-            if (err.code == 'ERR_NETWORK')
-              this.isNetworkError = true;
+    // loadSummary: function () {
+    //   this.isLoading = true;
+    //   this.isNetworkError = this.isServerError = false;
+    //   return new Promise((resolve, reject) => {
+    //     app.$http.get(`/andon/womin-request/summary`)
+    //       .then(v => {
+    //         this.data = v?.Data;
+    //         resolve(v);
+    //       })
+    //       .catch(err => {
+    //         if (err.code == 'ERR_NETWORK')
+    //           this.isNetworkError = true;
 
-            if (err.code == 'ERR_BAD_RESPONSE')
-              this.isServerError = true;
+    //         if (err.code == 'ERR_BAD_RESPONSE')
+    //           this.isServerError = true;
 
-            reject(err);
-          })
-          .finally(_ => this.isLoading = false);
-      })
+    //         reject(err);
+    //       })
+    //       .finally(_ => this.isLoading = false);
+    //   })
+    // },
+    setFilter: function (v) {
+      this.filter.Filters = v;
     },
+    // setSort: function (v) {
+    //   this.filter.Sorts = v;
+    // },
   },
 });
 
