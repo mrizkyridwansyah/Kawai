@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <table class="x-table" v-if="!ds.isLoading && ds.data.Items.length > 0">
+  <div class="mr-4">
+    <table class="x-table w-100" v-if="!ds.isLoading && ds.data.Items.length > 0">
       <thead>
         <tr>
           <th>#</th>
@@ -21,7 +21,7 @@
           <td>
             {{ item.FileName }}
             <small
-              ><strong>({{ $func.bytesToSize(item.Length) }})</strong></small
+              ><strong>({{ $func.bytesToSize(item.SizeFile) }})</strong></small
             >
             <div>
               <small>{{ item.Description }}</small>
@@ -78,10 +78,11 @@
       class="my-4"
       v-if="!ds.isLoading && ds.data.Items.length == 0"
     />
-    <v-table-pagination
+    <v-table-pagination-small
       v-if="!ds.isLoading && ds.data.Items.length > 0"
       class="mt-3"
       size="xs"
+      style="font-size: 1px;"
       :table="ds.data"
       :page-change="ds.setPage"
       :length-change="ds.setLength"
@@ -105,12 +106,17 @@ export default {
     },
   },
   mounted: function () {
+    this.ds.setFilter([
+      {
+        TemplateName: this.template,
+      },
+    ]);
     this.ds.setTemplate(this.template);
     this.ds.load();
   },
   methods: {
     downloadFile: function (id) {
-      this.$http.open(`/import/download-key?id=${id}`);
+      this.$http.open(`/api/import/download-key?id=${id}`);
     },
   },
 };
