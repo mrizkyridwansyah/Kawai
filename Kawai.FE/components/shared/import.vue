@@ -25,17 +25,37 @@
           <table class="tb-form">
             <tbody>
               <tr>
-                <td class="form-label text-left" style="vertical-align: middle;">Action</td>
-                <td class="form-colon" style="vertical-align: middle;">:</td>
+                <td class="form-label text-left" style="vertical-align: middle">
+                  Action
+                </td>
+                <td class="form-colon" style="vertical-align: middle">:</td>
                 <td>
-                  <input-file @input="change" :errors="errors.File" />
+                  <input-radio
+                    :options="[
+                      { value: 'TEST', text: 'Testing' },
+                      { value: 'EXECUTE', text: 'Execute' },
+                    ]"
+                    textField="text"
+                    valueField="value"
+                    v-model="model.Action"
+                    :errors="errors?.Action"
+                  />
                 </td>
               </tr>
               <tr>
-                <td class="form-label text-left" style="vertical-align: middle;">File</td>
-                <td class="form-colon" style="vertical-align: middle;">:</td>
+                <td class="form-label text-left" style="vertical-align: middle">
+                  File
+                </td>
+                <td class="form-colon" style="vertical-align: middle">:</td>
                 <td>
-                  <input-file @input="change" :errors="errors.File" />
+                  <input
+                    type="file"
+                    class="form-control"
+                    style="width: 250px"
+                    ref="fileInput"
+                    @change="change"
+                    :errors="errors.File"
+                  />
                 </td>
               </tr>
               <tr>
@@ -59,7 +79,7 @@
         <div class="mt-4">
           <v-submit-button-group
             :submit="submit"
-            :disabled="isLoading || isLoadingUpload"
+            :disabled="isLoadingUpload"
             label="Import"
           />
         </div>
@@ -71,76 +91,67 @@
     </div>
 
     <div style="max-width: 100%; overflow: auto">
-      <div class="mt-5 mb-5" v-if="importResult?.Data?.DataList">
+      <div class="mt-5 mb-5" v-if="this.importResult && JSON.stringify(this.importResult) != '{}'">
         <h5>Import Data Previews</h5>
-        <div>
+        <div class="mt-1">
           Upload Status:
           <span class="badge text-bg-success" v-if="!this.isInvalid">
             SUCCESS
           </span>
           <span class="badge text-bg-danger" v-else> FAILED </span>
         </div>
-        <div>
+        <div class="mt-1">
           Message:
           <span
             class="text-danger"
-            v-if="importResult.Status.toUpperCase() != 'SUCCESS'"
+            v-if="importResult?.Status?.toUpperCase() != 'SUCCESS'"
           >
-            {{ importResult.Message }}
+            <b>{{ importResult?.Message }}</b>
           </span>
-          <span v-else>{{ importResult.Message }}</span>
+          <span v-else>{{ importResult?.Message }}</span>
         </div>
-        <div>
+        <div class="mt-1">
           Total Rows:
           <span class="fw-bold text-primary">
-            {{ importResult.Data.Rows }}
+            {{ importResult?.Data?.length }}
           </span>
           | Valid:
           <span class="fw-bold text-success">
-            {{ importResult.Data.ValidRows }}
+            {{ importResult?.Data?.filter((x) => x.Errors.length == 0).length }}
           </span>
           | Invalid:
           <span class="fw-bold text-danger">
-            {{ importResult.Data.InvalidRows }}
+            {{ importResult?.Data?.filter((x) => x.Errors.length > 0).length }}
           </span>
         </div>
-        <table class="x-table mt-3">
+        <table class="x-table mt-3 w-100">
           <thead>
             <tr>
               <th>#</th>
-              <th v-for="(item, index) in dataList" :key="index">
-                {{ item.Name }}
+              <th
+                class="text-center"
+                v-for="(header, index) in headers.filter(
+                  (x) => x != 'RowNumber'
+                ) || []"
+                :key="index"
+              >
+                {{ header }}
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(item, index) in importResult?.Data?.DataList"
-              :key="index"
-            >
+            <tr v-for="(item, index) in importResult?.Data" :key="index">
               <td>{{ index + 1 }}.</td>
               <td
-                v-for="(header, idx) in dataList"
+                v-for="(header, idx) in headers.filter((x) => x != 'RowNumber')"
                 :key="idx"
                 :style="
-                  JSON.stringify(importResult?.Data?.Errors) == '{}'
-                    ? ''
-                    : importResult?.Data?.Errors?.[`[${index}]`][
-                        header.PropertyName
-                      ]
-                    ? 'background: pink;border:solid 1px red;'
-                    : ''
+                  item.Errors ? 'background: pink;border:solid 1px red;' : ''
                 "
-                :title="
-                  JSON.stringify(importResult?.Data?.Errors) == '{}'
-                    ? ''
-                    : importResult?.Data?.Errors?.[`[${index}]`][
-                        header.PropertyName
-                      ]
-                "
+                :title="item.Errors ? item.Errors : ''"
               >
                 <span>
-                  {{ item[header.PropertyName] }}
+                  {{ item[header] }}
                 </span>
               </td>
             </tr>
@@ -154,9 +165,8 @@
 <script>
 import axios from "axios";
 import TableLog from "./common/import-log-table.x.vue";
-import bootstrap from "bootstrap/dist/js/bootstrap.bundle";
 export default {
-  props: ["refresh", "template", "query", "title"],
+  props: ["refresh", "template", "query", "title", "urlSubmit"],
   components: { TableLog },
   data: () => ({
     isShowModal: false,
@@ -171,11 +181,12 @@ export default {
     model: {
       TemplateName: null,
       File: null,
-      Action: null,
+      Action: "TEST",
     },
     errorResponse: {},
     errors: {},
     dataList: [],
+    headers: [],
     importResult: {},
     logFilter: {
       Page: 1,
@@ -189,66 +200,19 @@ export default {
       Length: 10,
     },
   }),
-  watch: {
-    template: function (after) {
-      this.loadSchema();
-    },
-    // logFilter: {
-    //   deep: true,
-    //   handler: function(after) {
-    //     this.loadLogs();
-    //     this.ds.load
-    //   }
-    // }
-  },
   computed: {
-    workspaceId: function () {
-      return this.$route.params?.id;
-    },
     ds: function () {
       return useImportLog();
     },
   },
   mounted: function () {
-    // this.ds.setTemplate(this.template);
-    // this.ds.load();
-    this.loadSchema();
-    const tooltipTriggerList = document.querySelectorAll(
-      '[data-bs-toggle="tooltip"]'
-    );
-    const tooltipList = [...tooltipTriggerList].map(
-      (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
-    );
+    this.ds.setFilter([
+      {
+        TemplateName: this.template,
+      },
+    ]);
   },
   methods: {
-    loadSchema: function () {
-      this.isLoading = true;
-      this.$http
-        .get(`/import/schema?name=${this.template}`)
-        .then(({ data }) => {
-          this.dataList = data.Data;
-        })
-        .catch((err) => {
-          if (err.response) {
-            this.isNotFound = err.response.status == 404;
-          } else {
-            this.isError = true;
-          }
-        })
-        .finally(() => (this.isLoading = false));
-    },
-    // loadLogs: function() {
-    //   if(!this.isShowModal)
-    //     return;
-
-    //   this.isLoadingLogs = true;
-    //   this.$http.post(`/import/histories?workspace=${this.workspaceId}&templateName=${this.template}`, this.logFilter)
-    //     .then(({data}) => {
-    //       this.logList = data.Data;
-    //       console.log('loadlogs',this.logFilter, this.logList)
-    //     })
-    //     .finally(() => this.isLoadingLogs = false)
-    // },
     submit: function (e) {
       e.preventDefault();
       this.isLoadingUpload = true;
@@ -260,20 +224,12 @@ export default {
       this.model.TemplateName = this.template;
 
       var data = new FormData();
-      data.append("file", this.model.File);
-
-      if (this.model.Description)
-        data.append("description", this.model.Description);
-
-      var queryStrings = "";
-
-      if (this.query)
-        queryStrings = Object.keys(this.query)
-          .map((r) => `&${r}=${this.query[r]}`)
-          .join("");
+      data.append("File", this.model.File);
+      data.append("Action", this.model.Action);
+      data.append("TemplateName", this.template);
 
       this.$http
-        .post(`/import/submit?name=${this.template}${queryStrings}`, data)
+        .post(this.urlSubmit, data)
         .then(({ data }) => {
           console.log(data);
           this.isInvalid =
@@ -285,9 +241,10 @@ export default {
           } else {
             this.isSuccess = true;
             this.isLoadingUpload = false;
-            this.model.File = null;
             this.importResult = data;
-            toastSuccess("Import data successful!");
+            this.headers = Object.keys(data.Data[0]);
+            let message = this.model.Action == "TEST" ? "Test Import successfull" : "Import data successful!";
+            toastSuccess(message);
           }
 
           if (this["refresh"]) this["refresh"]();
@@ -296,17 +253,20 @@ export default {
         })
         .catch((err) => {
           if (err.response) {
-            this.importResult = err.response.data.Data || {};
-            this.errors = err.response.data?.Errors ?? {};
-            this.isInvalid = err.response.data?.Status == "INVALID";
+            this.importResult = err.response.data || {};
+            this.headers = Object.keys(err.response.data.Data[0]);
+            this.errors = err.response.data?.Errors ?? [];
+            this.isInvalid = err.response.data?.Status?.toUpperCase() == "INVALID";
             this.invalidMessage = err.response.data?.Message;
-            this.model.File = null;
           }
           // this.loadLogs();
           this.ds.load();
         })
         .finally((_) => {
           this.model.File = null;
+          if (this.$refs.fileInput) {
+            this.$refs.fileInput.value = null;
+          }
           this.isLoadingUpload = false;
         });
     },
@@ -316,33 +276,6 @@ export default {
       link.target = "_blank";
       link.setAttribute("download", `Template ${this.template}.xlsx`);
       link.click();
-    },
-    downloadFile: function (id) {
-      this.$http.get(`/import/download-key?id=${id}`).then(({ data }) => {
-        this.$http.open(`/import-log/download?id=${id}&key=${data.Data}`);
-      });
-    },
-    // setPage: function(i) {
-    //   this.logFilter.Page = i;
-    //   console.log(this.logFilter, this.logList)
-    // },
-    // setLength: function(i) {
-    //   this.logFilter.Length = i;
-    //   console.log(this.logFilter, this.logList)
-    // },
-    onModalShown: function () {
-      this.isShowModal = true;
-      this.model.File = null;
-      this.model.Description = null;
-      this.loadSchema();
-      this.ds.setTemplate(this.template);
-      this.ds.load();
-    },
-    onModalHidden: function () {
-      this.isShowModal = false;
-      this.model.File = null;
-      this.model.Description = null;
-      this.errors = this.errorResponse = {};
     },
     change: function (e) {
       this.invalidMessage = null;

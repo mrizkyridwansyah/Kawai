@@ -137,6 +137,17 @@ public class HahaController : ControllerBase
         });
     }
 
+    protected BadRequestObjectResult ImportInvalid(string message = null, object errors = null)
+    {
+        return BadRequest(new
+        {
+            Code = "INVALID_REQUEST_DATA",
+            Status = "Invalid",
+            Message = message,
+            Data = errors,
+        });
+    }
+
     protected BadRequestObjectResult Invalid(string message = null, object errors = null)
     {
         return BadRequest(new

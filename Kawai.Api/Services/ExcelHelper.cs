@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using Kawai.Domain.Shared;
 using QRCoder;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -264,14 +265,20 @@ public static class ExcelHelper
                 continue;
 
             var prop = props.FirstOrDefault(p =>
-                string.Equals(p.Name, header, StringComparison.OrdinalIgnoreCase));
+            {
+                // ambil DisplayAttribute jika ada
+                var display = p.GetCustomAttribute<DisplayAttribute>();
+                string displayName = display?.Name ?? p.Name;
+
+                return string.Equals(displayName, header, StringComparison.OrdinalIgnoreCase);
+            });
 
             if (prop != null)
                 colMap[col] = prop;
         }
 
         // DATA ROWS
-        for (int row = firstRow + 1; row <= lastRow; row++)
+        for (int row = firstRow + 2; row <= lastRow; row++)
         {
             var xlRow = ws.Row(row);
             var item = new T { RowNumber = row };

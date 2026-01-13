@@ -25,7 +25,7 @@ export const useImportLog = defineStore('ImportLog', {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/import/histories?templateName=${this.template}`, this.filter)
+        app.$http.post(`/import/histories`, this.filter)
           .then(({data}) => {
             this.data = data.Data;
             resolve(data);

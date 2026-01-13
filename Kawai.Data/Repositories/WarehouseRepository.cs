@@ -159,10 +159,10 @@ public class WarehouseRepository : IWarehouseRepository
         string sp = "sp_WMS_UserSetup_UserPrivilegeWarehouse";
         return (await _dbExecutor.QueryListAsync<WarehousePrivilegesDto>(sp, new { UserID = userId })).ToList();
     }
-    public async Task<List<WarehouseImport>> ValidateImport(DataTable datas)
+    public async Task<List<WarehouseImport>> ValidateImport(DataTable datas, string userId)
     {
         string sql = @"sp_Wms_Warehouse_ValidateImport";
-        return (await _dbExecutor.QueryListAsync<WarehouseImport>(sql, new { DataImport = datas })).ToList();
+        return (await _dbExecutor.QueryListAsync<WarehouseImport>(sql, new { DataImport = datas, UserId = userId })).ToList();
     }
 
     public async Task Import(DataTable datas, string userId)
@@ -170,7 +170,7 @@ public class WarehouseRepository : IWarehouseRepository
         string sql = @"sp_Wms_Warehouse_Import";
         await _dbExecutor.ExecuteAsync(sql, new
         {
-            UserDataImport = datas,
+            DataImport = datas,
             UserID = userId,
         });
     }

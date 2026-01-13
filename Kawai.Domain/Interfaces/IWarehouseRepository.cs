@@ -27,7 +27,7 @@ public interface IWarehouseRepository
     Task<List<WarehousePrivilegesDto>> GetAllWarehouseIncludePrivileges(string userId);
 
     #region Import
-    Task<List<WarehouseImport>> ValidateImport(DataTable datas);
+    Task<List<WarehouseImport>> ValidateImport(DataTable datas, string userId);
     Task Import(DataTable datas, string userId);
     #endregion
 }

@@ -1,9 +1,11 @@
 ﻿using ClosedXML.Excel;
 using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Reflection;
 
 namespace Kawai.Api.Controllers;
@@ -162,6 +164,25 @@ public class ImportController : HahaController
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             $"{name}.xlsx"
         );
+    }
+
+    [HttpPost("histories")]
+    public async Task<IActionResult> GetImportHistories([FromBody] RequestParameter parameter)
+    {
+        var results = await _importRepository.GetImportHistories(parameter);
+        return DataTableResult(parameter, results);
+    }
+
+    [HttpGet("download-key")]
+    public async Task<IActionResult> GetFile(string id)
+    {
+        var result = await _importRepository.GetDataImportHistory(id);
+        Stream? file = FileStorage.GetFromImports(id);
+
+        if(file == null || result == null)
+            return NotFound("File tidak ditemukan");
+
+        return File(file, result.ContentType, result.FileName);
     }
 
     private async Task<List<IDictionary<string, object>>> GetReferenceData(string sp)

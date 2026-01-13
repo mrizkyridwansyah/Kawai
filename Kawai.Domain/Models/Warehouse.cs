@@ -55,6 +55,7 @@ public class WarehouseImport : ImportBase
 
     [Required(ErrorMessage = "Adm Group tidak boleh kosong")]
     [MaxLength(15, ErrorMessage = "Adm Group tidak boleh lebih dari 15 karakter")]
+    [ReferenceSheet("sp_Wms_Import_AdmGroupReference")]
     [Display(Name = "Adm Group")]
     public string AdmGroup { get; set; }
 
