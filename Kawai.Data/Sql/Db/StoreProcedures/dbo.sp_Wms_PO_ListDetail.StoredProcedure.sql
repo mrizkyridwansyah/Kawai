@@ -41,6 +41,7 @@ begin
 		AND (@Keyword IS NULL OR a.PO_No LIKE '%' + @Keyword + '%' OR b.Supplier_Code LIKE '%' + @Keyword + '%' OR c.Trade_Name LIKE '%' + @Keyword + '%'  OR d.Item_Name LIKE '%' + @Keyword + '%')
 		and (@SupplierCode = '' or b.Supplier_Code = @SupplierCode)
 		and (@PONumber = '' or a.PO_No = @PONumber)
+		and isnull(b.Fix_Cls, '0') = '1'
 	)
 
 	declare @sql VARCHAR(MAX) =
@@ -60,6 +61,7 @@ begin
 		AND (''%'+@Keyword+'%'' IS NULL OR a.PO_No LIKE ''%' + @Keyword + '%'' OR b.Supplier_Code LIKE ''%' + @Keyword + '%'' OR c.Trade_Name LIKE ''%' + @Keyword + '%'' OR d.Item_Name LIKE ''%' + @Keyword + '%'')
 		and (''' + @SupplierCode + ''' = '''' or b.Supplier_Code = ''' + @SupplierCode + ''')
 		and (''' + @PONumber + ''' = '''' or a.PO_No = ''' + @PONumber + ''')
+		and isnull(b.Fix_Cls, ''0'') = ''1''
 		'+ @sqlSort +'
 		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
 		FETCH NEXT ' + cast(@Length as varchar(10)) + ' ROWS ONLY

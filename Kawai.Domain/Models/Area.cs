@@ -15,4 +15,6 @@ public class Area
     [Required(ErrorMessage = "Area Name tidak boleh kosong")]
     [MaxLength(100, ErrorMessage = "Area Name tidak boleh lebih dari 100 karakter")]
     public string AreaName { get; set; }
+
+    public string ItemType { get; set; }
 }

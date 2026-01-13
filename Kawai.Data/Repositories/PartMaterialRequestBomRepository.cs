@@ -23,7 +23,6 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         var paramFactory = param.GetParam("FactoryCode");
         var paramSupplier = param.GetParam("SupplierCode");
         var paramPONumber = param.GetParam("PONumber");
-        var paramWarehouse = param.GetParam("WarehouseCode");
         var paramRemainingFuckingCls = param.GetParam("RemainingCls");
 
         string sp = "sp_Wms_PartMaterialRequestBom_GetListHeader";
@@ -34,7 +33,6 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
             FactoryCode = paramFactory,
             SupplierCode = paramSupplier,
             PONumber = paramPONumber,
-            WarehouseCode = paramWarehouse,
             RemainingCls = paramRemainingFuckingCls == "ALL" ? (bool?)null : paramRemainingFuckingCls == "YES"
         })).ToList();
     }
@@ -44,8 +42,8 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         string sp = "sp_Wms_PartMaterialRequestBom_GetListDetail";
         return (await _dbExecutor.QueryListAsync<PartMaterialRequestBomDetilDto>(sp, new
         {
-            models[0].LineCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"])
+            models[0].WarehouseCode,
+            NewRequest = DataTableHelper.ToDataTable(models, ["WarehouseCode"])
         })).ToList();
     }
     public async Task<List<StockDto>> GetListStock(RequestParameter param)
@@ -59,8 +57,8 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         string sp = "sp_Wms_PartMaterialRequestBom_Save";
         await _dbExecutor.ExecuteAsync(sp, new
         {
-            models[0].LineCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+            models[0].WarehouseCode,
+            NewRequest = DataTableHelper.ToDataTable(models, ["WarehouseCode"]),
             UserId = userId
         });
     }
@@ -75,11 +73,11 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         });
     }
 
-    public async Task<Dictionary<string, object>> Capture(long productionId)
+    public async Task<Dictionary<string, object>> Capture(string poNumber)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
             "sp_Wms_PartMaterialRequestBom_Capture",
-            param: new { ProductionId = productionId },
+            param: new { PONumber = poNumber },
             async multi =>
             {
                 var headers = (await multi.ReadAsync<dynamic>()).ToList();

@@ -45,7 +45,6 @@
               placeholder=" "
               :trade-cls="['2', '3']"
               v-model="filter.SupplierCode"
-              :show-option-all="true"
               style-code="width: 110px"
               style-desc="width: 250px"
             />
@@ -75,13 +74,14 @@
             <label class="form-label">WH Subcon</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-warehouse-subcon-privileges
+            <filter-warehouse-privileges
               class="form-control"
               placeholder=" "
+              disabled
               :factory-code="filter.FactoryCode"
               v-model="filter.Warehouse"
-              style-code="width: 110px"
-              style-desc="width: 250px"
+              style-code="width: 120px"
+              style-desc="width: 240px"
             />
           </td>
         </tr>
@@ -100,15 +100,23 @@
         </tr>
         <tr>
           <td colspan="4" style="padding-top: 5px">
-            <v-button-search-reset :search="search" :reset="reset" />
+            <div class="d-flex flex-fill">
+              <v-button-search-reset :search="search" :reset="reset" />
+              <button
+                class="btn btn-primary btn-elevate btn-search"
+                style="margin-left: 5px"
+                @click="newRequest"
+              >
+                <font-awesome-icon icon="arrow-right" />
+                <span class="ml-2">To Material Request</span>
+              </button>
+            </div>
           </td>
         </tr>
       </table>
 
       <v-table
         :filter="filter"
-        :export-excel="true"
-        :export-excel-action="exportExcel"
         :ds="ds"
         ref="vtable"
         :use-paging="false"
@@ -136,24 +144,71 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
-                <td><input-checkbox /></td>
-                <td>{{ item.PONumber }}</td>
-                <td>{{ item.ReceiptNo }}</td>
-                <td>{{ item.SupplierName }}</td>
-                <td>{{ $func.formatDate(item.DNDate) }}</td>
-                <td>{{ item.ItemCode }}</td>
-                <td>{{ item.ItemName }}</td>
-                <td>{{ item.DNNumber }}</td>
-                <td>{{ item.BCType }}</td>
-                <td>{{ item.BCNumber }}</td>
-                <td>{{ $func.formatDate(item.BCDate) }}</td>
-                <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
-                <td>{{ item.UnitClsDescription }}</td>
-                <td>{{ item.Currency }}</td>
-                <td class="text-right">{{ $func.formatMoney(item.Price) }}</td>
-                <td class="text-right">{{ $func.formatMoney(item.Amount) }}</td>
-              </tr>
+              <template
+                v-for="(item, idx) in groupLists || []"
+                :key="item.ProductionId"
+              >
+                <tr>
+                  <td>
+                    <input-checkbox
+                      v-model="item.Selected"
+                      @click="(e) => check(e, item)"
+                    />
+                  </td>
+                  <td>{{ $func.formatDate(item.PODate) }}</td>
+                  <td>
+                    <div style="display: flex; justify-content: space-between">
+                      <span>
+                        {{ item.PONumber }}
+                      </span>
+                      <span
+                        v-if="item.Details.length > 0"
+                        :class="[
+                          'toggle-button',
+                          item.Expanded ? 'collapse' : 'expand',
+                        ]"
+                        @click="() => (item.Expanded = !item.Expanded)"
+                      >
+                        {{ item.Expanded ? "-" : "+" }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>{{ item.ItemCode }}</td>
+                  <td>{{ item.ItemName }}</td>
+                  <td>{{ item.UnitClsDesc }}</td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.PlanQty) }}
+                  </td>
+                  <td><input-money v-model="item.RequestSetQty" /></td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.RemainingQty) }}
+                  </td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr
+                  v-if="item.Expanded"
+                  v-for="(dtl, idxx) in item.Details || []"
+                  :key="dtl.RequestId"
+                >
+                  <td colspan="4"></td>
+                  <td>
+                    <a
+                      href="javascript:void(0)"
+                      @click="() => viewRequest(item, dtl)"
+                      >{{ dtl.RequestNo }}</a
+                    >
+                  </td>
+                  <td>{{ idxx + 1 }}</td>
+                  <td></td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(dtl.RequestSetQty) }}
+                  </td>
+                  <td></td>
+                  <td>{{ dtl.RegisterUser }}</td>
+                  <td>{{ $func.formatDate(dtl.RequestDate) }}</td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </template>
@@ -165,13 +220,8 @@
 <script>
 export default {
   data: () => ({
-    breadcrumbs: [
-      { title: "Stock Control", active: false, to: "" },
-      { title: "Part Receipt Material", active: false, to: "" },
-    ],
     filter: {
       keyword: null,
-      keywordKey: "ReceiptNo",
       FactoryCode: null,
       SupplierCode: null,
       PeriodFrom: null,
@@ -182,39 +232,18 @@ export default {
       sorts: {
         ReceiptNo: "asc",
       },
-      sortItems: [
-        {
-          label: "Receipt No.",
-          value: "ReceiptNo",
-          selected: true,
-          direction: "asc",
-        },
-        {
-          label: "Supplier",
-          value: "SupplierName",
-          selected: false,
-          direction: "asc",
-        },
-        {
-          label: "Item",
-          value: "ItemName",
-          selected: false,
-          direction: "asc",
-        },
-        {
-          label: "Delivery Date",
-          value: "DNDate",
-          selected: false,
-          direction: "asc",
-        },
-      ],
     },
     debounce: null,
     lists: [],
+    poNumbers: [],
+    groupLists: [],
   }),
   computed: {
     ds: function () {
-      return useReceiptInquiry();
+      return useSupplyRequestBOM();
+    },
+    dsSupplier: function () {
+      return useTrade();
     },
   },
   watch: {
@@ -222,6 +251,9 @@ export default {
       this.resetGrid();
     },
     "filter.SupplierCode": function () {
+      this.dsSupplier
+        .loadDetail(this.filter.SupplierCode)
+        .then((dt) => (this.filter.Warehouse = dt.Data.Subcon_WH_Code));
       this.resetGrid();
     },
     "filter.PeriodFrom": function () {
@@ -239,27 +271,42 @@ export default {
     "filter.PONumber": function () {
       this.resetGrid();
     },
-    "filter.keyword": function () {
-      this.search();
-    },
-    "filter.sorts": function () {
-      this.search();
-    },
   },
   mounted: function () {
-    let today = new Date();
-    this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
-    this.filter.PeriodUntil = today;
-    this.search();
+    const f = this.ds.filter.Filters?.[0];
+
+    if (this.$route.query.back && f) {
+      this.filter.FactoryCode = f.FactoryCode;
+      this.filter.SupplierCode = f.SupplierCode;
+      this.filter.PONumber = f.PONumber;
+      this.filter.Warehouse = f.Warehouse;
+      this.filter.RemainingCls = f.RemainingCls;
+      this.filter.PeriodFrom = f.PeriodFrom ? new Date(f.PeriodFrom) : null;
+      this.filter.PeriodUntil = f.PeriodUntil ? new Date(f.PeriodUntil) : null;
+
+      // OPTIONAL: auto load
+      this.search();
+    } else {
+      this.setDefaultFilter();
+    }
   },
   methods: {
     resetGrid: function () {
-      this.ds.setFilter([]);
-      this.ds.setPage(1);
-      this.ds.setLength(10);
-      this.ds.data.Items = [];
+      this.groupLists = [];
     },
     search: function () {
+      // let rangePeriodDays = this.$func.dateDiffInDays(
+      //   this.filter.PeriodFrom,
+      //   this.filter.PeriodUntil
+      // );
+
+      // if (rangePeriodDays > 30) {
+      //   toastWarning("Range Period only 30 days.");
+      //   return;
+      // }
+
+      this.ds.setPage(1);
+      this.ds.setLength(1000);
       this.ds.setSort(this.filter.sorts);
       let filters = [
         {
@@ -279,7 +326,48 @@ export default {
       ];
 
       this.ds.setFilter(filters);
-      this.ds.load().then((dt) => (this.lists = dt.Data.Items));
+      this.ds.load().then((dt) => {
+        let grouped = {};
+
+        dt.Data.Items.forEach((item) => {
+          let key = [
+            item.PONumber,
+            item.PODate,
+            item.ItemCode,
+            item.ItemName,
+            item.UnitClsDesc,
+            item.PlanQty,
+          ].join("|");
+
+          if (!grouped[key]) {
+            let totalRequestQty = dt.Data.Items.filter(
+              (x) => x.PONumber == item.PONumber && x.RequestId != null
+            ).reduce((a, b) => a + (b.RequestSetQty || 0), 0);
+
+            grouped[key] = {
+              ...item,
+              RequestSetQty: totalRequestQty,
+              RemainingQty: item.PlanQty - totalRequestQty,
+              Selected: false,
+              Expanded: true,
+              Details: [],
+            };
+          }
+
+          if (item.RequestId) {
+            grouped[key].Details.push({
+              RequestId: item.RequestId,
+              RequestNo: item.RequestNo,
+              RequestDate: item.RequestDate,
+              RequestSetQty: item.RequestSetQty,
+              RegisterUser: item.RegisterUser,
+              RegisterDate: item.RegisterDate,
+            });
+          }
+        });
+
+        this.groupLists = Object.values(grouped);
+      });
     },
     reset: function () {
       this.filter.FactoryCode = null;
@@ -297,35 +385,67 @@ export default {
       this.filter.PeriodUntil = today;
       this.search();
     },
-    exportExcel: function () {
-      let filters = [
+    check: function (e, item) {
+      item.Selected = e.target.checked;
+    },
+    newRequest: function () {
+      let selected = this.groupLists.filter((x) => x.Selected);
+      if (selected.length == 0) {
+        toastWarning("Please choose schedule!");
+        return;
+      }
+
+      if (selected.filter((x) => x.RequestSetQty <= 0).length > 0) {
+        toastWarning("Request Qty must be greater than ZERO!");
+        return;
+      }
+
+      if (selected.filter((x) => x.RequestSetQty > x.RemainingQty).length > 0) {
+        toastWarning("Request Qty cannot be greater than Remaining Qty!");
+        return;
+      }
+
+      let newRequestPayload = selected.map((x) => {
+        return {
+          WarehouseCode: this.filter.Warehouse,
+          RequestId: null,
+          PONumber: x.PONumber,
+          PODate: x.PODate,
+          ItemCode: x.ItemCode,
+          RequestSetQty: x.RequestSetQty,
+        };
+      });
+
+      this.ds.setRequest(newRequestPayload);
+      this.$router.push("/app/supply-request/bom/create");
+    },
+    viewRequest: function (selected, dtl) {
+      let payloadrequest = [
         {
-          Keyword: this.filter.keyword || "",
-          FactoryCode: this.filter.FactoryCode,
-          SupplierCode: this.filter.SupplierCode,
-          PONumber: this.filter.PONumber,
-          RemainingCls: this.filter.RemainingCls,
-          Warehouse: this.filter.Warehouse,
-          PeriodFrom: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodFrom)
-          ),
-          PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodUntil)
-          ),
+          WarehouseCode: this.filter.Warehouse,
+          RequestId: dtl.RequestId,
+          RequestNo: dtl.RequestNo,
+          RequestDate: dtl.RequestDate,
+          PONumber: selected.PONumber,
+          PODate: selected.PODate,
+          ItemCode: selected.ItemCode,
+          RequestSetQty: selected.RequestSetQty,
         },
       ];
 
-      return new Promise((resolve, reject) => {
-        this.ds
-          .exportExcel(filters)
-          .then((_) => {
-            resolve();
-          })
-          .catch((err) => {
-            toastDanger(err?.Message);
-            resolve();
-          });
-      });
+      this.ds.setRequest(payloadrequest);
+      this.$router.push("/app/supply-request/bom/view");
+    },
+
+    setDefaultFilter: function () {
+      let today = new Date();
+      this.filter.PeriodFrom = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+      this.filter.PeriodUntil = today;
+      this.filter.RemainingCls = "ALL";
     },
   },
 };
@@ -334,5 +454,37 @@ export default {
 <style scoped>
 .vdatetime {
   max-width: 60% !important;
+}
+
+.toggle-button {
+  margin-left: 1em;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 12px;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 50%; /* full bulat */
+  cursor: pointer;
+  margin-right: 6px;
+  user-select: none;
+}
+
+.toggle-button.expand {
+  color: #007bff;
+  border-color: #007bff;
+  background-color: #e6f0ff;
+}
+
+.toggle-button.collapse {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: #ffe6e6;
+}
+
+.toggle-button:hover {
+  opacity: 0.85;
 }
 </style>

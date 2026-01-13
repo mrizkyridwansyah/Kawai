@@ -2,7 +2,6 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE   procedure [sp_Wms_Receipt_ListPODetail]
 	@FactoryCode varchar(25),
 	@ReceiptId bigint,
@@ -60,6 +59,7 @@ begin
 		WHERE 1=1 
 		AND a.PO_No = @PONumber
 		AND (b.Qty - isnull(rcpSum.ReceiptQty, 0)) > 0
+		and isnull(a.Fix_Cls, '0') = '1'
 	END
 	else 
 	begin
@@ -70,6 +70,7 @@ begin
 		(
 			select * From PurchaseOrder_Master x
 			where Delivery_Date between @DateFrom and @DateUntil and Supplier_Code = @SupplierCode
+			and isnull(x.Fix_Cls, '0') = '1'
 		) po on a.PONumber = po.PO_No
 		where ReceiptId <> isnull(@ReceiptId, 0) 
 		group by PONumber, ItemCode
@@ -114,6 +115,7 @@ begin
 		WHERE 1=1 
 		AND a.Delivery_Date between @DateFrom and @DateUntil
 		and a.Supplier_Code = @SupplierCode
+		and isnull(a.Fix_Cls, '0') = '1'
 	end	
 end
 GO

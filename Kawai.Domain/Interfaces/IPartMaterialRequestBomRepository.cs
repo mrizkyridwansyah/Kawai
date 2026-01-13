@@ -11,6 +11,6 @@ public interface IPartMaterialRequestBomRepository
     Task<List<StockDto>> GetListStock(RequestParameter parameter);
     Task Save(List<PartMaterialRequestBomModel> model, string userId);
     Task Remove(long requestId, string userId);
-    Task<Dictionary<string, object>> Capture(long productionId);
+    Task<Dictionary<string, object>> Capture(string poNumber);
     Task<Dictionary<string, object>> CaptureRequest(long requestId);
 }

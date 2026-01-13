@@ -26,7 +26,7 @@ BEGIN
 			cast(1 as bit) AllowUpdate,
 			cast(1 as bit) AllowPrice
 		FROM SS_UserMenu 
-		ORDER BY GroupIndex, SubGroupIndex, MenuIndex
+		ORDER BY GroupIndex, SubGroupIndex, MenuIndex, MenuID
 	end 
 	else 
 	begin
@@ -45,7 +45,7 @@ BEGIN
 			A.AllowPrice
 		FROM [dbo].[SS_UserPrivilege] A LEFT JOIN SS_UserMenu B ON A.MenuID = B.MenuID
 		WHERE A.UserID = @UserId AND A.AllowAccess = 1
-		ORDER BY GroupIndex, SubGroupIndex, MenuIndex
+		ORDER BY GroupIndex, SubGroupIndex, MenuIndex, MenuID
 	end
 
 END

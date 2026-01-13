@@ -60,6 +60,7 @@ public class AreaRepository : IAreaRepository
             area.WarehouseCode,
             area.AreaCode,
             area.AreaName,
+            area.ItemType,
             RegisterBy = userId
         });
     }
@@ -72,6 +73,7 @@ public class AreaRepository : IAreaRepository
             area.WarehouseCode,
             area.AreaCode,
             area.AreaName,
+            area.ItemType,
             UpdateBy = userId
         });
     }

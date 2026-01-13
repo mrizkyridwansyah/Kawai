@@ -40,6 +40,7 @@ begin
 		where 1=1 and PO_No like '%' + @Keyword + '%' 
 		and PO_Date between @PeriodFrom and @PeriodUntil
 		and 1 = case when @SupplierCode = 'ALL' then 1 when @SupplierCode = Supplier_Code then 1 else 0 end 
+		and isnull(x.Fix_Cls, '0') = '1'
 	end
 	else if isnull(@TypeDate, '') = 'DELIVERY'
 	begin
@@ -48,6 +49,7 @@ begin
 		where 1=1 and PO_No like '%' + @Keyword + '%' 
 		and Delivery_Date between @PeriodFrom and @PeriodUntil
 		and 1 = case when @SupplierCode = 'ALL' then 1 when @SupplierCode = Supplier_Code then 1 else 0 end 
+		and isnull(x.Fix_Cls, '0') = '1'
 	end
 	else
 	begin
@@ -55,6 +57,7 @@ begin
 		select 2, PO_No from PurchaseOrder_Master x inner join @tblWarehouseLine y on x.WHTo = y.WarehouseCode
 		where 1=1 and PO_No like '%' + @Keyword + '%' 
 		and 1 = case when @SupplierCode = 'ALL' then 1 when @SupplierCode = Supplier_Code then 1 else 0 end 
+		and isnull(x.Fix_Cls, '0') = '1'
 	end
 
 	if (select count(1) from @tblPO) > 0

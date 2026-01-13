@@ -7,7 +7,7 @@ as
 begin
 	select ph.ReceiptNo, ph.ReceiptDate, tm.Trade_Name [SupplierName], ph.DNNumber, mi.Item_Name [ItemName], ph.StatusReceipt 
 	from PartReceiptHeader ph
-	inner join PartReceiptDetail pdb on ph.Id = pdb.ReceiptId
+	inner join PartReceiptDetailBarcode pdb on ph.Id = pdb.ReceiptId
 	left join Trade_Master tm on ph.SupplierCode = tm.Trade_Code
 	left join Item_Master mi on pdb.ItemCode = mi.Item_Code	
 	where ph.StatusReceipt <> 'COMPLETE'

@@ -1,6 +1,9 @@
 var app = useNuxtApp();
 
 export const useSupplyRequestBOM = defineStore('SupplyRequestBOM', {
+  persist: {
+    paths: ['filter.Filters', 'newRequest']
+  },
   state: () => ({
     isLoading: false,
     isCreating: false,
@@ -17,6 +20,13 @@ export const useSupplyRequestBOM = defineStore('SupplyRequestBOM', {
       Page: 1,
       Length: 10,
     },
+    dataDetails: {
+      Items: [],
+      Total: 0,
+      Filtered: 0,
+      Page: 1,
+      Length: 10,
+    },
     filter: {
       Page: 1,
       Length: 10,
@@ -25,15 +35,75 @@ export const useSupplyRequestBOM = defineStore('SupplyRequestBOM', {
       ],
       Sorts: {},
     },
+
+    dataListStock: {
+      Items: [],
+      Total: 0,
+      Filtered: 0,
+      Page: 1,
+      Length: 10,
+    },
+    filterListStock: {
+      Page: 1,
+      Length: 10,
+      Filters: [
+
+      ],
+      Sorts: {},
+    },
+
+    newRequest: []
   }),
   actions: {
     load: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/supply-request/bom/list`, this.filter)
+        app.$http.post(`/supply-request/bom/list-header`, this.filter)
           .then(({ data }) => {
             this.data = data.Data;
+            resolve(data);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoading = false);
+      })
+    },
+    loadDetail: function () {
+      this.isLoadingDetail = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/supply-request/bom/list-detail`, this.newRequest)
+          .then(({ data }) => {
+            this.dataDetails.Items = data.Data;
+            resolve(data);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoadingDetail = false);
+      })
+    },
+    loadListStock: function () {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/supply-request/bom/list-stock`, this.filterListStock)
+          .then(({ data }) => {
+            this.dataListStock = data.Data;
 
             resolve(data);
           })
@@ -49,26 +119,9 @@ export const useSupplyRequestBOM = defineStore('SupplyRequestBOM', {
           .finally(_ => this.isLoading = false);
       })
     },
-    loadDetail: function (id) {
-      this.isLoadingDetail = true;
-      return new Promise((resolve, reject) => {
-        app.$http.get(`/supply-request/bom/detail?id=${id}`)
-          .then(({ data }) => {
-            this.detail = data.Data;
 
-            resolve(data);
-          })
-          .catch(err => {
-            if (err.code == 'ERR_NETWORK')
-              this.isNetworkError = true;
-
-            if (err.code == 'ERR_BAD_RESPONSE')
-              this.isServerError = true;
-
-            reject(err);
-          })
-          .finally(_ => this.isLoadingDetail = false);
-      })
+    setRequest: function (req) {
+      this.newRequest = req;
     },
     setFilter: function (v) {
       this.filter.Filters = v;
@@ -79,17 +132,32 @@ export const useSupplyRequestBOM = defineStore('SupplyRequestBOM', {
     },
     setPage: function (v) {
       this.filter.Page = v;
-      this.load();
     },
     setLength: function (v) {
       this.filter.Page = 1;
       this.filter.Length = v;
-      this.load();
     },
-    create: function (data) {
+
+    setFilterListStock: function (v) {
+      this.filterListStock.Filters = v;
+      this.filterListStock.Page = 1;
+    },
+    setSortListStock: function (v) {
+      this.filterListStock.Sorts = v;
+    },
+    setPageListStock: function (v) {
+      this.filterListStock.Page = v;
+      this.loadListStock();
+    },
+    setLengthListStock: function (v) {
+      this.filterListStock.Page = 1;
+      this.filterListStock.Length = v;
+      this.loadListStock();
+    },
+    save: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/supply-request/bom/create`, data)
+        app.$http.post(`/supply-request/bom/save`, data)
           .then(({ data }) => {
             resolve(data);
           })
@@ -97,104 +165,15 @@ export const useSupplyRequestBOM = defineStore('SupplyRequestBOM', {
           .finally(_ => this.isCreating = false);
       })
     },
-    update: function (data) {
-      this.isEditing = true;
-      return new Promise((resolve, reject) => {
-        app.$http.patch(`/supply-request/bom/update`, data)
-          .then(({ data }) => {
-            resolve(data);
-          })
-          .catch((err) => reject(err.response?.data))
-          .finally(_ => this.isEditing = false);
-      })
-    },
-    remove: function (id) {
+    remove: function (id, reqNo) {
       this.isRemoving = true;
       return new Promise((resolve, reject) => {
-        app.$http.delete(`/supply-request/bom/remove?id=${id}`)
+        app.$http.delete(`/supply-request/bom/remove?requestId=${id}&requestNo=${reqNo}`)
           .then(({ data }) => {
             resolve(data);
           })
           .catch((err) => reject(err.response?.data))
           .finally(_ => this.isRemoving = false);
-
-      })
-    },
-    exportExcel: function (filters) {
-      return new Promise((resolve, reject) => {
-        let filterExport = {
-          Page: 1,
-          Length: 1000000,
-          Filters: filters,
-          Sorts: {},
-        };
-
-        app.$http.post(`/supply-request/bom/export/excel`, filterExport)
-          .then(({ data }) => {
-            if (data.Data) {
-              const byteCharacters = atob(data.Data); // decode base64
-              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
-              const byteArray = new Uint8Array(byteNumbers);
-
-              const blob = new Blob([byteArray], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-              });
-
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', 'List_SupplyRequestBOM.xlsx');
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-
-              resolve();
-            } else {
-              reject(data);
-            }
-          })
-          .catch(async (err) => {
-            reject(err?.response?.data);
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
-      })
-    },
-    exportQR: function (selectedPrint) {
-      return new Promise((resolve, reject) => {
-        app.$http.post(`/supply-request/bom/export/qrcode`, selectedPrint)
-          .then(({ data }) => {
-            if (data.Data) {
-              const byteCharacters = atob(data.Data); // decode base64
-              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
-              const byteArray = new Uint8Array(byteNumbers);
-
-              const blob = new Blob([byteArray], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-              });
-
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', 'QRCode_SupplyRequestBOM.xlsx');
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-
-              resolve();
-            } else {
-              reject(data);
-            }
-          })
-          .catch(async (err) => {
-              reject(err?.response?.data);
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
       })
     },
   },

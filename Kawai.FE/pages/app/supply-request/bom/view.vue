@@ -77,7 +77,6 @@
               <tr>
                 <th class="text-center">Schedule Date</th>
                 <th class="text-center">Line</th>
-                <th class="text-center">Work Station</th>
                 <th class="text-center">Parent Item</th>
                 <th class="text-center">Parent Item Name</th>
                 <th class="text-center">Qty Set</th>
@@ -95,9 +94,8 @@
                 :key="item.ProductionId"
               >
                 <tr>
-                  <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
-                  <td>{{ item.LineName }}</td>
-                  <td>{{ item.WorkStationName }}</td>
+                  <td>{{ $func.formatDate(item.PODate) }}</td>
+                  <td>{{ item.AreaName }}</td>
                   <td>{{ item.ParentItemCode }}</td>
                   <td>{{ item.ParentItemName }}</td>
                   <td class="text-right">
@@ -120,7 +118,7 @@
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.RequestId"
                 >
-                  <td colspan="6"></td>
+                  <td colspan="5"></td>
                   <td>{{ dtl.ChildItemCode }}</td>
                   <td>{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
@@ -162,7 +160,7 @@ export default {
   }),
   computed: {
     ds: function () {
-      return useSupplyRequestWomin();
+      return useSupplyRequestBOM();
     },
   },
   mounted: function () {
@@ -179,10 +177,10 @@ export default {
         dt.Data.forEach((item) => {
           let key = [
             item.RequestId,
-            item.ProductionId,
-            item.ScheduleDate,
-            item.LineCode,
-            item.WorkStationCode,
+            item.PONumber,
+            item.PODate,
+            item.WarehouseCode,
+            item.AreaCode,
             item.ParentItemCode,
           ].join("|");
 
@@ -234,7 +232,7 @@ export default {
     },
     back: function () {
       this.$router.push({
-        path: "/app/supply-request/womin",
+        path: "/app/supply-request/bom",
         query: {
           back: 1,
         },

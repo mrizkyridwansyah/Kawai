@@ -15,5 +15,6 @@ begin
 	left join WareHouse_Master c on a.WHTo= c.WH_Code
 	WHERE 1=1
 	and a.PO_No = @PONumber	
+	and isnull(a.Fix_Cls, '0') = '1'
 end
 GO

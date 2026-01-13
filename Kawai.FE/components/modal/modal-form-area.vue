@@ -38,8 +38,22 @@
         />
       </td>
     </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Item Type</label>
+      </td>
+      <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+        <input-cls
+          type-data="ClasificationPart_Cls"
+          v-model="model.ItemType"
+          :errors="errors?.ItemType"
+          style-code="width: 120px"
+          style-desc="width: 100px"
+        />
+      </td>
+    </tr>
   </table>
-  <div style="float: right;" class="mt-4 mb-3">
+  <div style="float: right" class="mt-4 mb-3">
     <v-button-submit
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
@@ -56,6 +70,7 @@ export default {
       WarehouseCode: "",
       AreaCode: "",
       AreaName: "",
+      ItemType: "",
     },
     errorResponse: {},
     errors: {},
@@ -97,6 +112,7 @@ export default {
           WarehouseCode: this.warehouse || "",
           AreaCode: "", // Kosongkan AreaCode
           AreaName: "",
+          ItemType: "",
         };
       }
       this.errors = {}; // Reset errors

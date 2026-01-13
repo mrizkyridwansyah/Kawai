@@ -38,6 +38,7 @@ begin
 		WHERE 1=1
 		AND (@Keyword IS NULL OR PO_No LIKE '%' + @Keyword + '%' OR Supplier_Code LIKE '%' + @Keyword + '%' OR b.Trade_Name LIKE '%' + @Keyword + '%')
 		and (@SupplierCode = '' or a.Supplier_Code = @SupplierCode)
+		and isnull(a.Fix_Cls, '0') = '1'
 	)
 
 	declare @sql VARCHAR(MAX) =
@@ -52,6 +53,7 @@ begin
 		WHERE 1=1
 		AND (''%'+@Keyword+'%'' IS NULL OR PO_No LIKE ''%' + @Keyword + '%'' OR Supplier_Code LIKE ''%' + @Keyword + '%'' OR b.Trade_Name LIKE ''%' + @Keyword + '%'')
 		and (''' + @SupplierCode + ''' = '''' or a.Supplier_Code = ''' + @SupplierCode + ''')
+		and isnull(a.Fix_Cls, ''0'') = ''1''
 		'+ @sqlSort +'
 		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
 		FETCH NEXT ' + cast(@Length as varchar(10)) + ' ROWS ONLY

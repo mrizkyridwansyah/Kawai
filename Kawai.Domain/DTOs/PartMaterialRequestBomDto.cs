@@ -2,8 +2,6 @@
 
 public class PartMaterialRequestBomDto: DataTableDto
 {
-    public long ProductionId { get; set; }
-    public DateTime ScheduleDate { get; set; }
     public DateTime PODate { get; set; }
     public string PONumber { get; set; }
     public string ItemCode { get; set; }
@@ -23,14 +21,12 @@ public class PartMaterialRequestBomDto: DataTableDto
 public class PartMaterialRequestBomDetilDto : DataTableDto
 {
     public long? RequestId { get; set; }
-    public long ProductionId { get; set; }
-    public DateTime ScheduleDate { get; set; }
     public DateTime PODate { get; set; }
     public string PONumber { get; set; }
-    public string LineCode { get; set; }
-    public string LineName { get; set; }
-    public string WorkStationCode { get; set; }
-    public string WorkStationName { get; set; }
+    public string WarehouseCode { get; set; }
+    public string WarehouseName { get; set; }
+    public string AreaCode { get; set; }
+    public string AreaName { get; set; }
     public string ParentItemCode { get; set; }
     public string ParentItemName { get; set; }
     public string ChildItemCode { get; set; }

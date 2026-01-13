@@ -20,7 +20,10 @@ left join
 union all
 select 
 	a.Line_Code WarehouseCode, a.Line_Name WarehouseName, b.AllowAccess, a.Company_Code FactoryCode, cp.Company_Name FactoryName
-From Manufacture_Line a
+From 
+(
+	select distinct Line_Code, Line_Name, Company_Code from Manufacture_Line
+) a
 left join Company_Profile cp on a.Company_Code = cp.Company_Code
 left join 
 (

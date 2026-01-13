@@ -90,7 +90,15 @@ begin
 	JOIN @InsertedHeader i
 		ON r.TempRowId = i.TempRowId;
 
-	set @RowCount = (select count(distinct bomws.WorkStationCode) from @Request a inner join MS_BOMPerworkstation bomws on a.ItemCode = bomws.ParentItem_Code)
+	set @RowCount = 
+	(
+		select count(*) 
+		from 
+		(
+			select distinct a.ProductionId, bomws.WorkStationCode from @Request a inner join MS_BOMPerworkstation bomws on a.ItemCode = bomws.ParentItem_Code
+		) x
+	)
+
 	declare @prefixDetail varchar(14) = 'REQ.DTL.' + FORMAT(GETDATE(), 'yyyyMM')
 	declare @lastSequenceDetail int
 

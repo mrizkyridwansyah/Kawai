@@ -112,7 +112,37 @@ begin
 
 	insert into Inventory_Control (Inventory_Year, Inventory_Month, Fix_Cls, ClosingDate)
 	values (@IvtYear, @IvtMonth, '1', getdate())
-
+	Insert into StockOpnameHistory 
+	(
+	[Period],BarcodeNo
+	,LotNo
+	,ItemCode
+	,RefNo
+	,WarehouseCode
+	,AreaCode
+	,AddressCode
+	,InventoryQty
+	,RegisterDate
+	,RegisterUser
+	,LastUpdate
+	,LastUser 
+	)
+	Select 
+	FORMAT(@NewPeriod, 'yyyyMM'),
+	 BarcodeNo
+	,LotNo
+	,ItemCode
+	,RefNo
+	,WarehouseCode
+	,AreaCode
+	,AddressCode
+	,InventoryQty
+	,RegisterDate
+	,RegisterUser
+	,LastUpdate
+	,LastUser 
+	from StockOpname
+	
 	DELETE FROM StockOpname
 end
 GO
