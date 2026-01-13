@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [PartMaterialRequestItemDetail](
+CREATE TABLE [PartMaterialRequestItemDetail_PO](
 	[IDSeq] [bigint] IDENTITY(1,1) NOT NULL,
 	[RequestDetailID] [bigint] NOT NULL,
 	[ItemCode] [char](25) NOT NULL,
@@ -19,12 +19,14 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-ALTER TABLE [PartMaterialRequestItemDetail]  WITH CHECK ADD FOREIGN KEY([ItemCode])
+ALTER TABLE [PartMaterialRequestItemDetail_PO]  WITH CHECK ADD FOREIGN KEY([ItemCode])
 REFERENCES [Item_Master] ([Item_Code])
 GO
-ALTER TABLE [PartMaterialRequestItemDetail]  WITH CHECK ADD FOREIGN KEY([RequestDetailID])
-REFERENCES [PartMaterialRequestDetail] ([RequestDetailID])
+ALTER TABLE [PartMaterialRequestItemDetail_PO]  WITH CHECK ADD  CONSTRAINT [FK__PartMater__Reque__154CCB23] FOREIGN KEY([RequestDetailID])
+REFERENCES [PartMaterialRequestDetail_PO] ([RequestDetailID])
 GO
-ALTER TABLE [PartMaterialRequestItemDetail]  WITH CHECK ADD FOREIGN KEY([unit_Cls])
+ALTER TABLE [PartMaterialRequestItemDetail_PO] CHECK CONSTRAINT [FK__PartMater__Reque__154CCB23]
+GO
+ALTER TABLE [PartMaterialRequestItemDetail_PO]  WITH CHECK ADD FOREIGN KEY([unit_Cls])
 REFERENCES [Unit_Cls] ([Unit_Cls])
 GO

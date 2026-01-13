@@ -13,6 +13,7 @@ CREATE TABLE [MS_Area](
 	[RegisterDate] [datetime] NULL,
 	[UpdateBy] [varchar](50) NULL,
 	[UpdateDate] [datetime] NULL,
+	[ItemType] [varchar](25) NULL,
  CONSTRAINT [PK_MS_Location] PRIMARY KEY CLUSTERED 
 (
 	[WarehouseCode] ASC,
