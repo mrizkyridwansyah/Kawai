@@ -1,28 +1,42 @@
 <template>
-  <div class="mb-3">
-    <label class="form-label">WS Code</label>
-    <input-text
-      placeholder="WS Code"
-      v-model="model.WorkStationCode"
-      :disabled="mode === 'edit'"
-      :errors="errors?.WorkStationCode"
-    />
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Description</label>
-    <input-text
-      placeholder="Description"
-      v-model="model.WorkStationName"
-      :errors="errors?.WorkStationName"
-    />
-  </div>
-  <div class="mt-4 mb-3">
-    <v-button-submit-modal
+    <table>
+    <tr>
+      <td><label class="form-label">WS Code</label></td>
+      <td style="padding-left: 15px">
+        <input-text
+          placeholder="WS Code"
+          v-model="model.WorkStationCode"
+          :disabled="mode === 'edit'"
+          :errors="errors?.WorkStationCode"
+          style="width: 200px;"
+          maxlength="15"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-top: 5px">
+        <label class="form-label">Description</label>
+      </td>
+      <td style="padding-top: 5px; padding-left: 15px">
+        <input-text
+          placeholder="Description"
+          v-model="model.WorkStationName"
+          :errors="errors?.WorkStationName"
+          style="width: 250px;"
+          maxlength="100"
+        />
+      </td>
+    </tr>
+  </table>
+  <div style="float: right" class="mt-4 mb-3">
+    <v-button-submit
       :submit="submit"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"
     />
   </div>
+
+  
 </template>
 <script>
 export default {

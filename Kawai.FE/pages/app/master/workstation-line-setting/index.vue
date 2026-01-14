@@ -10,6 +10,8 @@
           <filter-factory-privileges
             class="form-control"
             v-model="filter.factory"
+            style-code="width: 110px"
+              style-desc="width: 250px"
           />
         </div>
       </div>
@@ -19,12 +21,14 @@
           >Process</label
         >
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
-          <filter-trade
-            class="form-control"
-            placeholder="Search Process"
-            v-model="filter.supplier"
-            :trade-cls="['1']"
-          />
+          <filter-trade-2
+              class="form-control"
+              v-model="filter.supplier"
+              :trade-cls="['1']"
+              style-code="width: 110px"
+              style-desc="width: 250px"
+            />
+          
         </div>
       </div>
       <div class="row mt-1">
@@ -38,6 +42,8 @@
             :company="filter.factory"
             :manufacture="filter.supplier"
             v-model="filter.linecode"
+            style-code="width: 110px"
+              style-desc="width: 250px"
           />
         </div>
       </div>

@@ -157,7 +157,7 @@
                   <tr>
                     <td colspan="2"><label>Country Cls</label></td>
                     <td colspan="2">
-                      <input-cls
+                       <input-cls-desc
                         placeholder=" "
                         type-data="Country_Cls"
                         v-model="model.Country_Cls"
@@ -167,7 +167,7 @@
                     <td></td>
                     <td><label>Epte</label></td>
                     <td colspan="3">
-                      <input-cls
+                      <input-cls-desc
                         placeholder=" "
                         type-data="Epte_Cls"
                         v-model="model.Epte_Cls"
@@ -273,7 +273,7 @@
                   <tr>
                     <td colspan="2"><label>PO Cls</label></td>
                     <td colspan="2">
-                      <input-cls
+                        <input-cls-desc
                         placeholder=" "
                         v-model="model.PO_Cls"
                         type-data="PO_Cls"
@@ -290,7 +290,7 @@
                   <tr>
                     <td colspan="2"><label>NG Cls</label></td>
                     <td colspan="2">
-                      <input-cls
+                      <input-cls-desc
                         placeholder=" "
                         v-model="model.NG_Cls"
                         type-data="NG_Cls"
