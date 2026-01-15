@@ -1,6 +1,7 @@
 <template>
-  <div class="row">
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+  <table>
+    <tr>
+      <td :style="this.styleCode">
       <input-multiselect
         v-model="tempValue"
         :options="list"
@@ -34,16 +35,17 @@
       <small class="form-text text-muted" v-if="description">{{
         description
       }}</small>
-    </div>
-    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
+    </td>
+    <td :style="this.styleDesc" style="padding-left: 5px">
       <input
         type="text"
         disabled
-        :value="selectedItem?.CompanyName || ''"
+        :value="selectedItem?.AddressName || ''"
         class="w-100 form-control"
       />
-    </div>
-  </div>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -56,7 +58,9 @@ export default {
   props: [
     'modelValue', 'type', 'label', 'col', 'description',
     'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class', 'warehouse', 'area'
+    , 'disabled', 'multiple', 'class', 'warehouse', 'area',
+    'styleCode',
+    'styleDesc',
   ],
   data: () => ({
     isLoading: false,

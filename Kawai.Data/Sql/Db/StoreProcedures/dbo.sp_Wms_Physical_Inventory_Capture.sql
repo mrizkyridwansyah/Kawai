@@ -1,40 +1,35 @@
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER   procedure [dbo].[sp_Wms_Physical_Inventory_Capture]
-	@WarehouseCode	nvarchar(50)
-	,@ItemCode		nvarchar(50)
+CREATE OR ALTER procedure [dbo].[sp_Wms_Physical_Inventory_Capture]
+	@Details	dbo.tvp_StockDetail READONLY
 as
 begin
-	select	[Warehouse_Code]
-			,[Item_Code]
-			,[LM_PreMonth]
-			,[LM_Receipt]
-			,[LM_Supply]
-			,[LM_LossReject]
-			,[LM_Current]
-			,[LM_Inventory]
-			,[LM_Reason]
-			,[TM_PreMonth]
-			,[TM_Receipt]
-			,[TM_Supply]
-			,[TM_LossReject]
-			,[TM_Current]
-			,[TM_Inventory]
-			,[TM_Reason]
-			,[NM_PreMonth]
-			,[NM_Receipt]
-			,[NM_Supply]
-			,[NM_LossReject]
-			,[NM_Current]
-			,[NM_Inventory]
-			,[NM_Reason]
-			,[Last_Update]
-			,[Last_User]
-	From Stock_Master 
-	Where Warehouse_Code = @WarehouseCode
-	and Item_Code = @ItemCode
+
+	SELECT 
+		sd.RefNo, sd.WarehouseCode, sd.AreaCode, sd.AddressCode,
+		sd.BarcodeNo, sd.ItemCode, sd.LotNo, sd.Qty CurrentQty, so.InventoryQty, 
+		StatusScan = case when so.InventoryQty is null then 'NOTYET' when so.InventoryQty = sd.Qty then 'SCANNED' else 'DIFFERENT' end,
+		so.LastUpdate, so.LastUser
+	FROM StockDetail sd
+	LEFT JOIN StockOpname so 
+		on sd.RefNo				= so.RefNo
+		and sd.WarehouseCode	= so.WarehouseCode
+		and sd.AreaCode			= so.AreaCode
+		and sd.AddressCode		= so.AddressCode
+		and sd.BarcodeNo		= so.BarcodeNo
+		and sd.LotNo			= so.LotNo
+		and sd.ItemCode			= so.ItemCode
+	INNER JOIN @Details d 
+		on sd.RefNo				= d.RefNo
+		and sd.WarehouseCode	= d.WarehouseCode
+		and sd.AreaCode			= d.AreaCode
+		and sd.AddressCode		= d.AddressCode
+		and sd.BarcodeNo		= d.BarcodeNo
+		and sd.LotNo			= d.LotNo
+		and sd.ItemCode			= d.ItemCode
 
 end

@@ -1,7 +1,6 @@
 <template>
     <v-frame title="Slow Moving Report (Red Stock, Yellow Stock)" icon="table">
-        <template #frame-content>
-          
+        <template #frame-content>          
           <!-- FILTER -->
           <table>
             <tr>
@@ -56,60 +55,60 @@
           </table>
           
             
-            <!-- TABLE -->
-            <v-table
-              :filter="filter"
-              :export-excel="true"
-              :export-excel-action="exportExcel"
-              :frozen-column-left="2"
-              :data-items="ds.data.Items"
-              :ds="ds"
-              ref="vtable"
-            >
-              <template #table-content>
-                <table
-                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
-                  v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-                  ref="table"
-                >
-                  <thead>
-                    <tr>
-                        <th class="text-center" rowspan="2">Long Stock</th>
-                        <th class="text-center" rowspan="2">Warehouse</th>
-                        <th class="text-center" rowspan="2">Item Code</th>
-                        <th class="text-center" rowspan="2">Item Name</th>
-                        <th class="text-center" :colspan="periods.length"> Period</th>
-                        <th class="text-center" rowspan="2">Unit</th>
-                        <th class="text-center" rowspan="2">Remarks</th>
-                    </tr>
-                    <tr>
-                        <th class="text-center"
-                            v-for="p in periods"
-                            :key="p"
-                        >
-                            {{ formatPeriod(p) }}
-                        </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
-                        <td>{{ item.LongStock }}</td>
-                        <td>{{ item.WHCode }} - {{ item.WHName }}</td>
-                        <td>{{ item.Item_Code }}</td>
-                        <td>{{ item.Item_Name }}</td>
-                        <td class="text-end"
-                            v-for="p in periods"
-                            :key="p"
-                            >
-                             {{ formatQty(item.PeriodQty?.[p]) }}
-                        </td>
-                        <td>{{ item.Unit_Name }}</td>
-                        <td>{{ item.Remarks }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </template>
-            </v-table>
+          <!-- TABLE -->
+          <v-table
+            :filter="filter"
+            :export-excel="true"
+            :export-excel-action="exportExcel"
+            :frozen-column-left="2"
+            :data-items="ds.data.Items"
+            :ds="ds"
+            ref="vtable"
+          >
+            <template #table-content>
+              <table
+                class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+                ref="table"
+              >
+                <thead>
+                  <tr>
+                      <th class="text-center" rowspan="2">Long Stock</th>
+                      <th class="text-center" rowspan="2">Warehouse</th>
+                      <th class="text-center" rowspan="2">Item Code</th>
+                      <th class="text-center" rowspan="2">Item Name</th>
+                      <th class="text-center" :colspan="periods.length"> Period</th>
+                      <th class="text-center" rowspan="2">Unit</th>
+                      <th class="text-center" rowspan="2">Remarks</th>
+                  </tr>
+                  <tr>
+                      <th class="text-center"
+                          v-for="p in periods"
+                          :key="p"
+                      >
+                          {{ formatPeriod(p) }}
+                      </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
+                      <td>{{ item.LongStock }}</td>
+                      <td>{{ item.WHCode }} - {{ item.WHName }}</td>
+                      <td>{{ item.Item_Code }}</td>
+                      <td>{{ item.Item_Name }}</td>
+                      <td class="text-end"
+                          v-for="p in periods"
+                          :key="p"
+                          >
+                            {{ formatQty(item.PeriodQty?.[p]) }}
+                      </td>
+                      <td>{{ item.Unit_Name }}</td>
+                      <td>{{ item.Remarks }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </template>
+          </v-table>
             
         </template>
     </v-frame>

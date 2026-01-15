@@ -4,6 +4,7 @@ using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Shared;
 using Kawai.Domain.Models;
+using System.Net.Sockets;
 
 namespace Kawai.Data.Repositories;
 
@@ -24,37 +25,31 @@ public class PhysicalInventoryRepository : IPhysicalInventoryRepository
         return (await _dbExecutor.QueryListAsync<PhysicalInventoryDto>(sp, paramQuery)).ToList();
     }
 
-    public async Task Update(PhysicalInventoryUpdateDto model, string userId)
+    public async Task Update(List<PhysicalInventoryUpdateDto> model, string userId)
     {
         string sp = "sp_Wms_Physical_Inventory_Update";
 
         await _dbExecutor.ExecuteAsync(sp, new
         {
-            model.WarehouseCode,
-            ItemCode = model.ProductCode,
-            model.Period,
-            model.Inventory,
-            model.Reason,
-            LastUser = userId
+            LastUser = userId,
+            Details = DataTableHelper.ToDataTable(model)
         });
     }
 
-    public async Task<Dictionary<string, object>> Capture(string warehouseCode, string itemCode)
+    public async Task<Dictionary<string, object>> Capture(List<PhysicalInventoryUpdateDto> model)
     {
         string sp = "sp_Wms_Physical_Inventory_Capture";
-
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(
-            sp, new
-            {
-                WarehouseCode = warehouseCode,
-                ItemCode = itemCode
-            }
-        );
+        var result = await _dbExecutor.QueryListAsync<PhysicalInventoryCaptureDto>(sp, new
+        {
+            Details = DataTableHelper.ToDataTable(model)
+        });
 
         if (result == null)
             return new Dictionary<string, object>();
 
-        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
-
+        return new Dictionary<string, object>
+        {
+            { "Detail", result }
+        };
     }
 }
