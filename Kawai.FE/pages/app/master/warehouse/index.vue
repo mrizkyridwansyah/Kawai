@@ -139,6 +139,14 @@ export default {
         Id: "WarehouseName",
         Name: "Warehouse Name",
       },
+      {
+        Id: "AdmGroup",
+        Name: "Adm Group Code",
+      },
+      {
+        Id: "AdmGroupName",
+        Name: "Adm Group Name",
+      },
     ],
     filter: {
       keyword: null,
@@ -158,7 +166,19 @@ export default {
           label: "Warehouse Code",
           value: "WarehouseCode",
           selected: true,
-          direction: "desc",
+          direction: "asc",
+        },
+        {
+          label: "Adm Group Code",
+          value: "AdmGroup",
+          selected: false,
+          direction: "asc",
+        },
+        {
+          label: "Adm Group Name",
+          value: "AdmGroupName",
+          selected: false,
+          direction: "asc",
         },
       ],
     },

@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="Part Material Supply Request (By BOM)" icon="cart-flatbed">
+  <v-frame title="Part Material Supply Request (Subcon)" icon="cart-flatbed">
     <template #frame-content>
       <table>
         <tr>
