@@ -120,12 +120,12 @@ export const useWarehouse = defineStore('Warehouse', {
 
       })
     },
-    exportExcel: function () {
+    exportExcel: function (paramFilter) {
       return new Promise((resolve, reject) => {
         let filterExport = {
           Page: 1,
           Length: 1000000,
-          Filters: [],
+          Filters: paramFilter || [],
           Sorts: {},
         };
 

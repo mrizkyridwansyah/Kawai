@@ -30,7 +30,6 @@
       </td>
       <td style="padding-left: 15px; padding-top: 5px">
         <input-text
-          placeholder="Area Name"
           v-model="model.AreaName"
           :errors="errors?.AreaName"
           style="width: 470px"

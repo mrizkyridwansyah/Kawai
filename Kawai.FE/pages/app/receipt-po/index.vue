@@ -24,7 +24,6 @@
                 <td style="padding-left: 15px; padding-top: 5px" colspan="3">
                   <filter-trade-2
                     class="form-control"
-                    placeholder="Supplier"
                     v-model="filter.SupplierCode"
                     :trade-cls="['2', '3']"
                     :disabled="filter.ReceiptId != null"
@@ -60,7 +59,7 @@
                 <td style="padding-top: 5px; padding-left: 15px" colspan="3">
                   <input-po
                     class="form-control"
-                    placeholder=" "
+                    
                     v-model="filter.PONumber"
                     :factory-code="filter.FactoryCode"
                     :supplier-code="filter.SupplierCode"
@@ -138,7 +137,6 @@
                   <filter-cls-2
                     class="form-control"
                     type-data="BCType_Cls"
-                    placeholder="BC Type"
                     v-model="model.BCType"
                     :errors="errors?.BCType"
                     style-code="width: 120px"
@@ -186,7 +184,6 @@
                   <filter-cls-2
                     class="form-control"
                     type-data="Transport_Cls"
-                    placeholder="Transport"
                     v-model="model.Transport"
                     :errors="errors?.Transport"
                     style-code="width: 120px"

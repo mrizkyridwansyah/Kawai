@@ -14,13 +14,11 @@
         textField="text"
         valueField="value"
         v-model="model.QC_Status"
-        placeholder=" QC Status"
       />
     </div>
     <div class="mb-3">
       <label class="form-label">Remarks</label>
       <input-text
-        placeholder="Remarks"
         v-model="model.Remarks"
         :errors="errors?.Remarks"
       />

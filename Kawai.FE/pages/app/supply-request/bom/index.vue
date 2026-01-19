@@ -42,7 +42,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
               class="form-control"
-              placeholder=" "
+              
               :trade-cls="['2', '3']"
               v-model="filter.SupplierCode"
               style-code="width: 110px"
@@ -57,7 +57,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-po
               class="form-control"
-              placeholder=" "
+              
               v-model="filter.PONumber"
               :factory-code="filter.FactoryCode"
               :supplier-code="filter.SupplierCode"
@@ -76,7 +76,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-warehouse-privileges
               class="form-control"
-              placeholder=" "
+              
               disabled
               :factory-code="filter.FactoryCode"
               v-model="filter.Warehouse"
@@ -92,7 +92,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-remaining-cls
               class="form-control"
-              placeholder=" "
+              
               v-model="filter.RemainingCls"
               style="width: 110px"
             />

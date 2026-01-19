@@ -8,7 +8,6 @@
             <filter-cls-2
               class="form-control"
               type-data="ClasificationPart_Cls"
-              placeholder=" Search Category"
               v-model="filter.category"
               style-code="width: 150px"
               style-desc="width: 300px"
@@ -22,7 +21,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-item-by-stock
               class="form-control"
-              placeholder="Search Item"
+              
               v-model="filter.item"
               warehouse="ALL"
               area="ALL"
@@ -41,7 +40,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-warehouse-by-stock
               class="form-control"
-              placeholder="Search Warehouse"
+              
               v-model="filter.warehouse"
               :item-code="filter.item"
               :show-option-all="true"
@@ -57,7 +56,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-lot-by-stock
               class="form-control"
-              placeholder="Search Lot No"
+              
               v-model="filter.lotno"
               warehouse="ALL"
               area="ALL"

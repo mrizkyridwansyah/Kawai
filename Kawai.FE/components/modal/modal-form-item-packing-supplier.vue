@@ -37,7 +37,6 @@
         "
       >
         <input-money
-          placeholder="Qty Packing"
           v-model="model.QtyPacking"
           :errors="errors?.QtyPacking"
           style="width: 100px"

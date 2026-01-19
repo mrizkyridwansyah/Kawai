@@ -9,7 +9,7 @@
         :clear-on-select="false"
         :preserve-search="true"
         open-direction="bottom"
-        :placeholder="placeholder || 'Search Timezone'"
+        :placeholder="placeholder || ' '"
         :searchable="true"
         label="Name"
         track-by="Id"

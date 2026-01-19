@@ -18,7 +18,6 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px" colspan="5">
         <input-text
-          placeholder="Warehouse Code"
           v-model="model.WarehouseCode"
           :disabled="mode === 'edit'"
           :errors="errors?.WarehouseCode"
@@ -33,7 +32,6 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px" colspan="5">
         <input-text
-          placeholder="Warehouse Name"
           v-model="model.WarehouseName"
           :errors="errors?.WarehouseName"
           :disabled="mode === 'edit'"
@@ -48,9 +46,8 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px" colspan="5">
         <input-trade
-          placeholder="Adm Group"
           v-model="model.AdmGroup"
-          :trade-cls="['1', '2', '3']"
+          :trade-cls="['1', '3']"
           :errors="errors?.AdmGroup"
           style-code="width: 130px"
           style-desc="width: 250px"
@@ -74,7 +71,6 @@
       <td style="padding-top: 5px; padding-left: 15px">
         <input-cls
           type-data="ItemStockControlCls"
-          placeholder="Stock Cls"
           v-model="model.StockControlCls"
           :errors="errors?.StockControlCls"
           style-code="width: 100px"
@@ -87,7 +83,6 @@
       <td style="padding-top: 5px; padding-left: 15px">
         <input-cls
           type-data="NGCls"
-          placeholder="NG Cls"
           v-model="model.NGCls"
           :errors="errors?.NGCls"
           style-code="width: 100px"

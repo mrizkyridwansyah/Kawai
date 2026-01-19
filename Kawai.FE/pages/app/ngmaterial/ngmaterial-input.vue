@@ -8,7 +8,6 @@
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
           <filter-trade
-            placeholder="Supplier"
             v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
             :disabled="filter.ClaimId != null"
@@ -48,7 +47,6 @@
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
           <filter-cls
             type-data="BCType_Cls"
-            placeholder="BC Type"
             v-model="model.BCType"
             :errors="errors?.BCType"
           />
@@ -114,7 +112,6 @@
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
           <filter-cls
             type-data="Transport_Cls"
-            placeholder="Transport"
             v-model="model.Transport"
             :errors="errors?.Transport"
           />

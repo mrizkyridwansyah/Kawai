@@ -7,15 +7,13 @@
           >Model Cls</label
         >
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
-           <filter-cls-2
-                    class="form-control"
-                    type-data="Model_Cls"
-                    placeholder="Model Cls"
-                    v-model="filter.modelcls"
-                      style-code="width: 120px"
-                    style-desc="width: 250px"
-                  />
- 
+          <filter-cls-2
+            class="form-control"
+            type-data="Model_Cls"
+            v-model="filter.modelcls"
+            style-code="width: 120px"
+            style-desc="width: 250px"
+          />
         </div>
       </div>
       <div class="row mt-1">
@@ -26,11 +24,10 @@
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
           <filter-item-by-modelcls
             class="form-control"
-            placeholder="Search Item"
             v-model="filter.item"
             :modelCls="filter.modelcls"
-             style-code="width: 120px"
-                    style-desc="width: 250px"
+            style-code="width: 120px"
+            style-desc="width: 250px"
           />
         </div>
       </div>

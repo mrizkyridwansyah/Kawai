@@ -4,7 +4,6 @@
       <td><label class="form-label">WS Code</label></td>
       <td style="padding-left: 15px">
         <input-text
-          placeholder="WS Code"
           v-model="model.WorkStationCode"
           :disabled="mode === 'edit'"
           :errors="errors?.WorkStationCode"
@@ -19,7 +18,6 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px">
         <input-text
-          placeholder="Description"
           v-model="model.WorkStationName"
           :errors="errors?.WorkStationName"
           style="width: 250px;"

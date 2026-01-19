@@ -6,7 +6,7 @@
         v-model="tempValue"
         :options="list"
         :loading="isLoading"
-        :placeholder="placeholder || 'Search Warehouse'"
+        :placeholder="placeholder || ' '"
         :label="displayLabel"
         track-by="WarehouseCode"
         :multiple="multiple === true"

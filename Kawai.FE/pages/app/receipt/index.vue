@@ -20,7 +20,6 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
               class="form-control"
-              placeholder="Search Supplier"
               :trade-cls="['2', '3']"
               v-model="filter.SupplierCode"
               :show-option-all="true"

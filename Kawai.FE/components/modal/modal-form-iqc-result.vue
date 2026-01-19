@@ -18,7 +18,6 @@
           <div class="col-6">
             <label class="form-label">Qty NG</label>
             <input-money
-              placeholder="Qty / Case (Finish Goods)"
               class="text-right"
               v-model="model.QtyNG"
               :errors="errors?.QtyNG"

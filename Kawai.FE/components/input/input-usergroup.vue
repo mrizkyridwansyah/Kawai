@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `UserGroup`"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="FullName"
       track-by="UserGroupID"

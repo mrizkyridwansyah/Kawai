@@ -7,7 +7,7 @@
           <td style="padding-left: 15px">
             <filter-item-by-stock
               class="form-control"
-              placeholder="Search Item"
+              
               v-model="filter.item"
               warehouse="ALL"
               area="ALL"
@@ -26,7 +26,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-warehouse-by-stock
               class="form-control"
-              placeholder="Search Warehouse"
+              
               v-model="filter.warehouse"
               :item-code="filter.item"
               :show-option-all="true"
@@ -42,7 +42,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-area-by-stock
               class="form-control"
-              placeholder="Search Area"
+              
               v-model="filter.area"
               :warehouse="filter.warehouse"
               :item="filter.item"
@@ -59,7 +59,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-lot-by-stock
               class="form-control"
-              placeholder="Search Lot No"
+              
               v-model="filter.lotno"
               :warehouse="filter.warehouse"
               :area="filter.area"

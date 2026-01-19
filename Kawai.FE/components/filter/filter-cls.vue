@@ -6,7 +6,7 @@
         v-model="tempValue"
         :options="list"
         :loading="isLoading"
-        :placeholder="placeholder || 'Search Cls'"
+        :placeholder="placeholder || ' '"
         :label="displayLabel"
         track-by="ClsCode"
         :multiple="multiple === true"

@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Claim Number`"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="ClaimNo"
       track-by="ClaimID"

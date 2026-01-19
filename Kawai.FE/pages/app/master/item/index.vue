@@ -563,7 +563,6 @@
                         </td>
                         <td style="padding-left: 15px">
                           <input-warehouse-item
-                            placeholder=" "
                             v-model="model.WarehouseCode"
                             :errors="errors?.WarehouseCode"
                             style-code="width: 125px"
@@ -597,7 +596,7 @@
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-trade
                             :trade-cls="['2', '3']"
-                            placeholder=" "
+                            
                             v-model="model.SupplierCode"
                             :errors="errors?.SupplierCode"
                             style-code="width: 125px"
@@ -615,7 +614,7 @@
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-delivery-place
                             v-model="model.DeliveryPlaceCode"
-                            placeholder=" "
+                            
                             :errors="errors?.DeliveryPlaceCode"
                             :trade="model.SupplierCode"
                             style-code="width: 125px"
@@ -632,7 +631,7 @@
                         </td>
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-hs
-                            placeholder=" "
+                            
                             v-model="model.HSCode"
                             :errors="errors?.HSCode"
                             style="width: 125px"

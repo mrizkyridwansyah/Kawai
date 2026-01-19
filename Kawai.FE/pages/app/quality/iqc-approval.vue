@@ -19,7 +19,7 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
-              placeholder=" "
+              
               class="form-control"
               v-model="filter.SupplierCode"
               :trade-cls="['2', '3']"
@@ -35,7 +35,7 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-iqc-status
-              placeholder=" "
+              
               class="form-control"
               v-model="filter.Status"
               style="width: 110px"
@@ -48,7 +48,7 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-iqc-source
-              placeholder=" "
+              
               class="form-control"
               v-model="filter.Source"
               style="width: 140px"

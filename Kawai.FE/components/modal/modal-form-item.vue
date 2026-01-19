@@ -2,7 +2,6 @@
   <div class="mb-3">
     <label class="form-label">Item Code</label>
     <input-text
-      placeholder="Item Code"
       v-model="model.ItemCode"
       :disabled="mode === 'edit'"
       :errors="errors?.ItemCode"
@@ -11,7 +10,6 @@
   <div class="mb-3">
     <label class="form-label">Item Name</label>
     <input-text
-      placeholder="Item Name"
       v-model="model.ItemName"
       :errors="errors?.ItemName"
     />
@@ -38,7 +36,6 @@
               <label class="form-label">Finish Good Part</label>
               <input-cls
                 type-data="ItemFinishGoodCls"
-                placeholder="Finish Good Part"
                 v-model="model.FinishGoodPartCls"
                 :errors="errors?.FinishGoodPartCls"
               />
@@ -46,7 +43,6 @@
             <div class="mb-3">
               <label class="form-label">Part Number</label>
               <input-text
-                placeholder="Part Number"
                 v-model="model.MakerItemCode"
                 :errors="errors?.MakerItemCode"
               />
@@ -54,7 +50,6 @@
             <div class="mb-3">
               <label class="form-label">Drawing Code</label>
               <input-text
-                placeholder="Drawing Code"
                 v-model="model.DrawingNumber"
                 :errors="errors?.DrawingNumber"
               />
@@ -67,7 +62,6 @@
             <div class="mb-3">
               <label class="form-label">Warehouse</label>
               <input-warehouse-item
-                placeholder="Warehouse"
                 v-model="model.WarehouseCode"
                 :errors="errors?.WarehouseCode"
               />
@@ -75,7 +69,6 @@
             <div class="mb-3">
               <label class="form-label">Address</label>
               <input-text
-                placeholder="Address"
                 v-model="model.Address"
                 :errors="errors?.Address"
               />
@@ -83,7 +76,6 @@
             <div class="mb-3">
               <label class="form-label">Supplier</label>
               <input-trade
-                placeholder="Supplier"
                 :trade-cls="['2', '3']"
                 v-model="model.SupplierCode"
                 :errors="errors?.SupplierCode"
@@ -92,7 +84,6 @@
             <div class="mb-3">
               <label class="form-label">Delivery</label>
               <input-delivery-place
-                placeholder="Item Name"
                 v-model="model.DeliveryPlaceCode"
                 :errors="errors?.DeliveryPlaceCode"
                 :trade="model.SupplierCode"
@@ -101,7 +92,6 @@
             <div class="mb-3">
               <label class="form-label">HS Code</label>
               <input-hs
-                placeholder="HS"
                 v-model="model.HSCode"
                 :errors="errors?.HSCode"
               />
@@ -115,7 +105,6 @@
               <label class="form-label">Part Cls</label>
               <input-cls
                 type-data="ItemPartCls"
-                placeholder="Part Cls"
                 v-model="model.PartCls"
                 :errors="errors?.PartCls"
               />
@@ -170,7 +159,6 @@
           <div class="mb-3">
             <label class="form-label">Qty / Case (Finish Goods)</label>
             <input-money
-              placeholder="Qty / Case (Finish Goods)"
               class="text-right"
               v-model="model.NumberEntering"
               :errors="errors?.NumberEntering"
@@ -180,7 +168,6 @@
             <label class="form-label">Packing Style</label>
             <input-cls
               type-data="PackingStyle_Cls"
-              placeholder="Packing Style"
               v-model="model.PackingStyleCls"
               :errors="errors?.PackingStyleCls"
             />
@@ -189,7 +176,6 @@
             <label class="form-label">Group Cls</label>
             <input-cls
               type-data="Group_Cls"
-              placeholder="Group Cls"
               v-model="model.GroupCls"
               :errors="errors?.GroupCls"
             />
@@ -197,7 +183,6 @@
           <div class="mb-3">
             <label class="form-label">Standard Stock</label>
             <input-money
-              placeholder="Standard Stock"
               v-model="model.StandardStock"
               :errors="errors?.StandardStock"
             />
@@ -205,7 +190,6 @@
           <div class="mb-3">
             <label class="form-label">Safety Stock</label>
             <input-money
-              placeholder="Safety Stock"
               v-model="model.SafetyStock"
               :errors="errors?.SafetyStock"
             />
@@ -213,7 +197,6 @@
           <div class="mb-3">
             <label class="form-label">Safety Stock (%)</label>
             <input-money
-              placeholder="Safety Stock (%)"
               v-model="model.SafetyStockPercentage"
               :errors="errors?.SafetyStockPercentage"
             />
@@ -221,7 +204,6 @@
           <div class="mb-3">
             <label class="form-label">Max Stock</label>
             <input-money
-              placeholder="Max Stock"
               v-model="model.MaxStock"
               :errors="errors?.MaxStock"
             />
@@ -231,7 +213,6 @@
           <div class="mb-3">
             <label class="form-label">Qty/Box (Parts/Material)</label>
             <input-money
-              placeholder="Qty/Box (Parts/Material)"
               v-model="model.NumberBox"
               :errors="errors?.NumberBox"
             />
@@ -239,7 +220,6 @@
           <div class="mb-3">
             <label class="form-label">Accounting</label>
             <input-text
-              placeholder="Accounting"
               v-model="model.AccountingCode"
               :errors="errors?.AccountingCode"
             />
@@ -248,7 +228,6 @@
             <label class="form-label">Explosion Cls</label>
             <input-cls
               type-data="ItemExplosionCls"
-              placeholder="Explosion Cls"
               v-model="model.ExplosionCls"
               :errors="errors?.ExplosionCls"
             />
@@ -257,7 +236,6 @@
             <label class="form-label">Purchase Person</label>
             <input-cls
               type-data="PersonInCharge_Cls"
-              placeholder="Purchase Person"
               v-model="model.PersonInChargeCls"
               :errors="errors?.PersonInChargeCls"
             />
@@ -265,7 +243,6 @@
           <div class="mb-3">
             <label class="form-label">Allowance Day</label>
             <input-money
-              placeholder="Allowance Day"
               v-model="model.AlowanceDay"
               :errors="errors?.AlowanceDay"
             />
@@ -273,7 +250,6 @@
           <div class="mb-3">
             <label class="form-label">Use End Date</label>
             <input-date
-              placeholder="Use End Date"
               v-model="model.UseEndDay"
               :errors="errors?.UseEndDay"
             />
@@ -281,7 +257,6 @@
           <div class="mb-3">
             <label class="form-label">Min Stock</label>
             <input-money
-              placeholder="Min Stock"
               v-model="model.MinStock"
               :errors="errors?.MinStock"
             />
@@ -291,7 +266,6 @@
           <div class="mb-4">
             <label class="form-label">Make Or Buy Cls</label>
             <input-cls
-              placeholder="Make Or Buy Cls"
               type-data="ItemMakeOrBuyCls"
               v-model="model.MakeBuyCls"
               :errors="errors?.MakeBuyCls"
@@ -301,7 +275,6 @@
             <label class="form-label">Control</label>
             <input-cls
               type-data="Control_Cls"
-              placeholder="Control"
               v-model="model.ControlCls"
               :errors="errors?.ControlCls"
             />
@@ -310,7 +283,6 @@
             <label class="form-label">Unit Cls</label>
             <input-cls
               type-data="Unit_Cls"
-              placeholder="Unit Cls"
               v-model="model.UnitCls"
               :errors="errors?.UnitCls"
             />
@@ -318,7 +290,6 @@
           <div class="mb-3">
             <label class="form-label">Order Point Qty</label>
             <input-money
-              placeholder="Order Point Qty"
               v-model="model.OrderPointQty"
               :errors="errors?.OrderPointQty"
             />
@@ -326,7 +297,6 @@
           <div class="mb-3">
             <label class="form-label">Min. Order Qty</label>
             <input-money
-              placeholder="Min. Order Qty"
               v-model="model.MinOrder"
               :errors="errors?.MinOrder"
             />
@@ -335,7 +305,6 @@
             <label class="form-label">Packing Style Part/Material</label>
             <input-cls
               type-data="PackingStyle_Cls"
-              placeholder="Packing Style Part/Material"
               v-model="model.PackingStyleMaterialCls"
               :errors="errors?.PackingStyleMaterialCls"
             />
@@ -344,7 +313,6 @@
             <label class="form-label">Type Accs</label>
             <input-cls
               type-data="ItemTypeAccs"
-              placeholder="Type Accs"
               v-model="model.TypeAccs"
               :errors="errors?.TypeAccs"
             />
@@ -354,7 +322,6 @@
           <div class="mb-4">
             <label class="form-label">PO Type</label>
             <input-cls
-              placeholder="PO Type"
               type-data="POType_Cls"
               v-model="model.POTypeCls"
               :errors="errors?.POTypeCls"
@@ -363,7 +330,6 @@
           <div class="mb-4">
             <label class="form-label">Destination Cls</label>
             <input-cls
-              placeholder="Destination Cls"
               type-data="Destination_Cls"
               v-model="model.DestinationCls"
               :errors="errors?.DestinationCls"
@@ -372,7 +338,6 @@
           <div class="mb-3">
             <label class="form-label">Color Cls</label>
             <input-cls
-              placeholder="Color Cls"
               type-data="Color_Cls"
               v-model="model.ColorCls"
               :errors="errors?.ColorCls"
@@ -382,7 +347,6 @@
             <label class="form-label">Model</label>
             <input-cls
               type-data="Model_Cls"
-              placeholder="Model Cls"
               v-model="model.ModelCls"
               :errors="errors?.ModelCls"
             />
@@ -390,7 +354,6 @@
           <div class="mb-3">
             <label class="form-label">Delivery Leadtime</label>
             <input-money
-              placeholder="Delivery Leadtime"
               v-model="model.DeliveryReadTime"
               :errors="errors?.DeliveryReadTime"
             />
@@ -406,7 +369,6 @@
             <div class="mb-3">
               <label class="form-label">Factory</label>
               <input-manufacture
-                placeholder="Factory Code"
                 v-model="model.ManufactureCode"
                 :errors="errors?.ManufactureCode"
               />
@@ -415,7 +377,6 @@
               <label class="form-label">Line</label>
               <input-line
                 :manufacture="model.ManufactureCode"
-                placeholder="Line Code"
                 v-model="model.LineCode"
                 :errors="errors?.LineCode"
               />
@@ -429,7 +390,6 @@
               <label class="form-label">Material Cls</label>
               <input-cls
                 type-data="Material_Cls"
-                placeholder="Material Cls"
                 v-model="model.MaterialCls"
                 :errors="errors?.MaterialCls"
               />
@@ -437,7 +397,6 @@
             <div class="mb-3">
               <label class="form-label">Width</label>
               <input-money
-                placeholder="Width"
                 v-model="model.Width"
                 :errors="errors?.Width"
               />
@@ -445,7 +404,6 @@
             <div class="mb-3">
               <label class="form-label">Length</label>
               <input-money
-                placeholder="Length"
                 v-model="model.Length"
                 :errors="errors?.Length"
               />
@@ -453,7 +411,6 @@
             <div class="mb-3">
               <label class="form-label">Nett Weight</label>
               <input-money
-                placeholder="Nett Weight"
                 v-model="model.Weight"
                 :errors="errors?.Weight"
               />
@@ -461,7 +418,6 @@
             <div class="mb-3">
               <label class="form-label">Gross Weight</label>
               <input-money
-                placeholder="Gross Weight"
                 v-model="model.GrossWeight"
                 :errors="errors?.GrossWeight"
               />
@@ -477,7 +433,6 @@
                   <label class="form-label">Sheet Coil Cls</label>
                   <input-cls
                     type-data="SheetCoil_Cls"
-                    placeholder="Sheet Coil Cls"
                     v-model="model.SheetCoilCls"
                     :errors="errors?.SheetCoilCls"
                   />
@@ -486,7 +441,6 @@
                   <label class="form-label">Drawing Material Cls</label>
                   <input-cls
                     type-data="DrawingMaterial_Cls"
-                    placeholder="Drawing Material Cls"
                     v-model="model.DrawingMaterialCls"
                     :errors="errors?.DrawingMaterialCls"
                   />
@@ -495,7 +449,6 @@
                   <label class="form-label">Surface Treatment Cls</label>
                   <input-cls
                     type-data="SurfaceTreatment_Cls"
-                    placeholder="Surface Treatment Cls"
                     v-model="model.SurfaceTreatmentCls"
                     :errors="errors?.SurfaceTreatmentCls"
                   />
@@ -504,7 +457,6 @@
                   <label class="form-label">Heat Treatment Cls</label>
                   <input-cls
                     type-data="HeatTreatment_Cls"
-                    placeholder="Heat Treatment Cls"
                     v-model="model.HeatTreatmentCls"
                     :errors="errors?.HeatTreatmentCls"
                   />
@@ -513,7 +465,6 @@
                   <label class="form-label">Classification Part Cls</label>
                   <input-cls
                     type-data="ClasificationPart_Cls"
-                    placeholder="Classification Part Cls"
                     v-model="model.ClasificationPartCls"
                     :errors="errors?.ClasificationPartCls"
                   />
@@ -523,7 +474,6 @@
                 <div class="mb-3">
                   <label class="form-label">Thickness</label>
                   <input-money
-                    placeholder="Thickness"
                     v-model="model.Thickness"
                     :errors="errors?.Thickness"
                   />
@@ -531,7 +481,6 @@
                 <div class="mb-3">
                   <label class="form-label">Pitch</label>
                   <input-money
-                    placeholder="Pitch"
                     v-model="model.Pitch"
                     :errors="errors?.Pitch"
                   />
@@ -539,7 +488,6 @@
                 <div class="mb-3">
                   <label class="form-label">Number Producible</label>
                   <input-money
-                    placeholder="Number Producible"
                     v-model="model.NumberProducible"
                     :errors="errors?.NumberProducible"
                   />
@@ -547,7 +495,6 @@
                 <div class="mb-3">
                   <label class="form-label">Scrap Weight</label>
                   <input-money
-                    placeholder="Scrap Weight"
                     v-model="model.ScrapWeight"
                     :errors="errors?.ScrapWeight"
                   />
@@ -555,7 +502,6 @@
                 <div class="mb-3">
                   <label class="form-label">Number of Process</label>
                   <input-money
-                    placeholder="Number of Process"
                     v-model="model.NumberProcess"
                     :errors="errors?.NumberProcess"
                   />
@@ -563,7 +509,6 @@
                 <div class="mb-3">
                   <label class="form-label">Min Lot</label>
                   <input-money
-                    placeholder="Min Lot"
                     v-model="model.MinLot"
                     :errors="errors?.MinLot"
                   />
@@ -573,7 +518,6 @@
                 <div class="mb-3">
                   <label class="form-label">Material Coefficient</label>
                   <input-money
-                    placeholder="Material Coefficient"
                     v-model="model.MaterialCoefficient"
                     :errors="errors?.MaterialCoefficient"
                   />
@@ -581,7 +525,6 @@
                 <div class="mb-3">
                   <label class="form-label">Process Coefficient</label>
                   <input-money
-                    placeholder="Process Coefficient"
                     v-model="model.ProcessCoefficient"
                     :errors="errors?.ProcessCoefficient"
                   />
@@ -589,7 +532,6 @@
                 <div class="mb-3">
                   <label class="form-label">Lot Coefficient</label>
                   <input-money
-                    placeholder="Lot Coefficient"
                     v-model="model.LotCoefficient"
                     :errors="errors?.LotCoefficient"
                   />
@@ -597,7 +539,6 @@
                 <div class="mb-3">
                   <label class="form-label">Product Leadtime</label>
                   <input-money
-                    placeholder="Product Leadtime"
                     v-model="model.ProductReadTime"
                     :errors="errors?.ProductReadTime"
                   />
@@ -605,7 +546,6 @@
                 <div class="mb-3">
                   <label class="form-label">Yield</label>
                   <input-money
-                    placeholder="Yield"
                     v-model="model.YieldPercentage"
                     :errors="errors?.YieldPercentage"
                   />
@@ -615,7 +555,6 @@
                 <div class="mb-3">
                   <label class="form-label">Surface Order Point Qty</label>
                   <input-money
-                    placeholder="Surface Order Point Qty"
                     v-model="model.SurfaceOrderPointQty"
                     :errors="errors?.SurfaceOrderPointQty"
                   />
@@ -623,7 +562,6 @@
                 <div class="mb-3">
                   <label class="form-label">Heat Order Point Qty</label>
                   <input-money
-                    placeholder="Heat Order Point Qty"
                     v-model="model.HeatOrderPointQty"
                     :errors="errors?.HeatOrderPointQty"
                   />
@@ -631,7 +569,6 @@
                 <div class="mb-3">
                   <label class="form-label">Sample</label>
                   <input-money
-                    placeholder="Sample"
                     v-model="model.Sample"
                     :errors="errors?.Sample"
                   />
@@ -639,7 +576,6 @@
                 <div class="mb-3">
                   <label class="form-label">SW Qty</label>
                   <input-money
-                    placeholder="SW Qty"
                     v-model="model.SWQty"
                     :errors="errors?.SWQty"
                   />
@@ -647,7 +583,6 @@
                 <div class="mb-3">
                   <label class="form-label">EW Qty</label>
                   <input-money
-                    placeholder="EWQ ty"
                     v-model="model.EWQty"
                     :errors="errors?.EWQty"
                   />

@@ -45,7 +45,6 @@
       </td>
       <td style="padding-left: 15px; padding-top: 5px">
         <input-text
-          placeholder="Address Name"
           v-model="model.AddressName"
           :errors="errors?.AddressName"
           style="width: 420px"

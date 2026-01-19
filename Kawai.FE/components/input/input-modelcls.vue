@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Model`"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="Description"
       track-by="ModelCls"

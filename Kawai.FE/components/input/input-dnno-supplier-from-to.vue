@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search DN No `"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="DNNo"
       track-by="DNNo"

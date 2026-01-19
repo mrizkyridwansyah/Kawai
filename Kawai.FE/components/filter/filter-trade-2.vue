@@ -9,7 +9,7 @@
           :clear-on-select="false"
           :preserve-search="true"
           open-direction="bottom"
-          :placeholder="placeholder || `Search Trade`"
+          :placeholder="placeholder || ` `"
           :searchable="true"
           :label="displayLabel"
           track-by="Trade_Code"

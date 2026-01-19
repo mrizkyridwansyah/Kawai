@@ -42,7 +42,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
               class="form-control"
-              placeholder=" "
+              
               :trade-cls="['1']"
               v-model="filter.ManufactureCode"
               style-code="width: 110px"
@@ -57,7 +57,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-line-factory
               class="form-control"
-              placeholder=" "
+              
               :company="filter.FactoryCode"
               :manufacture="filter.ManufactureCode"
               v-model="filter.LineCode"
@@ -73,7 +73,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-remaining-cls
               class="form-control"
-              placeholder=" "
+              
               v-model="filter.RemainingCls"
               style="width: 110px"
             />

@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Factory`"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="DDLDescription"
       track-by="CompanyCode"

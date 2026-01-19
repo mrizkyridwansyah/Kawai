@@ -11,7 +11,6 @@
         <div class="" style="width: 100%">
           <input-item
             class="form-control"
-            placeholder="Search Parent Item"
             v-model="filter.parentItem"
             brand="ALL"
             item-type="ALL"
@@ -23,7 +22,7 @@
         <div class="" style="width: 100%">
           <input-item
             class="form-control"
-            placeholder="Search Lot No"
+            
             v-model="filter.parentItem"
             brand="ALL"
             item-type="ALL"

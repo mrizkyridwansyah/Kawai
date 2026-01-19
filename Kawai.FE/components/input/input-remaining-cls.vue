@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Remaining Cls`"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="Name"
       track-by="Id"

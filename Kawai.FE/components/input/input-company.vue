@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || `Search Company`"
+      :placeholder="placeholder || ` `"
       :searchable="true"
       label="WarehouseName"
       track-by="Company_Code"

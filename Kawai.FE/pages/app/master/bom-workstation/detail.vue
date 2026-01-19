@@ -7,17 +7,14 @@
           >Model Cls</label
         >
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
-           <filter-cls-2
-                    class="form-control"
-                    type-data="Model_Cls"
-                    placeholder="Model Cls"
-                    v-model="filter.modelcls"
-                      style-code="width: 120px"
-                    style-desc="width: 250px"
-                     :disabled="true"
-                  />
-
-           
+          <filter-cls-2
+            class="form-control"
+            type-data="Model_Cls"
+            v-model="filter.modelcls"
+            style-code="width: 120px"
+            style-desc="width: 250px"
+            :disabled="true"
+          />
         </div>
       </div>
       <div class="row mt-1">
@@ -26,16 +23,14 @@
           >Item</label
         >
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
-           <filter-item-by-modelcls
+          <filter-item-by-modelcls
             class="form-control"
-            placeholder="Search Item"
             v-model="filter.item"
-             :disabled="true"
+            :disabled="true"
             :modelCls="filter.modelcls"
-             style-code="width: 120px"
-                    style-desc="width: 250px"
+            style-code="width: 120px"
+            style-desc="width: 250px"
           />
-        
         </div>
       </div>
       <div class="row mt-1 mb-1">
@@ -47,10 +42,9 @@
           <filter-workstation
             class="form-control"
             :disabled="true"
-            placeholder="Search Workstation"
             v-model="filter.workstation"
-             style-code="width: 120px"
-                    style-desc="width: 250px"
+            style-code="width: 120px"
+            style-desc="width: 250px"
           />
         </div>
       </div>
@@ -189,13 +183,13 @@ export default {
   methods: {
     allowSettingBOM: function (e, item) {
       this.allowed.bomsetting.find(
-        (p) => p.ChildItem_Code === item.ChildItem_Code
+        (p) => p.ChildItem_Code === item.ChildItem_Code,
       ).AllowSetting = e.target.checked;
     },
     submit: function () {
       // cek apakah ada yg dicentang
       const hasChecked = this.allowed.bomsetting.some(
-        (item) => item.AllowSetting === true
+        (item) => item.AllowSetting === true,
       );
 
       if (!hasChecked) {
@@ -223,7 +217,7 @@ export default {
         .finally(() =>
           setTimeout(() => {
             this.isLoading = false;
-          }, 500)
+          }, 500),
         );
     },
   },

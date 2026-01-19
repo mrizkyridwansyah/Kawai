@@ -32,7 +32,6 @@
           <td style="padding-left: 15px; padding-top: 5px">
             <filter-trade-2
               class="form-control"
-              placeholder="Supplier"
               v-model="filter.SupplierCode"
               :trade-cls="['2', '3']"
               :disabled="filter.ReceiptId != null"
@@ -47,7 +46,6 @@
             <filter-cls-2
               class="form-control"
               type-data="BCType_Cls"
-              placeholder="BC Type"
               v-model="model.BCType"
               :errors="errors?.BCType"
               style-code="width: 120px"
@@ -118,7 +116,6 @@
             <filter-cls-2
               class="form-control"
               type-data="Transport_Cls"
-              placeholder="Transport"
               v-model="model.Transport"
               :errors="errors?.Transport"
               style-code="width: 120px"
@@ -191,7 +188,6 @@
                     <div class="row">
                       <div class="col-10">
                         <input-text
-                          placeholder="Item"
                           v-model="item.ItemCode"
                           disabled
                           :errors="errors?.[`Details[${i}].ItemCode`]"

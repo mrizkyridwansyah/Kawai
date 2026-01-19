@@ -9,7 +9,7 @@
           :clear-on-select="false"
           :preserve-search="true"
           open-direction="bottom"
-          :placeholder="placeholder || `Search Lot No `"
+          :placeholder="placeholder || `  `"
           :searchable="true"
           label="LotNo"
           track-by="LotNo"

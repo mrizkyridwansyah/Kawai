@@ -16,7 +16,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
           <filter-item
             class="form-control"
-            placeholder="Search Item"
+            
             v-model="filter.item"
               style-code="width: 170px;"
               style-desc="width: 250px;"
@@ -82,7 +82,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-area-privileges
               class="form-control"
-              placeholder="Search Area"
+              
               v-model="filter.area"
               :warehouse="filter.warehouse"
               :include-temp="true"
@@ -97,7 +97,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-scan-status
               class="form-control"
-              placeholder=" "
+              
               v-model="filter.scanStatus"
               style="width: 170px"
             />
@@ -121,7 +121,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-address-privileges
               class="form-control"
-              placeholder="Search Address"
+              
               v-model="filter.address"
               :warehouse="filter.warehouse"
               :area="filter.area"

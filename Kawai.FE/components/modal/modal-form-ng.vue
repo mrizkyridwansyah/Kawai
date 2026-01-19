@@ -4,7 +4,6 @@
       <td><label class="form-label">NG Code</label></td>
       <td style="padding-left: 15px">
         <input-text
-          placeholder="NG Code"
           v-model="model.NGCode"
           :disabled="mode === 'edit'"
           :errors="errors?.NGCode"
@@ -19,7 +18,6 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px">
         <input-text
-          placeholder="Description"
           v-model="model.Description"
           :errors="errors?.Description"
           style="width: 350px;"
@@ -45,7 +43,6 @@
           ]"
           textField="text"
           valueField="value"
-          placeholder="Common"
           v-model="model.IsCommon"
           :errors="errors?.IsCommon"
           style="width: 100px;"

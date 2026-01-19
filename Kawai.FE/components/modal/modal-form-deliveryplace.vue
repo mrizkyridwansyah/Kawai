@@ -2,7 +2,6 @@
   <div class="mb-3">
     <label class="form-label">Trade Code</label>
     <input-text
-      placeholder="Trade Code"
       v-model="model.Trade_Code"
       :disabled="mode === 'add' || 'edit'"
     />
@@ -10,7 +9,6 @@
   <div class="mb-3">
     <label class="form-label">Location Code</label>
     <input-text
-      placeholder="Location Code"
       v-model="model.Location_Code"
       :errors="errors.Location_Code"
       :disabled="mode === 'edit'"
@@ -19,7 +17,6 @@
   <div class="mb-3">
     <label class="form-label">Location Name</label>
     <input-text
-      placeholder="Location Name"
       v-model="model.Location_Name"
       :errors="errors.Location_Name"
     />

@@ -21,7 +21,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-area-privileges
               class="form-control"
-              placeholder="Search Area"
+              
               v-model="filter.area"
               :warehouse="filter.warehouse"
               :include-temp="true"
@@ -37,7 +37,7 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-item
               class="form-control"
-              placeholder="Search Item"
+              
               v-model="filter.item"
               style-code="width: 160px"
               style-desc="width: 300px"
@@ -69,7 +69,6 @@
             <input-month
               v-model="filter.period"
               class="mr-1"
-              placeholder="Period"
               style="width: 150px"
             />
           </td>

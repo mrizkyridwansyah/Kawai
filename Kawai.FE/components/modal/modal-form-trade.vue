@@ -30,7 +30,6 @@
           <div class="mb-3">
             <label class="form-label">Trade Code</label>
             <input-text
-              placeholder="Trade Code"
               v-model="model.Trade_Code"
               :disabled="mode === 'edit'"
               :errors="errors?.Trade_Code"
@@ -41,7 +40,6 @@
           <div class="mb-3">
             <label class="form-label">Trade Name</label>
             <input-text
-              placeholder="Trade Name"
               v-model="model.Trade_Name"
               :errors="errors?.Trade_Name"
             />
@@ -54,7 +52,6 @@
             <label class="form-label">Trade Cls</label>
             <input-cls
               type-data="Trade_Cls"
-              placeholder="Search Trade Cls"
               class="form-control"
               v-model="model.Trade_Cls"
               :errors="errors?.Trade_Cls"
@@ -73,11 +70,7 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">SAP Code</label>
-            <input-text
-              placeholder="SAP Code"
-              v-model="model.SAP_Code"
-              :errors="errors?.SAP_Code"
-            />
+            <input-text v-model="model.SAP_Code" :errors="errors?.SAP_Code" />
           </div>
         </div>
       </div>
@@ -86,7 +79,6 @@
           <div class="mb-3">
             <label class="form-label">Trade ABBR</label>
             <input-text
-              placeholder="Trade ABBR"
               v-model="model.Trade_ABBR"
               :errors="errors?.Trade_ABBR"
             />
@@ -96,7 +88,6 @@
           <div class="mb-3">
             <label class="form-label">Contact Person</label>
             <input-text
-              placeholder="Contact Person"
               v-model="model.Contact_Person"
               :errors="errors?.Contact_Person"
             />
@@ -105,21 +96,13 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Address 1</label>
-            <input-text
-              placeholder="Address 1"
-              v-model="model.Address1"
-              :errors="errors?.Address1"
-            />
+            <input-text v-model="model.Address1" :errors="errors?.Address1" />
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Address 2</label>
-            <input-text
-              placeholder="Address 2"
-              v-model="model.Address2"
-              :errors="errors?.Address2"
-            />
+            <input-text v-model="model.Address2" :errors="errors?.Address2" />
           </div>
         </div>
       </div>
@@ -128,18 +111,13 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">City</label>
-            <input-text
-              placeholder="City"
-              v-model="model.City"
-              :errors="errors?.City"
-            />
+            <input-text v-model="model.City" :errors="errors?.City" />
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Postal Code</label>
             <input-text
-              placeholder="Postal Code"
               v-model="model.Postal_Code"
               :errors="errors?.Postal_Code"
             />
@@ -148,11 +126,7 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Country</label>
-            <input-text
-              placeholder="Country"
-              v-model="model.Country"
-              :errors="errors?.Country"
-            />
+            <input-text v-model="model.Country" :errors="errors?.Country" />
           </div>
         </div>
         <div class="col-12 col-md-3">
@@ -160,7 +134,6 @@
             <label class="form-label">Country Cls</label>
             <input-cls
               type-data="Country_Cls"
-              placeholder="Search Country Cls"
               class="form-control"
               v-model="model.Country_Cls"
             />
@@ -172,31 +145,19 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Telephone</label>
-            <input-text
-              placeholder="Telephone"
-              v-model="model.Telephone"
-              :errors="errors?.Telephone"
-            />
+            <input-text v-model="model.Telephone" :errors="errors?.Telephone" />
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Fax</label>
-            <input-text
-              placeholder="Fax"
-              v-model="model.Fax"
-              :errors="errors?.Fax"
-            />
+            <input-text v-model="model.Fax" :errors="errors?.Fax" />
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">Region Cls</label>
-            <input-cls
-              class="form-control"
-              type-data="Region_Cls"
-              placeholder="Search Region Cls"
-            />
+            <input-cls class="form-control" type-data="Region_Cls" />
           </div>
         </div>
         <div class="col-12 col-md-3">
@@ -205,7 +166,6 @@
             <input-cls
               class="form-control"
               type-data="Epte_Cls"
-              placeholder="Search Epte Cls"
               v-model="model.Epte_Cls"
             />
           </div>
@@ -217,7 +177,6 @@
           <div class="mb-3">
             <label class="form-label">Closing Days</label>
             <input-text
-              placeholder="Closing Day"
               v-model="model.Closing_Day"
               :errors="errors?.Closing_Day"
             />
@@ -226,18 +185,13 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">Pay Days</label>
-            <input-text
-              placeholder="Pay Day"
-              v-model="model.Pay_Day"
-              :errors="errors?.Pay_Day"
-            />
+            <input-text v-model="model.Pay_Day" :errors="errors?.Pay_Day" />
           </div>
         </div>
         <div class="col-12 col-md-1">
           <div class="mb-3">
             <label class="form-label">Invoice To</label>
             <input-text
-              placeholder="Invoice To"
               v-model="model.Invoice_To"
               :errors="errors?.Invoice_To"
             />
@@ -247,7 +201,6 @@
           <div class="mb-3">
             <label class="form-label">Invoice Pay Days</label>
             <input-text
-              placeholder="Invoice Pay Days"
               v-model="model.InvoicePay_Days"
               :errors="errors?.InvoicePay_Days"
             />
@@ -257,8 +210,7 @@
           <div class="mb-3">
             <label class="form-label">Insurance Covered</label>
             <input-cls
-              type-data="Insurance_Cls"
-              placeholder="Search Insurance Cls"
+              type-data="Insurance_Cls"              
               class="form-control"
               v-model="model.Insurance_Cls"
             />
@@ -270,8 +222,7 @@
             <input-cls
               class="form-control"
               v-model="model.PO_Cls"
-              type-data="PO_Cls"
-              placeholder="Search PO Cls"
+              type-data="PO_Cls"              
             />
           </div>
         </div>
@@ -281,8 +232,7 @@
             <input-cls
               class="form-control"
               v-model="model.NG_Cls"
-              type-data="NG_Cls"
-              placeholder="Search NG Cls"
+              type-data="NG_Cls"              
             />
           </div>
         </div>
@@ -291,8 +241,7 @@
             <label class="form-label">Affiliate Cls</label>
             <input-cls
               class="form-control"
-              type-data="Affiliate_Cls"
-              placeholder="Search Affiliate Cls"
+              type-data="Affiliate_Cls"              
               v-model="model.Affiliate_Cls"
             />
           </div>
@@ -309,8 +258,7 @@
         <div class="col-12 col-md-4">
           <div class="mb-3">
             <label class="form-label">NPWP No</label>
-            <input-text
-              placeholder="NPWP No"
+            <input-text              
               v-model="model.NPWP_No"
               :errors="errors?.NPWP_No"
             />
@@ -321,8 +269,7 @@
         <div class="col-12 col-md-4">
           <div class="mb-3">
             <label class="form-label">NPWP Name</label>
-            <input-text
-              placeholder="NPWP Name"
+            <input-text              
               v-model="model.NPWP_Name"
               :errors="errors?.NPWP_Name"
             />
@@ -331,8 +278,7 @@
         <div class="col-12 col-md-8">
           <div class="mb-3">
             <label class="form-label">NPWP Address</label>
-            <input-text
-              placeholder="NPWP Address"
+            <input-text              
               v-model="model.NPWP_Address"
               :errors="errors?.NPWP_Address"
             />
@@ -343,8 +289,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">NPWP City</label>
-            <input-text
-              placeholder="NPWP City"
+            <input-text              
               v-model="model.NPWP_City"
               :errors="errors?.NPWP_City"
             />
@@ -353,8 +298,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">NPPKP No</label>
-            <input-text
-              placeholder="NPPKP No"
+            <input-text              
               v-model="model.NPPKP_No"
               :errors="errors?.NPPKP_No"
             />
@@ -364,7 +308,6 @@
           <div class="mb-3">
             <label class="form-label">NITKU</label>
             <input-text
-              placeholder="NITKU"
               v-model="model.NITKU"
               :errors="errors?.NITKU"
             />
@@ -377,7 +320,6 @@
           <div class="mb-3">
             <label class="form-label">Price Condition</label>
             <input-text
-              placeholder="Price Condition"
               v-model="model.Price_Condition"
               :errors="errors?.Price_Condition"
             />
@@ -388,8 +330,7 @@
             <label class="form-label">Payment Terms</label>
             <input-cls
               class="form-control"
-              type-data="PaymentTerm_Cls"
-              placeholder="Search Payment Terms"
+              type-data="PaymentTerm_Cls"              
               v-model="model.POPayment_Terms"
             />
           </div>
@@ -398,8 +339,7 @@
           <div class="mb-3">
             <label class="form-label">Transportation Cls</label>
             <input-cls
-              type-data="Transportation_Cls"
-              placeholder="Search Transportation Cls"
+              type-data="Transportation_Cls"              
               class="form-control"
               v-model="model.Transportation_Cls"
             />
@@ -409,7 +349,6 @@
           <div class="mb-3">
             <label class="form-label">Payment Days</label>
             <input-text
-              placeholder="Payment Days"
               v-model="model.POPayment_Day"
               :errors="errors?.POPayment_Day"
             />
@@ -426,8 +365,7 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">PO Case Mark 1</label>
-            <input-text
-              placeholder="PO Case Mark 1"
+            <input-text              
               v-model="model.POCaseMark1"
               :errors="errors?.POCaseMark1"
             />
@@ -436,8 +374,7 @@
         <div class="col-12 col-md-3">
           <div class="mb-3">
             <label class="form-label">PO Case Mark 2</label>
-            <input-text
-              placeholder="PO Case Mark 2"
+            <input-text              
               v-model="model.POCaseMark2"
               :errors="errors?.POCaseMark2"
             />
@@ -446,8 +383,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Case Mark 3</label>
-            <input-text
-              placeholder="PO Case Mark 3"
+            <input-text              
               v-model="model.POCaseMark3"
               :errors="errors?.POCaseMark3"
             />
@@ -456,8 +392,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Case Mark 4</label>
-            <input-text
-              placeholder="PO Case Mark 4"
+            <input-text              
               v-model="model.POCaseMark4"
               :errors="errors?.POCaseMark4"
             />
@@ -466,8 +401,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Case Mark 5</label>
-            <input-text
-              placeholder="PO Case Mark 5"
+            <input-text              
               v-model="model.POCaseMark5"
               :errors="errors?.POCaseMark5"
             />
@@ -478,8 +412,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Marking 1</label>
-            <input-text
-              placeholder="PO Marking 1"
+            <input-text              
               v-model="model.POMarking1"
               :errors="errors?.POMarking1"
             />
@@ -488,8 +421,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Marking 2</label>
-            <input-text
-              placeholder="PO Marking 2"
+            <input-text              
               v-model="model.POMarking2"
               :errors="errors?.POMarking2"
             />
@@ -498,8 +430,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Marking 3</label>
-            <input-text
-              placeholder="PO Marking 3"
+            <input-text              
               v-model="model.POMarking3"
               :errors="errors?.POMarking3"
             />
@@ -508,8 +439,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Marking 4</label>
-            <input-text
-              placeholder="PO Marking 4"
+            <input-text              
               v-model="model.POMarking4"
               :errors="errors?.POMarking4"
             />
@@ -518,8 +448,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Marking 5</label>
-            <input-text
-              placeholder="PO Marking 5"
+            <input-text              
               v-model="model.POMarking5"
               :errors="errors?.POMarking5"
             />
@@ -529,8 +458,7 @@
         <div class="col-12 col-md-2">
           <div class="mb-3">
             <label class="form-label">PO Marking 6</label>
-            <input-text
-              placeholder="PO Marking 6"
+            <input-text              
               v-model="model.POMarking6"
               :errors="errors?.POMarking6"
             />
@@ -546,7 +474,6 @@
               class="form-control"
               v-model="model.Type_BC"
               type-data="BCType_Cls"
-              placeholder="Search BC Type Cls"
             />
           </div>
         </div>
@@ -554,7 +481,6 @@
           <div class="mb-3">
             <label class="form-label">Kode KPPBC</label>
             <input-text
-              placeholder="Kode KPPBC"
               v-model="model.CODE_KPPBC"
               :errors="errors?.CODE_KPPBC"
             />
@@ -564,7 +490,6 @@
           <div class="mb-3">
             <label class="form-label">NO Izin</label>
             <input-text
-              placeholder="No Izin"
               v-model="model.No_Izin"
               :errors="errors?.No_Izin"
             />
@@ -574,7 +499,6 @@
           <div class="mb-3">
             <label class="form-label">Tanggal</label>
             <input-date
-              placeholder="No Izin Date"
               v-model="model.NoIzin_Date"
               :errors="errors?.NoIzin_Date"
             />

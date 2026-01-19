@@ -7,7 +7,7 @@
     :clear-on-select="false"
       :preserve-search="true" 
       open-direction="bottom" 
-      :placeholder="placeholder || `Search Item Type`"
+      :placeholder="placeholder || ` `"
       :searchable="true" 
       label="ItemTypeName" 
       track-by="ItemTypeCode" 

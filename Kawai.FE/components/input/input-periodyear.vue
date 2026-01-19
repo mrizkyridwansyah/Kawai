@@ -7,7 +7,7 @@
       :clear-on-select="false"
       :preserve-search="true"
       open-direction="bottom"
-      :placeholder="placeholder || 'Select Year'"
+      :placeholder="placeholder || ' '"
       :searchable="true"
       label="Year"
       track-by="Year"

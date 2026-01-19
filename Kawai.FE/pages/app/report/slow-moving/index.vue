@@ -39,7 +39,6 @@
                 <input-month
                     v-model="filter.period"
                     class="mr-1"
-                    placeholder="Period"
                     style="width: 215px"
                 />
               </td>

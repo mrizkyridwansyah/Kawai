@@ -65,7 +65,7 @@
                     </td>
                     <td colspan="4">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="80px"
                         desc-width="50px"
                         type-data="Trade_Cls"
@@ -88,7 +88,7 @@
                     </td>
                     <td colspan="8">
                       <filter-warehouse
-                        placeholder=" "
+                        
                         v-model="model.Subcon_WH_Code"
                       />
                     </td>
@@ -158,7 +158,7 @@
                     <td colspan="2"><label>Country Cls</label></td>
                     <td colspan="2">
                        <input-cls-desc
-                        placeholder=" "
+                        
                         type-data="Country_Cls"
                         v-model="model.Country_Cls"
                       />
@@ -168,7 +168,7 @@
                     <td><label>Epte</label></td>
                     <td colspan="3">
                       <input-cls-desc
-                        placeholder=" "
+                        
                         type-data="Epte_Cls"
                         v-model="model.Epte_Cls"
                       />
@@ -193,7 +193,7 @@
                     <td colspan="2"><label>Region Cls</label></td>
                     <td colspan="8">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Region_Cls"
@@ -233,7 +233,7 @@
                     </td>
                     <td colspan="8">
                       <filter-trade
-                        placeholder=" "
+                        
                         :trade-cls="['2', '3']"
                         v-model="model.Invoice_To"
                         :disabled="isInvoiceToChecked"
@@ -262,7 +262,7 @@
                     <td colspan="2"><label>Insurance Covered</label></td>
                     <td colspan="8">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Insurance_Cls"
@@ -274,7 +274,7 @@
                     <td colspan="2"><label>PO Cls</label></td>
                     <td colspan="2">
                         <input-cls-desc
-                        placeholder=" "
+                        
                         v-model="model.PO_Cls"
                         type-data="PO_Cls"
                         style="width: 120px"
@@ -291,7 +291,7 @@
                     <td colspan="2"><label>NG Cls</label></td>
                     <td colspan="2">
                       <input-cls-desc
-                        placeholder=" "
+                        
                         v-model="model.NG_Cls"
                         type-data="NG_Cls"
                         style="width: 120px"
@@ -375,7 +375,7 @@
                     <td><label>Price Condition</label></td>
                     <td colspan="5">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="PriceCondition_Cls"
@@ -387,7 +387,7 @@
                     <td><label>Payment Term</label></td>
                     <td colspan="5">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="PaymentTerm_Cls"
@@ -399,7 +399,7 @@
                     <td><label>Transportation</label></td>
                     <td colspan="3">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Transportation_Cls"
@@ -467,7 +467,6 @@
                                     <td>
                                       <div class="col-10">
                                         <input-text
-                                          placeholder="Location Code"
                                           v-model="item.Location_Code"
                                           :errors="
                                             errors?.[
@@ -480,7 +479,6 @@
                                     <td>
                                       <div class="col-10">
                                         <input-text
-                                          placeholder="Location Name"
                                           v-model="item.Location_Name"
                                           :errors="
                                             errors?.[
@@ -635,7 +633,7 @@
                     <td><label>BC Type</label></td>
                     <td colspan="5">
                       <filter-cls
-                        placeholder=" "
+                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="BCType_Cls"
@@ -659,7 +657,6 @@
                     <td><label>Tanggal</label></td>
                     <td colspan="5">
                       <input-date
-                        placeholder="No Izin Date"
                         v-model="model.NoIzin_Date"
                         :errors="errors?.NoIzin_Date"
                       />
