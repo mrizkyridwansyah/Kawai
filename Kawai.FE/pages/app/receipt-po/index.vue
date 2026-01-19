@@ -59,7 +59,6 @@
                 <td style="padding-top: 5px; padding-left: 15px" colspan="3">
                   <input-po
                     class="form-control"
-                    
                     v-model="filter.PONumber"
                     :factory-code="filter.FactoryCode"
                     :supplier-code="filter.SupplierCode"
@@ -299,9 +298,9 @@
                       {{ $func.formatMoney(item.RemainingQty) }}
                     </td>
                     <td>
-                      <input-money
+                      <input-money-small
                         v-model="item.ReceiptQty"
-                        :errors="errors?.[`Details[${i}].ReceiptQty`]"
+                        :errors="errors?.[`Details[${idx}].ReceiptQty`]"
                         style="width: 100px"
                       />
                     </td>
@@ -396,35 +395,38 @@ export default {
       this.listPODetail = [];
     },
     "filter.ReceiptId": function () {
-      this.model = {
-        Id: null,
-        ReceiptNo: "",
-        DNNumber: "",
-        FactoryCode: null,
-        SupplierCode: null,
-        DNDate: null,
-        BCNumber: "",
-        BCType: "",
-        BCDate: null,
-        VehicleNo: "",
-        Transport: null,
-        RegisterNo: null,
-        Remarks: null,
-        Details: [],
-        IsManual: true,
-        SourceMenu: "RECEIPT PO",
-      };
-      this.listPODetail = [];
-      let today = new Date();
-      this.filter.PeriodFrom = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-      );
-      this.filter.PeriodUntil = today;
-      this.filter.PONumber = null;
-
       if (this.filter.ReceiptId) this.getReceipt();
+      else {
+        this.isNew = true;
+        let today = new Date();
+        this.filter.PeriodFrom = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          1,
+        );
+        this.filter.PeriodUntil = today;
+        this.filter.PONumber = null;
+        this.listPODetail = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          Id: null,
+          ReceiptNo: "",
+          DNNumber: "",
+          FactoryCode: null,
+          SupplierCode: null,
+          DNDate: null,
+          BCNumber: "",
+          BCType: "",
+          BCDate: null,
+          VehicleNo: "",
+          Transport: null,
+          RegisterNo: null,
+          Remarks: null,
+          Details: [],
+          IsManual: true,
+          SourceMenu: "RECEIPT PO",
+        };
+      }
     },
   },
   mounted: function () {
@@ -472,12 +474,35 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
     },
     changeNew: function (e) {
-      if (e.target.checked) this.reset();
+      if (e.target.checked) {
+        this.isNew = true;
+        this.listPODetail = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          Id: null,
+          ReceiptNo: "",
+          DNNumber: "",
+          FactoryCode: null,
+          SupplierCode: null,
+          DNDate: null,
+          BCNumber: "",
+          BCType: "",
+          BCDate: null,
+          VehicleNo: "",
+          Transport: null,
+          RegisterNo: null,
+          Remarks: null,
+          Details: [],
+          IsManual: true,
+          SourceMenu: "RECEIPT PO",
+        };
+        // this.reset();
+      }
     },
     checkAll: function (e) {
       this.listPODetail.map((x) => (x.Selected = e.target.checked));
@@ -490,7 +515,9 @@ export default {
         .printLabel(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
@@ -568,7 +595,9 @@ export default {
         .create(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
@@ -581,7 +610,9 @@ export default {
         .update(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.reset();
+          this.isNew = false;
+          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          // this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;

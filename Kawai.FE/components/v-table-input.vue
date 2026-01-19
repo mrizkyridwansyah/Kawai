@@ -91,16 +91,17 @@ export default {
 
       const rows = table.querySelectorAll("tr");
 
-      // 🔍 Hitung posisi kiri berdasarkan DOM
+      // Hitung posisi kiri berdasarkan boundingClientRect
       const colPositions = [];
       let totalLeft = 0;
       for (let i = 0; i < headerRow.cells.length; i++) {
-        colPositions[i] = totalLeft;
         const cell = headerRow.cells[i];
-        totalLeft += cell?.offsetWidth || 150; // fallback kalau width belum kebaca
+        const width = cell?.getBoundingClientRect().width || 100; // fallback lebih aman
+        colPositions[i] = totalLeft;
+        totalLeft += width;
       }
 
-      // 🔧 Terapkan sticky-left dan style ke sel-sel yang ditentukan
+      // Terapkan sticky-left
       rows.forEach((row) => {
         columnIndexes.forEach((colIndex) => {
           const cell = row.cells[colIndex];
@@ -112,11 +113,10 @@ export default {
         });
       });
     },
+
     waitForDOMThenFreeze: function () {
       this.$nextTick(() => {
-        setTimeout(() => {
-          const screenWidth = window.innerWidth;
-
+        const tryFreeze = () => {
           const table = this.$refs.tableContainer?.querySelector("table");
           if (!table) return;
 
@@ -125,34 +125,35 @@ export default {
 
           const frozenIndexes = Array.from(
             { length: this.frozenColumnLeft },
-            (_, i) => i
+            (_, i) => i,
           );
 
-          // ✅ Ambil width dari th langsung
+          // Hitung total width kolom frozen
           let frozenWidth = 0;
           for (let i = 0; i < this.frozenColumnLeft; i++) {
             const th = headerRow.cells[i];
-            if (th) {
-              frozenWidth += th.offsetWidth || 0;
-            } else {
-              frozenWidth += 150; // fallback default
-            }
+            frozenWidth += th?.getBoundingClientRect().width || 100;
           }
 
-          // ✅ Dapatkan lebar panel-body
           const panel = this.$el.querySelector(".panel-body");
-          const panelWidth = panel ? panel.clientWidth : screenWidth;
+          const panelWidth = panel ? panel.clientWidth : window.innerWidth;
 
           const threshold = 0.7;
-
-          if (screenWidth > 768 && frozenWidth < panelWidth * threshold) {
+          if (window.innerWidth > 768 && frozenWidth < panelWidth * threshold) {
+            this.clearFrozenColumns(); // reset dulu
             this.setFrozenColumns(frozenIndexes);
           } else {
             this.clearFrozenColumns();
           }
-        }, 500);
+        };
+
+        // pakai requestAnimationFrame biar benar-benar nunggu render
+        requestAnimationFrame(() => {
+          tryFreeze();
+        });
       });
     },
+
     clearFrozenColumns: function () {
       const table = this.$refs.tableContainer?.querySelector("table");
       if (!table) return;

@@ -204,7 +204,7 @@
                   <tbody>
                     <tr
                       v-for="(item, idx) in allowed.warehouse.filter(
-                        (x) => x.AllowedAccessFactory
+                        (x) => x.AllowedAccessFactory,
                       )"
                     >
                       <td>{{ item.FactoryCode }}</td>
@@ -227,92 +227,99 @@
             <!-- END tab-pane -->
             <!-- BEGIN tab-pane AREA -->
             <div class="tab-pane fade" id="default-tab-4" role="tabpanel">
-              <table
-                class="table table-striped table-bordered mb-0 align-middle"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center" style="vertical-align: middle">
-                      Warehouse Code
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Warehouse Name
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Area Code
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Area Name
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Show</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox @click="(e) => allowAllAccessArea(e)" />
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(item, idx) in allowed.area.filter(
-                      (x) => x.AllowedAccessWarehouse && x.AllowedAccessFactory
-                    )"
-                  >
-                    <td>{{ item.WarehouseCode }}</td>
-                    <td>{{ item.WarehouseName }}</td>
-                    <td>{{ item.AreaCode }}</td>
-                    <td>{{ item.AreaName }}</td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowAccess"
-                          @click="(e) => allowAccessArea(e, item)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="vertical-align: middle">
+                        Warehouse Code
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Warehouse Name
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Area Code
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Area Name
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Show</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllAccessArea(e)"
+                          />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, idx) in allowed.area.filter(
+                        (x) =>
+                          x.AllowedAccessWarehouse && x.AllowedAccessFactory,
+                      )"
+                    >
+                      <td>{{ item.WarehouseCode }}</td>
+                      <td>{{ item.WarehouseName }}</td>
+                      <td>{{ item.AreaCode }}</td>
+                      <td>{{ item.AreaName }}</td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowAccess"
+                            @click="(e) => allowAccessArea(e, item)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- END tab-pane -->
             <!-- BEGIN tab-pane MOBILE -->
             <div class="tab-pane fade" id="default-tab-5" role="tabpanel">
-              <table
-                class="table table-striped table-bordered mb-0 align-middle"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center" style="vertical-align: middle">
-                      Menu ID
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      Description
-                    </th>
-                    <th class="text-center" style="vertical-align: middle">
-                      <span>Access</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox
-                          @click="(e) => allowAllAccessMenuMobile(e)"
-                        />
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, idx) in allowed.mobile">
-                    <td>{{ item.MenuID }}</td>
-                    <td>{{ item.MenuDescription }}</td>
-                    <td>
-                      <div style="justify-items: center">
-                        <input-checkbox
-                          v-model="item.AllowAccess"
-                          @click="(e) => allowAccessMenuMobile(e, item)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="vertical-align: middle">
+                        Menu ID
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        Description
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Access</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllAccessMenuMobile(e)"
+                          />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, idx) in allowed.mobile">
+                      <td>{{ item.MenuID }}</td>
+                      <td>{{ item.MenuDescription }}</td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowAccess"
+                            @click="(e) => allowAccessMenuMobile(e, item)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- END tab-pane -->
           </div>
@@ -363,7 +370,7 @@ export default {
         x.AllowedAccessFactory = false;
         if (
           this.allowed.factory.filter(
-            (y) => y.AllowAccess && y.FactoryCode == x.FactoryCode
+            (y) => y.AllowAccess && y.FactoryCode == x.FactoryCode,
           ).length > 0
         )
           x.AllowedAccessFactory = true;
@@ -375,14 +382,14 @@ export default {
         x.AllowedAccessWarehouse = false;
         if (
           this.allowed.factory.filter(
-            (y) => y.AllowAccess && y.FactoryCode == x.FactoryCode
+            (y) => y.AllowAccess && y.FactoryCode == x.FactoryCode,
           ).length > 0
         )
           x.AllowedAccessFactory = true;
 
         if (
           this.allowed.warehouse.filter(
-            (y) => y.AllowAccess && y.WarehouseCode == x.WarehouseCode
+            (y) => y.AllowAccess && y.WarehouseCode == x.WarehouseCode,
           ).length > 0
         )
           x.AllowedAccessWarehouse = true;
@@ -406,7 +413,7 @@ export default {
     },
     allowAccessFactory: function (e, item) {
       this.allowed.factory.find(
-        (p) => p.FactoryCode === item.FactoryCode
+        (p) => p.FactoryCode === item.FactoryCode,
       ).AllowAccess = e.target.checked;
 
       this.allowed.warehouse
@@ -419,7 +426,7 @@ export default {
     },
     allowAccessWarehouse: function (e, item) {
       this.allowed.warehouse.find(
-        (p) => p.WarehouseCode === item.WarehouseCode
+        (p) => p.WarehouseCode === item.WarehouseCode,
       ).AllowAccess = e.target.checked;
 
       this.allowed.area
@@ -442,14 +449,14 @@ export default {
     allowAllAccessFactory: function (e) {
       this.allowed.factory.map((p) => (p.AllowAccess = e.target.checked));
       this.allowed.warehouse.map(
-        (p) => (p.AllowedAccessFactory = e.target.checked)
+        (p) => (p.AllowedAccessFactory = e.target.checked),
       );
       this.allowed.area.map((p) => (p.AllowedAccessFactory = e.target.checked));
     },
     allowAllAccessWarehouse: function (e) {
       this.allowed.warehouse.map((p) => (p.AllowAccess = e.target.checked));
       this.allowed.area.map(
-        (p) => (p.AllowedAccessWarehouse = e.target.checked)
+        (p) => (p.AllowedAccessWarehouse = e.target.checked),
       );
     },
     allowAllAccessArea: function (e) {
@@ -486,7 +493,7 @@ export default {
         .finally(() =>
           setTimeout(() => {
             this.isLoading = false;
-          }, 500)
+          }, 500),
         );
     },
   },

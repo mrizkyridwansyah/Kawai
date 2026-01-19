@@ -187,7 +187,7 @@
                   <td>
                     <div class="row">
                       <div class="col-10">
-                        <input-text
+                        <input-text-small
                           v-model="item.ItemCode"
                           disabled
                           :errors="errors?.[`Details[${i}].ItemCode`]"
@@ -211,7 +211,7 @@
                   <td>{{ item.ItemName }}</td>
                   <td>{{ item.UnitClsName }}</td>
                   <td>
-                    <input-money
+                    <input-money-small
                       v-model="item.ReceiptQty"
                       :errors="errors?.[`Details[${i}].ReceiptQty`]"
                     />
