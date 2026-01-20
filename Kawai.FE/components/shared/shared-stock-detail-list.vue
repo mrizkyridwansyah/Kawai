@@ -14,6 +14,7 @@
         <thead>
           <tr>
             <th class="text-center">#</th>
+            <th class="text-center">Address</th>
             <th class="text-center">Barcode No</th>
             <!-- <th class="text-center">Sublot No</th> -->
             <th class="text-center">Qty</th>
@@ -24,6 +25,7 @@
         <tbody>
           <tr v-for="(item, idx) in ds.data.Items">
             <td class="text-center">{{ idx + 1 }}.</td>
+            <td>{{ item.AddressName }}</td>
             <td>{{ item.BarcodeNo }}</td>
             <!-- <td class="text-right">{{ item.SublotNo }}</td> -->
             <td class="text-right">{{ $func.formatMoney(item.CurrentQty) }}</td>

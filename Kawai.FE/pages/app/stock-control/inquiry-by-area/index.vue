@@ -152,7 +152,6 @@ export default {
     groupByFields: [
       ["ItemName", ["ItemCode", "ItemName"]],
       ["AreaName", ["AreaCode", "AreaName"]],
-      ["AddressName", ["AddressCode", "AddressName"]],
       ["LotNo", ["LotNo"]],
     ],
     sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
@@ -196,7 +195,6 @@ export default {
         // { text: "Warehouse Name", dataField: "WarehouseName", width: "250px" },
         { text: "Item Name", dataField: "ItemName", width: "250px" },
         { text: "Area", dataField: "AreaName", width: "250px" },
-        { text: "Address", dataField: "AddressName", width: "250px" },
         { text: "Lot No", dataField: "LotNo", width: "max-content" },
         {
           text: "Begin",

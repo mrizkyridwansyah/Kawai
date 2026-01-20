@@ -19,7 +19,6 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
-              
               class="form-control"
               v-model="filter.SupplierCode"
               :trade-cls="['2', '3']"
@@ -35,7 +34,6 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-iqc-status
-              
               class="form-control"
               v-model="filter.Status"
               style="width: 110px"
@@ -48,7 +46,6 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-iqc-source
-              
               class="form-control"
               v-model="filter.Source"
               style="width: 140px"
@@ -127,21 +124,19 @@
                     <td class="text-center">
                       <a
                         href="javascript:void(0);"
-                        v-if="
-                          item.InspectionResult != null &&
-                          item.InspectionResult != ''
-                        "
+                        v-if="item.StatusQC != 'NEW'"
                         @click="() => showModal(item, 'VIEW')"
                       >
                         View
                       </a>
                       <a
                         href="javascript:void(0);"
-                        v-else
+                        v-else-if="item.StatusQC == 'NEW'"
                         @click="() => showModal(item, 'INPUT')"
                       >
                         Input
                       </a>
+                      <a href="javascript:void(0);" v-else></a>
                     </td>
                     <td>{{ item.RegisterUserName }}</td>
                     <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
@@ -237,7 +232,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.FactoryCode = null;
       this.filter.SupplierCode = null;
@@ -253,10 +248,10 @@ export default {
           Source: this.filter.Source || "",
           StatusInspection: this.filter.Status || "",
           PeriodFrom: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodFrom)
+            new Date(this.filter.PeriodFrom),
           ),
           PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodUntil)
+            new Date(this.filter.PeriodUntil),
           ),
         },
       ];

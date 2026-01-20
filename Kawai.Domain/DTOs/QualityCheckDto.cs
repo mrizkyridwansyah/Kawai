@@ -24,6 +24,7 @@ public class QualityCheckDto: DataTableDto
     public DateTime? ApprovalDate { get; set; }
     public string ApprovalUser { get; set; }
     public string ApprovalUserName { get; set; }
+    public string StatusQC { get; set; }
 
 }
 
