@@ -43,6 +43,10 @@ public class ReceiptUnschedule
     [MaxLength(15, ErrorMessage = "Transport tidak boleh lebih dari 15 karakter")]
     public string Transport { get; set; }
 
+    [Required(ErrorMessage = "Reference No tidak boleh kosong")]
+    [MaxLength(50, ErrorMessage = "Reference No tidak boleh lebih dari 50 karakter")]
+    public string ReferenceNo { get; set; }
+
     [Required(ErrorMessage = "List Detail Item harus diisi")]
     public List<ReceiptUnscheduleDetail> Details { get; set; } = new List<ReceiptUnscheduleDetail>();
 }

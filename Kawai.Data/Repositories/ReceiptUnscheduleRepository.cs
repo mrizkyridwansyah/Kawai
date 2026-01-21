@@ -31,6 +31,7 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
             receipt.BCDate,
             receipt.VehicleNo,
             receipt.Transport,
+            receipt.ReferenceNo,
             Details = DataTableHelper.ToDataTable(receipt.Details),
             RegisterBy = userId
         });
@@ -52,6 +53,7 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
             receipt.BCDate,
             receipt.VehicleNo,
             receipt.Transport,
+            receipt.ReferenceNo,
             Details = DataTableHelper.ToDataTable(receipt.Details),
             UpdateBy = userId
         });

@@ -65,7 +65,7 @@
                     class="form-control"
                     :disabled="isNew"
                     status="NEW"
-                    source-menu="RECEIPT PO"
+                    source-menu="RECEIPT UNSCHEDULE"
                     :factory-code="filter.FactoryCode"
                     :supplier-code="filter.SupplierCode"
                     v-model="filter.ReceiptId"
@@ -133,6 +133,17 @@
               :errors="errors?.VehicleNo"
               style="width: 130px"
               maxlength="15"
+            />
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px">
+            <label class="form-label">Reference No</label>
+          </td>
+          <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+            <input-text
+              v-model="model.ReferenceNo"
+              :errors="errors?.ReferenceNo"
+              style="width: 360px"
+              maxlength="50"
             />
           </td>
         </tr>
@@ -312,6 +323,7 @@ export default {
       VehicleNo: "",
       Transport: null,
       RegisterNo: null,
+      ReferenceNo: null,
       Remarks: null,
       Details: [],
     },
@@ -362,6 +374,7 @@ export default {
           BCDate: null,
           VehicleNo: "",
           Transport: null,
+          ReferenceNo: null,
           RegisterNo: null,
           Remarks: null,
           Details: [],
@@ -409,6 +422,7 @@ export default {
         BCDate: null,
         VehicleNo: "",
         Transport: null,
+        ReferenceNo: null,
         RegisterNo: null,
         Remarks: null,
         Details: [],
@@ -431,6 +445,7 @@ export default {
           BCDate: null,
           VehicleNo: "",
           Transport: null,
+          ReferenceNo: null,
           RegisterNo: null,
           Remarks: null,
           Details: [],

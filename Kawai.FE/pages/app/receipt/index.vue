@@ -82,7 +82,8 @@
                 <th class="text-center">BC Type</th>
                 <th class="text-center">BC No</th>
                 <th class="text-center">BC Date</th>
-                <th class="text-center">Qty</th>
+                <th class="text-center">Qty DN</th>
+                <th class="text-center">Qty Scan</th>
                 <th class="text-center">Unit</th>
                 <th class="text-center">Currency</th>
                 <th class="text-center">Price</th>
@@ -102,6 +103,7 @@
                 <td>{{ item.BCNumber }}</td>
                 <td>{{ $func.formatDate(item.BCDate) }}</td>
                 <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
+                <td class="text-right">{{ $func.formatMoney(item.QtyScan) }}</td>
                 <td>{{ item.UnitClsDescription }}</td>
                 <td>{{ item.Currency }}</td>
                 <td class="text-right">{{ $func.formatMoney(item.Price) }}</td>

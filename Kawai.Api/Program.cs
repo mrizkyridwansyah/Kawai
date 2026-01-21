@@ -203,3 +203,5 @@ app.MapHub<NotifApprovalHub>("/notifapprovalhub");
 
 app.MapRazorPages();
 app.Run();
+
+public partial class Program { }
