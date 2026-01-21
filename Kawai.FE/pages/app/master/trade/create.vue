@@ -42,12 +42,24 @@
                       <label>Trade Code</label>
                     </td>
                     <td colspan="2">
-                      <input-text
-                        v-model="model.Trade_Code"
-                        maxlength="15"
-                        :disabled="isTradeCodeDisabled"
-                        @keyup.enter="onTradeCodeEnter"
-                      />
+                      <div class="d-flex">
+              <input-text
+                v-model="model.Trade_Code"
+                :disabled="isTradeCodeDisabled"
+                @keyup.enter="onTradeCodeEnter"
+                maxlength="15"
+              />
+              <button
+                class="form-submit bg-primary"
+                style="margin-left: 2px; width: 3em; border-radius: 0.5em"
+                @click="loadItem"
+              >
+                <v-icon name="search" width="16px" />
+              </button>
+            </div>
+
+
+                      
                     </td>
 
                     <td></td>
@@ -65,7 +77,7 @@
                     </td>
                     <td colspan="4">
                       <filter-cls
-                        
+                      
                         ddl-width="80px"
                         desc-width="50px"
                         type-data="Trade_Cls"
@@ -88,7 +100,7 @@
                     </td>
                     <td colspan="8">
                       <filter-warehouse
-                        
+                      
                         v-model="model.Subcon_WH_Code"
                       />
                     </td>
@@ -158,7 +170,7 @@
                     <td colspan="2"><label>Country Cls</label></td>
                     <td colspan="2">
                        <input-cls-desc
-                        
+                      
                         type-data="Country_Cls"
                         v-model="model.Country_Cls"
                       />
@@ -168,7 +180,7 @@
                     <td><label>Epte</label></td>
                     <td colspan="3">
                       <input-cls-desc
-                        
+                       
                         type-data="Epte_Cls"
                         v-model="model.Epte_Cls"
                       />
@@ -233,7 +245,7 @@
                     </td>
                     <td colspan="8">
                       <filter-trade
-                        
+                       
                         :trade-cls="['2', '3']"
                         v-model="model.Invoice_To"
                         :disabled="isInvoiceToChecked"
@@ -262,7 +274,7 @@
                     <td colspan="2"><label>Insurance Covered</label></td>
                     <td colspan="8">
                       <filter-cls
-                        
+                       
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Insurance_Cls"
@@ -291,7 +303,7 @@
                     <td colspan="2"><label>NG Cls</label></td>
                     <td colspan="2">
                       <input-cls-desc
-                        
+                       
                         v-model="model.NG_Cls"
                         type-data="NG_Cls"
                         style="width: 120px"
@@ -375,7 +387,7 @@
                     <td><label>Price Condition</label></td>
                     <td colspan="5">
                       <filter-cls
-                        
+                       
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="PriceCondition_Cls"
@@ -387,7 +399,7 @@
                     <td><label>Payment Term</label></td>
                     <td colspan="5">
                       <filter-cls
-                        
+                         
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="PaymentTerm_Cls"
@@ -467,6 +479,7 @@
                                     <td>
                                       <div class="col-10">
                                         <input-text
+                                          
                                           v-model="item.Location_Code"
                                           :errors="
                                             errors?.[
@@ -479,6 +492,7 @@
                                     <td>
                                       <div class="col-10">
                                         <input-text
+                                          
                                           v-model="item.Location_Name"
                                           :errors="
                                             errors?.[
@@ -657,6 +671,7 @@
                     <td><label>Tanggal</label></td>
                     <td colspan="5">
                       <input-date
+                       
                         v-model="model.NoIzin_Date"
                         :errors="errors?.NoIzin_Date"
                       />
@@ -668,14 +683,7 @@
           </div>
         </div>
       </div>
-      <button
-        class="ml-2 btn btn-sm btn-success btn-elevate mr-1"
-        :disabled="isLoading"
-        @click="goInquiry"
-      >
-        <font-awesome-icon icon="book" />
-        <span class="ml-2">Inquiry</span>
-      </button>
+       
       <v-button-submit :submit="submit" cClass="mr-1" :is-loading="isLoading" />
       <button
         class="btn btn-sm btn-red btn-elevate mr-1"
@@ -686,7 +694,7 @@
           class="spinner-border spinner-border-sm text-light"
           role="status"
           v-if="isLoading"
-        >
+        > 
           <span class="visually-hidden">Loading...</span>
         </div>
         <font-awesome-icon v-else icon="rotate-left" />
@@ -694,6 +702,21 @@
       </button>
     </template>
   </v-frame>
+    
+   <v-modal id="shared-trade" title="List Trade" size="lg">
+    <shared-trade
+      :list="this.dsTrade"
+      :refresh="refreshTradeList"
+      :actions="[
+        {
+          href: 'javascript:void(0);',
+          icon: 'edit',
+          label: 'Select',
+          event: (item) => selectItem(item),
+        },
+      ]"
+    />
+  </v-modal>
 </template>
 
 <script>
@@ -708,7 +731,7 @@ export default {
     idxItemLoad: 0,
     debounce: null,
     errors: {},
-    refreshItemList: 0,
+    refreshTradeList: 0,
     model: {
       Trade_Code: "",
       Trade_Cls: "",
@@ -768,6 +791,9 @@ export default {
     ds: function () {
       return useTrade();
     },
+    dsTrade: function () {
+      return useTrade();
+    },
   },
   mounted() {
     const trade_code = this.$route.query.tradecode;
@@ -794,9 +820,22 @@ export default {
     },
   },
   methods: {
-    goInquiry() {
-      window.location.href = "/app/master/trade";
+   loadItem: function (idx) {
+      this.refreshTradeList++;
+      this.$bvModal.show("shared-trade");
     },
+     selectItem: function (dt) {
+  // set Trade Code dari modal
+  this.model.Trade_Code = dt.Trade_Code;
+
+  // tutup modal
+  this.$bvModal.hide("shared-trade");
+
+  // trigger logic utama (sama seperti tekan Enter)
+  this.$nextTick(() => {
+    this.onTradeCodeEnter();
+  });
+},
     onTradeCodeEnter() {
       this.ds
         .loadDetail(this.model.Trade_Code)

@@ -18,3 +18,15 @@ public class SupplyScanRequestDto
     public double PlanQty { get; set; }
     public double QtyScan { get; set; }
 }
+
+public class SupplyScanRequestDetailDto
+{
+    public string WarehouseCode { get; set; }
+    public string Address { get; set; }
+    public string RequestNo { get; set; }
+    public string Qty { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string LotNo { get; set; }
+  
+}

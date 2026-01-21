@@ -11,7 +11,7 @@
       >
         <template #table-content>
           <table
-            class="table table-striped mb-0 align-middle"
+          class="table table-striped table-bordered mb-0 align-middle"
             style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >

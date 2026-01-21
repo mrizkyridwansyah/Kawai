@@ -63,13 +63,14 @@
       </div>
 
       <v-table-input :data-items="listPeriodSettingDetail" ref="vtable">
-        <template #table-content>
+         <template #table-content>
           <div class="detail-content">
             <table
               class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
               v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
               ref="table"
             >
+         
               <thead>
                 <tr>
                   <th class="text-center">Month</th>
@@ -161,6 +162,16 @@
                 </tr>
               </tbody>
             </table>
+            <v-data-empty
+              class="mt-3"
+              v-if="
+                !ds.isLoading &&
+                !ds.isNetworkError &&
+                !ds.isServerError  &&
+      (!this.listPeriodSettingDetail ||
+        this.listPeriodSettingDetail.length === 0)
+              "
+            />
           </div>
         </template>
       </v-table-input>

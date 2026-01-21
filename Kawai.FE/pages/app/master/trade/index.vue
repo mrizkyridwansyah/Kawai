@@ -18,7 +18,6 @@
           >
             <thead>
               <tr>
-                <th class="text-center">Action</th>
                 <th class="text-center">Trade Code</th>
                 <th class="text-center">Trade Cls</th>
                 <th class="text-center">Trade Name</th>
@@ -45,24 +44,7 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items">
-                <td class="text-center">
-                  <font-awesome-icon
-                    class="mr-2 text-success"
-                    icon="pencil"
-                    @click="
-                      () =>
-                        this.$router.push(
-                          `trade/create?tradecode=${item.Trade_Code}`
-                        )
-                    "
-                  />
-                  <font-awesome-icon
-                    class="ml-2 mr-2 text-danger"
-                    icon="trash"
-                    style="cursor: pointer"
-                    @click="remove(item)"
-                  />
-                </td>
+               
                 <td>{{ item.Trade_Code }}</td>
                 <td>{{ item.Trade_Cls_Descs }}</td>
                 <td>{{ item.Trade_Name }}</td>

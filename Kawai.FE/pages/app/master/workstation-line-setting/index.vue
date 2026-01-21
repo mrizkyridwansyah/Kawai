@@ -23,6 +23,7 @@
         <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
           <filter-trade-2
               class="form-control"
+              placeholder=" "
               v-model="filter.supplier"
               :trade-cls="['1']"
               style-code="width: 110px"
@@ -41,6 +42,7 @@
             class="form-control"
             :company="filter.factory"
             :manufacture="filter.supplier"
+             placeholder=" "
             v-model="filter.linecode"
             style-code="width: 110px"
               style-desc="width: 250px"
@@ -76,7 +78,7 @@
       <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
         <template #table-content>
           <table
-            class="table table-striped mb-0 align-middle v-fixed-table"
+           class="table table-striped table-bordered mb-0 align-middle"
             style="width: 100%"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >

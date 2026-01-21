@@ -1,5 +1,6 @@
 ﻿using Kawai.Api.Services;
 using Kawai.Data.Repositories;
+using Kawai.Data.Repositories.Mobile;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Interfaces.Mobile;
@@ -42,5 +43,46 @@ namespace Kawai.Api.Controllers.Mobile
             var result = await _supplyscanrequestRepository.GetDataBarcode(barcodeNo);
             return Success(result);
         }
+
+        [HttpGet("list-material")]
+        public async Task<IActionResult> GetListDetailMaterial(string requestno)
+        {
+            var result = await _supplyscanrequestRepository.GetListDetailMaterial(requestno);
+            result = result.ToList();
+            return Success(result);
+        }
+
+        [HttpGet("list-detail")]
+        public async Task<IActionResult> GetListDetail(string warehouseCode , string requestNo , string itemCode)
+        {
+            var result = await _supplyscanrequestRepository.GetListDetail(warehouseCode, requestNo, itemCode);
+            result = result.ToList();
+            return Success(result);
+        }
+
+        [HttpPost("save")]
+        public async Task<IActionResult> Save(MobilSupplyScanRequest model)
+        {
+            var before = await _supplyscanrequestRepository.Capture(model.BarcodeNo);
+
+            await _supplyscanrequestRepository.Save(model, Auth.User.UserID);
+
+            var after = await _supplyscanrequestRepository.Capture(model.BarcodeNo);
+
+            await _logger.SaveDataLog(new DataLogDto
+            {
+                DocumentType = "Mobile Supply Request Scan",
+                EntityId = model.BarcodeNo.ToString(),
+                ReferenceId = model.BarcodeNo.ToString(),
+                Before = before,
+                After = after,
+                Activity = "Save Mobile Supply Request Scan",
+                Action = DataLogAction.Update
+            });
+            return Success(after);
+
+ 
+        }
+
     }
 }
