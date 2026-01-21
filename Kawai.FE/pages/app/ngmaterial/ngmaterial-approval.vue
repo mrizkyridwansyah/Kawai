@@ -8,8 +8,7 @@
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
           <filter-trade
-            class="form-control"
-            v-model="filter.SupplierCode"
+             v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
             :disabled="filter.ClaimId != null"
           />
@@ -232,6 +231,15 @@
                 </tr>
               </tbody>
             </table>
+                 <v-data-empty
+  class="mt-3"
+  v-if="
+    !ds.isLoading &&
+    !ds.isNetworkError &&
+    !ds.isServerError &&
+    (!listNGClaimDetail || listNGClaimDetail.length === 0)
+  "
+/>
           </div>
         </template>
       </v-table-input>

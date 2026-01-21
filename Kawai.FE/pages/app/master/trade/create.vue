@@ -445,7 +445,7 @@
                   </tr>
                   <v-button-add :add="add" cClass="mt-1" />
                   <tr>
-                    <td colspan="6">
+                    <td colspan="6"> 
                       <div class="table-scroll-wrapper">
                         <v-table-input
                           :data-items="items"

@@ -226,6 +226,15 @@
                 </tr>
               </tbody>
             </table>
+            <v-data-empty
+  class="mt-3"
+  v-if="
+    !ds.isLoading &&
+    !ds.isNetworkError &&
+    !ds.isServerError &&
+    (!listPODetail || listPODetail.length === 0)
+  "
+/>
           </div>
         </template>
       </v-table-input>
