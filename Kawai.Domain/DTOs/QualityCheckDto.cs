@@ -12,8 +12,8 @@ public class QualityCheckDto: DataTableDto
     public string ItemName { get; set; }
     public string UnitCls { get; set; }
     public string UnitClsDescription { get; set; }
-    public double Qty { get; set; }
-    public double QtyNG { get; set; }
+    public decimal Qty { get; set; }
+    public decimal QtyNG { get; set; }
     public string InspectionResult { get; set; }
     public DateTime RegisterDate { get; set; }
     public string RegisterUser { get; set; }
@@ -35,8 +35,8 @@ public class QualityCheckResultDto: DataTableDto
     public string DNNumber { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
-    public double Qty { get; set; }
-    public double QtyNG { get; set; }
+    public decimal Qty { get; set; }
+    public decimal QtyNG { get; set; }
     public string InspectionResult { get; set; }
     public string Remarks { get; set; }
     public long? AttachmentID { get; set; }

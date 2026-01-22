@@ -29,7 +29,7 @@ public class Trade
     public string Fax { get; set; }
     public string Closing_Day { get; set; }
     public string Pay_Day { get; set; }
-    public double? InvoicePay_Days { get; set; }
+    public decimal? InvoicePay_Days { get; set; }
     public string? Affiliate_Cls { get; set; }
     public string? Insurance_Cls { get; set; }
     public string NPWP_No { get; set; }
@@ -40,7 +40,7 @@ public class Trade
     public string Invoice_To { get; set; }
     public string? PO_Cls { get; set; }
     public string? Price_Condition { get; set; }
-    public double? POPayment_Day { get; set; }
+    public decimal? POPayment_Day { get; set; }
     public string? POPayment_Terms { get; set; }
     public string? Transportation_Cls { get; set; }
     public string POCaseMark1 { get; set; }
@@ -86,7 +86,7 @@ public class TradeSaveDelivery
     public string Fax { get; set; }
     public string Closing_Day { get; set; }
     public string Pay_Day { get; set; }
-    public double? InvoicePay_Days { get; set; }
+    public decimal? InvoicePay_Days { get; set; }
     public string? Affiliate_Cls { get; set; }
     public string? Insurance_Cls { get; set; }
     public string NPWP_No { get; set; }
@@ -97,7 +97,7 @@ public class TradeSaveDelivery
     public string Invoice_To { get; set; }
     public string? PO_Cls { get; set; }
     public string? Price_Condition { get; set; }
-    public double? POPayment_Day { get; set; }
+    public decimal? POPayment_Day { get; set; }
     public string? POPayment_Terms { get; set; }
     public string? Transportation_Cls { get; set; }
     public string POCaseMark1 { get; set; }

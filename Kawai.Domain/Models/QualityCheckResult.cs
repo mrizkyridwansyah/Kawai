@@ -9,7 +9,7 @@ public class QualityCheckResult
     public long InspectionId { get; set; }
 
     [Required(ErrorMessage = "Qty NG tidak boleh kosong")]
-    public double QtyNG { get; set; }
+    public decimal QtyNG { get; set; }
 
     [Required(ErrorMessage = "Remarks tidak boleh kosong")]
     public string Remarks { get; set; }

@@ -22,12 +22,12 @@ public class PODetailDto : DataTableDto
     public string ItemName { get; set; }
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
-    public double Qty { get; set; }
-    public double TotalReceiptQty { get; set; }
-    public double ReceiptQty { get; set; }
-    public double RemainingQty { get; set; }
-    public double QtyPacking { get; set; }
-    public double TotalPacking { get; set; }
+    public decimal Qty { get; set; }
+    public decimal TotalReceiptQty { get; set; }
+    public decimal ReceiptQty { get; set; }
+    public decimal RemainingQty { get; set; }
+    public decimal QtyPacking { get; set; }
+    public decimal TotalPacking { get; set; }
     public string NoSeri { get; set; }
     public DateTime? ProductionDate { get; set; }
     public DateTime? LastUpdate { get; set; }

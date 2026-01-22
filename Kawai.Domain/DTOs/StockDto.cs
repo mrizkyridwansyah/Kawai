@@ -14,11 +14,11 @@ public class StockDto: DataTableDto
     public string LotNo { get; set; }
     public string BarcodeNo { get; set; }
     public int SublotNo { get; set; }
-    public double PreMonthQty { get; set; }
-    public double ReceiptQty { get; set; }
-    public double SupplyQty { get; set; }
-    public double CurrentQty { get; set; }
-    public double InventoryQty { get; set; }
+    public decimal PreMonthQty { get; set; }
+    public decimal ReceiptQty { get; set; }
+    public decimal SupplyQty { get; set; }
+    public decimal CurrentQty { get; set; }
+    public decimal InventoryQty { get; set; }
     public DateTime LastUpdate { get; set; }
     public string LastUser { get; set; }
     public string Category { get; set; }
@@ -36,25 +36,25 @@ public class StockMasterDto: DataTableDto
     public string AreaCode { get; set; }
     public string ItemCode { get; set; }
     public string LotNo { get; set; }
-    public double LMPreMonth { get; set; }
-    public double LMReceipt { get; set; }
-    public double LMSupply { get; set; }
-    public double LMCurrent { get; set; }
-    public double LMInventory { get; set; }
-    public double TMPreMonth { get; set; }
-    public double TMReceipt { get; set; }
-    public double TMSupply { get; set; }
-    public double TMCurrent { get; set; }
-    public double TMInventory { get; set; }
-    public double NMPreMonth { get; set; }
-    public double NMReceipt { get; set; }
-    public double NMSupply { get; set; }
-    public double NMCurrent { get; set; }
-    public double NMInventory { get; set; }
+    public decimal LMPreMonth { get; set; }
+    public decimal LMReceipt { get; set; }
+    public decimal LMSupply { get; set; }
+    public decimal LMCurrent { get; set; }
+    public decimal LMInventory { get; set; }
+    public decimal TMPreMonth { get; set; }
+    public decimal TMReceipt { get; set; }
+    public decimal TMSupply { get; set; }
+    public decimal TMCurrent { get; set; }
+    public decimal TMInventory { get; set; }
+    public decimal NMPreMonth { get; set; }
+    public decimal NMReceipt { get; set; }
+    public decimal NMSupply { get; set; }
+    public decimal NMCurrent { get; set; }
+    public decimal NMInventory { get; set; }
     public string LMReason { get; set; }
     public string TMReason { get; set; }
     public string NMReason { get; set; }
-    public double Adjustment { get; set; }
+    public decimal Adjustment { get; set; }
     public List<StockDetailDto> StockDetails { get; set; }
 }
 public class StockDetailDto : DataTableDto
@@ -67,8 +67,8 @@ public class StockDetailDto : DataTableDto
     public string ItemCode { get; set; }
     public string LotNo { get; set; }
     public int SublotNo { get; set; }
-    public double Qty { get; set; }
-    public double InventoryQty { get; set; }
+    public decimal Qty { get; set; }
+    public decimal InventoryQty { get; set; }
     public DateTime? ExpiredDate { get; set; }
     public DateTime? ProductionDate { get; set; }
     public DateTime? ReceiptDate { get; set; }

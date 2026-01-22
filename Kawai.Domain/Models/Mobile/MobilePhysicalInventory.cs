@@ -11,5 +11,5 @@ public class MobilePhysicalInventory
     public string BarcodeNo { get; set; }
 
     [Required(ErrorMessage = "Inventory tidak boleh kosong")]    
-    public double? InventoryQty { get; set; }
+    public decimal? InventoryQty { get; set; }
 }

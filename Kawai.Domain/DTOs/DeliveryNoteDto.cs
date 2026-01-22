@@ -21,6 +21,6 @@ public class DeliveryNoteDetailDto : DataTableDto
     public string ItemName { get; set; }
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
-    public double Qty { get; set; }
-    public double TotalPacking { get; set; }
+    public decimal Qty { get; set; }
+    public decimal TotalPacking { get; set; }
 }

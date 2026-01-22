@@ -15,7 +15,7 @@ public class BOMWorkStation
 public class BOMWorkStationList
 {
     public string ChildItem_Code { get; set; }
-    public double? Qty { get; set; }
+    public decimal? Qty { get; set; }
     public bool? AllowSetting { get; set; } = false;
     
 }

@@ -63,40 +63,40 @@ public class Item
     [MaxLength(2, ErrorMessage = "Material Cls tidak boleh lebih dari 2 karakter")]
     public string MaterialCls { get; set; }
 
-    public double? Thickness { get; set; }
-    public double? Width { get; set; }
-    public double? Length { get; set; }
-    public double? Weight { get; set; }
-    public double? GrossWeight { get; set; }
+    public decimal? Thickness { get; set; }
+    public decimal? Width { get; set; }
+    public decimal? Length { get; set; }
+    public decimal? Weight { get; set; }
+    public decimal? GrossWeight { get; set; }
 
     [MaxLength(2, ErrorMessage = "Sheet Coil Cls tidak boleh lebih dari 2 karakter")]
     public string SheetCoilCls { get; set; }
-    public double? Pitch { get; set; }
-    public double? NumberProducible { get; set; }
-    public double? ScrapWeight { get; set; }
+    public decimal? Pitch { get; set; }
+    public decimal? NumberProducible { get; set; }
+    public decimal? ScrapWeight { get; set; }
 
     [MaxLength(2, ErrorMessage = "Drawing Material Cls tidak boleh lebih dari 2 karakter")]
     public string DrawingMaterialCls { get; set; }
 
     [MaxLength(2, ErrorMessage = "Surface Treatment Cls tidak boleh lebih dari 2 karakter")]
     public string SurfaceTreatmentCls { get; set; }
-    public double? SurfaceOrderPointQty { get; set; }
+    public decimal? SurfaceOrderPointQty { get; set; }
 
     [MaxLength(2, ErrorMessage = "Heat Treatment Cls tidak boleh lebih dari 2 karakter")]
     public string HeatTreatmentCls { get; set; }
-    public double? HeatOrderPointQty { get; set; }
-    public double? Sample { get; set; }
-    public double? SWQty { get; set; }
-    public double? EWQty { get; set; }
-    public double? NumberProcess { get; set; }
-    public double? MaterialCoefficient { get; set; }
-    public double? ProcessCoefficient { get; set; }
-    public double? MinLot { get; set; }
-    public double? LotQty { get; set; }
-    public double? LotCoefficience { get; set; }
-    public double? ProductReadTime { get; set; }
-    public double? YieldPercentage { get; set; }
-    public double? NumberEntering { get; set; }
+    public decimal? HeatOrderPointQty { get; set; }
+    public decimal? Sample { get; set; }
+    public decimal? SWQty { get; set; }
+    public decimal? EWQty { get; set; }
+    public decimal? NumberProcess { get; set; }
+    public decimal? MaterialCoefficient { get; set; }
+    public decimal? ProcessCoefficient { get; set; }
+    public decimal? MinLot { get; set; }
+    public decimal? LotQty { get; set; }
+    public decimal? LotCoefficience { get; set; }
+    public decimal? ProductReadTime { get; set; }
+    public decimal? YieldPercentage { get; set; }
+    public decimal? NumberEntering { get; set; }
 
     [MaxLength(2, ErrorMessage = "Packing Style Cls tidak boleh lebih dari 2 karakter")]
     public string PackingStyleCls { get; set; }
@@ -104,12 +104,12 @@ public class Item
     [MaxLength(2, ErrorMessage = "Group Cls tidak boleh lebih dari 2 karakter")]
     public string GroupCls { get; set; }
 
-    public double? StandardStock { get; set; }
-    public double? SafetyStock { get; set; }
-    public double? MaxStock { get; set; }
-    public double? MinStock { get; set; }
-    public double? AlowanceDay { get; set; }
-    public double? DeliveryReadTime { get; set; }
+    public decimal? StandardStock { get; set; }
+    public decimal? SafetyStock { get; set; }
+    public decimal? MaxStock { get; set; }
+    public decimal? MinStock { get; set; }
+    public decimal? AlowanceDay { get; set; }
+    public decimal? DeliveryReadTime { get; set; }
 
     /// <summary>
     /// 01 = MAKE
@@ -123,12 +123,12 @@ public class Item
     [MaxLength(2, ErrorMessage = "Control Cls tidak boleh lebih dari 2 karakter")]
     public string ControlCls { get; set; }
 
-    public double? OrderPointQty { get; set; }
+    public decimal? OrderPointQty { get; set; }
 
     [MaxLength(2, ErrorMessage = "Unit Cls tidak boleh lebih dari 2 karakter")]
     public string UnitCls { get; set; }
 
-    public double? NumberBox { get; set; }
+    public decimal? NumberBox { get; set; }
 
     [MaxLength(2, ErrorMessage = "Packing Style Cls tidak boleh lebih dari 2 karakter")]
     public string PackingStyleMaterialCls { get; set; }
@@ -151,8 +151,8 @@ public class Item
     [MaxLength(15, ErrorMessage = "HS Code tidak boleh lebih dari 15 karakter")]
     public string HSCode { get; set; }
 
-    public double? MinOrder { get; set; }
-    public double? SafetyStockPercentage { get; set; }
+    public decimal? MinOrder { get; set; }
+    public decimal? SafetyStockPercentage { get; set; }
 
     [MaxLength(18, ErrorMessage = "SAP Item Code tidak boleh lebih dari 18 karakter")]
     public string SAPItemCode { get; set; }

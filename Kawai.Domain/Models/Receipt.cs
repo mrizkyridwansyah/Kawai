@@ -61,10 +61,10 @@ public class ReceiptDetail
     public string ItemCode { get; set; }
 
     public string UnitClsCode { get; set; }
-    public double ExpectedQty { get; set; }
-    public double TotalPacking { get; set; }
+    public decimal ExpectedQty { get; set; }
+    public decimal TotalPacking { get; set; }
 
     [Required(ErrorMessage = "Receipt Qty tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double ReceiptQty { get; set; }
+    public decimal ReceiptQty { get; set; }
 }

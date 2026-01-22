@@ -17,5 +17,5 @@ public class MobileIQCSample
 
     [Required(ErrorMessage = "Qty Sample tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double QtySample { get; set; }
+    public decimal QtySample { get; set; }
 }

@@ -16,7 +16,7 @@ public class IQCInspectionDto
     public string InspectorName { get; set; }
     public string Remarks { get; set; }
     public string Source { get; set; }
-    public double TotalQtySample { get; set; }
+    public decimal TotalQtySample { get; set; }
 }
 
 public class IQCSampleDetailBarcodeDto
@@ -32,6 +32,6 @@ public class IQCSampleDetailBarcodeDto
     public string BarcodeNo { get; set; }
     public string LotNo { get; set; }
     public int SublotNo { get; set; }
-    public double Qty { get; set; }
-    public double QtySample { get; set; }
+    public decimal Qty { get; set; }
+    public decimal QtySample { get; set; }
 }

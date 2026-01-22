@@ -59,7 +59,7 @@ public class NGClaimDetail
     [MaxLength(25, ErrorMessage = "Item Code tidak boleh lebih dari 25 karakter")]
     public string ItemCode { get; set; }
 
-    public double Qty { get; set; }
+    public decimal Qty { get; set; }
     public string NGCode { get; set; }
 
 

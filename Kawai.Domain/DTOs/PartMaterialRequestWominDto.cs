@@ -8,12 +8,12 @@ public class PartMaterialRequestWominDto: DataTableDto
     public string ItemName { get; set; }
     public string UnitCls { get; set; }
     public string UnitClsDesc { get; set; }
-    public double PlanQty { get; set; }
+    public decimal PlanQty { get; set; }
     public long? RequestId { get; set; }
     public string RequestNo { get; set; }
     public DateTime? RequestDate { get; set; }
-    public double? RequestSetQty { get; set; }
-    public double? RemainingQty { get; set; }
+    public decimal? RequestSetQty { get; set; }
+    public decimal? RemainingQty { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
 }
@@ -31,9 +31,9 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public string ParentItemName { get; set; }
     public string ChildItemCode { get; set; }
     public string ChildItemName { get; set; }
-    public double QtyBOM { get; set; }
-    public double QtySet { get; set; }
-    public double RequirementQty { get; set; }
+    public decimal QtyBOM { get; set; }
+    public decimal QtySet { get; set; }
+    public decimal RequirementQty { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
 }

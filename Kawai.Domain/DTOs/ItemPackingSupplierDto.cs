@@ -8,7 +8,7 @@ public class ItemPackingSupplierDto: DataTableDto
     public string ItemName { get; set; }
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
-    public double QtyPacking { get; set; }
+    public decimal QtyPacking { get; set; }
     public DateTime LastUpdate { get; set; }
     public string LastUser { get; set; }
 }

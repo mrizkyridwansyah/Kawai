@@ -9,8 +9,8 @@ public class NGClaimDto: DataTableDto
     public DateTime ClaimDate { get; set; }
     public string SupplierCode { get; set; }
     public string SupplierName { get; set; }
-    public double TotalQty { get; set; }
-    public double TotalAmount { get; set; }
+    public decimal TotalQty { get; set; }
+    public decimal TotalAmount { get; set; }
     public string Status { get; set; }
     public string Notes { get; set; }
     public DateTime DNDate { get; set; }
@@ -42,7 +42,7 @@ public class NGClaimDetailDto : DataTableDto
     public string ItemName { get; set; }
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
-    public double Qty { get; set; }
+    public decimal Qty { get; set; }
     public string NGCode { get; set; }
     public string NGDescs { get; set; }
     public DateTime? LastUpdate { get; set; }

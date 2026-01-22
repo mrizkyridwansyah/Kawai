@@ -15,8 +15,8 @@ public class SupplyScanRequestDto
     public string ItemName { get; set; }    
     public string LotNo { get; set; }    
     public string UnitDesc { get; set; }
-    public double PlanQty { get; set; }
-    public double QtyScan { get; set; }
+    public decimal PlanQty { get; set; }
+    public decimal QtyScan { get; set; }
 }
 
 public class SupplyScanRequestDetailDto

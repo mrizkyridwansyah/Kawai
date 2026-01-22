@@ -9,7 +9,7 @@ public class MaterialStorageDto
     public string ItemName { get; set; }
     public string LotNo { get; set; }
     public int SublotNo { get; set; }
-    public double Qty { get; set; }
+    public decimal Qty { get; set; }
 }
 
 public class MaterialStorageSummaryDto
@@ -19,5 +19,5 @@ public class MaterialStorageSummaryDto
     public string ItemName { get; set; }
     public string LotNo { get; set; }
     public int TotalItem { get; set; }
-    public double TotalQty { get; set; }
+    public decimal TotalQty { get; set; }
 }

@@ -7,5 +7,5 @@ public class PartMaterialRequestWominModel
     public long ProductionId { get; set; }
     public DateTime ScheduleDate { get; set; }
     public string ItemCode { get; set; }
-    public double RequestSetQty { get; set; }
+    public decimal RequestSetQty { get; set; }
 }

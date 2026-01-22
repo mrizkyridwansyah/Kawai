@@ -59,5 +59,5 @@ public class ReceiptUnscheduleDetail
 
     [Required(ErrorMessage = "Receipt Qty tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double ReceiptQty { get; set; }
+    public decimal ReceiptQty { get; set; }
 }

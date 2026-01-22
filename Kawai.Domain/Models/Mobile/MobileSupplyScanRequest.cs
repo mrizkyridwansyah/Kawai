@@ -19,6 +19,6 @@ public class MobilSupplyScanRequest
     public string LotNo { get; set; }
     public string ItemCode { get; set; }
     public string RequestNo { get; set; }
-    public double Qty { get; set; }
+    public decimal Qty { get; set; }
 }
 

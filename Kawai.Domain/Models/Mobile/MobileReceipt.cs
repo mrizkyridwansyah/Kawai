@@ -21,9 +21,9 @@ public class MobileReceiptDetail
 
     [Required(ErrorMessage = "Qty tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double Qty { get; set; }
+    public decimal Qty { get; set; }
 
     [Required(ErrorMessage = "Qty tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double QtyVerify { get; set; }
+    public decimal QtyVerify { get; set; }
 }

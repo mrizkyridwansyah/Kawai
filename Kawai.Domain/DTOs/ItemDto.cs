@@ -32,47 +32,47 @@ public class ItemDto : DataTableDto
     public string ProductionClsDesc { get; set; }
     public string MaterialCls { get; set; }
     public string MaterialClsDesc { get; set; }
-    public double? Thickness { get; set; }
-    public double? Width { get; set; }
-    public double? Length { get; set; }
-    public double? Weight { get; set; }
-    public double? GrossWeight { get; set; }
+    public decimal? Thickness { get; set; }
+    public decimal? Width { get; set; }
+    public decimal? Length { get; set; }
+    public decimal? Weight { get; set; }
+    public decimal? GrossWeight { get; set; }
     public string SheetCoilCls { get; set; }
     public string SheetCoilClsDesc { get; set; }
-    public double? Pitch { get; set; }
-    public double? NumberProducible { get; set; }
-    public double? ScrapWeight { get; set; }
+    public decimal? Pitch { get; set; }
+    public decimal? NumberProducible { get; set; }
+    public decimal? ScrapWeight { get; set; }
     public string DrawingMaterialCls { get; set; }
     public string DrawingMaterialClsDesc { get; set; }
 
     public string SurfaceTreatmentCls { get; set; }
     public string SurfaceTreatmentClsDesc { get; set; }
-    public double? SurfaceOrderPointQty { get; set; }
+    public decimal? SurfaceOrderPointQty { get; set; }
     public string HeatTreatmentCls { get; set; }
     public string HeatTreatmentClsDesc { get; set; }
-    public double? HeatOrderPointQty { get; set; }
-    public double? Sample { get; set; }
-    public double? SWQty { get; set; }
-    public double? EWQty { get; set; }
-    public double? NumberProcess { get; set; }
-    public double? MaterialCoefficient { get; set; }
-    public double? ProcessCoefficient { get; set; }
-    public double? MinLot { get; set; }
-    public double? LotQty { get; set; }
-    public double? LotCoefficience { get; set; }
-    public double? ProductReadTime { get; set; }
-    public double? YieldPercentage { get; set; }
-    public double? NumberEntering { get; set; }
+    public decimal? HeatOrderPointQty { get; set; }
+    public decimal? Sample { get; set; }
+    public decimal? SWQty { get; set; }
+    public decimal? EWQty { get; set; }
+    public decimal? NumberProcess { get; set; }
+    public decimal? MaterialCoefficient { get; set; }
+    public decimal? ProcessCoefficient { get; set; }
+    public decimal? MinLot { get; set; }
+    public decimal? LotQty { get; set; }
+    public decimal? LotCoefficience { get; set; }
+    public decimal? ProductReadTime { get; set; }
+    public decimal? YieldPercentage { get; set; }
+    public decimal? NumberEntering { get; set; }
     public string PackingStyleCls { get; set; }
     public string PackingStyleClsDesc { get; set; }
     public string GroupCls { get; set; }
     public string GroupClsDesc { get; set; }
-    public double? StandardStock { get; set; }
-    public double? SafetyStock { get; set; }
-    public double? MaxStock { get; set; }
-    public double? MinStock { get; set; }
-    public double? AlowanceDay { get; set; }
-    public double? DeliveryReadTime { get; set; }
+    public decimal? StandardStock { get; set; }
+    public decimal? SafetyStock { get; set; }
+    public decimal? MaxStock { get; set; }
+    public decimal? MinStock { get; set; }
+    public decimal? AlowanceDay { get; set; }
+    public decimal? DeliveryReadTime { get; set; }
     public string MakeBuyCls { get; set; }
     public string MakeBuyClsDesc { get; set; }
     public string ControlCls { get; set; }
@@ -81,10 +81,10 @@ public class ItemDto : DataTableDto
     public string ColorClsDesc { get; set; }
     public string DestinationCls { get; set; }
     public string DestinationClsDesc { get; set; }
-    public double? OrderPointQty { get; set; }
+    public decimal? OrderPointQty { get; set; }
     public string UnitCls { get; set; }
     public string UnitClsDesc { get; set; }
-    public double NumberBox { get; set; }
+    public decimal NumberBox { get; set; }
     public string PackingStyleMaterialCls { get; set; }
     public string PackingStyleMaterialClsDesc { get; set; }
     public string AccountingCode { get; set; }
@@ -99,8 +99,8 @@ public class ItemDto : DataTableDto
     public DateTime? UseEndDay { get; set; }
     public string HSCode { get; set; }
     public string HSName { get; set; }
-    public double MinOrder { get; set; }
-    public double SafetyStockPercentage { get; set; }
+    public decimal MinOrder { get; set; }
+    public decimal SafetyStockPercentage { get; set; }
     public string SAPItemCode { get; set; }
     public string TypeAccs { get; set; }
     public string ModelCls { get; set; }

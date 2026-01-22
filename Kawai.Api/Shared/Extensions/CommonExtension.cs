@@ -45,6 +45,7 @@ public static class CommonExtension
                 typeof(bool), typeof(bool?),
                 typeof(int), typeof(int?),
                 typeof(long), typeof(long?),
+                typeof(decimal), typeof(decimal?),
                 typeof(double), typeof(double?),
                 typeof(byte), typeof(byte?),
                 typeof(float), typeof(float?),

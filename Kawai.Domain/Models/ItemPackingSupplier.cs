@@ -17,5 +17,5 @@ public class ItemPackingSupplier
 
     [Required(ErrorMessage = "Item Code tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double? QtyPacking { get; set; }
+    public decimal? QtyPacking { get; set; }
 }

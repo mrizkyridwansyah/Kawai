@@ -29,6 +29,9 @@
           select-label=""
           deselect-label=""
         />
+
+
+
         <small class="form-text text-muted" v-if="description">{{
           description
         }}</small>
@@ -38,7 +41,7 @@
           v-if="!this.descNewRow"
           type="text"
           disabled
-          :value="selectedItem?.ItemName || ''"
+          :value="tempValue ? fuckingDescription : ''"
           class="w-100 form-control"
         />
       </td>
@@ -55,7 +58,7 @@
         <input
           type="text"
           disabled
-          :value="selectedItem?.ItemName || ''"
+          :value="tempValue ? fuckingDescription : ''"
           class="w-100 form-control"
         />
       </td>
@@ -95,14 +98,12 @@ export default {
     isOpen: false,
     list: [],
     tempValue: null,
+    fuckingDescription: "",
     debounce: null,
   }),
   computed: {
     cClass: function () {
       return (this["class"] ?? "") + (this.errors ? " is-invalid" : "");
-    },
-    selectedItem: function () {
-      return this.list.find((x) => x.ItemCode === this.tempValue) || null;
     },
     displayLabel() {
       if (this.isOpen) return "DDLDescription";
@@ -137,6 +138,9 @@ export default {
   methods: {
     change: function (v) {
       if (this.onSelect) this.onSelect(v);
+
+      const selected = this.list.find((x) => x.ItemCode === v);
+      this.fuckingDescription = selected?.ItemName || "";
 
       this.$emit("update:modelValue", v);
     },

@@ -9,7 +9,7 @@ public class StockMutationDto
     public string ItemCode { get; set; }
     public string BarcodeNo { get; set; }
     public string LotNo { get; set; }
-    public double QtyTrans { get; set; }
+    public decimal QtyTrans { get; set; }
     public int? SublotNo { get; set; }
     public string SourceType { get; set; }
     public string SourceRef { get; set; }

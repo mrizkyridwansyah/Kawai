@@ -12,15 +12,15 @@ public class AndonWominRequestDto: DataTableDto
     public string TrollyNumber { get; set; }
     public string CurrentPosition { get; set; }
     public string NextLocation { get; set; }
-    public double TotalItem { get; set; }
-    public double Remaining { get; set; }
+    public decimal TotalItem { get; set; }
+    public decimal Remaining { get; set; }
 
 }
 
 public class AndonWominRequestSummaryDto : DataTableDto
 {
-    public double TotalRequest { get;set; }
-    public double Womin { get; set; }
-    public double TotalItem { get;set;}
-    public double Remaining { get; set; }
+    public decimal TotalRequest { get;set; }
+    public decimal Womin { get; set; }
+    public decimal TotalItem { get;set;}
+    public decimal Remaining { get; set; }
 }

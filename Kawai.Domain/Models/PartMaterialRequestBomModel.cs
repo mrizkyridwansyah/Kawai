@@ -7,5 +7,5 @@ public class PartMaterialRequestBomModel
     public string PONumber { get; set; }
     public DateTime PODate { get; set; }
     public string ItemCode { get; set; }
-    public double RequestSetQty { get; set; }
+    public decimal RequestSetQty { get; set; }
 }

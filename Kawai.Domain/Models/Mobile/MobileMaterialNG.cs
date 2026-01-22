@@ -12,5 +12,5 @@ public class MobileMaterialNG
 
     [Required(ErrorMessage = "Qty NG tidak boleh kosong")]
     [NumberGreaterThan(0)]
-    public double QtyNG { get; set; }
+    public decimal QtyNG { get; set; }
 }

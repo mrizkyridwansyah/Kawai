@@ -11,6 +11,6 @@ public class MaterialNGDto
     public string BarcodeNo { get; set; }
     public string LotNo { get; set; }
     public int SublotNo { get; set; }
-    public double Qty { get; set; }
-    public double QtyNG { get; set; }
+    public decimal Qty { get; set; }
+    public decimal QtyNG { get; set; }
 }

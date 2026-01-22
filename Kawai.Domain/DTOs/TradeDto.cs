@@ -23,7 +23,7 @@ public class TradeDto: DataTableDto
     public string Fax { get; set; }
     public string Closing_Day { get; set; }
     public string Pay_Day { get; set; }
-    public double InvoicePay_Days { get; set; }
+    public decimal InvoicePay_Days { get; set; }
     public string Affiliate_Cls { get; set; }
     public string Affiliate_Cls_Descs { get; set; }
     public string Insurance_Cls { get; set; }
@@ -38,7 +38,7 @@ public class TradeDto: DataTableDto
     public string PO_Cls_Descs { get; set; }
     public string Price_Condition { get; set; }
     public string Price_Condition_Descs { get; set; }
-    public double POPayment_Day { get; set; }
+    public decimal POPayment_Day { get; set; }
     public string POPayment_Terms { get; set; }
     public string Transportation_Cls { get; set; }
     public string Transportation_Cls_Descs { get; set; }

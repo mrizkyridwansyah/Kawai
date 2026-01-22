@@ -36,10 +36,10 @@ public class ReceiptDetailDto : DataTableDto
     public string ItemName { get; set; }
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
-    public double ExpectedQty { get; set; }
-    public double TotalPacking { get; set; }
-    public double QtyPacking { get; set; }
-    public double ReceiptQty { get; set; }
+    public decimal ExpectedQty { get; set; }
+    public decimal TotalPacking { get; set; }
+    public decimal QtyPacking { get; set; }
+    public decimal ReceiptQty { get; set; }
     public string IQCResult { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
@@ -60,7 +60,7 @@ public class ReceiptDetailBarcodeDto : DataTableDto
     public string BarcodeNo { get; set; }
     public string LotNo { get; set; }
     public int SublotNo { get; set; }
-    public double Qty { get; set; }
+    public decimal Qty { get; set; }
     public bool IsVerified { get; set; }
     public string VerifiedBy { get; set; }
     public DateTime? VerifiedDate { get; set; }
@@ -73,8 +73,8 @@ public class ReceiptAndonDto : DataTableDto
     public string SupplierName { get; set; }
     public string DNNumber { get; set; }
     public string ItemName { get; set; }
-    public double ReceiptQtyUnit { get; set; }
-    public double ReceiptQtyPack { get; set; }
+    public decimal ReceiptQtyUnit { get; set; }
+    public decimal ReceiptQtyPack { get; set; }
     public string StatusReceipt { get; set; }
     public string StatusReceiptName { get; set; }
 }
@@ -98,9 +98,9 @@ public class ReceiptInquiryDto: DataTableDto
     public DateTime BCDate { get; set; }
     public string UnitCls { get; set; }
     public string UnitClsDescription { get; set; }
-    public double Qty { get; set; }
-    public double QtyScan { get; set; }
+    public decimal Qty { get; set; }
+    public decimal QtyScan { get; set; }
     public string Currency { get; set; }
-    public double Price { get; set; }
-    public double Amount { get; set; }
+    public decimal Price { get; set; }
+    public decimal Amount { get; set; }
 }
