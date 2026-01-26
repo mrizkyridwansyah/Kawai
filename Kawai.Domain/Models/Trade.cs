@@ -78,6 +78,7 @@ public class TradeSaveDelivery
 
     [Required(ErrorMessage = "Trade Name tidak boleh kosong")]
     [MaxLength(70, ErrorMessage = "Trade Name tidak boleh lebih dari 70 karakter")]
+    public string Trade_Name { get; set; }
     public string Trade_Abbr { get; set; }
     public string Contact_Person { get; set; }
     public string Address1 { get; set; }
