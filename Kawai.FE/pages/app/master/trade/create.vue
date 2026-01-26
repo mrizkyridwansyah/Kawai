@@ -47,6 +47,7 @@
                 v-model="model.Trade_Code"
                 :disabled="isTradeCodeDisabled"
                 @keyup.enter="onTradeCodeEnter"
+                 :errors="errors?.Trade_Code"
                 maxlength="15"
               />
               <button
@@ -82,6 +83,8 @@
                         desc-width="50px"
                         type-data="Trade_Cls"
                         v-model="model.Trade_Cls"
+                        :errors="errors?.Trade_Cls"
+                        
                       />
                     </td>
 
@@ -110,7 +113,7 @@
                       <label>Trade Name</label>
                     </td>
                     <td colspan="8">
-                      <input-text v-model="model.Trade_Name" maxlength="70" />
+                      <input-text v-model="model.Trade_Name" maxlength="70"     :errors="errors?.Trade_Name"/>
                     </td>
                   </tr>
                   <tr>
@@ -445,7 +448,7 @@
                   </tr>
                   <v-button-add :add="add" cClass="mt-1" />
                   <tr>
-                    <td colspan="6"> 
+                    <td colspan="6">
                       <div class="table-scroll-wrapper">
                         <v-table-input
                           :data-items="items"
@@ -685,21 +688,22 @@
       </div>
        
       <v-button-submit :submit="submit" cClass="mr-1" :is-loading="isLoading" />
-      <button
-        class="btn btn-sm btn-red btn-elevate mr-1"
-        @click="reset"
-        :disabled="isLoading"
-      >
-        <div
-          class="spinner-border spinner-border-sm text-light"
-          role="status"
-          v-if="isLoading"
-        > 
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <font-awesome-icon v-else icon="rotate-left" />
-        <span class="ml-2">Clear</span>
-      </button>
+       <v-button
+              :action="remove"
+              label="Delete"
+              icon="trash"
+              cClass="btn-danger mr-1"
+              :is-loading="isLoading"
+              :disabled="mode === 'add'"
+            />
+       <v-button
+              :action="reset"
+              label="Clear"
+              icon="refresh"
+              cClass="btn-danger mr-1"
+              :is-loading="isLoading"
+            />
+      
     </template>
   </v-frame>
     
@@ -867,6 +871,7 @@ export default {
     },
 
     reset: function () {
+        this.errors = {};
       this.model = {
         Trade_Code: "",
         Trade_Cls: "",
@@ -925,11 +930,7 @@ export default {
     },
 
     submit: async function () {
-      // VALIDASI TRADE CODE
-      if (!this.model.Trade_Code || this.model.Trade_Code.trim() === "") {
-        toastDanger("Trade Code wajib diisi");
-        return;
-      }
+       
       if (this.isLoading) return;
 
       this.isLoading = true;
@@ -946,9 +947,9 @@ export default {
         };
         debugger;
         // CREATE / UPDATE (backend pakai InsUpd)
-        await this.ds.submit(payload);
+        
+        this.ds.submit(payload).then(()=> toastSuccess("Data berhasil disimpan"));
 
-        toastSuccess("Data berhasil disimpan");
 
         // optional: disable Trade Code setelah save
         this.isTradeCodeDisabled = true;
@@ -958,6 +959,25 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+     remove: function () {
+      confirmRemove(
+        () =>
+          new Promise((resolve, reject) => {
+            this.ds
+              .remove(this.model.Trade_Code)
+              .then((datas) => {
+                toastSuccess("Data Deleted successfully!");
+                this.clear();
+              })
+              .catch((err) => {
+                this.errors = err?.Errors;
+                toastDanger(err?.Message);
+              });
+          }),
+        null,
+        this.model.Trade_Name
+      );
     },
     add: function () {
       let obj = {
