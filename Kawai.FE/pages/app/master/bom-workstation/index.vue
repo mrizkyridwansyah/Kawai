@@ -64,7 +64,7 @@
                       @click="
                         () =>
                           this.$router.push({
-                            path: 'bom-workstation/detail',
+                            path: '/app/master/bom-workstation/detail',
                             query: {
                               modelcls: filter.modelcls,
                               itemcode: filter.item,
