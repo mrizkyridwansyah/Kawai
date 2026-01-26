@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="Part Receipt Material Input" icon="receipt">
+  <v-frame title="Part Material Receipt Input" icon="receipt">
     <template #frame-content>
       <table>
         <tr>
@@ -337,10 +337,6 @@
 <script>
 export default {
   data: () => ({
-    breadcrumbs: [
-      { title: "Stock Control", active: false, to: "" },
-      { title: "Part Receipt Material", active: false, to: "" },
-    ],
     isNew: true,
     filter: {
       FactoryCode: null,
@@ -505,10 +501,14 @@ export default {
       }
     },
     checkAll: function (e) {
-      this.listPODetail.map((x) => (x.Selected = e.target.checked));
+      this.listPODetail.map((x) => {
+        x.Selected = e.target.checked;
+        x.ReceiptQty = e.target.checked ? x.RemainingQty : 0;
+      });
     },
     check: function (e, item) {
       item.Selected = e.target.checked;
+      item.ReceiptQty = e.target.checked ? item.RemainingQty : 0;
     },
     printLabel: function () {
       this.ds

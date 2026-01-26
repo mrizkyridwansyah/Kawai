@@ -25,6 +25,21 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
       ],
       Sorts: {},
     },
+    dataDetail: {
+      Items: [],
+      Total: 0,
+      Filtered: 0,
+      Page: 1,
+      Length: 10,
+    }, 
+    filterDetail: {
+      Page: 1,
+      Length: 10,
+      Filters: [
+
+      ],
+      Sorts: {},
+    },
   }),
   actions: {
     load: function () {
@@ -34,6 +49,28 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
         app.$http.post(`/receipt/inquiry`, this.filter)
           .then(({ data }) => {
             this.data = data.Data;
+
+            resolve(data);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoading = false);
+      })
+    },
+    loadDetail: function () {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/inquiry-detail`, this.filterDetail)
+          .then(({ data }) => {
+            this.dataDetail = data.Data;
 
             resolve(data);
           })
@@ -64,6 +101,23 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
       this.filter.Page = 1;
       this.filter.Length = v;
       this.load();
+    },
+
+    setFilterDetail: function (v) {
+      this.filterDetail.Filters = v;
+      this.filterDetail.Page = 1;
+    },
+    setSortDetail: function (v) {
+      this.filterDetail.Sorts = v;
+    },
+    setPageDetail: function (v) {
+      this.filterDetail.Page = v;
+      this.loadDetail();
+    },
+    setLengthDetail: function (v) {
+      this.filterDetail.Page = 1;
+      this.filterDetail.Length = v;
+      this.loadDetail();
     },
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {

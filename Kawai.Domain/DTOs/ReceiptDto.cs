@@ -64,6 +64,14 @@ public class ReceiptDetailBarcodeDto : DataTableDto
     public bool IsVerified { get; set; }
     public string VerifiedBy { get; set; }
     public DateTime? VerifiedDate { get; set; }
+
+    // properti ini buat di detail receipt inquiry
+    public string WarehouseCode { get; set; }
+    public string WarehouseName { get; set; }
+    public string AreaCode { get; set; }
+    public string AreaName { get; set; }
+    public string AddressCode { get; set; }
+    public string AddressName { get; set; }
 }
 
 public class ReceiptAndonDto : DataTableDto
@@ -82,6 +90,7 @@ public class ReceiptAndonDto : DataTableDto
 public class ReceiptInquiryDto: DataTableDto
 {
     public long? Id { get; set; }
+    public long? ReceiptDetailId { get; set; }
     public string ReceiptNo { get; set; }
     public DateTime ReceiptDate { get; set; }
     public string FactoryCode { get; set; }

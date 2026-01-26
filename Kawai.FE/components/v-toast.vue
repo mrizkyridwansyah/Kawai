@@ -45,10 +45,10 @@
 
 <script>
 export default {
-  data: () => ({
-    message: "test",
-    variant: "default",
-  }),
+  props: {
+    message: { type: String, default: "test" },
+    variant: { type: String, default: "default" },
+  },
   computed: {
     color: function () {
       if (this.variant.toLowerCase() == "info") return "dodgerblue";

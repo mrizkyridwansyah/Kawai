@@ -3,6 +3,7 @@ using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
+using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;

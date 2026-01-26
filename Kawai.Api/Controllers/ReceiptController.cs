@@ -136,6 +136,13 @@ public class ReceiptController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("inquiry-detail")]
+    public async Task<IActionResult> InquiryDetail([FromBody] RequestParameter parameter)
+    {
+        var result = await _receiptRepository.InquiryDetail(parameter);
+        return DataTableResult(parameter, result);
+    }
+
     [HttpPost("export/excel-inquiry")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {

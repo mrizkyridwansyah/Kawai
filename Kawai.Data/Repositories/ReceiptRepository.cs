@@ -243,4 +243,10 @@ public class ReceiptRepository : IReceiptRepository
         string sp = "sp_Wms_Receipt_Inquiry";
         return (await _dbExecutor.QueryListAsync<ReceiptInquiryDto>(sp, param.ToQueryObject())).ToList();
     }
+    public async Task<List<ReceiptDetailBarcodeDto>> InquiryDetail(RequestParameter param)
+    {
+        string sp = "sp_Wms_Receipt_InquiryDetail";
+        return (await _dbExecutor.QueryListAsync<ReceiptDetailBarcodeDto>(sp, param.ToQueryObject())).ToList();
+    }
+
 }

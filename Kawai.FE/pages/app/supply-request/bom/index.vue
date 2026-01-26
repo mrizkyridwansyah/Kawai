@@ -90,7 +90,7 @@
             <label class="form-label">Remaining Cls</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-remaining-cls
+            <filter-yes-no-all
               class="form-control"
               
               v-model="filter.RemainingCls"

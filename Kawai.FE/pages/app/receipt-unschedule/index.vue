@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="Part Receipt Material Unschedule" icon="receipt">
+  <v-frame title="Part Material Receipt Unschedule" icon="receipt">
     <template #frame-content>
       <table>
         <tr>
@@ -300,10 +300,6 @@
 <script>
 export default {
   data: () => ({
-    breadcrumbs: [
-      { title: "Stock Control", active: false, to: "" },
-      { title: "Part Receipt Material", active: false, to: "" },
-    ],
     isNew: true,
     filter: {
       FactoryCode: null,

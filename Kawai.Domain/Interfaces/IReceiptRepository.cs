@@ -16,6 +16,7 @@ public interface IReceiptRepository
     Task Remove(long id);
     Task PrintLabel(long id, string userId);
     Task<List<ReceiptInquiryDto>> Inquiry(RequestParameter parameter);
+    Task<List<ReceiptDetailBarcodeDto>> InquiryDetail(RequestParameter parameter);
     #endregion
 
     #region MOBILE
