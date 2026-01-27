@@ -168,100 +168,102 @@
       </table>
 
       <div style="width: 1150px">
-      <v-table-input :data-items="items" ref="vtable">
-        <template #table-content>
-          <div class="detail-content">
-            <table
-              class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
-              v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-              ref="table"
-            >
-              <thead>
-                <tr>
-                  <th class="text-center">No</th>
-                  <th class="text-center">Item Code</th>
-                  <th class="text-center">Item Name</th>
-                  <th class="text-center">Unit</th>
-                  <th class="text-center">Qty DN</th>
-                  <th class="text-center">Total Packing</th>
-                  <th class="text-center">Qty Packing</th>
-                  <th class="text-center">Last Update</th>
-                  <th class="text-center">Last User</th>
-                  <th class="text-center"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, i) in items || []" :key="i">
-                  <td class="text-center">
-                    {{ i + 1 }}
-                  </td>
-                  <td>
-                    <div class="row">
-                      <div class="col-10">
-                        <input-text-small
-                          v-model="item.ItemCode"
-                          disabled
-                          :errors="errors?.[`Details[${i}].ItemCode`]"
-                        />
+        <v-table-input :data-items="items" ref="vtable">
+          <template #table-content>
+            <div class="detail-content">
+              <table
+                class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+                ref="table"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Item Code</th>
+                    <th class="text-center">Item Name</th>
+                    <th class="text-center">Unit</th>
+                    <th class="text-center">Qty DN</th>
+                    <th class="text-center">Total Packing</th>
+                    <th class="text-center">Qty Packing</th>
+                    <th class="text-center">Last Update</th>
+                    <th class="text-center">Last User</th>
+                    <th class="text-center"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, i) in items || []" :key="i">
+                    <td class="text-center">
+                      {{ i + 1 }}
+                    </td>
+                    <td>
+                      <div class="row">
+                        <div class="col-10">
+                          <input-text-small
+                            v-model="item.ItemCode"
+                            disabled
+                            :errors="errors?.[`Details[${i}].ItemCode`]"
+                          />
+                        </div>
+                        <div class="col-1" style="margin-left: -1em">
+                          <button
+                            class="form-submit bg-primary"
+                            style="
+                              height: 100%;
+                              width: 2.5em;
+                              border-radius: 0.5em;
+                            "
+                            @click="loadItem(i)"
+                          >
+                            <v-icon name="search" width="16px" />
+                          </button>
+                        </div>
                       </div>
-                      <div class="col-1" style="margin-left: -1em">
-                        <button
-                          class="form-submit bg-primary"
-                          style="
-                            height: 100%;
-                            width: 2.5em;
-                            border-radius: 0.5em;
-                          "
-                          @click="loadItem(i)"
-                        >
-                          <v-icon name="search" width="16px" />
-                        </button>
-                      </div>
-                    </div>
-                  </td>
-                  <td>{{ item.ItemName }}</td>
-                  <td>{{ item.UnitClsName }}</td>
-                  <td>
-                    <input-money-small
-                      v-model="item.ReceiptQty"
-                      :errors="errors?.[`Details[${i}].ReceiptQty`]"
-                    />
-                  </td>
-                  <td class="text-right">
-                    {{
-                      $func.formatMoney(
-                        Math.ceil(
-                          parseFloat(item.ReceiptQty) /
-                            parseFloat(item.QtyPacking)
-                        )
-                      )
-                    }}
-                  </td>
-                  <td class="text-right">
-                    {{ $func.formatMoney(item.QtyPacking) }}
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <a href="javascript:void(0)" @click="items.splice(i, 1)">
-                      <v-icon name="x" width="20" color="red" />
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <v-data-empty
-              class="mt-3"
-              v-if="
-                !dsReceipt.isLoading &&
-                items.length == 0 &&
-                !dsReceipt.isNetworkError &&
-                !dsReceipt.isServerError
-              "
-            />
-          </div>
-        </template>
-      </v-table-input>
+                    </td>
+                    <td>{{ item.ItemName }}</td>
+                    <td>{{ item.UnitClsName }}</td>
+                    <td>
+                      <input-money-small
+                        v-model="item.ReceiptQty"
+                        :errors="errors?.[`Details[${i}].ReceiptQty`]"
+                      />
+                    </td>
+                    <td class="text-right">
+                      {{
+                        item.QtyPacking > 0
+                          ? $func.formatMoney(
+                              Math.ceil(
+                                parseFloat(item.ReceiptQty) /
+                                  parseFloat(item.QtyPacking),
+                              ),
+                            )
+                          : "0"
+                      }}
+                    </td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.QtyPacking) }}
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <a href="javascript:void(0)" @click="items.splice(i, 1)">
+                        <v-icon name="x" width="20" color="red" />
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <v-data-empty
+                class="mt-3"
+                v-if="
+                  !dsReceipt.isLoading &&
+                  items.length == 0 &&
+                  !dsReceipt.isNetworkError &&
+                  !dsReceipt.isServerError
+                "
+              />
+            </div>
+          </template>
+        </v-table-input>
       </div>
 
       <div
@@ -283,7 +285,7 @@
   <v-modal id="shared-item-list" title="List Item" size="lg">
     <shared-item-list
       :filters="[{ SupplierCode: this.filter.SupplierCode }]"
-      :list="this.dsItemSupplier"
+      :list="this.ds"
       :refresh="refreshItemList"
       :actions="[
         {
@@ -337,9 +339,6 @@ export default {
     },
     dsReceipt: function () {
       return useReceipt();
-    },
-    dsItemSupplier: function () {
-      return useItemPackingSupplier();
     },
     notif: function () {
       return useNotification();
@@ -457,8 +456,13 @@ export default {
     selectItem(dt) {
       this.dataItem = dt;
 
+      if (dt.QtyPacking <= 0) {
+        toastWarning("Qty Packing harus lebih dari 0!");
+        return;
+      }
+
       const duplicate = this.items.some(
-        (p, i) => p.ItemCode === dt.ItemCode && i !== this.idxItemLoad
+        (p, i) => p.ItemCode === dt.ItemCode && i !== this.idxItemLoad,
       );
 
       if (duplicate) {

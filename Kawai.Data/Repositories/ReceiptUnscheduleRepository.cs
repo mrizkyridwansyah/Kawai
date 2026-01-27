@@ -1,6 +1,8 @@
 ﻿using Kawai.Data.SqlConnections;
+using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
+using Kawai.Domain.Shared;
 
 namespace Kawai.Data.Repositories;
 
@@ -12,6 +14,12 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
     public ReceiptUnscheduleRepository(DbExecutor dbExecutor)
     {
         _dbExecutor = dbExecutor;
+    }
+
+    public async Task<List<ItemPackingSupplierDto>> GetListItem(RequestParameter param)
+    {
+        string sp = "sp_Wms_ReceiptUnschedule_ListItem";
+        return (await _dbExecutor.QueryListAsync<ItemPackingSupplierDto>(sp, param.ToQueryObject())).ToList();
     }
 
     public async Task Create(ReceiptUnschedule receipt, string userId)

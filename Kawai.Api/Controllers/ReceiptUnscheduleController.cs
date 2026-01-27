@@ -1,6 +1,7 @@
 ﻿using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
+using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,14 @@ public class ReceiptUnscheduleController : HahaController
         _receiptUnscheduleRepository = receiptUnscheduleRepository;
         _logger = logger;
     }
+
+    [HttpPost("list-item")]
+    public async Task<IActionResult> List([FromBody] RequestParameter parameter)
+    {
+        var results = await _receiptUnscheduleRepository.GetListItem(parameter);
+        return DataTableResult(parameter, results);
+    }
+
 
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] ReceiptUnschedule model)

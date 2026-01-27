@@ -79,4 +79,9 @@ definePageMeta({
   font-size: 0.6rem !important;
 }
 
+.panel-body {
+    box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.15),
+    0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
 </style>
