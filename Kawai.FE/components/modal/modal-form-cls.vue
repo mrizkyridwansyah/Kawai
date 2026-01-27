@@ -7,7 +7,7 @@
           v-model="model.Code"
           :disabled="mode === 'edit'"
           :errors="errors?.Code"
-          style="width: 200px;"
+          style="width: 200px"
           maxlength="20"
         />
       </td>
@@ -20,7 +20,7 @@
         <input-text
           v-model="model.Description"
           :errors="errors?.Description"
-          style="width: 350px;"
+          style="width: 350px"
           maxlength="400"
         />
       </td>
@@ -36,11 +36,11 @@
 </template>
 <script>
 export default {
-  props: ["id", "btnDisabled", "mode"],
+  props: ["id", "btnDisabled", "mode", "tableName"],
   data: () => ({
     isLoading: false,
     model: {
-       TableName: "",   // 🔥 WAJIB
+      TableName: "", // 🔥 WAJIB
       Code: "",
       Description: "",
     },
@@ -69,29 +69,25 @@ export default {
     },
   },
   methods: {
-    setTableName(tableName) {
-    this.model.TableName = tableName;
-  },
     loadDetail() {
-  this.ds
-    .loadDetail({
-      id: this.id,
-      tableName: this.model.TableName
-    })
-    .then(dt => {
-      this.model = {
-        ...dt.Data,
-        TableName: this.model.TableName
-      };
-    });
-},
+      this.ds
+        .loadDetail({
+          id: this.id,
+          tableName: this.tableName,
+        })
+        .then((dt) => {
+          this.model = {
+            ...dt.Data,
+            TableName: this.tableName,
+          };
+        });
+    },
     resetForm: function () {
       // Kosongkan form untuk mode Add
       this.model = {
-         TableName: this.model.TableName || "",  // 🔥 PERTAHANKAN
-       Code: "",
-      Description: "" 
-         
+        TableName: this.tableName || "", // 🔥 PERTAHANKAN
+        Code: "",
+        Description: "",
       };
       this.errors = {}; // Reset errors
     },

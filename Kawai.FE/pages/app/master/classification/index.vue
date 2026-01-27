@@ -1,8 +1,7 @@
 <template>
   <v-frame title="Classification Master" icon="database">
     <template #frame-content>
-      <div class="page-wrapper">
-
+      <div class="this-page-wrapper">
         <!-- TAB HEADER -->
         <div class="tab-wrapper">
           <button class="nav-btn" @click="scrollLeft">◀</button>
@@ -22,51 +21,50 @@
         </div>
 
         <!-- TAB CONTENT -->
-        <div class="tab-content">
+        <div class="tab-content panel-body">
           <h4>{{ activeTitle }} Cls</h4>
- 
-          <div v-if="ds.isLoading">Loading detail...</div>
-<v-button-add :add="add" cClass="mb-1" />
-  <div class="table-wrapper">
-  <table class="table-grid">
-    <thead>
-      <tr>
-         <th class="text-center">Action</th>
-        <th>Code</th>
-        <th>Description</th>
-      
-      </tr>
-    </thead>
 
-  <tbody v-if="detailItems && detailItems.length">
-  <tr v-for="row in detailItems" :key="row.Code">
-      <td class="text-center">
-                  <font-awesome-icon
-                    class="mr-2 text-success"
-                    icon="pencil"
-                     @click="edit(row)"
-                  />
-                  <font-awesome-icon
-                    class="ml-2 text-danger"
-                    icon="trash"
-                     @click="remove(row)"
-                  />
-                </td>
-        <td>{{ row.Code }}</td>
-        <td>{{ row.Description }}</td>
-     
-      </tr>
-    </tbody>
-    <tbody v-else>
-  <tr class="no-data-row">
-    <td colspan="3" class="no-data">
-      No results found
-    </td>
-  </tr>
-</tbody>
-  </table>
-</div>
+          <v-loading-2 class="m-5 p-5" v-if="ds.isLoading" />
+          <div v-else>
+            <v-button-add :add="add" cClass="mb-1" />
+            <div class="table-wrapper">
+              <table class="table-grid">
+                <thead>
+                  <tr>
+                    <th class="text-center">Action</th>
+                    <th>Code</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
 
+                <tbody
+                  v-if="detailItems?.TableData && detailItems?.TableData.length"
+                >
+                  <tr v-for="row in detailItems?.TableData" :key="row.Code">
+                    <td class="text-center">
+                      <font-awesome-icon
+                        class="mr-2 text-success"
+                        icon="pencil"
+                        @click="edit(row, detailItems?.TableName)"
+                      />
+                      <font-awesome-icon
+                        class="ml-2 text-danger"
+                        icon="trash"
+                        @click="remove(row, detailItems?.TableName)"
+                      />
+                    </td>
+                    <td>{{ row.Code }}</td>
+                    <td>{{ row.Description }}</td>
+                  </tr>
+                </tbody>
+                <tbody v-else>
+                  <tr class="no-data-row">
+                    <td colspan="3" class="no-data">No results found</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -86,6 +84,7 @@
     <modal-form-cls
       ref="formCls"
       :id="idSelected"
+      :table-name="tableNameSelected"
       :mode="modalMode"
       @submitted="close"
     />
@@ -95,12 +94,13 @@
 <script>
 export default {
   data: () => ({
-   activeTab: null,
-  tabs: [],
-titlemodal: '',  
-  modalMode: '',
-  idSelected: null,
-  activeTableName: ''   // 🔥 SIMPAN TABLENAME AKTIF
+    activeTab: null,
+    tabs: [],
+    titlemodal: "",
+    modalMode: "",
+    idSelected: null,
+    tableNameSelected: null,
+    activeTableName: "", // 🔥 SIMPAN TABLENAME AKTIF
   }),
 
   computed: {
@@ -109,27 +109,27 @@ titlemodal: '',
     },
 
     activeTitle() {
-      const f = this.tabs.find(x => x.tab === this.activeTab);
+      const f = this.tabs.find((x) => x.tab === this.activeTab);
       return f ? f.title : "";
     },
 
     activeTabConfig() {
-      return this.tabs.find(x => x.tab === this.activeTab) || {};
+      return this.tabs.find((x) => x.tab === this.activeTab) || {};
     },
 
     // 🔥 DETAIL DARI loadtable
     detailItems() {
-      return this.ds.data?.TableData || [];
-    }
+      return this.ds.data || [];
+    },
   },
 
   mounted() {
     // LOAD TAB HEADER SEKALI
     this.ds.load().then(() => {
-      this.tabs = (this.ds.data?.Items || []).map(x => ({
+      this.tabs = (this.ds.data?.Items || []).map((x) => ({
         tab: Number(x.SeqNo),
         title: x.TabHeader,
-        table: x.TableName
+        table: x.TableName,
       }));
 
       if (this.tabs.length) {
@@ -139,79 +139,82 @@ titlemodal: '',
   },
 
   methods: {
-     add: function () {
-      this.titlemodal =   this.activeTableName;
+    add: function () {
+      this.titlemodal = this.activeTableName;
       this.modalMode = "add";
       this.idSelected = null; // Reset ID for Add mode
-     
-     this.$bvModal.show("modal-form-cls");
+      this.tableNameSelected = this.activeTableName;
 
-  // 🔥 kirim ke modal form
-  this.$nextTick(() => {
-    if (this.$refs.formCls) {
-      this.$refs.formCls.setTableName(this.activeTableName);
-    }
-  });
-      },
-      edit: function (dt) {
+      this.$bvModal.show("modal-form-cls");
+
+      // // 🔥 kirim ke modal form
+      // this.$nextTick(() => {
+      //   if (this.$refs.formCls) {
+      //     this.$refs.formCls.setTableName(this.activeTableName);
+      //   }
+      // });
+    },
+    edit: function (dt, tableName) {
       this.titlemodal = this.activeTableName;
       this.modalMode = "edit";
       this.idSelected = dt.Code;
+      this.tableNameSelected = tableName;
       this.$bvModal.show("modal-form-cls");
-       // 🔥 kirim ke modal form
- this.$nextTick(() => {
-    if (this.$refs.formCls) {
-      this.$refs.formCls.setTableName(this.activeTableName);
-    }
-  });
-      },
-      remove: function (item) {
-  confirmRemove(
-    () =>
-      new Promise((resolve) => {
-        this.ds
-          .remove({
-            code: item.Code,                 // ✅ code yg benar
-            tableName: this.activeTableName  // ✅ tab aktif
-          })
-          .then(() => {
-            // 🔥 reload detail table tab aktif
-            this.ds.loadtable(this.activeTableName);
+      // 🔥 kirim ke modal form
+      // this.$nextTick(() => {
+      //   if (this.$refs.formCls) {
+      //     alert(tableName);
+      //     this.$refs.formCls.setTableName(tableName);
+      //   }
+      // });
+    },
+    remove: function (item, tableName) {
+      confirmRemove(
+        () =>
+          new Promise((resolve) => {
+            this.ds
+              .remove({
+                code: item.Code, // ✅ code yg benar
+                tableName: tableName, // ✅ tab aktif
+              })
+              .then(() => {
+                // 🔥 reload detail table tab aktif
+                this.ds.loadtable(this.activeTableName);
 
-            toastSuccess("Data deleted successfully");
-            resolve();
-          })
-          .catch((err) => {
-            toastDanger(err?.Message);
-            resolve();
-          });
-      }),
-    null,
-    item.Description
-  );
-},
+                toastSuccess("Data deleted successfully");
+                resolve();
+              })
+              .catch((err) => {
+                toastDanger(err?.Message);
+                resolve();
+              });
+          }),
+        null,
+        item.Description,
+      );
+    },
 
-      close() {
-    this.$bvModal.hide("modal-form-cls");
+    close() {
+      this.$bvModal.hide("modal-form-cls");
 
-    // 🔥 reload table aktif
-    if (this.activeTableName) {
-      this.ds.loadtable(this.activeTableName);
-    }
-  },
-   setActive(tab) {
-this.activeTab = tab;
+      // 🔥 reload table aktif
+      if (this.activeTableName) {
+        this.ds.loadtable(this.activeTableName);
+      }
+    },
+    setActive(tab) {
+      this.activeTab = tab;
 
-  const cfg = this.activeTabConfig;
-  if (!cfg.table) return;
+      const cfg = this.activeTabConfig;
+      if (!cfg.table) return;
 
-  // 🔥 SIMPAN TABLENAME
-  this.activeTableName = cfg.table;
+      // 🔥 SIMPAN TABLENAME
+      this.activeTableName = cfg.table;
 
-  this.ds.loadtable(cfg.table);
+      this.ds.loadtable(cfg.table);
 
-  this.$nextTick(() => this.scrollToActive());
-},
+      this.$nextTick(() => this.scrollToActive());
+    },
 
     scrollLeft() {
       this.$refs.tabs.scrollLeft -= 200;
@@ -222,20 +225,18 @@ this.activeTab = tab;
     },
 
     scrollToActive() {
-  if (!this.$refs.tabs) return;
+      if (!this.$refs.tabs) return;
 
-  const el = this.$refs.tabs.querySelector('.tab-btn.active');
-  if (el && el.scrollIntoView) {
-    el.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-  }
-}
-
-    
-  }
+      const el = this.$refs.tabs.querySelector(".tab-btn.active");
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: "smooth", inline: "center" });
+      }
+    },
+  },
 };
 </script>
 <style scoped>
-.page-wrapper {
+.this-page-wrapper {
   padding: 16px;
 }
 
@@ -290,7 +291,7 @@ this.activeTab = tab;
   border-radius: 4px;
 }
 .table-wrapper {
-  max-height: 250px;
+  max-height: 350px;
   overflow-y: auto;
   border: 1px solid #cfd8e3;
 }
@@ -300,7 +301,6 @@ this.activeTab = tab;
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
- 
 }
 
 /* header */
