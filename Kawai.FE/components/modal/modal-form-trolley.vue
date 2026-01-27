@@ -7,7 +7,7 @@
           v-model="model.TrolleyCode"
           :disabled="mode === 'edit'"
           :errors="errors?.TrolleyCode"
-          style="width: 200px;"
+          style="width: 200px"
           maxlength="20"
         />
       </td>
@@ -20,7 +20,7 @@
         <input-text
           v-model="model.Description"
           :errors="errors?.Description"
-          style="width: 350px;"
+          style="width: 350px"
           maxlength="400"
         />
       </td>
@@ -31,12 +31,11 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px">
         <filter-cls
-                       
-                        ddl-width="100px"
-                        desc-width="180px"
-                        type-data="Trolley_Cls"
-                        v-model="model.Trolley_Cls"
-                      />
+          ddl-width="100px"
+          desc-width="180px"
+          type-data="Trolley_Cls"
+          v-model="model.Trolley_Cls"
+        />
       </td>
     </tr>
     <tr>
@@ -59,7 +58,7 @@
           valueField="value"
           v-model="model.IsActive"
           :errors="errors?.IsActive"
-          style="width: 100px;"
+          style="width: 100px"
         />
       </td>
     </tr>
@@ -115,10 +114,9 @@ export default {
       // Kosongkan form untuk mode Add
       this.model = {
         TrolleyCode: "",
-      Description: "",
-      Trolley_Cls: "",
-      IsActive: null,
-         
+        Description: "",
+        Trolley_Cls: "",
+        IsActive: null,
       };
       this.errors = {}; // Reset errors
     },

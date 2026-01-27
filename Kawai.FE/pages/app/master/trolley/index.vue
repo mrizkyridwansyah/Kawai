@@ -2,11 +2,7 @@
   <v-frame title="Trolley Master" icon="database">
     <template #frame-content>
       <v-button-add :add="add" cClass="mr-1" />
-       <v-button-print
-                :print="print"
-                cClass=""
-                :is-loading="isLoadingPrint"
-              />
+      <v-button-print :print="print" cClass="" :is-loading="isLoadingPrint" />
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
@@ -34,7 +30,7 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items">
-                 <td>
+                <td>
                   <div style="justify-items: center">
                     <input-checkbox
                       :modelValue="isChecked(item.TrolleyCode)"
@@ -76,7 +72,7 @@
     size="md"
     @hidden="
       () => {
-        this.$refs.formNG.resetForm();
+        this.$refs.formTrolley.resetForm();
         modalMode = '';
       }
     "
@@ -195,7 +191,7 @@ export default {
               });
           }),
         null,
-        item.Description
+        item.Description,
       );
     },
     close: function () {
@@ -204,7 +200,7 @@ export default {
     },
     check: function (checked, item) {
       const existingIndex = this.selectedPrint.findIndex(
-        (p) => p.Key === item.TrolleyCode
+        (p) => p.Key === item.TrolleyCode,
       );
       if (checked && existingIndex === -1) {
         this.selectedPrint.push({
@@ -218,7 +214,7 @@ export default {
     isChecked: function (code) {
       return this.selectedPrint.some((p) => p.Key === code);
     },
-        print: function () {
+    print: function () {
       this.isLoadingPrint = true;
       if (this.selectedPrint.length === 0) {
         toastWarning("Please choose trolley");
