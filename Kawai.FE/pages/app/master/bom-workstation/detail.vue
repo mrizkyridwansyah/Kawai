@@ -1,53 +1,119 @@
 <template>
   <v-frame title="BOM Detail Item Setting" icon="database">
     <template #frame-content>
-      <div class="row">
+       <div class="row">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Model Cls</label
+          >Factory</label
         >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls-2
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-factory-privileges
             class="form-control"
-            type-data="Model_Cls"
-            v-model="filter.modelcls"
-            style-code="width: 120px"
-            style-desc="width: 250px"
-            :disabled="true"
+            v-model="filter.factory"
+            style-code="width: 110px"
+              style-desc="width: 250px"
           />
         </div>
-      </div>
-      <div class="row mt-1">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
           >Item</label
         >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
-          <filter-item-by-modelcls
-            class="form-control"
-            v-model="filter.item"
-            :disabled="true"
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+           <filter-item-by-modelcls
+              v-model="filter.item"
             :modelCls="filter.modelcls"
-            style-code="width: 120px"
+             :disabled="true"
+            style-code="width: 110px"
             style-desc="width: 250px"
           />
         </div>
       </div>
-      <div class="row mt-1 mb-1">
+       <div class="row mt-1">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Workstation</label
+          >Process</label
         >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-12">
-          <filter-workstation
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-trade-2
+              class="form-control"
+              placeholder=" "
+              v-model="filter.supplier"
+               :disabled="true"
+              :trade-cls="['1']"
+              style-code="width: 110px"
+              style-desc="width: 250px"
+            />
+          
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Work Station</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+             <filter-workstation
             class="form-control"
             :disabled="true"
             v-model="filter.workstation"
-            style-code="width: 120px"
+            style-code="width: 110px"
             style-desc="width: 250px"
           />
         </div>
       </div>
+       <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Line</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-line-factory
+                       :company="filter.factory"
+                      :manufacture="filter.supplier"
+                       :disabled="true"
+                      v-model="filter.linecode"
+                      style-code="width: 110px"
+                        style-desc="width: 250px"
+                    />
+        </div>
+       <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          > Trolley Cls</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+        <filter-cls-2
+             type-data="Trolley_Cls"
+            v-model="filter.trolley_cls"
+             style-code="width: 110px"
+            style-desc="width: 250px"
+          />
+        </div>
+      </div> 
+
+       <div class="row mt-1">
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Model Cls</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+          <filter-cls-2
+             type-data="Model_Cls"
+            v-model="filter.modelcls"
+             :disabled="true"
+            style-code="width: 110px"
+            style-desc="width: 250px"
+          />
+        </div>
+       <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          > Max Qty Set</label
+        >
+        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+            <input-money placeholder="Qty " v-model="model.QtySet" style="width: 110px" />
+        </div>
+      </div> 
+
+      
+
+   
       <button
         class="btn btn-sm btn-primary btn-elevate mt-2"
         @click="submit"
@@ -66,7 +132,21 @@
       <button
         class="mt-2 ml-2 btn btn-sm btn-danger btn-elevate"
         :disabled="isLoading"
-        @click="() => this.$router.push('/app/master/bom-workstation')"
+        @click="
+                        () =>
+                          this.$router.push({
+                            path: '/app/master/bom-workstation',
+                            query: {
+                              factory: filter.factory,
+                              process: filter.supplier,
+                              line: filter.linecode,
+                              modelcls: filter.modelcls,
+                              itemcode: filter.item,
+                            },
+                          })
+                      "
+
+         
       >
         <font-awesome-icon icon="arrow-left" />
         <span class="ml-2">Back</span>
@@ -85,10 +165,6 @@
                   <tr>
                     <th class="text-center" style="vertical-align: middle">
                       Setting
-                      <!-- <span>Setting</span>
-                      <div class="mt-1" style="justify-items: center">
-                        <input-checkbox @click="(e) => allowSetting(e)" /> -->
-                      <!-- </div> -->
                     </th>
                     <th class="text-center" style="vertical-align: middle">
                       Child Item
@@ -154,10 +230,17 @@
 export default {
   data: () => ({
     filter: {
+      factory: null,
+      process: null,
+      line: null,
       modelcls: null,
       workstation: null,
+      trolley_cls: null,
       item: null,
       keyword: null,
+    },
+    model: {
+      QtySet: 0,
     },
     isLoading: false,
     allowed: {
@@ -170,57 +253,86 @@ export default {
     },
   },
   mounted: function () {
+    this.filter.factory = this.$route.query.factory;
+    this.filter.supplier = this.$route.query.process;
+    this.filter.linecode = this.$route.query.line;
     this.filter.modelcls = this.$route.query.modelcls;
     this.filter.item = this.$route.query.itemcode;
     this.filter.workstation = this.$route.query.workstationcode;
 
-    this.dsBOMSetting
-      .load(this.$route.query.itemcode, this.$route.query.workstationcode)
-      .then((dt) => {
-        this.allowed.bomsetting = dt.Data.BomSetting;
-      });
+   this.loadData();  
   },
   methods: {
-    allowSettingBOM: function (e, item) {
-      this.allowed.bomsetting.find(
-        (p) => p.ChildItem_Code === item.ChildItem_Code,
-      ).AllowSetting = e.target.checked;
-    },
-    submit: function () {
-      // cek apakah ada yg dicentang
-      const hasChecked = this.allowed.bomsetting.some(
-        (item) => item.AllowSetting === true,
-      );
+loadData() {
+  return this.dsBOMSetting
+    .load(this.filter.linecode, this.filter.item, this.filter.workstation)
+    .then((dt) => {
+      // DETAIL
+      this.allowed.bomsetting = dt.Data.BomSetting ?? [];
 
-      if (!hasChecked) {
-        toastWarning("Please select child item setting (minimal 1 data)!");
-        return;
+      // HEADER
+      const header = dt.Data.Header?.[0]?.[0];
+      if (header) {
+        this.model.QtySet = header.QtySet;
+        this.filter.trolley_cls = header.Trolley_Cls;
       }
+    });
+},
 
-      this.isLoading = true;
-
-      let model = {
-        ParentItem_Code: this.$route.query.itemcode,
-        WorkStationCode: this.$route.query.workstationcode,
-        BomSetting: this.allowed.bomsetting,
-      };
-
-      this.dsBOMSetting
-        .submit(model)
-        .then((datas) => {
-          toastSuccess("Data saved successfully!");
-        })
-        .catch((err) => {
-          this.errors = err?.Errors;
-          toastDanger(err?.Message);
-        })
-        .finally(() =>
-          setTimeout(() => {
-            this.isLoading = false;
-          }, 500),
-        );
-    },
+  allowSettingBOM(e, item) {
+    this.allowed.bomsetting.find(
+      p => p.ChildItem_Code === item.ChildItem_Code
+    ).AllowSetting = e.target.checked;
   },
+
+  submit() {
+    const details = this.allowed.bomsetting.filter(
+      x => x.AllowSetting === true
+    );
+
+    if (details.length === 0) {
+      toastWarning("Please select child item setting (minimal 1 data)!");
+      return;
+    }
+
+    this.isLoading = true;
+
+    const payload = {
+      Header: [
+        {
+          FactoryCode: this.filter.factory,
+          ProcessCode: this.filter.supplier,
+          LineCode: this.filter.linecode,
+          ModelCls: this.filter.modelcls,
+          ParentItem_Code: this.filter.item,
+          WorkStationCode: this.filter.workstation,
+          Trolley_Cls: this.filter.trolley_cls,
+          QtySet: this.model.QtySet,
+        }
+      ],
+      Details: details.map(x => ({
+        ChildItem_Code: x.ChildItem_Code,
+        Qty: x.Qty,
+        AllowSetting: x.AllowSetting,
+      }))
+    };
+
+    this.dsBOMSetting
+      .submit(payload)
+      .then(() => {
+        toastSuccess("Data saved successfully!");
+        return this.loadData();  
+      })
+      .catch(err => {
+        this.errors = err?.Errors;
+        toastDanger(err?.Message);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  }
+}
+  
 };
 </script>
 

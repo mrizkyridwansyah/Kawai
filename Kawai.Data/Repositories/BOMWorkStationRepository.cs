@@ -23,10 +23,15 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         return (await _dbExecutor.QueryListAsync<BOMWorkStationDto>(sp, param.ToQueryObject())).ToList();
     }
 
-    public async Task<List<ParentBOMWorkStationDto>> GetBOMWorkStation(string parentitem_code, string workstationcode)
+    public async Task<List< BOMWorkStationDetailDto>> GetBOMWorkStationDetail(string linecode,string parentitem_code, string workstationcode)
     {
-        string sp = "sp_Wms_BOMWorkStation_Detail";
-        return (await _dbExecutor.QueryListAsync<ParentBOMWorkStationDto>(sp, new { ParentItem_Code = parentitem_code, WorkStationCode = workstationcode })).ToList();
+        string sp = "sp_Wms_BOMWorkStation_GetDetail";
+        return (await _dbExecutor.QueryListAsync<BOMWorkStationDetailDto>(sp, new { LineCode = linecode, ParentItem_Code = parentitem_code, WorkStationCode = workstationcode })).ToList();
+    }
+    public async Task<List<BOMWorkStationHeaderDto>> GetBOMWorkStationHeader(string linecode,string parentitem_code, string workstationcode)
+    {
+        string sp = "sp_Wms_BOMWorkStation_GetHeader";
+        return (await _dbExecutor.QueryListAsync<BOMWorkStationHeaderDto>(sp, new { LineCode = linecode, ParentItem_Code = parentitem_code, WorkStationCode = workstationcode })).ToList();
     }
 
     public async Task<List<BOMWorkStationDto>> GetModelClsDDL(string keyword)
@@ -41,30 +46,71 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         return (await _dbExecutor.QueryListAsync<BOMWorkStationDto>(sp, new { Keyword = keyword ?? "", ModelCls = modelCls })).ToList();
     }
 
-    public async Task SaveBOMWorkStation(BOMWorkStation bomsetting, string userId)
+    public async Task SaveBOMWorkStation(BOMWorkStation model, string userId)
     {
+      
+        var header = model.Header.First();
+
         var commands = new List<(string, object?, CommandType)>();
 
-        commands.Add(("sp_WMS_BOMWorkStation_Delete", new
-        {
-            ParentItem_Code = bomsetting.ParentItem_Code,
-            WorkStationCode = bomsetting.WorkStationCode
-        }, CommandType.StoredProcedure));
-
-        foreach (var wsSet in bomsetting.BomSetting.Where(p => (p.AllowSetting.HasValue && p.AllowSetting.Value)))
-        {
-            commands.Add(("sp_WMS_BOMWorkStation_Upd", new
+        // =========================
+        // 1. UPSERT HEADER
+        // =========================
+        commands.Add((
+            "sp_Wms_BOMWorkStation_Header",
+            new
             {
-                ParentItem_Code = bomsetting.ParentItem_Code,
-                WorkStationCode = bomsetting.WorkStationCode,
-                wsSet.ChildItem_Code,
-                wsSet.Qty,
-                wsSet.AllowSetting,UserID = userId
-            }, CommandType.StoredProcedure));
+                header.FactoryCode,
+                header.LineCode,
+                header.ModelCls,
+                header.ParentItem_Code,
+                header.ProcessCode,
+                header.QtySet,
+                header.Trolley_Cls,
+                header.WorkStationCode,
+                UserID = userId
+            },
+            CommandType.StoredProcedure
+        ));
+
+        // =========================
+        // 2. DELETE DETAIL  
+        // =========================
+        commands.Add((
+            "sp_Wms_BOMWorkStation_DetailDelete",
+            new
+            {
+                header.LineCode,
+                header.ParentItem_Code,
+                header.WorkStationCode,
+               
+            },
+            CommandType.StoredProcedure
+        ));
+
+        // =========================
+        // 3. INSERT DETAIL
+        // =========================
+        foreach (var wsSet in model.Details.Where(p => p.AllowSetting == true))
+        {
+            commands.Add((
+                "sp_WMS_BOMWorkStation_detail_ins",
+                new
+                {
+                    header.LineCode,
+                    header.ParentItem_Code,
+                    header.WorkStationCode,
+                    wsSet.ChildItem_Code,
+                    wsSet.Qty,
+                    UserID = userId
+                },
+                CommandType.StoredProcedure
+            ));
         }
 
         await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
     }
+
 
 
 

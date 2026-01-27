@@ -8,7 +8,8 @@ namespace Kawai.Domain.Interfaces;
 public interface IBOMWorkStationRepository
 {
     Task<List<BOMWorkStationDto>> GetAll(RequestParameter param);
-    Task<List<ParentBOMWorkStationDto>> GetBOMWorkStation(string parentitem_code, string workstationcode);
+    Task<List<BOMWorkStationHeaderDto>> GetBOMWorkStationHeader(string linecode, string parentitem_code, string workstationcode);
+    Task<List<BOMWorkStationDetailDto>> GetBOMWorkStationDetail(string linecode, string parentitem_code, string workstationcode);
     Task<List<BOMWorkStationDto>> GetModelClsDDL(string keyword);
     Task<List<BOMWorkStationDto>> GetItemByModelClsDDL(string keyword, string modelCls);
     Task SaveBOMWorkStation(BOMWorkStation bomsetting,string userId);

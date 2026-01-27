@@ -9,11 +9,11 @@ export const useBOMWorkstationDetail = defineStore('BOMSetting', {
         data: {},
     }),
     actions: {
-        load: function (i,w) {
+        load: function (l,i,w) {
             this.isLoading = true;
             this.isNetworkError = this.isServerError = false;
             return new Promise((resolve, reject) => {
-                app.$http.get(`/bomworkstation/listdetail?parentitem_code=${i}&workstationcode=${w}`)
+                app.$http.get(`/bomworkstation/listdetail?linecode=${l}&parentitem_code=${i}&workstationcode=${w}`)
                     .then(({ data }) => {
                         this.data = data.Data;
                         resolve(data);

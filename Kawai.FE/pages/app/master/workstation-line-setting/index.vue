@@ -1,6 +1,8 @@
 <template>
   <v-frame title="Workstation Line Setting Master" icon="database">
     <template #frame-content>
+ 
+
       <div class="row">
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-2"

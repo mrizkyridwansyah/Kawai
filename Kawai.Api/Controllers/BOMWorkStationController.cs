@@ -33,15 +33,24 @@ public class BOMWorkStationController : HahaController
     }
 
     [HttpGet("listdetail")]
-    public async Task<IActionResult> ListDetail(string parentitem_code, string workstationcode)
+    public async Task<IActionResult> ListDetail(
+     string linecode,
+     string parentitem_code,
+     string workstationcode)
     {
-        var bomList = await _bomworkstationRepository.GetBOMWorkStation(parentitem_code, workstationcode);
-        
+        var header = await _bomworkstationRepository
+            .GetBOMWorkStationHeader(linecode, parentitem_code, workstationcode);
+
+        var details = await _bomworkstationRepository
+            .GetBOMWorkStationDetail(linecode, parentitem_code, workstationcode);
+
         var result = new
         {
-            ParentItem_Code = parentitem_code,
-            WorkstationCode = workstationcode,
-            BomSetting = bomList
+            Header = header != null
+                ? new[] { header }    
+                : Array.Empty<object>(),
+
+            BomSetting = details
         };
 
         return Success(result);
@@ -78,15 +87,16 @@ public class BOMWorkStationController : HahaController
     [HttpPost("save")]
     public async Task<IActionResult> Save(BOMWorkStation model)
     {
-        var before = await _bomworkstationRepository.Capture(model.ParentItem_Code, model.WorkStationCode);
+        var header = model.Header.FirstOrDefault();
+        var before = await _bomworkstationRepository.Capture(header.ParentItem_Code, header.WorkStationCode);
         await _bomworkstationRepository.SaveBOMWorkStation(model,Auth.User.UserID);
-        var after = await _bomworkstationRepository.Capture(model.ParentItem_Code, model.WorkStationCode);
+        var after = await _bomworkstationRepository.Capture(header.ParentItem_Code, header.WorkStationCode);
 
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "BOMWorkStation",
-            EntityId = model.ParentItem_Code,
-            ReferenceId = model.WorkStationCode,
+            EntityId = header.ParentItem_Code,
+            ReferenceId = header.WorkStationCode,
             Action = DataLogAction.Update,
             Before = before,
             After = after
