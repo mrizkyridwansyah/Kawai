@@ -61,6 +61,7 @@ public class AreaRepository : IAreaRepository
             area.AreaCode,
             area.AreaName,
             area.ItemType,
+            area.PickingSequence,
             RegisterBy = userId
         });
     }
@@ -74,6 +75,7 @@ public class AreaRepository : IAreaRepository
             area.AreaCode,
             area.AreaName,
             area.ItemType,
+            area.PickingSequence,
             UpdateBy = userId
         });
     }
