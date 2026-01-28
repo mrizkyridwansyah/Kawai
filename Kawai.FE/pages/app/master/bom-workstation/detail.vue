@@ -1,71 +1,44 @@
 <template>
   <v-frame title="BOM Detail Item Setting" icon="database">
     <template #frame-content>
-       <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Factory</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-factory-privileges
-            class="form-control"
-            v-model="filter.factory"
-            style-code="width: 110px"
-              style-desc="width: 250px"
-          />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Item</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-           <filter-item-by-modelcls
-              v-model="filter.item"
-            :modelCls="filter.modelcls"
-             :disabled="true"
-            style-code="width: 110px"
-            style-desc="width: 250px"
-          />
-        </div>
-      </div>
-       <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Process</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade-2
-              class="form-control"
-              placeholder=" "
-              v-model="filter.supplier"
-               :disabled="true"
-              :trade-cls="['1']"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-          
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Work Station</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-             <filter-workstation
-            class="form-control"
-            :disabled="true"
-            v-model="filter.workstation"
-            style-code="width: 110px"
-            style-desc="width: 250px"
-          />
-        </div>
-      </div>
-       <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Line</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-line-factory
+
+       <table>
+        <tr>
+          <td style="padding-top: 5px">
+            <table>
+              <tr>
+                <td><label class="form-label">Factory</label></td>
+                <td style="padding-left: 15px" colspan="3">
+                 <filter-factory-privileges
+                  class="form-control"
+                  v-model="filter.factory"
+                  style-code="width: 110px"
+                    style-desc="width: 250px"
+                />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">Process</label>
+                </td>
+                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+                   <filter-trade-2
+                    class="form-control"
+                    placeholder=" "
+                    v-model="filter.supplier"
+                     :disabled="true"
+                    :trade-cls="['1']"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">Line</label>
+                </td>
+                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+                    <filter-line-factory
                        :company="filter.factory"
                       :manufacture="filter.supplier"
                        :disabled="true"
@@ -73,47 +46,83 @@
                       style-code="width: 110px"
                         style-desc="width: 250px"
                     />
-        </div>
-       <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          > Trolley Cls</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-        <filter-cls-2
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">Model Cls</label>
+                </td>
+                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+                     <filter-cls-2
+                    type-data="Model_Cls"
+                    v-model="filter.modelcls"
+                     :disabled="true"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td style="padding-left: 30px; padding-top: 5px">
+            <table>
+              <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">Item</label>
+                </td>
+                <td style="padding-left: 30px; padding-top: 5px" colspan="3">
+                   <filter-item-by-modelcls
+                      v-model="filter.item"
+                    :modelCls="filter.modelcls"
+                     :disabled="true"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">WorkStation</label>
+                </td>
+                <td style="padding-left: 30px; padding-top: 5px" colspan="3">
+                   <filter-workstation
+                      class="form-control"
+                      :disabled="true"
+                      v-model="filter.workstation"
+                      style-code="width: 110px"
+                      style-desc="width: 250px"
+                    />
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">Trolley Cls</label>
+                </td>
+                <td style="padding-left: 30px; padding-top: 5px" colspan="3">
+                   <filter-cls-2
              type-data="Trolley_Cls"
             v-model="filter.trolley_cls"
              style-code="width: 110px"
             style-desc="width: 250px"
           />
-        </div>
-      </div> 
+                </td>
+              </tr>
 
-       <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Model Cls</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls-2
-             type-data="Model_Cls"
-            v-model="filter.modelcls"
-             :disabled="true"
-            style-code="width: 110px"
-            style-desc="width: 250px"
-          />
-        </div>
-       <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          > Max Qty Set</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-            <input-money placeholder="Qty " v-model="model.QtySet" style="width: 110px" />
-        </div>
-      </div> 
-
-      
-
-   
+               <tr>
+                <td style="padding-top: 5px">
+                  <label class="form-label">Max Qty Set</label>
+                </td>
+                <td style="padding-left: 30px; padding-top: 5px" colspan="3">
+                    <input-money placeholder="Qty " v-model="model.QtySet" style="width: 110px" />
+                </td>
+              </tr>
+             
+            </table>
+          </td>
+        </tr>
+      </table>
+  
       <button
         class="btn btn-sm btn-primary btn-elevate mt-2"
         @click="submit"
