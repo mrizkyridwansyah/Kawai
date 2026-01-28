@@ -32,6 +32,7 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public string ChildItemCode { get; set; }
     public string ChildItemName { get; set; }
     public decimal QtyBOM { get; set; }
+    public int SetNumber { get; set; }
     public decimal QtySet { get; set; }
     public decimal RequirementQty { get; set; }
     public string RegisterUser { get; set; }

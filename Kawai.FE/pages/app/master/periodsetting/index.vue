@@ -282,7 +282,7 @@ export default {
     },
     searchPeriodSettingDetail: function () {
       if (!this.filter.Year) {
-        toastDanger("Silahkan pilih Year!");
+        toastDanger("Silahkan pilih Tahun!");
         return;
       }
 

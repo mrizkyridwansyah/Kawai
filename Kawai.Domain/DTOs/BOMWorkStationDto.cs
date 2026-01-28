@@ -24,7 +24,7 @@ public class ParentBOMWorkStationDto
     public bool AllowSetting { get; set; }
     public string ChildItem_Code { get; set; }
     public string ChildItem_Name { get; set; }
-    public string Qty { get; set; }
+    public decimal Qty { get; set; }
     public string Unit_Cls { get; set; }
     public string Unit_Descs { get; set; }
     public string RegisterUser { get; set; }
@@ -60,7 +60,7 @@ public class BOMWorkStationDetailDto
     public bool AllowSetting { get; set; }
     public string ChildItem_Code { get; set; }
     public string ChildItem_Name { get; set; }
-    public string Qty { get; set; }
+    public decimal Qty { get; set; }
     public string Unit_Cls { get; set; }
     public string Unit_Descs { get; set; }
     public string RegisterUser { get; set; }

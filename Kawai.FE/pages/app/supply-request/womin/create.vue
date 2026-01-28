@@ -78,6 +78,7 @@
                 <th class="text-center">Work Station</th>
                 <th class="text-center">Parent Item</th>
                 <th class="text-center">Parent Item Name</th>
+                <th class="text-center">Set Number</th>
                 <th class="text-center">Qty Set</th>
                 <th class="text-center">Child Item Code</th>
                 <th class="text-center">Child Item Name</th>
@@ -98,6 +99,7 @@
                   <td>{{ item.WorkStationName }}</td>
                   <td>{{ item.ParentItemCode }}</td>
                   <td>{{ item.ParentItemName }}</td>
+                  <td class="text-right">{{ item.SetNumber }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(item.QtySet) }}
 
@@ -118,7 +120,7 @@
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.RequestId"
                 >
-                  <td colspan="6"></td>
+                  <td colspan="7"></td>
                   <td>{{ dtl.ChildItemCode }}</td>
                   <td>{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
@@ -182,6 +184,7 @@ export default {
             item.LineCode,
             item.WorkStationCode,
             item.ParentItemCode,
+            item.SetNumber,
           ].join("|");
 
           if (!grouped[key]) {
