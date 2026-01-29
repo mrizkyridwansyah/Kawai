@@ -1,6 +1,7 @@
 <template>
   <v-frame title="BOM Per Workstation" icon="database">
     <template #frame-content>
+
       <table>
         <tr>
           <td style="padding-top: 5px">
@@ -86,6 +87,13 @@
           </td>
         </tr>
       </table>
+
+     
+    
+     
+
+   
+
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
           <v-button-search-reset class="ms-1" :search="search" :reset="reset" />

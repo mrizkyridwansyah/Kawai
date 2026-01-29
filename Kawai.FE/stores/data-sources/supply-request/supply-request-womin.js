@@ -1,7 +1,9 @@
 var app = useNuxtApp();
 
 export const useSupplyRequestWomin = defineStore('SupplyRequestWomin', {
-
+  persist: {
+    paths: ['filter.Filters', 'newRequest']
+  },
   state: () => ({
     isLoading: false,
     isCreating: false,
