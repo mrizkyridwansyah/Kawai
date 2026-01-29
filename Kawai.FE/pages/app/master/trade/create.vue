@@ -861,7 +861,7 @@ export default {
           const message =
             err.response?.data?.Message || "Trade Code didn't Exists";
 
-          toastDanger("Trade Code wajib diisi");
+          toastDanger(message);
 
           // reset state
           this.isTradeCodeDisabled = false;
@@ -928,38 +928,64 @@ export default {
       this.items = [];
       this.isTradeCodeDisabled = false;
     },
+submit: async function () {
+  if (this.isLoading) return;
 
-    submit: async function () {
+  this.isLoading = true;
+  this.errors = {};
+
+  try {
+    const payload = {
+      ...this.model,
+      DeliveryList: this.items.map((x) => ({
+        Location_Code: x.Location_Code,
+        Location_Name: x.Location_Name,
+      })),
+    };
+
+    await this.ds.submit(payload); // ⬅️ WAJIB await
+    toastSuccess("Data berhasil disimpan");
+
+    this.isTradeCodeDisabled = true;
+  } catch (err) {
+    // ⬇️ INI BARU MASUK
+    this.errors = err?.Errors || {};
+    toastDanger(err?.Message || "Gagal menyimpan data");
+  } finally {
+    this.isLoading = false;
+  }
+},
+    // submit: async function () {
        
-      if (this.isLoading) return;
+    //   if (this.isLoading) return;
 
-      this.isLoading = true;
-      this.errors = {};
+    //   this.isLoading = true;
+    //   this.errors = {};
 
-      try {
-        // payload sesuai DTO backend
-        const payload = {
-          ...this.model,
-          DeliveryList: this.items.map((x) => ({
-            Location_Code: x.Location_Code,
-            Location_Name: x.Location_Name,
-          })),
-        };
-        debugger;
-        // CREATE / UPDATE (backend pakai InsUpd)
+    //   try {
+    //     // payload sesuai DTO backend
+    //     const payload = {
+    //       ...this.model,
+    //       DeliveryList: this.items.map((x) => ({
+    //         Location_Code: x.Location_Code,
+    //         Location_Name: x.Location_Name,
+    //       })),
+    //     };
+    //     debugger;
+    //     // CREATE / UPDATE (backend pakai InsUpd)
         
-        this.ds.submit(payload).then(()=> toastSuccess("Data berhasil disimpan"));
+    //     this.ds.submit(payload).then(()=> toastSuccess("Data berhasil disimpan"));
 
 
-        // optional: disable Trade Code setelah save
-        this.isTradeCodeDisabled = true;
-      } catch (err) {
-        this.errors = err?.Errors || {};
-        toastDanger(err?.Message || "Gagal menyimpan data");
-      } finally {
-        this.isLoading = false;
-      }
-    },
+    //     // optional: disable Trade Code setelah save
+    //     this.isTradeCodeDisabled = true;
+    //   } catch (err) {
+    //     this.errors = err?.Errors || {};
+    //     toastDanger(err?.Message || "Gagal menyimpan data");
+    //   } finally {
+    //     this.isLoading = false;
+    //   }
+    // },
      remove: function () {
       confirmRemove(
         () =>
