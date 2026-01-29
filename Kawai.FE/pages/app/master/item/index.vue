@@ -1419,6 +1419,7 @@ export default {
               .then((datas) => {
                 toastSuccess("Data Deleted successfully!");
                 this.clear();
+                resolve();
               })
               .catch((err) => {
                 this.errors = err?.Errors;

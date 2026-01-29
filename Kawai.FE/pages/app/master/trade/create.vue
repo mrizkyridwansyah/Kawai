@@ -993,8 +993,9 @@ submit: async function () {
             this.ds
               .remove(this.model.Trade_Code)
               .then((datas) => {
+                resolve();
                 toastSuccess("Data Deleted successfully!");
-                this.clear();
+                this.reset();
               })
               .catch((err) => {
                 this.errors = err?.Errors;
