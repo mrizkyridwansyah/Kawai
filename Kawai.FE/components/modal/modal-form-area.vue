@@ -2,7 +2,7 @@
   <table>
     <tr>
       <td><label class="form-label">Warehouse</label></td>
-      <td style="padding-left: 15px" colspan="3">
+      <td style="padding-left: 15px" colspan="7">
         <input-warehouse
           class="form-control"
           v-model="model.WarehouseCode"
@@ -28,7 +28,7 @@
       <td style="padding-left: 10px; padding-top: 5px">
         <label class="form-label">Area Name</label>
       </td>
-      <td style="padding-left: 15px; padding-top: 5px">
+      <td style="padding-left: 15px; padding-top: 5px" colspan="5">
         <input-text
           v-model="model.AreaName"
           :errors="errors?.AreaName"
@@ -41,15 +41,30 @@
       <td style="padding-top: 5px">
         <label class="form-label">Item Type</label>
       </td>
-      <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+      <td
+        style="padding-left: 15px; padding-top: 5px; width: 270px"
+        colspan="2"
+      >
         <input-cls
           type-data="ClasificationPart_Cls"
           v-model="model.ItemType"
           :errors="errors?.ItemType"
           style-code="width: 120px"
-          style-desc="width: 100px"
+          style-desc="width: 150px"
         />
       </td>
+      <td style="padding-left: 15px; padding-top: 5px; width: 120px">
+        <label class="form-label">Picking Sequence</label>
+      </td>
+      <td style="padding-left: 15px; padding-top: 5px; width: 50px" colspan="2">
+        <input-number
+          v-model="model.PickingSequence"
+          min="1"
+          :errors="errors?.PickingSequence"
+          style="width: 10px !important"
+        />
+      </td>
+      <td colspan="2" style="width: 150px">&nbsp;</td>
     </tr>
   </table>
   <div style="float: right" class="mt-4 mb-3">
@@ -70,6 +85,7 @@ export default {
       AreaCode: "",
       AreaName: "",
       ItemType: "",
+      PickingSequence: null,
     },
     errorResponse: {},
     errors: {},
@@ -112,6 +128,7 @@ export default {
           AreaCode: "", // Kosongkan AreaCode
           AreaName: "",
           ItemType: "",
+          PickingSequence: null,
         };
       }
       this.errors = {}; // Reset errors

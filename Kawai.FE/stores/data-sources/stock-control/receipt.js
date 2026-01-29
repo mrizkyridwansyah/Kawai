@@ -211,10 +211,10 @@ export const useReceipt = defineStore('Receipt', {
 
       })
     },
-    printLabel: function (data) {
+    printLabel: function (id) {
       this.isLoading = true;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/receipt/print-label`, data)
+        app.$http.post(`/receipt/print-label?receiptId=${id}`)
           .then(({ data }) => {
             resolve(data);
           })

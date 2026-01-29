@@ -512,7 +512,7 @@ export default {
     },
     printLabel: function () {
       this.ds
-        .printLabel(this.model)
+        .printLabel(this.filter.ReceiptId)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;

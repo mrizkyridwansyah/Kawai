@@ -495,7 +495,7 @@ export default {
 
       this.model.Remarks = "-";
       this.dsReceipt
-        .printLabel(this.model)
+        .printLabel(this.filter.ReceiptId)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;

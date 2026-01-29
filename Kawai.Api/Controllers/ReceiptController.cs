@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Kawai.Api.Services;
 using Kawai.Data.Repositories;
 using Kawai.Domain;
@@ -107,20 +108,22 @@ public class ReceiptController : HahaController
     }
 
     [HttpPost("print-label")]
-    public async Task<IActionResult> PrintLabel(Receipt payload)
+    public async Task<IActionResult> PrintLabel(long receiptId)
     {
-        if (!payload.Id.HasValue) return Invalid("Data Receipt Invalid");
+        var result = await _receiptRepository.GetDataHeader(receiptId);
 
-        var before = await _receiptRepository.Capture(payload.Id ?? 0);
+        if (result == null) return Invalid("Data Receipt Invalid");
 
-        await _receiptRepository.PrintLabel(payload.Id ?? 0, Auth.User.UserID);
+        var before = await _receiptRepository.Capture(result.Id ?? 0);
 
-        var after = await _receiptRepository.Capture(payload.Id ?? 0);
+        await _receiptRepository.PrintLabel(result.Id ?? 0, Auth.User.UserID);
+
+        var after = await _receiptRepository.Capture(result.Id ?? 0);
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Part Receipt Material",
-            EntityId = (payload.Id ?? 0).ToString(),
-            ReferenceId = payload.ReceiptNo,
+            EntityId = (result.Id ?? 0).ToString(),
+            ReferenceId = result.ReceiptNo,
             Before = before,
             After = after,
             Activity = "Print Label Receipt",

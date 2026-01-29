@@ -64,6 +64,7 @@
                 <th class="text-center">Area Code</th>
                 <th class="text-center">Area Name</th>
                 <th class="text-center">Item Type</th>
+                <th class="text-center">Picking Sequence</th>
                 <th class="text-center">Register Date</th>
                 <th class="text-center">Register User</th>
                 <th class="text-center">Last Update</th>
@@ -97,6 +98,7 @@
                 <td>{{ item.AreaCode }}</td>
                 <td>{{ item.AreaName }}</td>
                 <td>{{ item.ItemTypeDesc }}</td>
+                <td class="text-right">{{ item.PickingSequence }}</td>
                 <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
                 <td>{{ item.RegisterUser }}</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>

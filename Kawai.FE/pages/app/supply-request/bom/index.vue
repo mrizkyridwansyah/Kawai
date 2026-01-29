@@ -91,8 +91,7 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-yes-no-all
-              class="form-control"
-              
+              class="form-control"              
               v-model="filter.RemainingCls"
               style="width: 110px"
             />

@@ -7,7 +7,6 @@
           <td style="padding-left: 15px">
             <filter-warehouse-by-stock
               class="form-control"
-              
               v-model="filter.warehouse"
               item-code="ALL"
               :show-option-all="false"
@@ -23,7 +22,6 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-area-by-stock
               class="form-control"
-              
               v-model="filter.area"
               :warehouse="filter.warehouse"
               item="ALL"
@@ -40,7 +38,6 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-item-by-stock
               class="form-control"
-              
               v-model="filter.item"
               :warehouse="filter.warehouse"
               :area="filter.area"
@@ -59,7 +56,6 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <filter-lot-by-stock
               class="form-control"
-              
               v-model="filter.lotno"
               :warehouse="filter.warehouse"
               :area="filter.area"
@@ -76,7 +72,7 @@
             <div class="d-flex flex-fill">
               <v-button-search-reset
                 class="mr-1"
-                :search="search"
+                :search="onSearch"
                 :reset="reset"
               />
             </div>
@@ -93,7 +89,7 @@
         :is-loading="ds.isLoading"
         :is-server-error="ds.isServerError"
         :is-network-error="ds.isNetworkError"
-        :refresh="search"
+        :refresh="onSearch"
       >
         <template #paging-tree>
           <v-table-pagination
@@ -164,7 +160,7 @@ export default {
   },
   mounted: function () {
     this.getColumns();
-    this.search();
+    this.search(false);
   },
   watch: {
     "filter.warehouse": function () {
@@ -230,7 +226,35 @@ export default {
         },
       ];
     },
-    search: function () {
+    validSearch: function () {
+      if ((this.filter.warehouse || "") == "") {
+        toastDanger("Silahkan pilih warehouse");
+        return false;
+      }
+
+      if ((this.filter.area || "") == "") {
+        toastDanger("Silahkan pilih area");
+        return false;
+      }
+
+      if ((this.filter.item || "") == "") {
+        toastDanger("Silahkan pilih item");
+        return false;
+      }
+
+      if ((this.filter.lotno || "") == "") {
+        toastDanger("Silahkan pilih lot no");
+        return false;
+      }
+
+      return true;
+    },
+    onSearch: function () {
+      this.search(true);
+    },
+    search: function (cek) {
+      if (cek && !this.validSearch()) return;
+
       this.ds.setSort(this.filter.sorts);
       let filters = [
         {
@@ -253,7 +277,7 @@ export default {
       this.filter.area = null;
       this.filter.item = null;
       this.filter.lotno = null;
-      this.search();
+      this.search(false);
     },
     buildTree: function (items, level = 0, path = []) {
       if (!this.groupByFields[level]) return items;
@@ -295,8 +319,8 @@ export default {
           node[sumField] = this.$func.formatMoney(
             groupItems.reduce(
               (acc, item) => acc + Number(item[sumField] || 0),
-              0
-            )
+              0,
+            ),
           );
         }
 
