@@ -1,0 +1,29 @@
+﻿@using QRCoder
+@using System.Drawing
+@using System.Drawing.Imaging
+@using System.IO
+
+@model Kawai.Domain.DTOs.StockDetailDto
+
+@{
+    using var qrGenerator = new QRCodeGenerator();
+    using var qrData = qrGenerator.CreateQrCode(Model.BarcodeNo, QRCodeGenerator.ECCLevel.Q);
+    using var qrCode = new PngByteQRCode(qrData);
+    byte[] bitmap = qrCode.GetGraphic(8);
+
+    using Bitmap qrBitmap = new Bitmap(new MemoryStream(bitmap));
+    using Bitmap resizedBitmap = new Bitmap(qrBitmap, new Size(50, 50));
+
+    // Convert bitmap ke MemoryStream PNG
+    using var ms = new MemoryStream();
+    resizedBitmap.Save(ms, ImageFormat.Png);
+    var qrBase64 = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+}
+
+<div class="label-inner" style="text-align:center; font-size:12pt;">
+    <div class="nomor">@Model.BarcodeNo</div>
+    <div class="qrcode">
+        <img src="@qrBase64" alt="QR Code"
+             style="width:45mm; height:45mm; margin-top:5mm;" />
+    </div>
+</div>

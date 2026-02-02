@@ -10,7 +10,6 @@ using Kawai.Data.SqlConnections;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.RateLimiting;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -45,6 +44,9 @@ builder.Services.AddCors(config =>
               .AllowCredentials()
     ));
 
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<RazorViewRenderer>();
 
 builder.Services.AddSingleton<IConnectionFactory, ConnectionFactory>();
 builder.Services.AddScoped<DbExecutor>();
