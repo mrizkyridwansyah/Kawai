@@ -128,7 +128,13 @@
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
-                  <td><a href="javascript:void(0)" @click="() => viewStock(dtl.ChildItemCode)">View Detail</a></td>
+                  <td>
+                    <a
+                      href="javascript:void(0)"
+                      @click="() => viewStock(dtl.ChildItemCode)"
+                      >View Detail</a
+                    >
+                  </td>
                   <td>{{ dtl.RegisterUser }}</td>
                   <td>{{ $func.formatDate(dtl.RegisterDate) }}</td>
                 </tr>
@@ -210,7 +216,24 @@ export default {
         this.groupLists = Object.values(grouped);
       });
     },
-    print: function () {},
+    print: function () {
+      this.ds
+        .print([
+          "tes",
+          "tes1",
+          "tes2",
+          "tes3",
+          "tes4",
+          "tes5",
+          "tes6",
+          "tes7",
+          // "tes8",
+        ])
+        .then((data) => {
+          toastSuccess(data || "Print Label berhasil!");
+        })
+        .catch((err) => toastDanger(err.Message));
+    },
     remove: function () {
       confirmRemove(
         () =>
@@ -218,7 +241,7 @@ export default {
             this.ds
               .remove(
                 this.ds.newRequest[0].RequestId,
-                this.ds.newRequest[0].RequestNo
+                this.ds.newRequest[0].RequestNo,
               )
               .then((dt) => {
                 toastSuccess("Data deleted successfully!");
@@ -232,7 +255,7 @@ export default {
               });
           }),
         null,
-        this.ds.newRequest[0].RequestNo
+        this.ds.newRequest[0].RequestNo,
       );
     },
     back: function () {
@@ -243,11 +266,11 @@ export default {
         },
       });
     },
-    viewStock: function(item) {
+    viewStock: function (item) {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
-    }
+    },
   },
 };
 </script>
