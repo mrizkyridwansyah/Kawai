@@ -1,15 +1,9 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
-using System.Text;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 using Microsoft.Playwright;
 
 namespace Kawai.Api.Services;
@@ -68,35 +62,6 @@ public class RazorViewRenderer
         await viewResult.View.RenderAsync(viewContext);
         return sw.ToString();
     }
-
-    //public byte[] ConvertHtmlToPdf(string html)
-    //{
-    //    var doc = new HtmlToPdfDocument()
-    //    {
-    //        GlobalSettings = {
-    //        ColorMode = DinkToPdf.ColorMode.Color,
-    //        Orientation = DinkToPdf.Orientation.Portrait,
-    //        PaperSize = DinkToPdf.PaperKind.A4,
-    //        Margins = new MarginSettings {
-    //            Top = 10,
-    //            Bottom = 10,
-    //            Left = 10,
-    //            Right = 10
-    //        }
-    //    },
-    //        Objects = {
-    //        new ObjectSettings {
-    //            HtmlContent = html,
-    //            WebSettings = {
-    //                DefaultEncoding = "utf-8",
-    //                LoadImages = true
-    //            }
-    //        }
-    //    }
-    //    };
-
-    //    return _converter.Convert(doc);
-    //}
 
     public async Task<byte[]> GeneratePdfAsync(string html)
     {
