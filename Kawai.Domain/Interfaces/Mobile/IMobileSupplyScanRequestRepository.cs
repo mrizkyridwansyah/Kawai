@@ -9,6 +9,6 @@ public interface IMobileSupplyScanRequestRepository
     Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo);
     Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno);
     Task<List<SupplyScanRequestDetailDto>> GetListDetail(string warehouseCode, string requestNo, string itemCode);
-    Task Save(MobilSupplyScanRequest payload, string userId);
+    Task Save(MobilSupplyScanRequestSubmit payload, string userId);
     Task<Dictionary<string, object>> Capture(string barcodeNo);
 }

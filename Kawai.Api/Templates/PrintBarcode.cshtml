@@ -3,9 +3,67 @@
 @using System.Drawing.Imaging
 @using System.IO
 
-@model Kawai.Domain.DTOs.StockDetailDto
+@model Kawai.Domain.DTOs.LabelBarcodeDetailDto
 
 @{
+    string textToCompany = Model.ToCompany;
+    string ToCompany1 = "";
+    string ToCompany2 = "";
+
+    if (!string.IsNullOrEmpty(textToCompany))
+    {
+        if (textToCompany.Length > 20)
+        {
+            // cari spasi terakhir sebelum / di karakter ke-20
+            int cutIndex = textToCompany.LastIndexOf(' ', 20);
+
+            if (cutIndex > 0)
+            {
+                ToCompany1 = textToCompany.Substring(0, cutIndex);
+                ToCompany2 = textToCompany.Substring(cutIndex + 1);
+            }
+            else
+            {
+                // kalau tidak ada spasi, potong paksa
+                ToCompany1 = textToCompany.Substring(0, 20);
+                ToCompany2 = textToCompany.Substring(20);
+            }
+        }
+        else
+        {
+            ToCompany1 = textToCompany;
+        }
+    }
+
+    string textFromCompany = Model.FromCompany;
+    string FromCompany1 = "";
+    string FromCompany2 = "";
+
+    if (!string.IsNullOrEmpty(textFromCompany))
+    {
+        if (textFromCompany.Length > 20)
+        {
+            // cari spasi terakhir sebelum / di karakter ke-20
+            int cutIndex = textFromCompany.LastIndexOf(' ', 20);
+
+            if (cutIndex > 0)
+            {
+                FromCompany1 = textFromCompany.Substring(0, cutIndex);
+                FromCompany2 = textFromCompany.Substring(cutIndex + 1);
+            }
+            else
+            {
+                // kalau tidak ada spasi, potong paksa
+                FromCompany1 = textFromCompany.Substring(0, 20);
+                FromCompany2 = textFromCompany.Substring(20);
+            }
+        }
+        else
+        {
+            FromCompany1 = textFromCompany;
+        }
+    }
+
 	using var qrGenerator = new QRCodeGenerator();
 	using var qrData = qrGenerator.CreateQrCode(Model.BarcodeNo, QRCodeGenerator.ECCLevel.Q);
 	using var qrCode = new PngByteQRCode(qrData);
@@ -20,10 +78,94 @@
 	var qrBase64 = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
 }
 
-<div class="label-inner" style="text-align:center; font-size:12pt;">
-	<div class="nomor">@Model.BarcodeNo</div>
-	<div class="qrcode">
-		<img src="@qrBase64" alt="QR Code"
-			 style="width:30mm; height:30mm; margin-top:5mm;" />
-	</div>
+<div class="label">
+
+  <!-- SHIPPING LOT -->
+  <div class="shipping-lot">
+    <div class="shipping-lot-header">Shipping Lot</div>
+        <div class="shipping-lot-number">@Model.ShippingLot</div>
+  </div>
+
+  <table border="1">
+
+    <!-- HEADER -->
+    <tr class="header">
+      <td class="header-title" >SHIPPING LABEL</td>
+            <td class="header-page">@Model.ShippingLabelNo</td>
+    </tr>
+
+    <!-- FROM / TO (50% : 50%) -->
+    <tr class="fromto">
+      <td>
+        <div class="small">FROM :</div>
+                <div class="big">
+                    @FromCompany1 <br />
+                    @FromCompany2
+                </div>
+      </td>
+      <td>
+        <div class="small">TO :</div>
+        <div class="big">
+         @ToCompany1 <br /> 
+         @ToCompany2
+        </div>
+      </td>
+    </tr>
+
+    <!-- CONTENT -->
+    <tr class="content">
+      <td colspan="2">
+         <table class="content-table">
+        <tr>
+          <!-- LEFT INFO -->
+          <td class="info">
+            <table class="detail">
+              <tr>
+                <td class="lbl">Item Code</td>
+                <td class="colon">:</td>
+               <td>@Model.ItemCode</td>
+              </tr>
+              <tr>
+                <td class="lbl">Item Name</td>
+                <td class="colon">:</td>
+                <td>@Model.ItemName</td>
+              </tr>
+              <tr>
+                <td class="lbl">Qty</td>
+                <td class="colon">:</td>
+                <td>@Model.Qty</td>
+              </tr>
+              <tr>
+                <td class="lbl">Delivery Date</td>
+                <td class="colon">:</td>
+                 <td>@Model.DeliveryDate</td>
+              </tr>
+            </table>
+          </td>
+
+          <!-- RIGHT QR -->
+          <td class="qr">
+                            <img src="@qrBase64" />
+            
+          </td>
+        </tr>
+      </table>
+      </td>
+    </tr>
+
+    <!-- FOOTER -->
+    <tr class="footer">
+      <td>
+        <div class="footer-title">D/N No. :</div>
+                <div class="footer-value">@Model.DNNumber</div>
+      </td>
+      <td>
+        <div class="footer-title">PO No. :</div>
+                <div class="footer-value">@Model.PONumber</div>
+      </td>
+    </tr>
+
+  </table>
 </div>
+
+ 

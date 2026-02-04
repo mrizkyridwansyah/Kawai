@@ -43,6 +43,18 @@ public class ReceiptRepository : IReceiptRepository
         })).ToList();
     }
 
+    public async Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id)
+    {
+         
+
+        string sp = "sp_Wms_PartReceiptDetailBarcodeLabel";
+        return (await _dbExecutor.QueryListAsync<LabelBarcodeDetailDto>(sp, new
+        {
+            ReceiptNo = id,
+            
+        })).ToList();
+    }
+
     public async Task<ReceiptDto> GetDataHeader(long id)
     {
         string sp = "sp_Wms_Receipt_DataHeader";

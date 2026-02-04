@@ -241,6 +241,13 @@
                 :print="printReport"
                 :is-loading="isLoading"
               />
+               <v-button
+                :action="print"
+                label="Print Label"
+                icon="print"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
             </div>
           </td>
         </tr>
@@ -524,6 +531,19 @@ export default {
           toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
+    },
+
+    print: function () {
+       if (!this.filter.ReceiptId) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+      this.ds
+       .print(this.filter.ReceiptId)
+        .then((data) => {
+          toastSuccess(data || "Print Label berhasil!");
+        })
+        .catch((err) => toastDanger(err.Message));
     },
     printReport: function () {},
     submit: function () {

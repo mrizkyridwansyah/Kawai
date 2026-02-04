@@ -48,7 +48,7 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestDto>(sp, new { BarcodeNo = barcodeNo });
     }
 
-    public async Task Save(MobilSupplyScanRequest payload, string userId)
+    public async Task Save(MobilSupplyScanRequestSubmit payload, string userId)
     {
         string sql = "sp_Wms_Mobile_SupplyScanRequest_Submit";
         int i = await _dbExecutor.ExecuteAsync(sql, new
@@ -58,7 +58,7 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
             payload.LineCode  ,
             payload.LotNo  ,
             payload.ItemCode  ,
-            payload.RequestNo,
+            payload.RequestNoCode,
             payload.Qty  ,
             UserId = userId
         });

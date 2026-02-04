@@ -61,7 +61,7 @@ namespace Kawai.Api.Controllers.Mobile
         }
 
         [HttpPost("save")]
-        public async Task<IActionResult> Save(MobilSupplyScanRequest model)
+        public async Task<IActionResult> Save(MobilSupplyScanRequestSubmit model)
         {
             var before = await _supplyscanrequestRepository.Capture(model.BarcodeNo);
 
@@ -79,7 +79,7 @@ namespace Kawai.Api.Controllers.Mobile
                 Activity = "Save Mobile Supply Request Scan",
                 Action = DataLogAction.Update
             });
-            return Success(after);
+            return Success(after, "Data saved successfully!");
 
  
         }

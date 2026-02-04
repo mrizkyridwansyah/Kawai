@@ -82,28 +82,7 @@ public class PartMaterialRequestWominController : HahaController
         return Success();
     }
 
-    [HttpPost("print-barcodes")]
-    public async Task<IActionResult> Save([FromBody] List<string> barcodes, [FromServices] RazorViewRenderer renderer)
-    {
-        var renderedLabels = new List<string>();
-
-        foreach (var label in barcodes)
-        {
-            StockDetailDto x = new StockDetailDto();
-            x.BarcodeNo = label;
-            var html = await renderer.RenderAsync(
-                "Templates/PrintBarcode.cshtml",
-                x);
-
-            renderedLabels.Add(html);
-        }
-
-        var fullHtml = BuildA4Html(renderedLabels);
-        //return Content(fullHtml, "text/html");
-        var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
-
-        return File(pdfBytes, "application/pdf", "labels.pdf");
-    }
+    
 
     [HttpDelete("remove")]
     public async Task<IActionResult> Remove(long requestId, string requestNo)
@@ -127,70 +106,4 @@ public class PartMaterialRequestWominController : HahaController
     }
 
 
-    protected string BuildA4Html(List<string> labelHtmls)
-    {
-        var sb = new StringBuilder();
-
-        sb.Append("""
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="utf-8" />
-                        <style>
-                        @page {
-                          size: A4;
-                          margin: 10mm;
-                        }
-
-                        body {
-                          margin: 0;
-                          font-family: Arial, sans-serif;
-                        }
-
-                        .page {
-                          width: 190mm;
-                          height: 277mm;
-                          display: grid;
-                          grid-template-columns: repeat(2, 1fr);
-                          grid-template-rows: repeat(4, 1fr);
-                          gap: 5mm;
-                          page-break-after: always;
-                        }
-
-                        .label {
-                          border: 1px solid #000;
-                          padding: 5mm;
-                          box-sizing: border-box;
-                        }
-
-                        .label-inner {
-                          font-size: 14pt;
-                        }
-
-                        </style>
-                    </head>
-                    <body>
-            """);
-
-        foreach (var chunk in labelHtmls.Chunk(8))
-        {
-            sb.Append("<div class='page'>");
-
-            foreach (var label in chunk)
-            {
-                sb.Append("<div class='label'>");
-                sb.Append(label);
-                sb.Append("</div>");
-            }
-
-            sb.Append("</div>");
-        }
-
-        sb.Append("""
-                    </body>
-                    </html>
-        """);
-
-        return sb.ToString();
-    }
-}
+     }

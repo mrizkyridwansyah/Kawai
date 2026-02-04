@@ -39,15 +39,7 @@
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
               />
-
-              <v-button
-                :action="print"
-                label="Print"
-                icon="print"
-                cClass="ml-1 btn-blue"
-                :is-loading="isLoading"
-              />
-
+ 
               <v-button
                 :action="remove"
                 label="Delete"
@@ -215,24 +207,6 @@ export default {
 
         this.groupLists = Object.values(grouped);
       });
-    },
-    print: function () {
-      this.ds
-        .print([
-          "tes",
-          "tes1",
-          "tes2",
-          "tes3",
-          "tes4",
-          "tes5",
-          "tes6",
-          "tes7",
-          // "tes8",
-        ])
-        .then((data) => {
-          toastSuccess(data || "Print Label berhasil!");
-        })
-        .catch((err) => toastDanger(err.Message));
     },
     remove: function () {
       confirmRemove(
