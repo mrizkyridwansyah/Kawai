@@ -1,13 +1,7 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces.Robot;
-using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Models.Robot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kawai.Data.Repositories.Robot;
 
@@ -22,10 +16,11 @@ public class RobotStockRepository: IRobotStockRepository
     }
     public async Task MoveTrolley(RobotMovingTrolley payload, string robotCode)
     {
-        string sqlHeader = "sp_Wms_Robot_MoveTrollery";
+        string sqlHeader = "sp_Wms_Robot_MoveTrolley";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
             payload.TrolleyCode,
+            payload.AreaCode,
             RobotCode = robotCode,
         });
     }
@@ -33,7 +28,7 @@ public class RobotStockRepository: IRobotStockRepository
     public async Task<Dictionary<string, object>> CaptureDataGrouping(string refNo)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
-            "sp_Wms_Robot_CaptureStock",
+            "sp_Wms_Mobile_AssignStorage_Capture",
             param: new { RefNo = refNo },
             async multi =>
             {
