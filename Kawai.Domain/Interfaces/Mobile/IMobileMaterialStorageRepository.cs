@@ -5,7 +5,7 @@ namespace Kawai.Domain.Interfaces.Mobile;
 
 public interface IMobileMaterialStorageRepository
 {
-    Task<List<MaterialStorageSummaryDto>> GetSummaryStorage(string warehouseCode);
+    Task<List<MaterialStorageSummaryDto>> GetSummaryStorage(string warehouseCode, string barcode);
     Task<List<MaterialStorageDto>> GetListDetail(string warehouseCode, string lotNo, string itemCode);
     Task<MaterialStorageDto> GetDataBarcode(string barcodeNo);
     Task Save(MobileMaterialStorage payload, string userId);

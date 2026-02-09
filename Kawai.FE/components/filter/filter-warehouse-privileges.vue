@@ -118,7 +118,7 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     close: function () {
       this.isOpen = false;
@@ -133,7 +133,7 @@ export default {
           .get(
             `/warehouse/ddlsearch-privileges?keyword=${q || ""}&ids=${
               d || ""
-            }&factoryCode=${this.factoryCode}`
+            }&factoryCode=${this.factoryCode}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

@@ -89,7 +89,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -102,7 +102,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/factory/ddlsearch-privileges?keyword=${q || ""}&ids=${d || ""}`
+            `/factory/ddlsearch-privileges?keyword=${q || ""}&ids=${d || ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

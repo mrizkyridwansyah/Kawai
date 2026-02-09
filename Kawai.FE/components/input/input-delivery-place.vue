@@ -110,7 +110,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -125,7 +125,7 @@ export default {
           .get(
             `/deliveryplace/ddlsearch?keyword=${q || ""}&trade_code=${
               this.trade
-            }&ids=${d || ""}`
+            }&ids=${d || ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

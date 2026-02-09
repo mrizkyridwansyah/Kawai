@@ -113,7 +113,7 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     close: function () {
       this.isOpen = false;
@@ -128,7 +128,7 @@ export default {
           .get(
             `/cls/ddlsearch?keyword=${q || ""}&typedata=${this.typeData}&ids=${
               d || ""
-            }`
+            }`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

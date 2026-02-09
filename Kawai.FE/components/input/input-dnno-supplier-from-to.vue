@@ -108,7 +108,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -125,7 +125,7 @@ export default {
               q || ""
             }&ids=${d || ""}&supplier=${this.supplier}&receiptdatefrom=${
               this.receiptdatefrom
-            }&receiptdateto=${this.receiptdateto}`
+            }&receiptdateto=${this.receiptdateto}`,
           )
           .then((p) => {
             this.list =

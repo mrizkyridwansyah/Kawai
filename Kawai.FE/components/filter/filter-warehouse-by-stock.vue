@@ -130,7 +130,7 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     close: function () {
       this.isOpen = false;
@@ -145,7 +145,7 @@ export default {
           .get(
             `/warehouse/ddl-warehouse-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&item=${this.itemCode}&factoryCode=${this.factoryCode || ""}`
+            }&item=${this.itemCode}&factoryCode=${this.factoryCode || ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

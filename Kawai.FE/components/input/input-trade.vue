@@ -36,12 +36,12 @@
       </td>
       <td :style="this.styleDesc" style="padding-left: 5px">
         <div>
-        <input
-          type="text"
-          disabled
-          :value="selectedItem?.Trade_Name || ''"
-          class="w-100 form-control"
-        />
+          <input
+            type="text"
+            disabled
+            :value="selectedItem?.Trade_Name || ''"
+            class="w-100 form-control"
+          />
         </div>
       </td>
     </tr>
@@ -130,7 +130,7 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     close: function () {
       this.isOpen = false;
@@ -154,7 +154,7 @@ export default {
                   ? "&tradecls=" + this.tradeCls
                   : ""
                 : tradeFlags.join("")
-            }&ids=${d || ""}`
+            }&ids=${d || ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

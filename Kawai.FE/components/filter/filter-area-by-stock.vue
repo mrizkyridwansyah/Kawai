@@ -132,9 +132,9 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
-    close: function() {
+    close: function () {
       this.isOpen = false;
     },
     load: function (q = "", d = "") {
@@ -147,7 +147,7 @@ export default {
           .get(
             `/area/ddl-area-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouse=${this.warehouse || ""}&item=${this.item}`
+            }&warehouse=${this.warehouse || ""}&item=${this.item}`,
           )
           .then((p) => {
             this.list =

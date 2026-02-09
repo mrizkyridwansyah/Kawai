@@ -109,7 +109,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);

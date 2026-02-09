@@ -98,7 +98,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -110,7 +110,7 @@ export default {
           .get(
             `/area/ddl-area-search-by-stock?keyword=${q || ""}&selectedVal=${
               d || ""
-            }&warehouse=${this.warehouse || ""}&item=${this.item}`
+            }&warehouse=${this.warehouse || ""}&item=${this.item}`,
           )
           .then((p) => {
             this.list =

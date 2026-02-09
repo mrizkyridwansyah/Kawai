@@ -241,10 +241,10 @@
                 :print="printReport"
                 :is-loading="isLoading"
               />
-               <v-button
+              <v-button
                 :action="print"
-                label="Print Label"
-                icon="print"
+                label="Print Label PDF"
+                icon="file-pdf"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
               />
@@ -534,12 +534,12 @@ export default {
     },
 
     print: function () {
-       if (!this.filter.ReceiptId) {
+      if (!this.filter.ReceiptId) {
         toastDanger("Silahkan pilih Receipt No!");
         return;
       }
       this.ds
-       .print(this.filter.ReceiptId)
+        .print(this.filter.ReceiptId)
         .then((data) => {
           toastSuccess(data || "Print Label berhasil!");
         })

@@ -115,7 +115,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -127,7 +127,7 @@ export default {
           .get(
             `/area/ddlsearch?keyword=${q || ""}&ids=${d || ""}&warehouseCode=${
               this.warehouse || "ALL"
-            }${this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"}`
+            }${this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

@@ -20,7 +20,9 @@
       :select="change"
       :class="cClass || 'input-wrapper'"
       :multiple="multiple !== undefined || false"
-      :disabled="(disabled !== undefined || disabled === true) && disabled !== false"
+      :disabled="
+        (disabled !== undefined || disabled === true) && disabled !== false
+      "
       select-label=""
       deselect-label=""
     />
@@ -87,7 +89,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -102,7 +104,7 @@ export default {
           .get(
             `/cls/ddlsearch?keyword=${q || ""}&typedata=${this.typeData}&ids=${
               d || ""
-            }`
+            }`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

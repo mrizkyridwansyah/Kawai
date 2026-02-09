@@ -125,7 +125,7 @@ export default {
       this.isOpen = true;
       this.load("", null);
     },
-    close: function() {
+    close: function () {
       this.isOpen = false;
     },
     load: function (q = "", d = "") {
@@ -140,7 +140,7 @@ export default {
               q || ""
             }&companycode=${this.company}&manufacture=${this.manufacture}&ids=${
               d || ""
-            }`
+            }`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

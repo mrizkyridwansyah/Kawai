@@ -124,14 +124,16 @@
                     <td class="text-center">
                       <a
                         href="javascript:void(0);"
-                        v-if="item.StatusQC != 'NEW'"
+                        v-if="item.StatusQC == 'CONFIRMED'"
                         @click="() => showModal(item, 'VIEW')"
                       >
                         View
                       </a>
                       <a
                         href="javascript:void(0);"
-                        v-else-if="item.StatusQC == 'NEW'"
+                        v-else-if="
+                          item.StatusQC == 'NEW' || item.StatusQC == 'INPUT'
+                        "
                         @click="() => showModal(item, 'INPUT')"
                       >
                         Input

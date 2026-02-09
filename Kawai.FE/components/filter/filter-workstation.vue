@@ -1,46 +1,46 @@
 <template>
-   <table>
+  <table>
     <tr>
       <td :style="this.styleCode">
-      <input-multiselect
-        v-model="tempValue"
-        :options="list"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        open-direction="bottom"
-        :placeholder="placeholder || ` `"
-        :searchable="true"
-        :label="displayLabel"
-        track-by="WorkStationCode"
-        trackBy="WorkStationCode"
-        :hide-selected="true"
-        :internal-search="false"
-        :loading="isLoading"
-        @search-change="search"
-        @open="open"
-        @close="close"
-        :select="change"
-        :class="cClass || 'input-wrapper'"
-        :multiple="multiple !== undefined || false"
-        :disabled="
-          (disabled !== undefined || disabled === true) && disabled !== false
-        "
-        select-label=""
-        deselect-label=""
-      />
-      <div class="invalid-feedback d-block" v-if="errors">
-        {{ errors[0] }}
-      </div>
-    </td>
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || ` `"
+          :searchable="true"
+          :label="displayLabel"
+          track-by="WorkStationCode"
+          trackBy="WorkStationCode"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          @close="close"
+          :select="change"
+          :class="cClass || 'input-wrapper'"
+          :multiple="multiple !== undefined || false"
+          :disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
+          select-label=""
+          deselect-label=""
+        />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+      </td>
       <td :style="this.styleDesc" style="padding-left: 5px">
-      <input
-        type="text"
-        disabled
-        :value="selectedItem?.WorkStationName || ''"
-        class="w-100 form-control"
-      />
-   </td>
+        <input
+          type="text"
+          disabled
+          :value="selectedItem?.WorkStationName || ''"
+          class="w-100 form-control"
+        />
+      </td>
     </tr>
   </table>
 </template>
@@ -111,9 +111,9 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
-    close: function() {
+    close: function () {
       this.isOpen = false;
     },
     load: function (q = "", d = "") {

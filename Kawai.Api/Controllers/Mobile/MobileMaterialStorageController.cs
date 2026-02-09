@@ -22,9 +22,9 @@ public class MobileMaterialStorageController : HahaController
     }
 
     [HttpGet("data-summary")]
-    public async Task<IActionResult> GetSummaryStorage(string warehouseCode)
+    public async Task<IActionResult> GetSummaryStorage(string warehouseCode, string barcode)
     {
-        var result = await _materialStorageRepository.GetSummaryStorage(warehouseCode);
+        var result = await _materialStorageRepository.GetSummaryStorage(warehouseCode, barcode);
         return Success(result);
     }
 

@@ -116,7 +116,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -134,9 +134,12 @@ export default {
             }&supplier=${this.supplierCode || ""}&status=${
               this.status || ""
             }&sourceMenu=${this.sourceMenu || ""}${
-              this.periodFrom ? "&periodFrom=" + this.$func.asUtcStringDateOnly(new Date(this.periodFrom)) : ""
+              this.periodFrom
+                ? "&periodFrom=" +
+                  this.$func.asUtcStringDateOnly(new Date(this.periodFrom))
+                : ""
             }
-                  ${this.periodUntil ? "&periodUntil=" + this.$func.asUtcStringDateOnly(new Date(this.periodUntil)) : ""}`
+                  ${this.periodUntil ? "&periodUntil=" + this.$func.asUtcStringDateOnly(new Date(this.periodUntil)) : ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

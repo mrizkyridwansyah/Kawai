@@ -53,7 +53,7 @@ export default {
     "multiple",
     "class",
     "warehouse",
-    "includeTemp"
+    "includeTemp",
   ],
   data: () => ({
     isLoading: false,
@@ -72,9 +72,9 @@ export default {
 
       this.load("", after);
     },
-    warehouse: function(after) {
+    warehouse: function (after) {
       this.tempValue = null;
-      this.load('', this.modelValue);
+      this.load("", this.modelValue);
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
@@ -93,7 +93,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -105,7 +105,7 @@ export default {
           .get(
             `/area/ddlsearch-privileges?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouseCode=${this.warehouse || "ALL"}${this.includeTemp ? "&includeTemp=true": "&includeTemp=false"}`
+            }&warehouseCode=${this.warehouse || "ALL"}${this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

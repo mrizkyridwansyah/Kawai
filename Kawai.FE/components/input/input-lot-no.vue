@@ -108,7 +108,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -125,7 +125,7 @@ export default {
               d || ""
             }&warehouse=${this.warehouse}&area=${this.area}&address=${
               this.address
-            }&item=${this.item || ""}`
+            }&item=${this.item || ""}`,
           )
           .then((p) => {
             this.list =

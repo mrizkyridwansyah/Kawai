@@ -1,46 +1,57 @@
 <template>
   <div>
-    <input-multiselect 
-    v-model="tempValue" 
-    :options="list" 
-    :close-on-select="true" 
-    :clear-on-select="false"
-      :preserve-search="true" 
-      open-direction="bottom" 
+    <input-multiselect
+      v-model="tempValue"
+      :options="list"
+      :close-on-select="true"
+      :clear-on-select="false"
+      :preserve-search="true"
+      open-direction="bottom"
       :placeholder="placeholder || ` `"
-      :searchable="true" 
-      label="HSCode" 
-      track-by="HSCode" 
-      trackBy="HSCode" 
+      :searchable="true"
+      label="HSCode"
+      track-by="HSCode"
+      trackBy="HSCode"
       :hide-selected="true"
       :internal-search="false"
-       :loading="isLoading" 
-       @search-change="search" 
-       @open="open" 
-       :select="change"
-      :class="cClass || 'input-wrapper'" 
+      :loading="isLoading"
+      @search-change="search"
+      @open="open"
+      :select="change"
+      :class="cClass || 'input-wrapper'"
       :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false" 
-      select-label="" 
-      deselect-label="" />
+      :disabled="disabled !== undefined || false"
+      select-label=""
+      deselect-label=""
+    />
     <div class="invalid-feedback d-block" v-if="errors">
       {{ errors[0] }}
     </div>
-    <small class="form-text text-muted" v-if="description">{{ description }}</small>
+    <small class="form-text text-muted" v-if="description">{{
+      description
+    }}</small>
   </div>
 </template>
 
 <script>
 export default {
   model: {
-    prop: 'modelValue',
-    event: 'update',
+    prop: "modelValue",
+    event: "update",
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   props: [
-    'modelValue', 'type', 'label', 'col', 'description',
-    'placeholder', 'onSelect', 'errors'
-    , 'disabled', 'multiple', 'class'
+    "modelValue",
+    "type",
+    "label",
+    "col",
+    "description",
+    "placeholder",
+    "onSelect",
+    "errors",
+    "disabled",
+    "multiple",
+    "class",
   ],
   data: () => ({
     isLoading: false,
@@ -50,28 +61,25 @@ export default {
   }),
   computed: {
     cClass: function () {
-      return (this['class'] ?? '') + (this.errors ? 'is-invalid' : '');
-    }
+      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+    },
   },
   watch: {
     modelValue: function (after, before) {
-      if (!after)
-        this.tempValue = null;
+      if (!after) this.tempValue = null;
 
-      this.load('', after);
+      this.load("", after);
     },
     tempValue: function (after) {
-      if (!after)
-        this.$emit("update:modelValue", null);
+      if (!after) this.$emit("update:modelValue", null);
     },
   },
   mounted: function () {
-    this.load('', this.modelValue);
+    this.load("", this.modelValue);
   },
   methods: {
     change: function (v) {
-      if (this.onSelect)
-        this.onSelect(v);
+      if (this.onSelect) this.onSelect(v);
 
       this.$emit("update:modelValue", v);
     },
@@ -79,32 +87,32 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load('', this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
     // },
-    load: function (q = '', d = '') {
+    load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
-      if (this.debounce != null)
-        clearTimeout(this.debounce);
+      if (this.debounce != null) clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/hs/ddlsearch?keyword=${q || ''}&ids=${d || ''}`)
-          .then(p => {
+        this.$http
+          .get(`/hs/ddlsearch?keyword=${q || ""}&ids=${d || ""}`)
+          .then((p) => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.HSCode;
             }
             this.list = p.data.Data;
           })
-          .finally(() => this.isLoading = false);
+          .finally(() => (this.isLoading = false));
 
         clearTimeout(this.debounce);
-      }, 200)
-    }
-  }
-}
+      }, 200);
+    },
+  },
+};
 </script>
 
 <style>

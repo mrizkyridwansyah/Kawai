@@ -30,8 +30,6 @@
           deselect-label=""
         />
 
-
-
         <small class="form-text text-muted" v-if="description">{{
           description
         }}</small>

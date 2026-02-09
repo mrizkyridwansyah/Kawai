@@ -119,7 +119,7 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     close: function () {
       this.isOpen = false;
@@ -136,7 +136,7 @@ export default {
               d || ""
             }&warehouseCode=${this.warehouse || "ALL"}${
               this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"
-            }`
+            }`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

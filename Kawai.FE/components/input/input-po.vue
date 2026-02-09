@@ -113,7 +113,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -137,7 +137,7 @@ export default {
                   "&periodUntil=" +
                   this.$func.asUtcStringDateOnly(new Date(this.periodUntil))
                 : ""
-            }&showOptionAll=${this.showOptionAll || false}`
+            }&showOptionAll=${this.showOptionAll || false}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

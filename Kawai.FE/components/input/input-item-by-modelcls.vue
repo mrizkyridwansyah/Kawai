@@ -93,7 +93,7 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     // refresh: function () {
     //   this.load('', this.modelValue);
@@ -108,7 +108,7 @@ export default {
           .get(
             `/bomworkstation/ddl-itembymodelcls-search?keyword=${q || ""}&ids=${
               d || ""
-            }&modelCls=${this.modelCls}`
+            }&modelCls=${this.modelCls}`,
           )
           .then((p) => {
             this.list =
