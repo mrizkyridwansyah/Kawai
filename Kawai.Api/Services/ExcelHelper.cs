@@ -103,6 +103,10 @@ public static class ExcelHelper
                 break;
             case decimal dec:
                 cell.Value = Convert.ToDouble(dec); // ClosedXML tidak support decimal langsung
+                if (dec % 1 == 0)
+                    cell.Style.NumberFormat.NumberFormatId = 3; // #,##0
+                else
+                    cell.Style.NumberFormat.Format = "#,##0.############";
                 break;
             case DateTime dt:
                 cell.Value = dt;

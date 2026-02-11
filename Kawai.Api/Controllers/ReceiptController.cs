@@ -1,7 +1,5 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Kawai.Api.Services;
-using Kawai.Data.Repositories;
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Log;
@@ -159,7 +157,7 @@ public class ReceiptController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["Supplier", "Delivery Date", "Item Code", "Description", "DN Number", "PO Number", "BC Type", "BC Number", "BC Date", "Qty", "Unit", "Currency", "Price", "Amount"];
+        List<string> headers = ["Receipt No", "Supplier", "Delivery Date", "Item Code", "Description", "DN Number", "PO Number", "BC Type", "BC Number", "BC Date", "Qty", "Qty Scan", "Unit", "Currency", "Price", "Amount"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
         foreach (var result in results)
@@ -168,6 +166,8 @@ public class ReceiptController : HahaController
             var row = ws.Row(rowIdx);
             int colIdx = 1;
 
+            ExcelHelper.SetCell(row, colIdx, result.ReceiptNo);
+            colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.SupplierName);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.DNDate.ToString("dd MMM yyyy"));
@@ -187,6 +187,10 @@ public class ReceiptController : HahaController
             ExcelHelper.SetCell(row, colIdx, result.BCDate.ToString("dd MMM yyyy"));
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Qty);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.QtyScan);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.UnitClsDescription);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Currency);
             colIdx++;
