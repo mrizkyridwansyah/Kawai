@@ -260,6 +260,9 @@ public static class ExcelHelper
         var firstCol = ws.FirstColumnUsed().ColumnNumber();
         var lastCol = ws.LastColumnUsed().ColumnNumber();
 
+        if(lastRow > 10000)
+            throw new Exception("Upload gagal: maksimal 10.000 baris per file.");
+
         // HEADER
         var headerRow = ws.Row(firstRow);
         for (int col = firstCol; col <= lastCol; col++)

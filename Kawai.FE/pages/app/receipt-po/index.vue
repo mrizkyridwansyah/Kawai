@@ -3,7 +3,7 @@
     <template #frame-content>
       <table>
         <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; vertical-align: top">
             <table>
               <tr>
                 <td><label class="form-label">Factory</label></td>
@@ -116,7 +116,7 @@
               </tr>
             </table>
           </td>
-          <td style="padding-left: 15px; padding-top: 5px">
+          <td style="padding-left: 15px; padding-top: 5px; vertical-align: top">
             <table>
               <tr>
                 <td><label class="form-label">BC Number</label></td>
@@ -151,6 +151,7 @@
                   <input-date
                     v-model="model.BCDate"
                     style-date="width: 115px"
+                    :errors="errors?.BCDate"
                   />
                 </td>
                 <td style="padding-top: 5px">
@@ -160,6 +161,7 @@
                   <input-date
                     v-model="model.DNDate"
                     style-date="width: 115px"
+                    :errors="errors?.DNDate"
                   />
                 </td>
               </tr>

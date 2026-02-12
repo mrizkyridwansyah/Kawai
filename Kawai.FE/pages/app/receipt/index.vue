@@ -62,7 +62,7 @@
         </tr>
         <tr>
           <td colspan="4" style="padding-top: 5px">
-            <v-button-search-reset :search="search" :reset="reset" />
+            <v-button-search-reset :search="onSearch" :reset="reset" />
           </td>
         </tr>
       </table>
@@ -368,7 +368,6 @@ export default {
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
     this.filter.CompleteStatus = "ALL";
-    this.search();
   },
   methods: {
     resetGrid: function () {
@@ -377,7 +376,35 @@ export default {
       this.ds.setLength(10);
       this.ds.data.Items = [];
     },
-    search: function () {
+    validSearch: function () {
+      if ((this.filter.SupplierCode || "") == "") {
+        toastDanger("Silahkan pilih supplier");
+        return false;
+      }
+
+      if ((this.filter.PeriodFrom || "") == "") {
+        toastDanger("Silahkan pilih receipt date from");
+        return false;
+      }
+
+      if ((this.filter.PeriodUntil || "") == "") {
+        toastDanger("Silahkan pilih receipt date until");
+        return false;
+      }
+
+      if ((this.filter.CompleteStatus || "") == "") {
+        toastDanger("Silahkan pilih complete status");
+        return false;
+      }
+
+      return true;
+    },
+    onSearch: function () {
+      this.search(true);
+    },
+    search: function (cek) {
+      if (cek && !this.validSearch()) return;
+
       this.ds.setSort(this.filter.sorts);
       let filters = [
         {
@@ -409,7 +436,7 @@ export default {
         1,
       );
       this.filter.PeriodUntil = today;
-      this.search();
+      this.search(false);
     },
     exportExcel: function () {
       let filters = [
@@ -439,11 +466,11 @@ export default {
           });
       });
     },
-    viewDetail: function(item) {
+    viewDetail: function (item) {
       this.selectedReceiptDetailId = item.ReceiptDetailId;
       this.counter++;
       this.$bvModal.show("modal-list-receipt");
-    }
+    },
   },
 };
 </script>

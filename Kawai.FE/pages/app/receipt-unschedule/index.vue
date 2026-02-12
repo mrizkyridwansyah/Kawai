@@ -88,13 +88,21 @@
             <label class="form-label">BC Date</label>
           </td>
           <td style="padding-left: 15px; padding-top: 5px">
-            <input-date v-model="model.BCDate" style-date="width: 115px" />
+            <input-date
+              v-model="model.BCDate"
+              style-date="width: 115px"
+              :errors="errors?.BCDate"
+            />
           </td>
           <td style="padding-top: 5px">
             <label class="form-label">DN Date</label>
           </td>
           <td style="padding-left: 15px; padding-top: 5px">
-            <input-date v-model="model.DNDate" style-date="width: 115px" />
+            <input-date
+              v-model="model.DNDate"
+              style-date="width: 115px"
+              :errors="errors?.DNDate"
+            />
           </td>
         </tr>
         <tr>

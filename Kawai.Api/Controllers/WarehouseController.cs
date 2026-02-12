@@ -291,68 +291,74 @@ public class WarehouseController : HahaController
     [HttpPost("import")]
     public async Task<IActionResult> Import(ImportModel payload)
     {
-        Stopwatch Timer = new();
-
-        Timer.Start();
-
-        // ambil data dari file & convert jadi List class import
-        var list = ExcelHelper.ReadAndValidate<WarehouseImport>(payload.File);
-        // kalo ada error dari hasil convert ke class
-        var invalidRows = list.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
-        if (invalidRows.Any())
+        try
         {
-            Timer.Stop();
+            Stopwatch Timer = new();
+            Timer.Start();
 
-            if (payload.Action == "EXECUTE")
-                SaveImportHistory(payload, Timer, list, "FAILED");
-
-            return ImportInvalid("DATA IMPORT TIDAK VALID", list);
-        }
-
-        // ubah jadi datatable disini, biar ga berkali-kali.
-        var dtTable = DataTableHelper.ToDataTable(list);
-
-        // get data setelah validasi
-        var resultAfter = await _warehouseRepository.ValidateImport(dtTable, Auth.User.UserID);
-        // kalo ada error setelah validasi
-        invalidRows = resultAfter.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
-        if (invalidRows.Any())
-        {
-            Timer.Stop();
-
-            if (payload.Action == "EXECUTE")
-                SaveImportHistory(payload, Timer, resultAfter, "FAILED");
-
-            return ImportInvalid("DATA IMPORT TIDAK VALID", resultAfter);
-        }
-
-        // kalo aksi nya execute maka langsung ke table. kalo cuma testing jangan.
-        if (payload.Action == "EXECUTE")
-        {
-            await _warehouseRepository.Import(dtTable, Auth.User.UserID);
-
-            foreach (var item in list)
+            // ambil data dari file & convert jadi List class import
+            var list = ExcelHelper.ReadAndValidate<WarehouseImport>(payload.File);
+            // kalo ada error dari hasil convert ke class
+            var invalidRows = list.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
+            if (invalidRows.Any())
             {
-                var after = await _warehouseRepository.Capture(item.WarehouseCode);
+                Timer.Stop();
 
-                await _logger.SaveDataLog(new DataLogDto
-                {
-                    DocumentType = "Master Warehouse",
-                    EntityId = item.WarehouseCode,
-                    ReferenceId = item.WarehouseCode,
-                    Action = DataLogAction.Import,
-                    Activity = "Import Warehouse",
-                    Before = null,
-                    After = after
-                });
+                if (payload.Action == "EXECUTE")
+                    SaveImportHistory(payload, Timer, list, "FAILED");
+
+                return ImportInvalid("DATA IMPORT TIDAK VALID", list);
             }
 
-            SaveImportHistory(payload, Timer, resultAfter, "SUCCESS");
+            // ubah jadi datatable disini, biar ga berkali-kali.
+            var dtTable = DataTableHelper.ToDataTable(list);
+
+            // get data setelah validasi
+            var resultAfter = await _warehouseRepository.ValidateImport(dtTable, Auth.User.UserID);
+            // kalo ada error setelah validasi
+            invalidRows = resultAfter.Where(x => !String.IsNullOrEmpty(x.Errors)).ToList();
+            if (invalidRows.Any())
+            {
+                Timer.Stop();
+
+                if (payload.Action == "EXECUTE")
+                    SaveImportHistory(payload, Timer, resultAfter, "FAILED");
+
+                return ImportInvalid("DATA IMPORT TIDAK VALID", resultAfter);
+            }
+
+            // kalo aksi nya execute maka langsung ke table. kalo cuma testing jangan.
+            if (payload.Action == "EXECUTE")
+            {
+                await _warehouseRepository.Import(dtTable, Auth.User.UserID);
+
+                foreach (var item in list)
+                {
+                    var after = await _warehouseRepository.Capture(item.WarehouseCode);
+
+                    await _logger.SaveDataLog(new DataLogDto
+                    {
+                        DocumentType = "Master Warehouse",
+                        EntityId = item.WarehouseCode,
+                        ReferenceId = item.WarehouseCode,
+                        Action = DataLogAction.Import,
+                        Activity = "Import Warehouse",
+                        Before = null,
+                        After = after
+                    });
+                }
+
+                SaveImportHistory(payload, Timer, resultAfter, "SUCCESS");
+            }
+
+            Timer.Stop();
+
+            return Success(list);
         }
-
-        Timer.Stop();
-
-        return Success(list);
+        catch (Exception ex)
+        {
+            return Invalid(ex.Message);
+        }
     }
 
     private void SaveImportHistory(ImportModel payload, Stopwatch timer, List<WarehouseImport> result, string status)
