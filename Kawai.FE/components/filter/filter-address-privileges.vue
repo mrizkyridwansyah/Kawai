@@ -61,6 +61,7 @@ export default {
     , 'disabled', 'multiple', 'class', 'warehouse', 'area',
     'styleCode',
     'styleDesc',
+    "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -73,9 +74,18 @@ export default {
     cClass: function() {
       return (this['class'] ?? '') + (this.errors ? 'is-invalid' : '');
     },
-    selectedItem: function () {
+     selectedItem: function () {
+      if (this.tempValue === "ALL") {
+        return {
+          AddressCode: "ALL",
+          AddressName: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
       return this.list.find((x) => x.AddressCode === this.tempValue) || null;
     },
+    
     displayLabel() {
       if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "AddressCode" : "DDLDescription";
@@ -129,11 +139,24 @@ export default {
 
       this.debounce = setTimeout(() => {
         this.$http.get(`/address/ddlsearch-privileges?keyword=${q || ''}&ids=${d || ''}&warehouse=${this.warehouse || 'ALL'}&area=${this.area || 'ALL'}`)
-          .then(p => {
-            if(d && p.data.length > 0) {
-              this.tempValue = p.data.Data[0]?.AreaCode;
+              .then((p) => {
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [
+                    {
+                      AddressCode: "ALL",
+          AddressName: "ALL",
+                      DDLDescription: "ALL",
+                    },
+                    ...p.data.Data,
+                  ]
+                : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.AreaCode;
             }
-            this.list = p.data.Data;
           })
           .finally(() => this.isLoading = false);
 

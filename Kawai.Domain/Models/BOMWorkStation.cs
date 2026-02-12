@@ -26,8 +26,11 @@ public class BOMWorkStationListHeader
     public string ModelCls { get; set; }
     public string ParentItem_Code { get; set; }
     public string ProcessCode { get; set; }
-    public decimal? QtySet { get; set; }
+
+     public decimal? QtySet { get; set; }
+
     public string Trolley_Cls { get; set; }
+
     public string WorkStationCode { get; set; }
     
 

@@ -71,6 +71,7 @@ export default {
     "includeTemp",
     "styleCode",
     "styleDesc",
+     "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -83,9 +84,18 @@ export default {
     cClass: function () {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
-    selectedItem: function () {
+      selectedItem: function () {
+      if (this.tempValue === "ALL") {
+        return {
+          AreaCode: "ALL",
+          AreaName: "ALL",
+          DDLDescription: "ALL",
+        };
+      }
+
       return this.list.find((x) => x.AreaCode === this.tempValue) || null;
     },
+    
     displayLabel() {
       if (this.isOpen) return "DDLDescription";
       return this.tempValue ? "AreaCode" : "DDLDescription";
@@ -138,11 +148,24 @@ export default {
               this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"
             }`,
           )
-          .then((p) => {
+           .then((p) => {
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [
+                    {
+                      AreaCode: "ALL",
+                      AreaName: "ALL",
+                      DDLDescription: "ALL",
+                    },
+                    ...p.data.Data,
+                  ]
+                : p.data.Data;
+
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.AreaCode;
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.AreaCode;
             }
-            this.list = p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 
