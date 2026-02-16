@@ -15,6 +15,7 @@
      <td style="width: 1%;"></td>
     <td style="width: 10%;"><label class="form-label">Item</label></td>
     <td style="width: 34%;"> <filter-item-by-modelcls
+       class="form-control"
                       v-model="filter.item"
                     :modelCls="filter.modelcls"
                     
@@ -46,6 +47,7 @@
     <td style="width: 10%;"><label class="form-label">Line</label></td>
     <td style="width: 34%;">
       <filter-line-factory
+       class="form-control"
                        :company="filter.factory"
                       :manufacture="filter.supplier"
                         
@@ -64,6 +66,7 @@
     <td style="width: 34%;">
        <filter-cls-2
                     type-data="Model_Cls"
+                     class="form-control"
                     v-model="filter.modelcls"
                     
                     style-code="width: 110px"

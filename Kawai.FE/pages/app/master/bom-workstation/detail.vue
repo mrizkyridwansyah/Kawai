@@ -14,6 +14,7 @@
      <td style="width: 1%;"></td>
     <td style="width: 10%;"><label class="form-label">Item</label></td>
     <td style="width: 34%;"> <filter-item-by-modelcls
+       class="form-control"
                       v-model="filter.item"
                     :modelCls="filter.modelcls"
                      :disabled="true"
@@ -51,6 +52,7 @@
     <td style="width: 10%;"><label class="form-label">Line</label></td>
     <td style="width: 34%;">
       <filter-line-factory
+       class="form-control"
                        :company="filter.factory"
                       :manufacture="filter.supplier"
                        :disabled="true"
@@ -61,6 +63,7 @@
      <td style="width: 1%;"></td>
     <td style="width: 10%;"><label class="form-label">Trolley Cls</label></td>
     <td style="width: 34%;">  <filter-cls-2
+       class="form-control"
              type-data="Trolley_Cls"
             v-model="filter.trolley_cls"
              :errors="errors?.trolley_cls"
@@ -74,6 +77,7 @@
     <td style="width: 10%;"><label class="form-label">Model Cls</label></td>
     <td style="width: 34%;">
        <filter-cls-2
+        class="form-control"
                     type-data="Model_Cls"
                     v-model="filter.modelcls"
                      :disabled="true"
