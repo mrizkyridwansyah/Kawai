@@ -79,6 +79,7 @@
                 <th class="text-center">Parent Item</th>
                 <th class="text-center">Parent Item Name</th>
                 <th class="text-center">Set Number</th>
+                <th class="text-center">Child Classification</th>
                 <th class="text-center">Qty Set</th>
                 <th class="text-center">Child Item Code</th>
                 <th class="text-center">Child Item Name</th>
@@ -100,6 +101,7 @@
                   <td>{{ item.ParentItemCode }}</td>
                   <td>{{ item.ParentItemName }}</td>
                   <td class="text-right">{{ item.SetNumber }}</td>
+                  <td>{{ item.ChildClassificationPartDesc }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(item.QtySet) }}
 
@@ -120,13 +122,19 @@
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.RequestId"
                 >
-                  <td colspan="7"></td>
+                  <td colspan="8"></td>
                   <td>{{ dtl.ChildItemCode }}</td>
                   <td>{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
-                  <td><a href="javascript:void(0)" @click="() => viewStock(dtl.ChildItemCode)">View Detail</a></td>
+                  <td>
+                    <a
+                      href="javascript:void(0)"
+                      @click="() => viewStock(dtl.ChildItemCode)"
+                      >View Detail</a
+                    >
+                  </td>
                   <td>{{ dtl.RegisterUser }}</td>
                   <td>{{ $func.formatDate(dtl.RegisterDate) }}</td>
                 </tr>
@@ -185,6 +193,7 @@ export default {
             item.WorkStationCode,
             item.ParentItemCode,
             item.SetNumber,
+            item.ChildClassificationPartDesc,
           ].join("|");
 
           if (!grouped[key]) {
@@ -215,7 +224,7 @@ export default {
         ...new Set(
           this.groupLists
             .filter((x) => x.Details.length > 0)
-            .map((item) => item.ProductionId)
+            .map((item) => item.ProductionId),
         ),
       ];
 
@@ -252,11 +261,11 @@ export default {
         },
       });
     },
-    viewStock: function(item) {
+    viewStock: function (item) {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
-    }
+    },
   },
 };
 </script>
