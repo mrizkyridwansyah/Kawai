@@ -39,6 +39,6 @@ public class MobileMaterialNGTransactionHandler : ITransactionHandler
             After = after,
             Activity = "Save Mobile Material NG",
             Action = DataLogAction.Create
-        });
+        }, logContext);
     }
 }

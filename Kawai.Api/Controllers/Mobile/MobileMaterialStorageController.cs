@@ -36,9 +36,9 @@ public class MobileMaterialStorageController : HahaController
     }
 
     [HttpGet("data-barcode")]
-    public async Task<IActionResult> GetDataBarcode(string barcodeNo)
+    public async Task<IActionResult> GetDataBarcode(string barcodeNo, bool onlyTemp)
     {
-        var result = await _materialStorageRepository.GetDataBarcode(barcodeNo);
+        var result = await _materialStorageRepository.GetDataBarcode(barcodeNo, onlyTemp);
         return Success(result);
     }
 

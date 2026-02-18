@@ -27,10 +27,10 @@ public class MobileMaterialStorageRepository : IMobileMaterialStorageRepository
         return (await _dbExecutor.QueryListAsync<MaterialStorageDto>(sp, new { WarehouseCode = warehouseCode, LotNo = lotNo, ItemCode = itemCode })).ToList();
     }
 
-    public async Task<MaterialStorageDto> GetDataBarcode(string barcodeNo)
+    public async Task<MaterialStorageDto> GetDataBarcode(string barcodeNo, bool onlyTemp)
     {
         string sp = "sp_Wms_Mobile_MaterialStorage_GetDataBarcode";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<MaterialStorageDto>(sp, new { BarcodeNo = barcodeNo });
+        return await _dbExecutor.QueryFirstOrDefaultAsync<MaterialStorageDto>(sp, new { BarcodeNo = barcodeNo, OnlyTemporary = onlyTemp });
     }
 
     public async Task Save(MobileMaterialStorage payload, string userId)
