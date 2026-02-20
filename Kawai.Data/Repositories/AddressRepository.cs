@@ -53,7 +53,7 @@ public class AddressRepository : IAddressRepository
 
     public async Task Create(Address address, string userId)
     {
-        address.AddressCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Address_GenerateCode", new { address.WarehouseCode, address.AreaCode });
+       // address.AddressCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Address_GenerateCode", new { address.WarehouseCode, address.AreaCode });
         string sql = @"sp_Wms_Address_Create";
         await _dbExecutor.ExecuteAsync(sql, new
         {

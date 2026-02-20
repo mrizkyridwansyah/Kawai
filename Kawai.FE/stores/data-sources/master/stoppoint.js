@@ -97,6 +97,19 @@ export const useStopPoint= defineStore('StopPoint', {
           .finally(_ => this.isCreating = false);
       })
     },
+
+    settingdata: function (data) {
+      debugger;
+      this.isCreating = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/stoppoint/settingdata`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isCreating = false);
+      })
+    },
     update: function (data) {
       this.isEditing = true;
       return new Promise((resolve, reject) => {

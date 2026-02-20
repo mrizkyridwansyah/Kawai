@@ -18,3 +18,15 @@ public class StopPoint
     [Required(ErrorMessage = "Flag Active tidak boleh kosong")]
     public bool? IsActive { get; set; }
 }
+
+public class StopPointSetting
+{
+    public string StopPoint { get; set; }
+    public List<AddressListSetting> Address { get; set; }
+}
+
+public class AddressListSetting
+{
+    public string Key { get; set; }
+
+}

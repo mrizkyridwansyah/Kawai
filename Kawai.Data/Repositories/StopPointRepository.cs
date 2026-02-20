@@ -43,6 +43,16 @@ public class StopPointRepository : IStopPointRepository
         });
     }
 
+    public async Task SaveStopPointAddress(string stoppointCode, string addressKey)
+    {
+        string sql = @"sp_Wms_StopPoint_AddressSetting";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            StopPointCode = stoppointCode,
+            AddressCode = addressKey
+        });
+    }
+
     public async Task<List<StopPointDto>> GetDDL(string keyword)
     {
         string sp = "sp_Wms_StopPoint_DDL";
