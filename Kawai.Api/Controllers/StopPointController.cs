@@ -5,6 +5,7 @@ using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
+using Kawai.Domain.DTOs;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -72,6 +73,25 @@ public class StopPointController : HahaController
 
         return Success(after);
     }
+
+    [HttpPost("settingdata")]
+    public async Task<IActionResult> SettingData([FromBody] StopPointSetting model)
+    {
+        if (model == null || model.Address == null || !model.Address.Any())
+            return BadRequest("No address selected");
+
+        foreach (var addr in model.Address)
+        {
+            // contoh simpan ke DB
+            await _stoppointRepository.SaveStopPointAddress(
+                model.StopPoint,
+                addr.Key
+            );
+        }
+
+        return Success();
+    }
+
 
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] StopPoint model)

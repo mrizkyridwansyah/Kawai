@@ -11,6 +11,7 @@ public interface IStopPointRepository
     Task<StopPointDto> GetData(string StopPointCode);
     Task Create(StopPoint stoppoint, string userId);
     Task Update(StopPoint stoppoint, string userId);
+    Task SaveStopPointAddress(string stopPoint, string addressKey);
     Task Remove(string stoppointCode, string userId);
     Task<Dictionary<string, object>> Capture(string stoppointCode);
 

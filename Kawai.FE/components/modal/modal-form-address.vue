@@ -33,8 +33,7 @@
       </td>
       <td style="padding-left: 15px; padding-top: 5px; width: 120px">
         <input-text
-          placeholder="#AUTO"
-          disabled="true"
+          :disabled="mode === 'edit'"
           v-model="model.AddressCode"
           :errors="errors?.AddressCode"
           style="width: 120px"
@@ -121,7 +120,7 @@ export default {
     submit: function () {
       this.model.WarehouseCode = this.warehouse;
       this.model.AreaCode = this.area;
-      this.model.AddressCode = this.mode === "edit" ? this.id : "#AUTO";
+      // this.model.AddressCode = this.mode === "edit" ? this.id : "#AUTO";
 
       if (this.mode === "add") this.create();
       else this.update();

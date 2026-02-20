@@ -55,6 +55,14 @@
                 :search="search"
                 :reset="reset"
               />
+               <v-button
+                :action="setting"
+                label="Setting Stop Point"
+                icon="file-pdf"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
+                
             </div>
           </td>
         </tr>
@@ -76,12 +84,14 @@
               <tr>
                 <th class="text-center">Print</th>
                 <th class="text-center">Action</th>
+                <th class="text-center">Setting Stop Point</th>
                 <th class="text-center">Warehouse Code</th>
                 <th class="text-center">Warehouse Name</th>
                 <th class="text-center">Area Code</th>
                 <th class="text-center">Area Name</th>
                 <th class="text-center">Address Code</th>
                 <th class="text-center">Address Name</th>
+                <th class="text-center">Stop Point</th>
                 <th class="text-center">Register Date</th>
                 <th class="text-center">Register User</th>
                 <th class="text-center">Last Update</th>
@@ -110,12 +120,21 @@
                     @click="remove(item)"
                   />
                 </td>
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isSet(item.AddressCode)"
+                      @update:modelValue="(checked) => set(checked, item)"
+                    />
+                  </div>
+                </td>
                 <td>{{ item.WarehouseCode }}</td>
                 <td>{{ item.WarehouseName }}</td>
                 <td>{{ item.AreaCode }}</td>
                 <td>{{ item.AreaName }}</td>
                 <td>{{ item.AddressCode }}</td>
                 <td>{{ item.AddressName }}</td>
+                <td>{{ item.StopPointDescs }}</td>
                 <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
                 <td>{{ item.RegisterUser }}</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
@@ -129,6 +148,29 @@
   </v-frame>
 
   <v-modal
+    ref="modalSettingStopPoint"
+    id="modal-form-settingstoppoint"
+    :title="title"
+   size="md"
+    @hidden="
+      () => {
+        this.$refs.formSettingStopPoint.resetForm();
+        modalMode = '';
+      }
+    "
+  >
+    <modal-form-settingstoppoint
+      ref="formSettingStopPoint"
+      :id="idSelected"
+      :mode="modalMode"
+      :data-setting="dataSetting"
+      :warehouse="filter.warehouse"
+      :area="filter.area"
+      @submitted="closestop"
+    />
+  </v-modal>
+
+    <v-modal
     ref="modalAddress"
     id="modal-form-address"
     :title="title"
@@ -197,6 +239,7 @@ export default {
     title: "",
     modalMode: "",
     selectedPrint: [],
+    selectedSet: [],
     isLoadingPrint: false,
   }),
   computed: {
@@ -243,7 +286,24 @@ export default {
       this.filter.area = null;
       this.search();
     },
-    add: function () {
+    setting: function () {
+      if (!this.filter.warehouse) {
+        toastWarning("Please choose warehouse!");
+        return;
+      }
+
+      if (!this.filter.area) {
+        toastWarning("Please choose area!");
+        return;
+      }
+ 
+      this.title = "Setting Stop Point";
+      this.modalMode = "add";
+      this.dataSetting = [...this.selectedSet];
+      this.$bvModal.show("modal-form-settingstoppoint");
+    },
+
+  add: function () {
       if (!this.filter.warehouse) {
         toastWarning("Please choose warehouse!");
         return;
@@ -289,11 +349,18 @@ export default {
       this.$bvModal.hide("modal-form-address");
       this.search();
     },
+
+    closestop: function () {
+      this.$bvModal.hide("modal-form-settingstoppoint");
+      this.selectedSet = [];
+       this.search();
+     
+    },
     exportExcel: function () {
       if (!this.filter.warehouse) {
         toastWarning("Please choose warehouse!");
         return;
-      }
+      } 
 
       if (!this.filter.area) {
         toastWarning("Please choose area!");
@@ -332,8 +399,23 @@ export default {
         this.selectedPrint.splice(existingIndex, 1);
       }
     },
+    set: function (checked, item) {
+      const existingIndex = this.selectedSet.findIndex(
+        (p) => p.Key === item.AddressCode
+      );
+      if (checked && existingIndex === -1) {
+        this.selectedSet.push({
+          Key: item.AddressCode,
+        });
+      } else if (!checked && existingIndex !== -1) {
+        this.selectedSet.splice(existingIndex, 1);
+      }
+    },
     isChecked: function (code) {
       return this.selectedPrint.some((p) => p.Key === code);
+    },
+     isSet: function (code) {
+      return this.selectedSet.some((p) => p.Key === code);
     },
     print: function () {
       this.isLoadingPrint = true;
@@ -350,6 +432,7 @@ export default {
             this.selectedPrint = [];
             resolve();
           })
+
           .catch((err) => {
             toastDanger(err?.Message);
             resolve();

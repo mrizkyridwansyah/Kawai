@@ -10,3 +10,14 @@ public class StopPointDto: DataTableDto
     public bool IsActive { get; set; }
     public string DDLDescription { get; set; }
 }
+public class StopPointSettingDto
+{
+    public string StopPoint { get; set; }
+    public List<AddressListDto> Addresses { get; set; }
+}
+
+public class AddressListDto
+{
+    public string Key { get; set; }
+   
+}
