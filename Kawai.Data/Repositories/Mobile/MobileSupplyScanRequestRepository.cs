@@ -29,6 +29,17 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
         return (await _dbExecutor.QueryListAsync<SupplyScanRequestDto>(sp, new { RequestNo = requestno })).ToList();
     }
 
+    public async Task<List<WarehouseDto>> GetWarehouseDDL(string keyword)
+    {
+        string sp = "sp_Wms_Mobile_SupplyScanRequestNo_WarehouseDDL";
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? ""})).ToList();
+    }
+    public async Task<List<ManufactureLineDto>> GetLineDDL(string keyword, string warehouseCode)
+    {
+        string sp = "sp_Wms_Mobile_SupplyScanRequestNo_LineDDL";
+        return (await _dbExecutor.QueryListAsync<ManufactureLineDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode })).ToList();
+    }
+
     public async Task<List<SupplyScanRequestDetailDto>> GetListDetail(string warehouseCode, string requestNo, string itemCode)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_GetListDetail";
@@ -42,10 +53,10 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
     //    return (await _dbExecutor.QueryListAsync<StockInventoryUpdateDto>(sp, new { LotNo = lotNo, ItemCode = itemCode })).ToList();
     //}
 
-    public async Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo)
+    public async Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo , string requestNo)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_GetDataBarcode";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestDto>(sp, new { BarcodeNo = barcodeNo });
+        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestDto>(sp, new { BarcodeNo = barcodeNo, RequestNo = requestNo });
     }
 
     public async Task Save(MobilSupplyScanRequestSubmit payload, string userId)
