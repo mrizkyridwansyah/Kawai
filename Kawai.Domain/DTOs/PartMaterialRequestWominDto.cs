@@ -37,6 +37,7 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public int SetNumber { get; set; }
     public decimal QtySet { get; set; }
     public decimal RequirementQty { get; set; }
-    public string RegisterUser { get; set; }
-    public DateTime? RegisterDate { get; set; }
+    public string PickingNo { get; set; }
+    public string Status { get; set; }
+    public decimal? TotalScan { get; set; }
 }

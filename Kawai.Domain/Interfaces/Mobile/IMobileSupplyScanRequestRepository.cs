@@ -1,4 +1,5 @@
 ﻿using Kawai.Domain.DTOs;
+using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 
 namespace Kawai.Domain.Interfaces.Mobile;
@@ -6,8 +7,10 @@ namespace Kawai.Domain.Interfaces.Mobile;
 public interface IMobileSupplyScanRequestRepository
 {
     Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string factoryCode);
-    Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo);
+    Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo, string requestNo);
     Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno);
+    Task<List<WarehouseDto>> GetWarehouseDDL(string keyword);
+    Task<List<ManufactureLineDto>> GetLineDDL(string keyword,string warehousecode);
     Task<List<SupplyScanRequestDetailDto>> GetListDetail(string warehouseCode, string requestNo, string itemCode);
     Task Save(MobilSupplyScanRequestSubmit payload, string userId);
     Task<Dictionary<string, object>> Capture(string barcodeNo);

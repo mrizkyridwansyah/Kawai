@@ -38,10 +38,37 @@ namespace Kawai.Api.Controllers.Mobile
         }
 
         [HttpGet("data-barcode")]
-        public async Task<IActionResult> GetDataBarcode(string barcodeNo)
+        public async Task<IActionResult> GetDataBarcode(string barcodeNo, string requestno)
         {
-            var result = await _supplyscanrequestRepository.GetDataBarcode(barcodeNo);
+            var result = await _supplyscanrequestRepository.GetDataBarcode(barcodeNo, requestno);
             return Success(result);
+        }
+
+        [HttpGet("warehouseline-ddlsearch")]
+        public async Task<IActionResult> WarehouseDDL(string keyword,   string ids)
+        {
+            var results = await _supplyscanrequestRepository.GetWarehouseDDL(keyword);
+            if (!string.IsNullOrEmpty(ids))
+            {
+                var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+                results = results.Where(x => idList.Contains(x.WarehouseCode)).ToList();
+            }
+
+            return Success(results);
+        }
+
+
+        [HttpGet("line-ddlsearch")]
+        public async Task<IActionResult> LineDDL(string keyword, string warehousecode, string ids)
+        {
+            var results = await _supplyscanrequestRepository.GetLineDDL(keyword, warehousecode);
+            if (!string.IsNullOrEmpty(ids))
+            {
+                var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+                results = results.Where(x => idList.Contains(x.LineCode)).ToList();
+            }
+
+            return Success(results);
         }
 
         [HttpGet("list-material")]

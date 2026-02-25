@@ -61,26 +61,52 @@
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+            class="table table-striped table-bordered mb-0 align-middle"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
           >
             <thead>
               <tr>
-                <th class="text-center">Schedule Date</th>
-                <th class="text-center">Line</th>
-                <th class="text-center">Work Station</th>
-                <th class="text-center">Parent Item</th>
-                <th class="text-center">Parent Item Name</th>
-                <th class="text-center">Set Number</th>
-                <th class="text-center">Child Classification</th>
-                <th class="text-center">Qty Set</th>
-                <th class="text-center">Child Item Code</th>
-                <th class="text-center">Child Item Name</th>
-                <th class="text-center">Requirement Qty</th>
-                <th class="text-center">Current Stock</th>
-                <th class="text-center">Request User</th>
-                <th class="text-center">Request Date</th>
+                <th class="text-center" style="vertical-align: middle">
+                  Schedule Date
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Work Station
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Parent Item
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Parent Item Name
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Picking No.
+                </th>
+                <th class="text-center" style="vertical-align: middle">No.</th>
+                <th class="text-center" style="vertical-align: middle">
+                  Status
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Child Cls
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Qty Set
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Child Item Code
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Child Item Name
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Req. Qty
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Picking Qty
+                </th>
+                <th class="text-center" style="vertical-align: middle">
+                  Crn. Qty
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -89,14 +115,32 @@
                 :key="item.ProductionId"
               >
                 <tr>
-                  <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
-                  <td>{{ item.LineName }}</td>
-                  <td>{{ item.WorkStationName }}</td>
-                  <td>{{ item.ParentItemCode }}</td>
-                  <td>{{ item.ParentItemName }}</td>
-                  <td class="text-right">{{ item.SetNumber }}</td>
+                  <template
+                    v-if="
+                      idx == 0 ||
+                      groupLists[idx - 1].ScheduleDate != item.ScheduleDate ||
+                      groupLists[idx - 1].WorkStationName !=
+                        item.WorkStationName ||
+                      groupLists[idx - 1].ParentItemCode !=
+                        item.ParentItemCode ||
+                      groupLists[idx - 1].PickingNo != item.PickingNo ||
+                      groupLists[idx - 1].SetNumber != item.SetNumber ||
+                      groupLists[idx - 1].Status != item.Status
+                    "
+                  >
+                    <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
+                    <td>{{ item.WorkStationName }}</td>
+                    <td>{{ item.ParentItemCode }}</td>
+                    <td>{{ item.ParentItemName }}</td>
+                    <td class="text-right">{{ item.PickingNo }}</td>
+                    <td class="text-right">{{ item.SetNumber }}</td>
+                    <td class="text-left">{{ item.Status }}</td>
+                  </template>
+                  <template v-else>
+                    <td colspan="7"></td>
+                  </template>
                   <td>{{ item.ChildClassificationPartDesc }}</td>
-                  <td class="text-right">
+                  <td class="text-right" style="white-space: nowrap">
                     {{ $func.formatMoney(item.QtySet) }}
 
                     <span
@@ -109,28 +153,29 @@
                       {{ item.Expanded ? "-" : "+" }}
                     </span>
                   </td>
-                  <td colspan="7"></td>
+                  <td colspan="5"></td>
                 </tr>
                 <tr
                   v-if="item.Expanded"
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.RequestId"
                 >
-                  <td colspan="8"></td>
+                  <td colspan="9"></td>
                   <td>{{ dtl.ChildItemCode }}</td>
                   <td>{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
-                  <td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(dtl.TotalScan) }}
+                  </td>
+                  <td class="text-center">
                     <a
                       href="javascript:void(0)"
                       @click="() => viewStock(dtl.ChildItemCode)"
                       >View Detail</a
                     >
                   </td>
-                  <td>{{ dtl.RegisterUser }}</td>
-                  <td>{{ $func.formatDate(dtl.RegisterDate) }}</td>
                 </tr>
               </template>
             </tbody>
@@ -203,12 +248,29 @@ export default {
             ChildItemName: item.ChildItemName,
             Qty: item.Qty,
             RequirementQty: item.RequirementQty,
+            TotalScan: item.TotalScan,
             RegisterUser: item.RegisterUser,
             RegisterDate: item.RegisterDate,
           });
         });
 
-        this.groupLists = Object.values(grouped);
+        this.groupLists = Object.values(grouped).sort((a, b) => {
+          const dateA = new Date(a.ScheduleDate);
+          const dateB = new Date(b.ScheduleDate);
+          if (dateA.getTime() !== dateB.getTime()) {
+            return dateA - dateB;
+          }
+
+          if (a.ParentItemCode !== b.ParentItemCode) {
+            return a.ParentItemCode.localeCompare(b.ParentItemCode);
+          }
+
+          if (a.WorkStationName !== b.WorkStationName) {
+            return a.WorkStationName.localeCompare(b.WorkStationName);
+          }
+
+          return Number(a.SetNumber) - Number(b.SetNumber);
+        });
       });
     },
     remove: function () {
@@ -287,5 +349,12 @@ export default {
 
 .toggle-button:hover {
   opacity: 0.85;
+}
+
+table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20; /* harus lebih tinggi dari sticky kiri */
+  background: #8ec5fc;
 }
 </style>
