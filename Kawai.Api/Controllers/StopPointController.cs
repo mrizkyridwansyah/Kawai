@@ -78,7 +78,7 @@ public class StopPointController : HahaController
     public async Task<IActionResult> SettingData([FromBody] StopPointSetting model)
     {
         if (model == null || model.Address == null || !model.Address.Any())
-            return BadRequest("No address selected");
+            return Invalid("No address selected");
 
         foreach (var addr in model.Address)
         {

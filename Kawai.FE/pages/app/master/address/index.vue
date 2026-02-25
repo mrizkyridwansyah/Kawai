@@ -55,14 +55,12 @@
                 :search="search"
                 :reset="reset"
               />
-               <v-button
+              <v-button
                 :action="setting"
                 label="Setting Stop Point"
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
-                 
               />
-                
             </div>
           </td>
         </tr>
@@ -146,12 +144,12 @@
       </v-table>
     </template>
   </v-frame>
- 
+
   <v-modal
     ref="modalSettingStopPoint"
     id="modal-form-settingstoppoint"
     :title="title"
-   size="md"
+    size="md"
     @hidden="
       () => {
         this.$refs.formSettingStopPoint.resetForm();
@@ -170,7 +168,7 @@
     />
   </v-modal>
 
-    <v-modal
+  <v-modal
     ref="modalAddress"
     id="modal-form-address"
     :title="title"
@@ -296,14 +294,14 @@ export default {
         toastWarning("Please choose area!");
         return;
       }
- 
+
       this.title = "Setting Stop Point";
       this.modalMode = "add";
       this.dataSetting = [...this.selectedSet];
       this.$bvModal.show("modal-form-settingstoppoint");
     },
 
-  add: function () {
+    add: function () {
       if (!this.filter.warehouse) {
         toastWarning("Please choose warehouse!");
         return;
@@ -342,7 +340,7 @@ export default {
               });
           }),
         null,
-        item.AddressName
+        item.AddressName,
       );
     },
     close: function () {
@@ -353,14 +351,13 @@ export default {
     closestop: function () {
       this.$bvModal.hide("modal-form-settingstoppoint");
       this.selectedSet = [];
-       this.search();
-     
+      this.search();
     },
     exportExcel: function () {
       if (!this.filter.warehouse) {
         toastWarning("Please choose warehouse!");
         return;
-      } 
+      }
 
       if (!this.filter.area) {
         toastWarning("Please choose area!");
@@ -388,7 +385,7 @@ export default {
     },
     check: function (checked, item) {
       const existingIndex = this.selectedPrint.findIndex(
-        (p) => p.Key === item.AddressCode
+        (p) => p.Key === item.AddressCode,
       );
       if (checked && existingIndex === -1) {
         this.selectedPrint.push({
@@ -401,7 +398,7 @@ export default {
     },
     set: function (checked, item) {
       const existingIndexSet = this.selectedSet.findIndex(
-        (p) => p.Key === item.AddressCode
+        (p) => p.Key === item.AddressCode,
       );
       if (checked && existingIndexSet === -1) {
         this.selectedSet.push({
@@ -414,7 +411,7 @@ export default {
     isChecked: function (code) {
       return this.selectedPrint.some((p) => p.Key === code);
     },
-     isSet: function (code) {
+    isSet: function (code) {
       return this.selectedSet.some((p) => p.Key === code);
     },
     print: function () {
