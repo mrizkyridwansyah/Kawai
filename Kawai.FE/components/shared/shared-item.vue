@@ -83,7 +83,7 @@ export default {
         filters.push({ Keyword: this.filter.keyword || "" });
 
       this.ds.setFilter(filters);
-      this.ds.load();
+      this.$nextTick(() => this.ds.load());
     },
   },
 };

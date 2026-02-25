@@ -128,7 +128,7 @@ export default {
           .get(`/stoppoint/ddlsearch?keyword=${q || ""}&ids=${d || ""}`) //&itemGroup=01&brand=${this.brand || ''}&itemType=${this.itemType || ''}&itemCls=${this.itemCls || ''}`)
           .then((p) => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.ClsCode;
+              this.tempValue = p.data.Data[0]?.StopPointCode;
             }
             this.list = p.data.Data;
           })

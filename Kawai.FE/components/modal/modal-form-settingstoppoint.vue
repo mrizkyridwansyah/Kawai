@@ -7,9 +7,9 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px">
         <filter-stoppoint
-          ddl-width="100px"
-          desc-width="180px"
-           v-model="filter.stoppoint"
+          style-code="width: 140px"
+              style-desc="width: 240px"
+          v-model="filter.stoppoint"
         />
       </td>
     </tr>
@@ -17,6 +17,7 @@
   <div style="float: right" class="mt-4 mb-3">
     <v-button-submit
       :submit="submit"
+      label="Setting"
       :disabled="btnDisabled !== undefined && btnDisabled !== false"
       :is-loading="isLoading"
     />
