@@ -60,7 +60,7 @@
                 label="Setting Stop Point"
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
-                :is-loading="isLoading"
+                 
               />
                 
             </div>
@@ -146,7 +146,7 @@
       </v-table>
     </template>
   </v-frame>
-
+ 
   <v-modal
     ref="modalSettingStopPoint"
     id="modal-form-settingstoppoint"
@@ -400,15 +400,15 @@ export default {
       }
     },
     set: function (checked, item) {
-      const existingIndex = this.selectedSet.findIndex(
+      const existingIndexSet = this.selectedSet.findIndex(
         (p) => p.Key === item.AddressCode
       );
-      if (checked && existingIndex === -1) {
+      if (checked && existingIndexSet === -1) {
         this.selectedSet.push({
           Key: item.AddressCode,
         });
-      } else if (!checked && existingIndex !== -1) {
-        this.selectedSet.splice(existingIndex, 1);
+      } else if (!checked && existingIndexSet !== -1) {
+        this.selectedSet.splice(existingIndexSet, 1);
       }
     },
     isChecked: function (code) {
