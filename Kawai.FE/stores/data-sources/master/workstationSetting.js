@@ -50,7 +50,10 @@ export const useWorkStationSetting= defineStore('WorkStationSetting', {
           .finally(_ => this.isLoading = false);
       })
     },    
+  
       submitworkstationsetting: function (data) {
+            
+
             this.isLoading = true;
             return new Promise((resolve, reject) => {
                 app.$http.post(`/workstationsetting/save`, data)

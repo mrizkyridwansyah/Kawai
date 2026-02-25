@@ -18,8 +18,8 @@
       </td>
       <td style="padding-left: 15px; padding-top: 5px; width: 120px">
         <input-text
-          placeholder="#AUTO"
-          disabled="true"
+          placeholder=""
+          :disabled="mode === 'edit'"
           v-model="model.AreaCode"
           :errors="errors?.AreaCode"
           style="width: 120px"
@@ -135,7 +135,8 @@ export default {
     },
     submit: function () {
       this.model.WarehouseCode = this.warehouse;
-      this.model.AreaCode = this.mode === "edit" ? this.id : "#AUTO";
+      //input area code tidak otomotatis lagi
+      //this.model.AreaCode = this.mode === "edit" ? this.id : "#AUTO";
 
       if (this.mode === "add") this.create();
       else this.update();

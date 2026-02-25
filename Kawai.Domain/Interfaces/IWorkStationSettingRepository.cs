@@ -9,6 +9,7 @@ public interface IWorkStationSettingRepository
 {
     Task<List<WorkStationSettingDto>> GetAll(RequestParameter param);
     Task<List<CompanyLineDto>> GetLineCompanyDDL(string keyword, string companyCode, string manufacture);
+
     Task SaveWorkStationSetting(WorkStationSetting settinglist,string userId);
     Task<Dictionary<string, object>> Capture(string LineCode);
 

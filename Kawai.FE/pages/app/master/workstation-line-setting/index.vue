@@ -90,6 +90,7 @@
                 <th class="text-center"></th>
                 <th class="text-center">WS Code</th>
                 <th class="text-center">Description</th>
+                <th class="text-center">Stop Point Code</th>
                 <th class="text-center">Register Date</th>
                 <th class="text-center">Register User</th>
                 <th class="text-center">Last Update</th>
@@ -116,6 +117,16 @@
                 </td>
                 <td>{{ item.WorkStationCode }}</td>
                 <td>{{ item.WorkStationName }}</td>
+                <td style="width: 150px !important;">
+                  <div style="justify-items: center; display: grid">
+                  <input-stoppoint
+                    v-model="item.StopPointCode"
+                    :width="'100%'"
+                    :include-temp="true"
+                    :errors="item.errors?.StopPointCode"
+                    @update:modelValue="(value) => onStopPointChange(value, item)"
+                  /></div>
+                </td>
                 <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
                 <td>{{ item.RegisterUser }}</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
@@ -129,6 +140,8 @@
   </v-frame>
 </template>
 <script>
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+
 export default {
   data: () => ({
     keywordKeys: [
@@ -186,6 +199,38 @@ export default {
   },
 
   methods: {
+    onStopPointChange: function (value, item) {
+      //jika belum centang allowsetting maka error
+      if (!item.AllowSetting) {
+        toastWarning("Please allow setting before set Stop Point Code");
+        return;
+      }
+
+      item.StopPointCode = value;
+      this.validateDuplicateStopPoint(item);
+    },
+    validateDuplicateStopPoint: function (item) {
+      const duplicate = this.ds.data.Items.find(
+        (x) =>
+          x.StopPointCode === item.StopPointCode &&
+          x.WorkStationCode !== item.WorkStationCode
+      );
+      if (duplicate) {
+        toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode);
+        //clear value
+    
+        // item.errors = {
+        //   ...item.errors,
+        //   // StopPointCode: "Duplicate Stop Point Code",
+    
+        // };
+      } else if (item.errors) {
+        delete item.errors.StopPointCode;
+        if (Object.keys(item.errors).length === 0) {
+          delete item.errors;
+        }
+      }
+    },
     submit: function () {
       if (!this.filter.supplier) {
         toastWarning("Please select process!");
@@ -196,13 +241,30 @@ export default {
         toastWarning("Please select line!");
         return;
       }
+     const usedStopPoints = new Set();
+
+    for (let item of this.ds.data.Items) {
+      
+      if (item.AllowSetting && item.StopPointCode) {
+        console.log("Checking Stop Point Code: ", usedStopPoints);
+        if (usedStopPoints.has(item.StopPointCode)) {
+          toastWarning(
+            "Duplicate Stop Point Code : " + item.StopPointCode
+          );
+          return;
+        }
+
+        usedStopPoints.add(item.StopPointCode);
+      }
+    }
       this.isLoading = true;
-      debugger;
+ 
       const payload = {
         LineCode: this.filter.linecode || "", // << kirim line code di sini
         SettingList: this.ds.data.Items.map((item) => ({
           WorkStationCode: item.WorkStationCode,
           AllowSetting: item.AllowSetting,
+          StopPointCode: item.StopPointCode,
         })),
       };
 

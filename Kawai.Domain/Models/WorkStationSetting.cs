@@ -15,5 +15,7 @@ public class WorkStationSettingList
 {
     public string WorkStationCode { get; set; }
     public bool? AllowSetting { get; set; } = false;
-    
+    public string StopPointCode { get; set; } = "";
+
+
 }

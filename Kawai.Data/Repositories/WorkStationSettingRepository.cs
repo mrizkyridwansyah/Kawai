@@ -44,7 +44,9 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
             {
                 lineCode = wssettinglist.LineCode,
                 wsSet.WorkStationCode,
-                wsSet.AllowSetting,UserID = userId
+                wsSet.AllowSetting,
+                wsSet.StopPointCode, //input address untuk prod result
+                UserID = userId
             }, CommandType.StoredProcedure));
         }
 

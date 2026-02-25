@@ -17,12 +17,14 @@ namespace Kawai.Api.Controllers;
 public class WorkStationSettingController : HahaController
 {
     private readonly IWorkStationSettingRepository _workstationsettingRepository;
+  
     private readonly DataLogger _logger;
 
     public WorkStationSettingController(IWorkStationSettingRepository workstationsettingRepository, DataLogger logger)
     {
         _workstationsettingRepository = workstationsettingRepository;
         _logger = logger;
+        
     }
 
     [HttpPost("list")]
@@ -44,8 +46,8 @@ public class WorkStationSettingController : HahaController
 
         return Success(results);
     }
-
-
+        
+    
     [HttpPost("save")]
     public async Task<IActionResult> Save(WorkStationSetting model)
     {
