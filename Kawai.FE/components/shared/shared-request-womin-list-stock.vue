@@ -88,7 +88,7 @@ export default {
     item: function () {
       this.search();
     },
-    counter: function() {
+    counter: function () {
       this.search();
     },
     "filter.keyword": function () {
@@ -112,7 +112,7 @@ export default {
       ];
 
       this.ds.setFilterListStock(filters);
-      this.ds.loadListStock();
+      this.$nextTick(() => this.ds.loadListStock());
     },
     reset: function () {
       this.item = null;

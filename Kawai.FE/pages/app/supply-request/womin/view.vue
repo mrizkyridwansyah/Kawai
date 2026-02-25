@@ -4,6 +4,14 @@
       <table>
         <tr>
           <td style="padding-top: 5px">
+            <label class="form-label">Line</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <input-text v-model="lineName" disabled style="width: 200px" />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
             <label class="form-label">Supply Request No.</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -87,10 +95,10 @@
                   Status
                 </th>
                 <th class="text-center" style="vertical-align: middle">
-                  Child Cls
+                  Qty Set
                 </th>
                 <th class="text-center" style="vertical-align: middle">
-                  Qty Set
+                  Child Cls
                 </th>
                 <th class="text-center" style="vertical-align: middle">
                   Child Item Code
@@ -111,72 +119,74 @@
             </thead>
             <tbody>
               <template
-                v-for="(item, idx) in groupLists || []"
-                :key="item.ProductionId"
+                v-for="(item, idx) in groupLists"
+                :key="
+                  item.RequestId +
+                  '-' +
+                  item.ProductionId +
+                  '-' +
+                  item.SetNumber
+                "
               >
+                <!-- Parent Row -->
                 <tr>
-                  <template
-                    v-if="
-                      idx == 0 ||
-                      groupLists[idx - 1].ScheduleDate != item.ScheduleDate ||
-                      groupLists[idx - 1].WorkStationName !=
-                        item.WorkStationName ||
-                      groupLists[idx - 1].ParentItemCode !=
-                        item.ParentItemCode ||
-                      groupLists[idx - 1].PickingNo != item.PickingNo ||
-                      groupLists[idx - 1].SetNumber != item.SetNumber ||
-                      groupLists[idx - 1].Status != item.Status
-                    "
-                  >
-                    <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
-                    <td>{{ item.WorkStationName }}</td>
-                    <td>{{ item.ParentItemCode }}</td>
-                    <td>{{ item.ParentItemName }}</td>
-                    <td class="text-right">{{ item.PickingNo }}</td>
-                    <td class="text-right">{{ item.SetNumber }}</td>
-                    <td class="text-left">{{ item.Status }}</td>
-                  </template>
-                  <template v-else>
-                    <td colspan="7"></td>
-                  </template>
-                  <td>{{ item.ChildClassificationPartDesc }}</td>
+                  <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
+                  <td>{{ item.WorkStationName }}</td>
+                  <td>{{ item.ParentItemCode }}</td>
+                  <td>{{ item.ParentItemName }}</td>
+                  <td class="text-right">{{ item.PickingNo }}</td>
+                  <td class="text-right">{{ item.SetNumber }}</td>
+                  <td>{{ item.Status }}</td>
                   <td class="text-right" style="white-space: nowrap">
                     {{ $func.formatMoney(item.QtySet) }}
-
                     <span
                       :class="[
                         'toggle-button',
                         item.Expanded ? 'collapse' : 'expand',
                       ]"
-                      @click="() => (item.Expanded = !item.Expanded)"
+                      @click="toggleExpand(item)"
+                      style="cursor: pointer"
                     >
                       {{ item.Expanded ? "-" : "+" }}
                     </span>
                   </td>
-                  <td colspan="5"></td>
+                  <td colspan="6"></td>
                 </tr>
-                <tr
-                  v-if="item.Expanded"
-                  v-for="(dtl, idxx) in item.Details || []"
-                  :key="dtl.RequestId"
-                >
-                  <td colspan="9"></td>
-                  <td>{{ dtl.ChildItemCode }}</td>
-                  <td>{{ dtl.ChildItemName }}</td>
-                  <td class="text-right">
-                    {{ $func.formatMoney(dtl.RequirementQty) }}
-                  </td>
-                  <td class="text-right">
-                    {{ $func.formatMoney(dtl.TotalScan) }}
-                  </td>
-                  <td class="text-center">
-                    <a
-                      href="javascript:void(0)"
-                      @click="() => viewStock(dtl.ChildItemCode)"
-                      >View Detail</a
-                    >
-                  </td>
-                </tr>
+
+                <!-- Child Classification + Details (hanya tampil saat expanded) -->
+                <template v-if="item.Expanded">
+                  <template
+                    v-for="(details, cls) in item.Classifications"
+                    :key="cls"
+                  >
+                    <!-- Classification Row -->
+                    <tr>
+                      <td colspan="8"></td>
+                      <td>{{ cls }}</td>
+                      <td colspan="5"></td>
+                    </tr>
+
+                    <!-- Detail Rows -->
+                    <tr v-for="dtl in details" :key="dtl.ChildItemCode">
+                      <td colspan="9"></td>
+                      <td>{{ dtl.ChildItemCode }}</td>
+                      <td>{{ dtl.ChildItemName }}</td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(dtl.RequirementQty) }}
+                      </td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(dtl.TotalScan) }}
+                      </td>
+                      <td class="text-center">
+                        <a
+                          href="javascript:void(0)"
+                          @click="viewStock(dtl.ChildItemCode)"
+                          >View Detail</a
+                        >
+                      </td>
+                    </tr>
+                  </template>
+                </template>
               </template>
             </tbody>
           </table>
@@ -206,6 +216,7 @@ export default {
     isLoading: false,
     selectedItem: null,
     counter: 0,
+    lineName: "",
   }),
   computed: {
     ds: function () {
@@ -223,8 +234,14 @@ export default {
       this.ds.loadDetail().then((dt) => {
         let grouped = {};
 
+        // Isi lineName dari data pertama
+        if (dt.Data.length > 0) {
+          this.lineName = dt.Data[0].LineName;
+        }
+
         dt.Data.forEach((item) => {
-          let key = [
+          // Grouping berdasarkan Parent level (tanpa ChildClassificationPartDesc)
+          let parentKey = [
             item.RequestId,
             item.ProductionId,
             item.ScheduleDate,
@@ -232,31 +249,45 @@ export default {
             item.WorkStationCode,
             item.ParentItemCode,
             item.SetNumber,
-            item.ChildClassificationPartDesc,
+            item.Status,
           ].join("|");
 
-          if (!grouped[key]) {
-            grouped[key] = {
+          if (!grouped[parentKey]) {
+            grouped[parentKey] = {
               ...item,
-              Expanded: true,
-              Details: [],
+              Expanded: true, // default collapsed
+              Classifications: {}, // child groups
             };
           }
 
-          grouped[key].Details.push({
+          // Buat group classification di dalam parent
+          if (
+            !grouped[parentKey].Classifications[
+              item.ChildClassificationPartDesc
+            ]
+          ) {
+            grouped[parentKey].Classifications[
+              item.ChildClassificationPartDesc
+            ] = [];
+          }
+
+          // Push detail ke classification
+          grouped[parentKey].Classifications[
+            item.ChildClassificationPartDesc
+          ].push({
             ChildItemCode: item.ChildItemCode,
             ChildItemName: item.ChildItemName,
-            Qty: item.Qty,
             RequirementQty: item.RequirementQty,
             TotalScan: item.TotalScan,
-            RegisterUser: item.RegisterUser,
-            RegisterDate: item.RegisterDate,
+            RequestId: item.RequestId, // optional untuk key
           });
         });
 
+        // Convert ke array dan sorting parent groups
         this.groupLists = Object.values(grouped).sort((a, b) => {
           const dateA = new Date(a.ScheduleDate);
           const dateB = new Date(b.ScheduleDate);
+
           if (dateA.getTime() !== dateB.getTime()) {
             return dateA - dateB;
           }
@@ -309,6 +340,9 @@ export default {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
+    },
+    toggleExpand: function (item) {
+      item.Expanded = !item.Expanded;
     },
   },
 };

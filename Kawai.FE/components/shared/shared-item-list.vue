@@ -124,7 +124,7 @@ export default {
     filters: {
       deep: true,
       immediate: true,
-      handler(newVal) {        
+      handler(newVal) {
         this.load();
       },
     },
@@ -156,7 +156,7 @@ export default {
       xFilter.push({ Keyword: this.filter.keyword || "" });
       this.ds.setFilterItem(xFilter);
 
-      this.ds.loadListItem();
+      this.$nextTick(() => this.ds.loadListItem());
     },
   },
 };
