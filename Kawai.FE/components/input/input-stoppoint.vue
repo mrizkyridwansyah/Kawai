@@ -25,6 +25,7 @@
           :disabled="disabled !== undefined || false"
           select-label=""
           deselect-label=""
+          
         />
         <div class="invalid-feedback d-block" v-if="errors">
           {{ errors[0] }}
@@ -39,6 +40,8 @@
 </template>
 
 <script>
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+
 export default {
   model: {
     prop: "modelValue",
@@ -133,6 +136,6 @@ export default {
 <style>
 .input-wrapper {
   max-width: 12em!important;
-  
+  width: 100%;
 }
 </style>

@@ -86,8 +86,8 @@
           >
             <thead>
               <tr>
+                <th class="text-center">Setting</th>
                 <th class="text-center">Print</th>
-                <th class="text-center"></th>
                 <th class="text-center">WS Code</th>
                 <th class="text-center">Description</th>
                 <th class="text-center">Stop Point Code</th>
@@ -99,19 +99,20 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items">
-                <td>
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      :modelValue="isChecked(item.WorkStationCode)"
-                      @update:modelValue="(checked) => check(checked, item)"
-                    />
-                  </div>
-                </td>
+                
                 <td class="text-center">
                   <div style="justify-items: center">
                     <input-checkbox
                       v-model="item.AllowSetting"
                       @click="(e) => allowDataSetting(e, item)"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isChecked(item.WorkStationCode)"
+                      @update:modelValue="(checked) => check(checked, item)"
                     />
                   </div>
                 </td>
