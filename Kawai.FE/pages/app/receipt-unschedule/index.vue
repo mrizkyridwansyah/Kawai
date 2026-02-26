@@ -170,6 +170,14 @@
                 :print="printLabel"
                 :is-loading="isLoading"
               />
+
+                <v-button
+                :action="print"
+                label="Print Label PDF"
+                icon="file-pdf"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
             </div>
           </td>
         </tr>
@@ -515,6 +523,19 @@ export default {
           toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
+    },
+
+   print: function () {
+      if (this.model.Id == null || this.model.Id == undefined) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+      this.dsReceipt
+        .print(this.model.Id)
+        .then((data) => {
+          toastSuccess(data || "Print Label berhasil!");
+        })
+        .catch((err) => toastDanger(err.Message));
     },
     submit: function () {
       this.isLoading = true;
