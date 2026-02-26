@@ -2,6 +2,7 @@
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces.Mobile;
+using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 
 namespace Kawai.Data.Repositories.Mobile;
@@ -14,13 +15,14 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
     {
         _dbExecutor = dbExecutor;
     }
-    public async Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string linecode)
+    public async Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string linecode, string warehouse)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequestNo_DDL";
         return (await _dbExecutor.QueryListAsync<SupplyScanRequestNoDto>(sp, new
         {
             Keyword = keyword ?? "",
-            LineCode = String.IsNullOrEmpty(linecode) ? "ALL" : linecode
+            LineCode = String.IsNullOrEmpty(linecode) ? "ALL" : linecode,
+            WarehouseCode = String.IsNullOrEmpty(warehouse) ? "ALL" : warehouse
         })).ToList();
     }
     public async Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno)

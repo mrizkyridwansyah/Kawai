@@ -25,9 +25,9 @@ namespace Kawai.Api.Controllers.Mobile
         }
 
         [HttpGet("ddlrequestno")]
-        public async Task<IActionResult> DDLSearch(string keyword, string linecode, string requestno)
+        public async Task<IActionResult> DDLSearch(string keyword, string linecode, string requestno, string warehouse)
         {
-            var results = await _supplyscanrequestRepository.GetRequestNoDDL(keyword, linecode);
+            var results = await _supplyscanrequestRepository.GetRequestNoDDL(keyword, linecode, warehouse);
             if (!string.IsNullOrEmpty(requestno))
             {
                 var idList = requestno.Split(',').Select(id => id.Trim()).ToList();

@@ -6,7 +6,7 @@ namespace Kawai.Domain.Interfaces.Mobile;
 
 public interface IMobileSupplyScanRequestRepository
 {
-    Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string factoryCode);
+    Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string factoryCode , string warehouse);
     Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo, string requestNo);
     Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno);
     Task<List<WarehouseDto>> GetWarehouseDDL(string keyword);
