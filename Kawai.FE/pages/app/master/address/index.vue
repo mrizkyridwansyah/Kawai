@@ -295,6 +295,12 @@ export default {
         return;
       }
 
+      if (this.selectedSet.length === 0) {
+        toastWarning("Please select address");
+        this.isLoadingPrint = false;
+        return;
+      }
+
       this.title = "Setting Stop Point";
       this.modalMode = "add";
       this.dataSetting = [...this.selectedSet];
