@@ -50,6 +50,23 @@
         </tr>
         <tr>
           <td style="padding-top: 5px">
+            <label class="form-label">Receipt No.</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <filter-receipt
+              class="form-control"
+              :factory-code="filter.FactoryCode"
+              :supplier-code="filter.SupplierCode || '0'"
+              :period-from="filter.PeriodFrom"
+              :period-until="filter.PeriodUntil"
+              :show-option-all="true"
+              v-model="filter.ReceiptId"
+              style="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
             <label class="form-label">Complete Status</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -62,7 +79,17 @@
         </tr>
         <tr>
           <td colspan="4" style="padding-top: 5px">
-            <v-button-search-reset :search="onSearch" :reset="reset" />
+            <div class="d-flex flex-fill">
+              <v-button-search-reset :search="onSearch" :reset="reset" />
+              <v-button
+                :disabled="filter.ReceiptId == 'ALL'"
+                :action="print"
+                label="Print Label PDF"
+                icon="file-pdf"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
+            </div>
           </td>
         </tr>
       </table>
@@ -299,6 +326,7 @@ export default {
       SupplierCode: null,
       PeriodFrom: null,
       PeriodUntil: null,
+      ReceiptId: null,
       CompleteStatus: null,
       sorts: {
         ReceiptNo: "asc",
@@ -333,11 +361,15 @@ export default {
     debounce: null,
     selectedReceiptDetailId: null,
     counter: 0,
+    isLoading: false,
     lists: [],
   }),
   computed: {
     ds: function () {
       return useReceiptInquiry();
+    },
+    dsReceipt: function () {
+      return useReceipt();
     },
   },
   watch: {
@@ -351,6 +383,9 @@ export default {
       this.resetGrid();
     },
     "filter.PeriodUntil": function () {
+      this.resetGrid();
+    },
+    "filter.ReceiptId": function () {
       this.resetGrid();
     },
     "filter.CompleteStatus": function () {
@@ -392,6 +427,11 @@ export default {
         return false;
       }
 
+      if ((this.filter.ReceiptId || "") == "") {
+        toastDanger("Silahkan pilih no. receipt");
+        return false;
+      }
+
       if ((this.filter.CompleteStatus || "") == "") {
         toastDanger("Silahkan pilih complete status");
         return false;
@@ -411,6 +451,10 @@ export default {
           Keyword: this.filter.keyword || "",
           FactoryCode: this.filter.FactoryCode,
           SupplierCode: this.filter.SupplierCode,
+          ReceiptId:
+            this.filter.ReceiptId == "ALL"
+              ? "0"
+              : this.filter.ReceiptId?.toString(),
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom),
           ),
@@ -438,12 +482,29 @@ export default {
       this.filter.PeriodUntil = today;
       this.search(false);
     },
+    print: function () {
+      if ((this.filter.ReceiptId || "") == "") {
+        toastDanger("Silahkan pilih no. receipt");
+        return;
+      }
+
+      this.dsReceipt
+        .print(this.filter.ReceiptId)
+        .then((data) => {
+          toastSuccess(data || "Print Label berhasil!");
+        })
+        .catch((err) => toastDanger(err.Message));
+    },
     exportExcel: function () {
       let filters = [
         {
           Keyword: this.filter.keyword || "",
           FactoryCode: this.filter.FactoryCode,
           SupplierCode: this.filter.SupplierCode,
+          ReceiptId:
+            this.filter.ReceiptId == "ALL"
+              ? "0"
+              : this.filter.ReceiptId?.toString(),
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom),
           ),

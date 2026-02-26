@@ -302,8 +302,12 @@ export default {
       let avaiableGroupList = [
         ...new Set(
           this.groupLists
-            .filter((x) => x.Details.length > 0)
-            .map((item) => item.ProductionId),
+            .filter((group) =>
+              Object.values(group.Classifications || {})
+                .flat()
+                .some((detail) => detail.ChildItemCode),
+            )
+            .map((group) => group.ProductionId),
         ),
       ];
 
