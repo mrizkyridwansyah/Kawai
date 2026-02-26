@@ -13,6 +13,7 @@ public interface IBOMWorkStationRepository
     Task<List<BOMWorkStationDto>> GetModelClsDDL(string keyword);
     Task<List<BOMWorkStationDto>> GetItemByModelClsDDL(string keyword, string modelCls);
     Task SaveBOMWorkStation(BOMWorkStation bomsetting,string userId);
+    Task CopyBomWorkStation(string fromline, string toline, string itemcode, string userId);
     Task<Dictionary<string, object>> Capture(string ParentItem_Code, string WorkStationCode);
 
 

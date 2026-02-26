@@ -32,6 +32,24 @@ public class BOMWorkStationController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("copydata")]
+    public async Task<IActionResult> CopyBomWorkStation([FromBody] CopyBomWorkstation model)
+    {
+        
+            // contoh simpan ke DB
+            await _bomworkstationRepository.CopyBomWorkStation(
+                model.FromLine,
+                model.ToLine,
+                model.ItemCode,
+                Auth.User.UserID
+
+
+            );
+         
+        return Success();
+    }
+
+
     [HttpGet("listdetail")]
     public async Task<IActionResult> ListDetail(
      string linecode,

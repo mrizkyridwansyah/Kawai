@@ -11,6 +11,8 @@ public class BOMWorkStationDto: DataTableDto
     public string ModelCls { get; set; }
     public string Description { get; set; }
     public string DDLDescription { get; set; }
+    public string TrolleyCls { get; set; }
+    public decimal MaxQtySet { get; set; }
     public string WorkStationName { get; set; }
     public DateTime? RegisterDate { get; set; }
     public string RegisterUser { get; set; }

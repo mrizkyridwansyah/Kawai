@@ -46,6 +46,19 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         return (await _dbExecutor.QueryListAsync<BOMWorkStationDto>(sp, new { Keyword = keyword ?? "", ModelCls = modelCls })).ToList();
     }
 
+    public async Task CopyBomWorkStation(string fromline, string toline, string itemcode, string userId)
+    {
+        string sql = @"sp_Wms_BOMWorkStation_CopyData";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            FromLine = fromline,
+            ToLine = toline,
+            ItemCode = itemcode,
+            UserID = userId
+        });
+    }
+
+
     public async Task SaveBOMWorkStation(BOMWorkStation model, string userId)
     {
       

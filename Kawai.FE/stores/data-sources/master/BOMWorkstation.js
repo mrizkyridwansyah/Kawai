@@ -50,6 +50,19 @@ export const useBOMWorkstation= defineStore('BOMWorkstation', {
           .finally(_ => this.isLoading = false);
       })
     },    
+    copydata: function (data) {
+      debugger;
+      this.isCreating = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/bomworkstation/copydata`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isCreating = false);
+      })
+    },
+
       submitworkstationsetting: function (data) {
             this.isLoading = true;
             return new Promise((resolve, reject) => {
