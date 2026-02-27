@@ -62,7 +62,7 @@
             class="p-2 header-summary-content"
             style="background-color: #18B2E0"
           >
-            <span class="title-summary">Picking Progress(Item)</span>
+            <span class="title-summary">Picking Progress (Item)</span>
             <br />
             <span class="qty-summary">{{
                this.summary.totalItem 
@@ -91,7 +91,7 @@
                 icon="hourglass-start"
                 class="text-warning icon-title"
               />
-              <span id="header-panel" style="font-size: 1.05em" class="ml-3">Remaining Item</span>
+              <span id="header-panel" style="font-size: 1.05em" class="ml-3">Remaining Item - Material Type (Group)</span>
             </div>
             <div class="panel-body">
                  <table
@@ -222,7 +222,7 @@ export default {
         //header-panel change text to "Remaining Item" dan nama area bukan codenya
         const headerPanel = document.getElementById("header-panel");
         if (headerPanel) {
-          headerPanel.innerText = `Remaining Item - ${this.filter.areaName}`;
+          headerPanel.innerText = `Remaining Item - Material Type (Group)`;
         }
               
         //hide filter id="containerfilter" after search
