@@ -18,7 +18,7 @@
                       v-model="filter.item"
                     :modelCls="filter.modelcls"
                      :disabled="true"
-                    style-code="width: 110px"
+                    style-code="width: 150px"
                     style-desc="width: 250px"
                   /></td>
    
