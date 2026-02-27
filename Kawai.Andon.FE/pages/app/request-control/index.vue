@@ -38,7 +38,7 @@
             class="p-2 header-summary-content"
             style="background-color: #8d56a9"
           >
-            <span class="title-summary">Total </span>
+            <span class="title-summary">Total Request </span>
             <br />
             <span class="qty-summary">{{
               $func.formatMoney(this.summary.total)
@@ -62,10 +62,10 @@
             class="p-2 header-summary-content"
             style="background-color: #18B2E0"
           >
-            <span class="title-summary">Item</span>
+            <span class="title-summary">Picking Progress(Item)</span>
             <br />
             <span class="qty-summary">{{
-              $func.formatMoney(this.summary.totalItem)
+               this.summary.totalItem 
             }}</span>
           </div>
         </div>
@@ -109,8 +109,7 @@
                     <th class="text-center">Trolly Number</th>
                     <th class="text-center">Current Position</th>
                     <th class="text-center">Next Location</th>
-                    <th class="text-center">Total Item</th>
-                    <th class="text-center">Remaining Item</th>
+              
                   </tr>
                 </thead>
                 <tbody>
@@ -124,8 +123,7 @@
                     <td>{{ item.TrollyNumber }}</td>
                     <td>{{ item.CurrentPosition }}</td>
                     <td>{{ item.NextLocation }}</td>
-                    <td class="text-end">{{ $func.formatMoney(item.TotalItem) }}</td>
-                    <td class="text-end">{{ $func.formatMoney(item.Remaining) }}</td>
+                     
                     
                   </tr>
                 </tbody>
@@ -204,15 +202,15 @@ export default {
           this.list = dt.Data;
           //total diambil dari countdata datalist
           this.summary.total = this.list.length;
-          this.summary.totalItem = this.list.reduce((sum, item) => sum + item.TotalItem, 0 );
-          this.summary.remaining = this.list.reduce((sum, item) => sum + item.Remaining, 0 );
+          this.summary.totalItem = this.list.length > 0  ? this.list[0].PickingProgress   : 0;
+          this.summary.remaining = this.list.length > 0  ? this.list[0].Remaining   : 0;
 
           //untuk womin summary semua workstasion yang sama aja
-          this.summary.womin = this.list.filter((item, index, self) =>
-            index === self.findIndex((t) => (
-              t.WorkStation === item.WorkStation
-            ))
-          ).length;
+          this.summary.womin = this.list.length > 0  ? this.list[0].Womin   : 0;
+          //   index === self.findIndex((t) => (
+          //     t.WorkStation === item.WorkStation
+          //   ))
+          // ).length;
 
 
 

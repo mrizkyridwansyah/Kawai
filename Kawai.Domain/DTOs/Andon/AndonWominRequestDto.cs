@@ -14,6 +14,8 @@ public class AndonWominRequestDto: DataTableDto
     public string NextLocation { get; set; }
     public decimal TotalItem { get; set; }
     public decimal Remaining { get; set; }
+    public decimal Womin { get; set; }
+    public string PickingProgress { get; set; }
 
 }
 
