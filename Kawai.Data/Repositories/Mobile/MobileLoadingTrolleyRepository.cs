@@ -1,4 +1,5 @@
 ﻿using Kawai.Data.SqlConnections;
+using Kawai.Domain;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models.Mobile;
@@ -15,10 +16,10 @@ public class MobileLoadingTrolleyRepository : IMobileLoadingTrolleyRepository
         _dbExecutor = dbExecutor;
     }
 
-    public async Task<LoadingTrolleyDto> GetDataTrolley(string trolleyNo)
+    public async Task<List<LoadingTrolleyDto>> GetDataTrolley(string trolleyNo)
     {
         string sp = "sp_Wms_Mobile_LoadingTrolley_GetDataTrolley";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<LoadingTrolleyDto>(sp, new { TrolleyNo = trolleyNo });
+        return (await _dbExecutor.QueryListAsync<LoadingTrolleyDto>(sp, new { TrolleyNo = trolleyNo })).ToList();
     }
 
     public async Task<List<StockDto>> GetDataBarcode(string trolleyNo, string barcodeNo)
@@ -27,13 +28,35 @@ public class MobileLoadingTrolleyRepository : IMobileLoadingTrolleyRepository
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, new { TrolleyNo = trolleyNo, BarcodeNo = barcodeNo })).ToList();
     }
 
+    public async Task ScanBarcode(MobileLoadingTrolley payload, string userId)
+    {
+        string sp = "sp_Wms_Mobile_LoadingTrolley_ScanBarcode";
+        int i = await _dbExecutor.ExecuteAsync(sp, new
+        {
+            payload.TrolleyNo,
+            payload.BarcodeNo,
+            UserId = userId
+        });
+    }
+
+    public async Task CompleteLoading(MobileLoadingTrolleyComplete payload, string userId)
+    {
+        string sp = "sp_Wms_Mobile_LoadingTrolley_CompleteLoading";
+        int i = await _dbExecutor.ExecuteAsync(sp, new
+        {
+            payload.TrolleyNo,
+            payload.PickingNo,
+            UserId = userId
+        });
+    }
+
     public async Task Save(MobileLoadingTrolley payload, string userId)
     {
         string sql = "sp_Wms_Mobile_LoadingTrolley_Save";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
             payload.TrolleyNo,
-            payload.RequestDetailId,
+            //payload.RequestDetailId,
             UserId = userId
         });
     }
@@ -59,6 +82,26 @@ public class MobileLoadingTrolleyRepository : IMobileLoadingTrolleyRepository
                     ).ToList();
                 }
                 return stocks;
+            }
+        );
+
+        return new Dictionary<string, object>
+        {
+            { "Loading Trolley", result }
+        };
+    }
+
+    public async Task<Dictionary<string, object>> CapturePicking(string pickingNo)
+    {
+        var result = await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_Mobile_LoadingTrolley_CapturePicking",
+            param: new { PickingNo = pickingNo },
+            async multi =>
+            {
+                var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
+                var details = (await multi.ReadAsync<dynamic>()).ToList();
+                header.Details = details;
+                return header;
             }
         );
 
