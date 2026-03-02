@@ -4,6 +4,7 @@ using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Kawai.Domain.DTOs.Log;
+using Hangfire;
 
 namespace Kawai.Api.Controllers.Mobile;
 
@@ -87,6 +88,8 @@ public class MobileLoadingTrolleyController : HahaController
 
         var after = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
+        //BackgroundJob.Enqueue<IRobotService>(service => service.SendRobotRequest(model));
+        
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Mobile Loading Trolley",

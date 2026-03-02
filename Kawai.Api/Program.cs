@@ -53,6 +53,7 @@ builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
 builder.Services.AddRepositoriesAuto();
+builder.Services.AddScoped<IRobotService, RobotService>();
 
 
 //ini daftarin producer rabbitmq, buat publish message ke queueing => transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
@@ -66,6 +67,7 @@ builder.Services.AddScoped<ITransactionHandler, MobileMaterialStorageTransaction
 builder.Services.AddScoped<ITransactionHandler, MobileMaterialMergeStorageTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileAssignStorageTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileLoadingTrolleyTransactionHandler>();
+builder.Services.AddScoped<ITransactionHandler, MobileSupplyScanRequestTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, QualityCheckConfirmTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, RobotMovingTrolleyTransactionHandler>();
 

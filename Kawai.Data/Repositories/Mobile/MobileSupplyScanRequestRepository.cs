@@ -25,16 +25,16 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
             WarehouseCode = String.IsNullOrEmpty(warehouse) ? "ALL" : warehouse
         })).ToList();
     }
-    public async Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno)
+    public async Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno, string itemClass)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_GetListMaterial";
-        return (await _dbExecutor.QueryListAsync<SupplyScanRequestDto>(sp, new { RequestNo = requestno })).ToList();
+        return (await _dbExecutor.QueryListAsync<SupplyScanRequestDto>(sp, new { RequestNo = requestno, ItemClass = itemClass })).ToList();
     }
 
     public async Task<List<WarehouseDto>> GetWarehouseDDL(string keyword)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequestNo_WarehouseDDL";
-        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? ""})).ToList();
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? "" })).ToList();
     }
     public async Task<List<ManufactureLineDto>> GetLineDDL(string keyword, string warehouseCode)
     {
@@ -45,20 +45,13 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
     public async Task<List<SupplyScanRequestDetailDto>> GetListDetail(string warehouseCode, string requestNo, string itemCode)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_GetListDetail";
-        return (await _dbExecutor.QueryListAsync<SupplyScanRequestDetailDto>(sp, new { WarehouseCode =   warehouseCode ,RequestNo = requestNo , ItemCode = itemCode })).ToList();
+        return (await _dbExecutor.QueryListAsync<SupplyScanRequestDetailDto>(sp, new { WarehouseCode = warehouseCode, RequestNo = requestNo, ItemCode = itemCode })).ToList();
     }
 
-
-    //public async Task<List<SupplyScanRequestDto>> GetListDetail(string lotNo, string itemCode)
-    //{
-    //    string sp = "sp_Wms_Mobile_StockInventoryUpdate_GetListDetail";
-    //    return (await _dbExecutor.QueryListAsync<StockInventoryUpdateDto>(sp, new { LotNo = lotNo, ItemCode = itemCode })).ToList();
-    //}
-
-    public async Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo , string requestNo)
+    public async Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo, string requestNo, string itemClass)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_GetDataBarcode";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestDto>(sp, new { BarcodeNo = barcodeNo, RequestNo = requestNo });
+        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestDto>(sp, new { BarcodeNo = barcodeNo, RequestNo = requestNo, ItemClass = itemClass });
     }
 
     public async Task Save(MobilSupplyScanRequestSubmit payload, string userId)
@@ -66,22 +59,23 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
         string sql = "sp_Wms_Mobile_SupplyScanRequest_Submit";
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
-            payload.WarehouseCode  ,
-            payload.BarcodeNo  ,
-            payload.LineCode  ,
-            payload.LotNo  ,
-            payload.ItemCode  ,
+            payload.WarehouseCode,
+            payload.BarcodeNo,
+            payload.LineCode,
+            payload.LotNo,
+            payload.ItemCode,
             payload.RequestNoCode,
-            payload.Qty  ,
+            payload.ItemClass,
+            payload.Qty,
             UserId = userId
         });
     }
 
 
-    public async Task<Dictionary<string, object>> Capture(string barcodeNo)
+    public async Task<Dictionary<string, object>> Capture(string barcodeNo, string pickingNo, string itemClass)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_Capture";
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { BarcodeNo = barcodeNo });
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { BarcodeNo = barcodeNo, PickingNo = pickingNo, ItemClass = itemClass });
 
         if (result == null)
             return new Dictionary<string, object>();
@@ -91,4 +85,4 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
 
 
 }
- 
+
