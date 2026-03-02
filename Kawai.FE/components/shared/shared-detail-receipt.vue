@@ -28,9 +28,9 @@
         <tbody>
           <tr v-for="(item, idx) in ds.dataDetail.Items">
             <td class="text-center">{{ idx + 1 }}.</td>
-            <td>{{ item.WarehouseName }}</td>
-            <td>{{ item.AreaName }}</td>
-            <td>{{ item.AddressName }}</td>
+            <td>{{ item.WarehouseCode }}</td>
+            <td>{{ item.AreaCode }}</td>
+            <td>{{ item.AddressCode }}</td>
             <td>{{ item.ItemName }}</td>
             <td>{{ item.BarcodeNo }}</td>
             <td>{{ item.LotNo }}</td>
@@ -72,20 +72,20 @@ export default {
           direction: "asc",
         },
         {
-          label: "Warehouse Name",
-          value: "WarehouseName",
+          label: "Warehouse Code",
+          value: "WarehouseCode",
           selected: true,
           direction: "asc",
         },
         {
-          label: "Area Name",
-          value: "AreaName",
+          label: "Area Code",
+          value: "AreaCode",
           selected: true,
           direction: "asc",
         },
         {
-          label: "Address Name",
-          value: "AddressName",
+          label: "Address Code",
+          value: "AddressCode",
           selected: true,
           direction: "asc",
         },

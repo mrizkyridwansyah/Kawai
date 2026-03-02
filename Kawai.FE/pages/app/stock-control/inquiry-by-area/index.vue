@@ -147,7 +147,7 @@ export default {
     rawData: [],
     groupByFields: [
       ["ItemName", ["ItemCode", "ItemName"]],
-      ["AreaName", ["AreaCode", "AreaName"]],
+      ["AreaCode", ["AreaCode", "AreaName"]],
       ["LotNo", ["LotNo"]],
     ],
     sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
@@ -189,8 +189,8 @@ export default {
       this.columns = [
         // { text: "Warehouse Code", dataField: "WarehouseCode", width: "250px" },
         // { text: "Warehouse Name", dataField: "WarehouseName", width: "250px" },
-        { text: "Item Name", dataField: "ItemName", width: "250px" },
-        { text: "Area", dataField: "AreaName", width: "250px" },
+        { text: "Item Name", dataField: "ItemName", width: "max-content" },
+        { text: "Area", dataField: "AreaCode", width: "max-content" },
         { text: "Lot No", dataField: "LotNo", width: "max-content" },
         {
           text: "Begin",

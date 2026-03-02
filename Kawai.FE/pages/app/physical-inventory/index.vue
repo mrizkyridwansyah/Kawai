@@ -192,9 +192,9 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in lists || []" :key="idx">
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.WarehouseName }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.AreaName }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.AddressName }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">{{ item.WarehouseCode }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">{{ item.AreaCode }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">{{ item.AddressCode }}</td>
                 <td :class="scanStatusClass(item.StatusScan)">{{ item.BarcodeNo }}</td>
                 <td :class="scanStatusClass(item.StatusScan)">{{ item.ItemCode }}</td>
                 <td :class="scanStatusClass(item.StatusScan)">{{ item.ItemDesc }}</td>
