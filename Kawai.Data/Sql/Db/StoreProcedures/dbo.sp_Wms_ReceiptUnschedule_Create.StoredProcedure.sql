@@ -4,6 +4,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
+
 CREATE   procedure [sp_Wms_ReceiptUnschedule_Create]
 	@ReceiptNo		varchar(50),
 	@DNNumber		varchar(50),
@@ -15,6 +16,7 @@ CREATE   procedure [sp_Wms_ReceiptUnschedule_Create]
 	@BCDate			date,
 	@VehicleNo		varchar(15),
 	@Transport		varchar(15),
+	@ReferenceNo	varchar(50),
 	@Details		tvp_ReceiptUnscheduleDetail READONLY,
 	@RegisterBy		varchar(25)
 as
@@ -23,10 +25,11 @@ begin
 	(
 		select * From @Details a
 		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-		where b.QtyPacking is null
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
+		where isnull(b.QtyPacking, mi.Number_Box) <= 0
 	)
 	begin
-		raiserror('Qty Packing Item Supplier ini belum disetting!', 16, 1)
+		raiserror('Qty Packing Item ini belum disetting!', 16, 1)
 		return
 	end
 
@@ -41,16 +44,17 @@ begin
 	begin transaction receiptTransaction
 	begin try
 		insert into PartReceiptHeader 
-		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode)
+		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode, ReferenceNo)
 		values 
-		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, '', 'RECEIPT UNSCHEDULE', @FactoryCode)
+		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, '', 'RECEIPT UNSCHEDULE', @FactoryCode, @ReferenceNo)
 
 		declare @newid bigint = (select SCOPE_IDENTITY())
 
 		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
-		select @newid, @ReceiptDate, NULL, a.ItemCode, mi.UnitCls, 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / mi.QtyPacking), a.ReceiptQty, '' 
+		select @newid, @ReceiptDate, NULL, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '' 
 		from @Details a
-		inner join ItemSupplierPacking mi on a.ItemCode = mi.ItemCode and mi.SupplierCode = @SupplierCode
+		left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
 
 		declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
 
@@ -62,11 +66,12 @@ begin
 		)
 		select 
 			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, '' , it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
-			dtl.UnitCls, null Currency, null Price, null Amount, hd.DNNumber, 0, null DailySeq_No, '', @Transport,
+			dtl.UnitCls, pm.Currency_Code, pm.Price, pm.Price * dtl.ReceiptQty , hd.DNNumber, 0, null DailySeq_No, '', @Transport,
 			getdate(), @RegisterBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, hd.Id
 		From PartReceiptHeader hd
 		inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 		left join Item_Master it on dtl.ItemCode = it.Item_Code
+		left join Price_Master pm on dtl.ItemCode = pm.Item_Code and hd.SupplierCode = pm.Trade_Code and Price_Cls = '01'
 		where hd.Id = @newid
 
 		select @newid

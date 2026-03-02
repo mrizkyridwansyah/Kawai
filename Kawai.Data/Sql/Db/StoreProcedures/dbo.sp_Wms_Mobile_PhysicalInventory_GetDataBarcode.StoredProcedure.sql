@@ -7,6 +7,18 @@ CREATE   procedure [sp_Wms_Mobile_PhysicalInventory_GetDataBarcode]
 	@BarcodeNo varchar(50)
 as
 begin
+	
+	IF NOT EXISTS 
+	(
+		SELECT 1 FROM StockDetail sd 
+		WHERE sd.AddressCode = @AddressCode
+		and sd.BarcodeNo = @BarcodeNo and sd.Qty > 0	 
+	)
+	begin 
+		raiserror('Data stock tidak ditemukan / sudah habis!',16,1)
+		return
+	end
+
 	SELECT 
 		sd.BarcodeNo, sd.ItemCode, mi.Item_Name ItemName, sd.LotNo, sd.Qty CurrentQty, so.InventoryQty 
 	FROM StockDetail sd

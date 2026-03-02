@@ -30,6 +30,7 @@ begin
 		PrintCls		bit null,
 		DisposalCls		bit null,
 		StatusReceipt	varchar(10) null,
+		Picking_No		varchar(50) null,
 		RegisterDate	datetime null,
 		RegisterUser	varchar(25) null,
 		Lastupdate		datetime null,
@@ -54,6 +55,7 @@ begin
 		, PrintCls		
 		, DisposalCls		
 		, StatusReceipt	
+		, Picking_No
 		, RegisterDate	
 		, RegisterUser	
 		, Lastupdate		
@@ -117,7 +119,7 @@ begin
 	) as sc
 	(
 		RefNo, WarehouseCode, AreaCode, AddressCode, BarcodeNo, ItemCode, LotNo, SublotNo, Qty, InventoryQty, ExpiredDate, ProductionDate, ReceiptDate, 
-		Supplier, PrintCls, DisposalCls, StatusReceipt, RegisterDate, RegisterUser, Lastupdate, LastUser	
+		Supplier, PrintCls, DisposalCls, StatusReceipt, Picking_No, RegisterDate, RegisterUser, Lastupdate, LastUser	
 	)
 	ON
 	sd.RefNo = sc.RefNo 
@@ -152,6 +154,7 @@ begin
 			, PrintCls		
 			, DisposalCls		
 			, StatusReceipt	
+			, Picking_No
 			, RegisterDate	
 			, RegisterUser	
 			, Lastupdate		
@@ -176,6 +179,7 @@ begin
 			, sc.PrintCls		
 			, sc.DisposalCls		
 			, sc.StatusReceipt	
+			, sc.Picking_No
 			, sc.RegisterDate	
 			, sc.RegisterUser	
 			, sc.Lastupdate		

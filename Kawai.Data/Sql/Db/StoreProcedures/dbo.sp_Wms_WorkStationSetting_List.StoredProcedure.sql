@@ -39,6 +39,7 @@ CREATE Proc [sp_Wms_WorkStationSetting_List]
 			select 
 				ISNULL((Select Top 1 1 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),0) AllowSetting,   
 				A.WorkStationCode,A.WorkStationName,
+				(Select Top 1 StopPointCode From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode,
 				A.RegisterUser , 
 				A.RegisterDate ,
 				(Select Top 1 RegisterUser From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode) LastUser,
@@ -58,6 +59,7 @@ CREATE Proc [sp_Wms_WorkStationSetting_List]
 				ISNULL((Select Top 1 1 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),0) AllowSetting,   
 				A.WorkStationCode,
 				A.WorkStationName,
+				(Select Top 1 StopPointCode From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode,
 				A.RegisterUser , 
 				A.RegisterDate ,
 				(Select Top 1 RegisterUser From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode) LastUser,

@@ -49,7 +49,7 @@ begin
 	'
 		select 
 			ml.WarehouseCode, mw.WH_Name WarehouseName, ml.AreaCode, ml.AreaName, ml.ItemType, cp.[Description] ItemTypeDesc,
-			ml.RegisterDate, us.FullName RegisterUser, ml.UpdateDate LastUpdate, us2.FullName LastUser, '''+cast(@TotalRows as varchar)+''' TotalRows
+			ml.RegisterDate, us.FullName RegisterUser, ml.UpdateDate LastUpdate, us2.FullName LastUser, ml.PickingSequence, '''+cast(@TotalRows as varchar)+''' TotalRows
 		From MS_Area ml
 		left join WareHouse_Master mw on mw.WH_Code = ml.WarehouseCode
 		left join ClasificationPart_Cls cp on ml.ItemType = cp.ClasificationPart_Cls

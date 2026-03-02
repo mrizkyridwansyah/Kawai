@@ -33,7 +33,7 @@ begin
 		QtyNG = isnull(iqch.TotalQtyNG, 0), 
 		iqch.RegisterDate,  iqch.InspectorID RegisterUser, qcus.FullName RegisterUserName,
 		iqch.InspectionDate, iqch.InspectorID, qcus.FullName InspectorName,
-		iqch.InspectionResult, iqch.InspectionResultDate ApprovalDate, iqch.InspectionResultApproval ApprovalUser, approver.FullName ApprovalUserName
+		iqch.InspectionResult, iqch.InspectionResultDate ApprovalDate, iqch.InspectionResultApproval ApprovalUser, approver.FullName ApprovalUserName, iqch.StatusQC
 	from IQC_Inspection_Header iqch
 	inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
 	inner join Trade_Master sp on iqch.SupplierCode = sp.Trade_Code

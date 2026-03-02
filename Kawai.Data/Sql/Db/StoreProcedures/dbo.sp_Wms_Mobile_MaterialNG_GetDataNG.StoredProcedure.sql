@@ -18,6 +18,25 @@ begin
 		return
 	end
 
+	declare @PONumber varchar(100), @ItemCode varchar(25)
+	select @PONumber = PONumber, @ItemCode = ItemCode
+	From PartReceiptDetailBarcode 
+	where BarcodeNo = @BarcodeNo
+
+	if exists 
+	(
+		select 1 from IQC_SamplingBarcodeDetail dtl
+		inner join IQC_Inspection_Header hd on dtl.InspectionID = hd.InspectionID 
+		where hd.PO_Number = @PONumber 
+		and hd.ItemCode = @ItemCode 
+		and hd.Soruce = 'Material NG' 
+		and hd.StatusQC = 'CONFIRMED'
+	)
+	begin
+		raiserror('Material NG dari PO barcode ini sudah diconfirm!', 16,1)
+		return
+	end
+
 	SELECT
 		smp.SamplingID SampleId, smp.InspectionID InspectionId,
 		c.SupplierCode,

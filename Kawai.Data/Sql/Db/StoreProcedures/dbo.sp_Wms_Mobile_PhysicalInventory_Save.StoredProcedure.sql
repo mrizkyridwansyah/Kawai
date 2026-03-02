@@ -9,6 +9,13 @@ CREATE   procedure [sp_Wms_Mobile_PhysicalInventory_Save]
 	@UserId varchar(25)
 as
 begin
+	DECLARE @validToSO varchar(max) = (select dbo.[fn_ValidateStockOpnamePeriod]())
+	if isnull(@validToSO, 'OK') <> 'OK'
+	begin
+		RAISERROR(@validToSO, 16, 1)
+		return
+	end
+
 	-- ambil data warehouse & area dari address tsb sebagai default
 	declare @warehouseCode varchar(25), @areaCode varchar(25), @areaName varchar(100), @allowed bit
 	select @warehouseCode = b.WarehouseCode, @areaCode = a.AreaCode, @areaName = b.AreaName, @allowed = isnull(priv.AllowAccess, 0)

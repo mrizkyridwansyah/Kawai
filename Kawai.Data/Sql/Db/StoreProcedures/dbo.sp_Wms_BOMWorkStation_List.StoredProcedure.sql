@@ -11,8 +11,9 @@ CREATE Proc [sp_Wms_BOMWorkStation_List]
 
 	-- PARAMETER OPSIONAL
 	@Keyword varchar(max) = '',
-    @ModelCls Varchar(100) = '',
-	@ItemCode Varchar(100) = '011'
+	@Line Varchar(100) ,
+    @ModelCls Varchar(100),
+	@ItemCode Varchar(100) 
   as
 
   declare @sqlSort varchar(max) = ''
@@ -33,44 +34,35 @@ CREATE Proc [sp_Wms_BOMWorkStation_List]
 		declare @TotalRows int =
 		(
 			select count(1)
-			   from MS_WorkStation wh
+			   From WorkStationLineSetting wh
+		      left join MS_WorkStation ws on wh.WorkStationCode = ws.WorkStationCode
 			where 1=1
-			and (wh.WorkStationCode like '%'+@Keyword+'%' or wh.WorkStationName like '%'+@Keyword+'%')
+			and (wh.WorkStationCode like '%'+@Keyword+'%' or ws.WorkStationName like '%'+@Keyword+'%')
+			and 1 = case when @Line = 'ALL' or @Line = wh.LineCode then 1 else 0 end
 		 
 		)
 
 	declare @sql varchar(max) 
-	if @ModelCls = '' OR @ItemCode = ''
-	begin
-	set  @sql = 
-	'
-		select 
-			WorkStationCode
-            ,WorkStationName
-            ,RegisterDate
-			,RegisterUser
-			,LastUpdate
-			,LastUser, 
-			'''+cast(@TotalRows as varchar)+''' as TotalRows
-		From MS_WorkStation wh 
-		where 1=0'
-	end
-	Else
+	
 	Begin
 	set  @sql = 
 	'
 		select 
-			WorkStationCode
-            ,WorkStationName
-            ,RegisterDate
-			,RegisterUser
-			,LastUpdate
-			,LastUser, 
+			 wh.WorkStationCode
+            ,ws.WorkStationName
+			,(select ff.Description from MS_BOMPerworkstation_Header zz left join Trolley_Cls ff ON zz.Troly_Cls = ff.Trolley_Cls  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) TrolleyCls
+			,(select zz.MAX_Qty_Set from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) MaxQtySet
+            ,wh.RegisterDate
+			,wh.RegisterUser
+		    ,(select zz.LastUpdate from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) LastUpdate
+			,(select zz.LastUser from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) LastUser, 
 			'''+cast(@TotalRows as varchar)+''' as TotalRows
-		From MS_WorkStation wh
+		From WorkStationLineSetting wh
+		left join MS_WorkStation ws on wh.WorkStationCode = ws.WorkStationCode
 		left join vw_User us on wh.LastUser = us.UserID
 		 	where 1=1
-		and (wh.WorkStationCode like ''%'+@Keyword+'%'' or wh.WorkStationName like ''%'+@Keyword+'%'')
+		and (wh.WorkStationCode like ''%'+@Keyword+'%'' or ws.WorkStationName like ''%'+@Keyword+'%'')
+		and 1 = case when '''+ @Line +''' = ''ALL'' or '''+ @Line +''' = wh.LineCode then 1 else 0 end
 		
 		 '+ @sqlSort +'
 		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 

@@ -49,8 +49,8 @@ begin
 		isnull(sm.TMLossReject,0) Reject,
 		isnull(sm.TMCurrent,0) [Current],	
 		mi.Item_Name ItemName, 
-		case when res.TransactionType = 'OUT' THEN isnull(ma.AreaName, '') else isnull(maf.AreaName, '') end FromAreaName, 
-		case when res.TransactionType = 'IN' THEN isnull(ma.AreaName, '') else isnull(maf.AreaName, '') end ToAreaName, 
+		case when res.TransactionType = 'OUT' THEN isnull(ma.AreaCode, '') else isnull(maf.AreaCode, '') end FromAreaName, 
+		case when res.TransactionType = 'IN' THEN isnull(ma.AreaCode, '') else isnull(maf.AreaCode, '') end ToAreaName, 
 		us.FullName LastUser 
 	From 
 	(

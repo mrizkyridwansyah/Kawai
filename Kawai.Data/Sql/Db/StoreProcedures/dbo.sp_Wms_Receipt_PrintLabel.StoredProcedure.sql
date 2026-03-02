@@ -60,9 +60,9 @@ begin
 		)
 	
 		insert into @partReceiptDetail
-		select ROW_NUMBER() over (order by Id), Id, a.PONumber, a.ItemCode, a.ReceiptQty, b.QtyPacking, isnull(po.WHTo, mi.WH_Code)
+		select ROW_NUMBER() over (order by Id), Id, a.PONumber, a.ItemCode, a.ReceiptQty, isnull(b.QtyPacking, mi.Number_Box), isnull(po.WHTo, mi.WH_Code)
 		From PartReceiptDetail a
-		inner join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
+		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
 		left join PurchaseOrder_Master po on a.PONumber = po.PO_No
 		inner join Item_Master mi on a.ItemCode = mi.Item_Code
 		where ReceiptId = @ReceiptId

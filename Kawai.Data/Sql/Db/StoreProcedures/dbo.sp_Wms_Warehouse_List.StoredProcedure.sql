@@ -51,7 +51,7 @@ begin
 		left join Trade_Master tm on wh.Adm_Group = tm.Trade_Code
 		left join Company_Profile cp on wh.Company_Code = cp.Company_Code
 		where 1=1
-		and (wh.WH_Code like ''%'+@Keyword+'%'' or wh.WH_Name like ''%'+@Keyword+'%'')
+		and (wh.WH_Code like ''%'+@Keyword+'%'' or wh.WH_Name like ''%'+@Keyword+'%'' or wh.Adm_Group like ''%'+@Keyword+'%'' or tm.Trade_Name like ''%'+@Keyword+'%'')
 		and 1 = case when '''+ @FactoryCode +''' = ''ALL'' or '''+ @FactoryCode +''' = wh.Company_Code then 1 else 0 end
 		'+ @sqlSort +'
 		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 

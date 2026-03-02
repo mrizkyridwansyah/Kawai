@@ -58,6 +58,7 @@ begin
 				, LastUpdate
 				, TotalQtySample
 				, Soruce
+				, StatusQC
 			)
 			select 
 				a.PONumber,
@@ -72,7 +73,8 @@ begin
 				getdate(),
 				null,
 				0,
-				'Incoming Material'
+				'Incoming Material',
+				'NEW'
 			From PartReceiptDetailBarcode a
 			inner join PartReceiptHeader b on a.ReceiptId = b.Id
 			inner join Item_Master mi on a.ItemCode = mi.Item_Code

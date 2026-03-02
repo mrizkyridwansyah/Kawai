@@ -15,7 +15,7 @@ begin
 	(
 		select 
 			dp.ProductionId, dp.Schedule_Date ScheduleDate, dp.Item_code ItemCode, mi.Item_Name ItemName, mi.Unit_Cls UnitCls, mu.Description UnitClsDesc, 
-			dp.Qty PlanQty, pmrh.RequestID, pmrh.RequestNo, pmrh.RequestDate, pmrh.RequestSetQty, pmrh.RegisterUser, pmrh.RegisterDate, 
+			dp.Qty PlanQty, pmrh.RequestID, pmrh.RequestNo, pmrh.RequestDate, pmrh.RequestSetQty, us.FullName RegisterUser, pmrh.RegisterDate, 
 			RemainingQty = dp.Qty - isnull(pmrh.RequestSetQty , 0)
 		From 
 		(
@@ -34,6 +34,7 @@ begin
 		inner join Unit_Cls mu on mi.Unit_Cls = mu.Unit_Cls
 		left join PartMaterialRequestHeader pmrh 
 			on dp.Schedule_Date = pmrh.ProductionDate and dp.Item_code = pmrh.ParentItem_Code and dp.ProductionId = pmrh.ProductionID
+		left join SS_UserSetup us on pmrh.RegisterUser  = us.UserID
 	) res
 	where 1 = case when @RemainingCls is null then 1 
 				   when @RemainingCls = 1 and RemainingQty > 0 then 1

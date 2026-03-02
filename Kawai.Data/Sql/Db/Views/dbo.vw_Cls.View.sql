@@ -111,4 +111,6 @@ union all
 select 'ItemTypeAccs' TypeData, Code, Description from vw_TypeAccs 
 union all
 select 'IQCResult' TypeData, Code, Description from vw_IQCResult
+Union all
+select 'Trolley_Cls' TypeData, Trolley_Cls Code, Description from Trolley_Cls
 GO

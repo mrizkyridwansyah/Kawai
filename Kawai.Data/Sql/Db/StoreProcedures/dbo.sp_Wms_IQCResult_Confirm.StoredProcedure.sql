@@ -14,9 +14,21 @@ begin
 		return
 	end
 
-	declare @Source varchar(50), @ReceiptId bigint 
+	if exists 
+	(
+		select 1 From IQC_Inspection_Header iqc
+		inner join PartReceiptHeader prh on iqc.ReceiptNo = prh.ReceiptNo
+		inner join PartReceiptDetailBarcode prdb on prh.Id = prdb.ReceiptId and iqc.ItemCode = prdb.ItemCode
+		where iqc.InspectionID = @InspectionId and isnull(IsVerified, 0) = 0
+	) 
+	begin
+		raiserror('Silahkan receive semua barcode terlebih dahulu!', 16,1)
+		return
+	end
+
+	declare @Source varchar(50), @ReceiptId bigint, @ItemCode varchar(25)
 	select 
-		@Source = Soruce, @ReceiptId = prh.Id
+		@Source = Soruce, @ReceiptId = prh.Id, @ItemCode = iqch.ItemCode
 	from IQC_Inspection_Header iqch
 	inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
 	where iqch.InspectionID = @InspectionId
@@ -28,7 +40,7 @@ begin
 
 	update IQC_Inspection_Header 
 	set 
-		InspectionResult = @InspectionResult, InspectionResultApproval = @UserId, InspectionResultDate = getdate(), LastUpdate = getdate() 
+		InspectionResult = @InspectionResult, InspectionResultApproval = @UserId, InspectionResultDate = getdate(), LastUpdate = getdate(), StatusQC = 'CONFIRMED' 
 	where InspectionID = @InspectionId
 
 	declare @status varchar(50) = case when @InspectionResult = 'Accepted' then 'OK'  when @InspectionResult = 'Rejected' then 'NG' else 'HOLD' end
@@ -47,8 +59,9 @@ begin
 		From StockDetail sd
 		inner join 
 		(
-			select BarcodeNo, ItemCode, LotNo From PartReceiptDetailBarcode 
-			where ReceiptId = @ReceiptId
+			select BarcodeNo, ItemCode, LotNo 
+			From PartReceiptDetailBarcode 
+			where ReceiptId = @ReceiptId and ItemCode = @ItemCode
 		) qc on sd.BarcodeNo = qc.BarcodeNo and sd.ItemCode = qc.ItemCode and sd.LotNo = qc.LotNo
 	end
 	else if @Source = 'Material NG'

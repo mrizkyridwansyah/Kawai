@@ -17,6 +17,18 @@ begin
 		return;
 	end
 
+	if exists (select 1 from WorkStationLineSetting where WorkStationCode = @WorkStationCode)
+	begin
+		raiserror('Data Workstation already used as reference data',16,1)
+		return;
+	end
+
+	if exists (select 1 from MS_BOMPerworkstation_Header where WorkStationCode = @WorkStationCode)
+	begin
+		raiserror('Data Workstation already used as reference data',16,1)
+		return;
+	end
+
 	delete from  MS_WorkStation where WorkStationCode = @WorkStationCode
 end
 GO

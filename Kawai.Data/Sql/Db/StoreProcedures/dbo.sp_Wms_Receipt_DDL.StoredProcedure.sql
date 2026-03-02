@@ -30,6 +30,11 @@ begin
 		) b on a.Company_Code = b.FactoryCode
 	end
 
+	IF ISNULL(@Status, '') = ''
+	BEGIN
+		SET @Status = 'ALL'
+	END
+
 	if @PeriodFrom is not null and @PeriodUntil is not null
 	begin
 		select Id, ReceiptNo 
@@ -37,7 +42,7 @@ begin
 		where 1=1 and ReceiptNo like '%' + @Keyword + '%' 
 		and ReceiptDate between @PeriodFrom and @PeriodUntil
 		and 1 = case when @SupplierCode = 'ALL' then 1 when @SupplierCode = SupplierCode then 1 else 0 end 
-		and StatusReceipt = @Status
+		and 1 = case when @Status = 'ALL' then 1 when StatusReceipt = @Status then 1 else 0 end
 		and 1 = case when isnull(@SourceMenu, '') = '' then 1 when isnull(@SourceMenu, '') = SourceMenu then 1 else 0 end
 	end
 	else
@@ -46,7 +51,7 @@ begin
 		from PartReceiptHeader x inner join @tblFactory y on x.CompanyCode = y.Factory
 		where 1=1 and ReceiptNo like '%' + @Keyword + '%' 
 		and 1 = case when @SupplierCode = 'ALL' then 1 when @SupplierCode = SupplierCode then 1 else 0 end 
-		and StatusReceipt = @Status
+		and 1 = case when @Status = 'ALL' then 1 when StatusReceipt = @Status then 1 else 0 end
 		and 1 = case when isnull(@SourceMenu, '') = '' then 1 when isnull(@SourceMenu, '') = SourceMenu then 1 else 0 end
 	end
 end

@@ -13,6 +13,12 @@ begin
 		return;
 	end
 
+	if exists (select 1 from StockDetail where AddressCode = @AddressCode)
+	begin 
+		raiserror('Data Address already used as reference data',16,1)
+		return;
+	end
+
 	delete from MS_Address where AddressCode = @AddressCode
 end
 GO

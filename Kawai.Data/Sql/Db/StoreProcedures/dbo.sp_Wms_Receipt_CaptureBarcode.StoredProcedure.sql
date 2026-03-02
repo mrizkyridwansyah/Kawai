@@ -19,7 +19,7 @@ where RefNo = @RefNo
 
 select 
 	a.RefNo, a.WarehouseCode, a.AreaCode, a.AddressCode, a.BarcodeNo, a.ItemCode, a.LotNo, a.SublotNo, a.Qty, a.InventoryQty, 
-	a.ExpiredDate, a.ProductionDate, a.ReceiptDate, a.Supplier, a.PrintCls, a.DisposalCls 
+	a.ExpiredDate, a.ProductionDate, a.ReceiptDate, a.Supplier, a.PrintCls, a.DisposalCls, a.StatusReceipt
 from StockDetail a 
 where RefNo = @RefNo
 and Qty > 0

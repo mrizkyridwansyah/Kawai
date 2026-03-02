@@ -26,6 +26,7 @@ begin
 		a.BCDate,
 		a.VehicleNo,
 		a.Transport,
+		a.ReferenceNo,
 		a.Remarks,
 		@minDeliveryDate [DeliveryDatePOFrom],
 		@maxDeliveryDate [DeliveryDatePOUntil],

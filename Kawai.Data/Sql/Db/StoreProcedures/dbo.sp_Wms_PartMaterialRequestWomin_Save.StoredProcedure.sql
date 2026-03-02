@@ -90,12 +90,75 @@ begin
 	JOIN @InsertedHeader i
 		ON r.TempRowId = i.TempRowId;
 
+	DECLARE @BomTemp table 
+	(
+		ProductionId bigint, 
+		ScheduleDate date, 
+		WorkStationCode varchar(100), 
+		ParentItemCode varchar(100), 
+		ChildItemCode varchar(100), 
+		UnitCls varchar(25), 
+		SetNumber int, 
+		ChildClassification varchar(25), 
+		QtyBOM numeric(18, 9), 
+		QtySet numeric(18, 9), 
+		RequirementQty numeric(18, 9)
+	)
+
+	;WITH Numbers AS (
+		SELECT TOP (1000)
+			ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
+		FROM sys.objects
+	)
+
+	insert into @BomTemp
+	SELECT
+		req.ProductionId,
+		req.ScheduleDate,
+		bomws.WorkStationCode,
+		req.ItemCode AS ParentItemCode,
+		bomws.ChildItem_Code AS ChildItemCode,
+		bomws.Unit_Cls UnitCls,
+		n.n SetNumber,
+		mi.ClasificationPart_Cls,
+		bomws.Qty AS QtyBOM,
+		CASE
+			WHEN n.n * bomws.MaxCapacity <= TotalQty THEN bomws.MaxCapacity
+			ELSE TotalQty - ((n.n - 1) * bomws.MaxCapacity)
+		END AS QtySet,
+
+		bomws.Qty *
+		CASE
+			WHEN n.n * bomws.MaxCapacity <= TotalQty THEN bomws.MaxCapacity
+			ELSE TotalQty - ((n.n - 1) * bomws.MaxCapacity)
+		END AS RequirementQty
+	FROM 
+	(
+		select 
+			hd.Bomws_ID, hd.Line_Code, hd.WorkStationCode, hd.ParentItemCode, hd.MAX_Qty_Set MaxCapacity, hd.Troly_Cls, 
+			dt.DetailID, dt.ChildItem_Code, dt.Unit_Cls, dt.Qty 
+		from MS_BOMPerworkstation_Header hd
+		inner join MS_BOMPerworkstation_Detail dt on hd.Bomws_ID = dt.Bomws_ID
+	) bomws
+	INNER JOIN @NewRequest req
+		ON bomws.ParentItemCode = req.ItemCode
+	INNER JOIN MS_WorkStation ws
+		ON bomws.WorkStationCode = ws.WorkStationCode
+	LEFT JOIN Item_Master mi on bomws.ChildItem_Code = mi.Item_Code
+	CROSS APPLY (
+		SELECT req.RequestSetQty AS TotalQty
+	) q
+
+	INNER JOIN Numbers n
+		ON n.n <= CEILING(q.TotalQty * 1.0 / bomws.MaxCapacity);
+
 	set @RowCount = 
 	(
-		select count(*) 
+		select sum(TotalDetil) 
 		from 
 		(
-			select distinct a.ProductionId, bomws.WorkStationCode from @Request a inner join MS_BOMPerworkstation bomws on a.ItemCode = bomws.ParentItem_Code
+			select a.ProductionId, bomws.WorkStationCode, max(SetNumber) TotalDetil from @Request a inner join @BomTemp bomws on a.ItemCode = bomws.ParentItemCode
+			group by a.ProductionId, bomws.WorkStationCode, bomws.ChildClassification
 		) x
 	)
 
@@ -106,26 +169,36 @@ begin
 
 	insert into PartMaterialRequestDetail 
 	(
-		RequestDetailNo, RequestID, WorkStationCode, AreaCode, SEQ, RackNumber, RefNumber, RequestStatusID, Remarks, RegisterDate, RegisterUser
+		RequestDetailNo, RequestID, WorkStationCode, AreaCode, SEQ, Trolley_No, RefNumber, RequestStatusID, Remarks, RegisterDate, RegisterUser
 	)
 	select 
 		@prefixDetail + RIGHT(REPLICATE('0', 4) + CAST(isnull(@lastSequenceDetail, 0) + ROW_NUMBER() OVER (ORDER BY bomws.WorkStationCode) AS VARCHAR), 4),  
-		r.RequestId, bomws.WorkStationCode, '', ROW_NUMBER() over (order by bomws.WorkStationCode), null, null, 0, '', getdate(), @UserId
-	From 
+		r.RequestId, 
+		bomws.WorkStationCode, 
+		isnull(bomws.ChildClassification, '20'), -- untuk default adalah OTHERS 
+		bomws.SetNumber, 
+		null, 
+		cast(r.RequestId as varchar) + rtrim(bomws.WorkStationCode) + cast(bomws.SetNumber as varchar), 
+		0, '', getdate(), @UserId
+	From 		
 	(
-		select distinct ParentItem_Code, WorkStationCode From MS_BOMPerworkstation 
+		select distinct ProductionId, WorkStationCode, ChildClassification, SetNumber from @BomTemp
 	) bomws
-	inner join @Request r on bomws.ParentItem_Code = r.ItemCode
+	inner join @Request r on bomws.ProductionId = r.ProductionId
 
 	insert into PartMaterialRequestItemDetail 
 	(
 		RequestDetailID, ItemCode, unit_Cls, ChildRequirement_Qty, Remarks, RegisterDate, RegisterUser
 	)
 	select 
-		pmrd.RequestDetailID, bomws.ChildItem_Code, bomws.Unit_Cls, bomws.Qty * r.RequestSetQty, '', getdate(), @UserId
-	From MS_BOMPerworkstation bomws
-	inner join @Request r on bomws.ParentItem_Code = r.ItemCode
-	inner join PartMaterialRequestDetail pmrd on pmrd.RequestID = r.RequestId and pmrd.WorkStationCode = bomws.WorkStationCode
+		pmrd.RequestDetailID, bomws.ChildItemCode, bomws.UnitCls, bomws.RequirementQty, '', getdate(), @UserId
+	From @BomTemp bomws
+	inner join 
+	(
+		select dtl.RequestDetailID, r.ProductionId , dtl.WorkStationCode, dtl.AreaCode, dtl.SEQ URutan From @Request r 
+		inner join PartMaterialRequestDetail dtl on dtl.RequestID = r.RequestId	
+	) pmrd on bomws.ProductionId = pmrd.ProductionId and pmrd.WorkStationCode = bomws.WorkStationCode and pmrd.URutan = bomws.SetNumber 
+	and pmrd.AreaCode = bomws.ChildClassification
 
 end
 GO

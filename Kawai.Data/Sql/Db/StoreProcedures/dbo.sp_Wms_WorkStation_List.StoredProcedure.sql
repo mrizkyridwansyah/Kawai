@@ -25,7 +25,7 @@ begin
 	end 
 	else 
 	begin
-		set @sqlSort = 'order by wh.WorkStationCode'
+		set @sqlSort = 'order by wh.WorkStationCode asc'
 	end 
 
 	declare @TotalRows int =

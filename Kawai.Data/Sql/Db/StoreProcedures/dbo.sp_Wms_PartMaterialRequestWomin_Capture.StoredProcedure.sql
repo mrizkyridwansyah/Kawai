@@ -28,7 +28,7 @@ begin
 		pmrd.WorkStationCode, 
 		pmrd.AreaCode,
 		pmrd.SEQ,
-		pmrd.RackNumber,
+		pmrd.Trolley_No,
 		pmrd.RefNumber,
 		pmrd.RequestStatusID,
 		pmrd.Remarks
