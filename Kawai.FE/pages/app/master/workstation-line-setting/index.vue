@@ -121,7 +121,7 @@
                 <td>{{ item.WorkStationName }}</td>
                 <td style="width: 150px !important;">
                   <div style="justify-items: center; display: grid">
-                  <input-stoppoint
+                  <input-stoppointbyaddress
                     v-model="item.StopPointCode"
                     :width="'100%'"
                     :include-temp="true"
@@ -131,7 +131,7 @@
                 </td>
                  <td style="width: 150px !important;">
                   <div style="justify-items: center; display: grid">
-                  <input-stoppoint
+                  <input-stoppointbyaddress
                     v-model="item.StopPointCode2"
                     :width="'100%'"
                     :include-temp="true"
