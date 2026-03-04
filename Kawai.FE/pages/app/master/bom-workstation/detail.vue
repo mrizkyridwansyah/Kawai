@@ -135,6 +135,25 @@
           <!-- BEGIN tab-content -->
           <div class="tab-content panel rounded-0 p-3 m-0">
             <!-- BEGIN tab-pane MENU -->
+          <div
+  class="d-flex align-items-center mb-2 p-2"
+  style="gap:10px; background:#2f2f2f; border-radius:6px;"
+>
+  <!-- SORT BUTTON -->
+ 
+
+  <!-- SEARCH INPUT -->
+  <div style="flex:1;">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      v-model="filter.keyword"
+      placeholder="Search..."
+       style="background:#f1f1f1;"
+    />
+  </div>
+
+</div>
             <div class="table-scroll">
               <table
                 class="table table-striped table-bordered mb-0 align-middle sticky-header-table"
@@ -143,6 +162,9 @@
                   <tr>
                     <th class="text-center" style="vertical-align: middle">
                       Setting
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Type Material
                     </th>
                     <th class="text-center" style="vertical-align: middle">
                       Child Item
@@ -168,7 +190,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, idx) in allowed.bomsetting">
+                  <tr v-for="(item, idx) in filteredBomSetting" :key="item.ChildItem_Code">
                     <td>
                       <div style="justify-items: center">
                         <input-checkbox
@@ -177,6 +199,7 @@
                         />
                       </div>
                     </td>
+                    <td>{{ item.TypeMaterial }}</td>
                     <td>{{ item.ChildItem_Code }}</td>
                     <td>{{ item.ChildItem_Name }}</td>
                     <td>
@@ -226,11 +249,25 @@ export default {
       bomsetting: [],
     },
   }),
-  computed: {
-    dsBOMSetting: function () {
-      return useBOMWorkstationDetail();
-    },
+computed: {
+  dsBOMSetting() {
+    return useBOMWorkstationDetail();
   },
+
+  filteredBomSetting() {
+    if (!this.filter.keyword) {
+      return this.allowed.bomsetting;
+    }
+
+    const keyword = this.filter.keyword.toLowerCase();
+
+    return this.allowed.bomsetting.filter(x =>
+      (x.ChildItem_Code ?? "").toLowerCase().includes(keyword) ||
+      (x.ChildItem_Name ?? "").toLowerCase().includes(keyword) ||
+      (x.TypeMaterial ?? "").toLowerCase().includes(keyword)
+    );
+  }
+},
   mounted: function () {
     this.filter.factory = this.$route.query.factory;
     this.filter.supplier = this.$route.query.process;

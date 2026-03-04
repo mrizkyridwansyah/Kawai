@@ -60,6 +60,7 @@ public class BOMWorkStationHeaderDto
 public class BOMWorkStationDetailDto
 {
     public bool AllowSetting { get; set; }
+    public string TypeMaterial { get; set; }
     public string ChildItem_Code { get; set; }
     public string ChildItem_Name { get; set; }
     public decimal Qty { get; set; }
