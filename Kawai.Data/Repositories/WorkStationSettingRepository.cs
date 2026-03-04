@@ -37,10 +37,16 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
         //ini list StopPoint dari payload
         var stopPoints = wssettinglist.SettingList
             .Where(x => x.AllowSetting == true && !string.IsNullOrEmpty(x.StopPointCode))
-            .Select(x => x.StopPointCode)
+            .Select(x => x.StopPointCode )
             .Distinct()
             .ToList();
-        
+
+        var stopPoints2 = wssettinglist.SettingList
+           .Where(x => x.AllowSetting == true && !string.IsNullOrEmpty(x.StopPointCode2))
+           .Select(x => x.StopPointCode2)
+           .Distinct()
+           .ToList();
+
         // =========================
         // Build Table Valued Parameter
         // =========================
@@ -51,8 +57,16 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
             table.Rows.Add(sp);
         }
 
+        var table2 = new DataTable();
+        table2.Columns.Add("StopPointCode2", typeof(string));
+        foreach (var sp2 in stopPoints2)
+        {
+            table2.Rows.Add(sp2);
+        }
+
         var parameters = new DynamicParameters();
         parameters.Add("@StopPoints", table.AsTableValuedParameter("dbo.tvp_StopPointList"));
+        parameters.Add("@StopPoints2", table2.AsTableValuedParameter("dbo.tvp_StopPointList2"));
         parameters.Add("@LineCode", wssettinglist.LineCode);
 
         commands.Add((
@@ -75,6 +89,7 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
                 wsSet.WorkStationCode,
                 wsSet.AllowSetting,
                 wsSet.StopPointCode, //input address untuk prod result
+                wsSet.StopPointCode2, //input address untuk prod result
                 UserID = userId
             }, CommandType.StoredProcedure));
         }

@@ -6,6 +6,7 @@ public class WorkStationSettingDto: DataTableDto
     public string Barcode { get; set; }
     public string LineCode { get; set; }
     public string StopPointCode { get; set; } = "";
+    public string StopPointCode2 { get; set; } = "";
     public string DDLDescription { get; set; }
     public bool AllowSetting { get; set; }
     public string WorkStationName { get; set; }
