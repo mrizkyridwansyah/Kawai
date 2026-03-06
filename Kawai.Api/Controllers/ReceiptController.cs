@@ -116,7 +116,7 @@ public class ReceiptController : HahaController
 
         var before = await _receiptRepository.Capture(result.Id ?? 0);
 
-        await _receiptRepository.PrintLabel(result.Id ?? 0, Auth.User.UserID);
+        await _receiptRepository.PrintLabel(result.Id ?? 0, Auth.User.UserID, true);
 
         var after = await _receiptRepository.Capture(result.Id ?? 0);
         await _logger.SaveDataLog(new DataLogDto
@@ -215,15 +215,35 @@ public class ReceiptController : HahaController
     [HttpPost("print-barcodes")]
     public async Task<IActionResult> LabelBarcode(long receiptId, [FromServices] RazorViewRenderer renderer)
     {
-        var results = await _receiptRepository.GetListBarcodeDetail(receiptId);       
+        var result = await _receiptRepository.GetDataHeader(receiptId);
+
+        if (result == null) return Invalid("Data Receipt Invalid");
+
+        var before = await _receiptRepository.Capture(result.Id ?? 0);
+
+        await _receiptRepository.PrintLabel(result.Id ?? 0, Auth.User.UserID, false);
+
+        var after = await _receiptRepository.Capture(result.Id ?? 0);
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Material",
+            EntityId = (result.Id ?? 0).ToString(),
+            ReferenceId = result.ReceiptNo,
+            Before = before,
+            After = after,
+            Activity = "Print Label Receipt",
+            Action = DataLogAction.Update
+        });
+
+        var results = await _receiptRepository.GetListBarcodeDetail(receiptId);
         var renderedLabels = new List<string>();
 
         foreach (var item in results)
         {
             var model = new LabelBarcodeDetailDto
             {
-                 
-                BarcodeNo   = item.BarcodeNo,
+
+                BarcodeNo = item.BarcodeNo,
                 ReceiptNo = item.ReceiptNo,
                 FromCompany = item.FromCompany,
                 ToCompany = item.ToCompany,
@@ -247,8 +267,8 @@ public class ReceiptController : HahaController
 
         var fullHtml = BuildA4Html(renderedLabels);
         var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
-
-        return File(pdfBytes, "application/pdf", "labels.pdf");
+        Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+        return File(pdfBytes, "application/pdf", result.SupplierName + "_" + result.DNNumber);
     }
 
     protected string BuildA4Html(List<string> labelHtmls)

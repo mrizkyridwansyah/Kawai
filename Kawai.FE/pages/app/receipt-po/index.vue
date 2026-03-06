@@ -200,6 +200,7 @@
                   <input-text
                     v-model="model.RegisterNo"
                     :errors="errors?.RegisterNo"
+                    :disabled
                     style="width: 360px"
                   />
                 </td>
@@ -438,6 +439,8 @@ export default {
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
+    this.model.BCDate = today;
+    this.model.DNDate = today;
   },
   methods: {
     deepClone: function (obj) {

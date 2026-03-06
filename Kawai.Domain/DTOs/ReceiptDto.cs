@@ -112,4 +112,5 @@ public class ReceiptInquiryDto: DataTableDto
     public string Currency { get; set; }
     public decimal Price { get; set; }
     public decimal Amount { get; set; }
+    public string StatusIQC { get; set; }
 }

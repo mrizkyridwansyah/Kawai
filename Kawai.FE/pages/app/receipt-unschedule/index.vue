@@ -90,7 +90,7 @@
           <td style="padding-left: 15px; padding-top: 5px">
             <input-date
               v-model="model.BCDate"
-              style-date="width: 115px"
+              style-date="width: 120px"
               :errors="errors?.BCDate"
             />
           </td>
@@ -100,7 +100,7 @@
           <td style="padding-left: 15px; padding-top: 5px">
             <input-date
               v-model="model.DNDate"
-              style-date="width: 115px"
+              style-date="width: 120px"
               :errors="errors?.DNDate"
             />
           </td>
@@ -393,7 +393,12 @@ export default {
       }
     },
   },
-  mounted: function () {},
+  mounted: function () {
+    let today = new Date();
+    this.model.BCDate = today;
+    this.model.DNDate = today;
+
+  },
   methods: {
     deepClone: function (obj) {
       return typeof structuredClone === "function"

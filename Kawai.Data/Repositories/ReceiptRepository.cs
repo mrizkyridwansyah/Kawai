@@ -151,12 +151,13 @@ public class ReceiptRepository : IReceiptRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new { Id = id });
     }
 
-    public async Task PrintLabel(long id, string userId)
+    public async Task PrintLabel(long id, string userId, bool? mustBePrint)
     {
         string sqlHeader = "sp_Wms_Receipt_PrintLabel";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
             ReceiptId = id,
+            MustPrint = mustBePrint ?? true,
             UserId = userId
         });
     }

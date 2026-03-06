@@ -32,7 +32,7 @@
           <td style="padding-top: 5px">
             <label class="form-label">Receipt Date</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px; width: 160px">
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="filter.PeriodFrom"
               style-date="width: 100px !important"
@@ -127,6 +127,7 @@
                 <th class="text-center">Currency</th>
                 <th class="text-center">Price</th>
                 <th class="text-center">Amount</th>
+                <th class="text-center">Status IQC</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
@@ -283,6 +284,15 @@
                   class="text-right"
                 >
                   {{ $func.formatMoney(item.Amount) }}
+                </td>
+                <td
+                  :class="{
+                    'bg-danger': item.Qty > item.QtyScan,
+                    'table-striped-row':
+                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
+                  }"
+                >
+                  {{ item.StatusIQC }}
                 </td>
                 <td
                   class="text-center"

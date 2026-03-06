@@ -6,7 +6,7 @@
           <td style="padding-top: 5px">
             <label class="form-label">Schedule Date</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px; width: 160px">
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="filter.PeriodFrom"
               style-date="width: 100px !important"
