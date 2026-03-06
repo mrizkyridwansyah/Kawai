@@ -44,12 +44,13 @@
         v-model="tempValue"
         value-zone="local"
         zone="local"
-        format="dd/MM/yyyy"
+        format="dd MMM yyyy"
         :input-id="key"
         v-model:open-pop-up="isOpen"
-        placeholder="dd/MM/yyyy"
+        placeholder="dd MMM yyyy"
         :disabled="disabled"
         :style-date="styleDate"
+        :mask="null"
       />
       <span
         class="input-group-text btn btn-primary"
