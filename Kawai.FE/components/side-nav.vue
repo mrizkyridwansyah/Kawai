@@ -22,7 +22,12 @@
               </v-app-link>
             </template>
             <template v-else-if="getLevel(menuGroup) === 2">
-              <a href="javascript:;" class="menu-link">
+              <a
+                href="javascript:;"
+                class="menu-link"
+                @mouseenter="showFloatingMenu(menuGroup, null, $event)"
+                @mouseleave="hideFloatingMenu"
+              >
                 <div class="menu-icon">
                   <font-awesome-icon :icon="getImageName(menuGroup)" />
                 </div>
@@ -42,7 +47,12 @@
               </div>
             </template>
             <template v-else>
-              <a href="javascript:;" class="menu-link">
+              <a
+                href="javascript:;"
+                class="menu-link"
+                @mouseenter="showFloatingMenu(menuGroup, null, $event)"
+                @mouseleave="hideFloatingMenu"
+              >
                 <div class="menu-icon">
                   <font-awesome-icon :icon="getImageName(menuGroup)" />
                 </div>
@@ -60,7 +70,12 @@
                   }"
                   @click.stop="toggleSubMenu(menuGroup, subGroup)"
                 >
-                  <a href="javascript:;" class="menu-link">
+                  <a
+                    href="javascript:;"
+                    class="menu-link"
+                    @mouseenter="showFloatingMenu(menuGroup, subGroup, $event)"
+                    @mouseleave="hideFloatingMenu"
+                  >
                     <div class="menu-text">{{ subGroup }}</div>
                   </a>
                   <div
@@ -87,35 +102,61 @@
             </template>
           </div>
           <!-- BEGIN minify-button -->
-          <!-- <div class="menu-item d-flex">
+          <div class="menu-item d-flex">
             <a
               href="javascript:;"
               class="app-sidebar-minify-btn ms-auto d-flex align-items-center text-decoration-none"
-              data-toggle="app-sidebar-minify"
               @click="handleToggle"
             >
               <font-awesome-icon icon="fa-angle-double-left" />
             </a>
-          </div> -->
+          </div>
           <!-- END minify-button -->
         </div>
       </div>
     </div>
+
+    <teleport to="body">
+      <div
+        data-bs-theme="dark"
+        v-if="floatingMenu.show"
+        class="app-sidebar-float-submenu-container"
+        :style="{ top: floatingMenu.top + 'px', left: '60px' }"
+        @mouseenter="clearHideTimer"
+        @mouseleave="hideFloatingMenu"
+      >
+        <div class="app-sidebar-float-submenu-arrow"></div>
+        <div class="app-sidebar-float-submenu">
+          <div
+            v-for="menu in floatingMenu.items"
+            :key="menu.MenuName"
+            class="menu-item"
+          >
+            <v-app-link :to="menu.MenuName" class="menu-link">
+              <div class="menu-text">{{ menu.MenuDescription }}</div>
+            </v-app-link>
+          </div>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
 <script>
+import { useNuxtApp } from "#app";
+
 export default {
-  // semua properti kamu tetap
-  setup() {
-    const { $sidebarToggle } = useNuxtApp();
-    return { $sidebarToggle }; // supaya bisa diakses di methods & template
-  },
   data: () => ({
+    hideTimer: null,
     isSmallScreen: false, // State untuk mengecek apakah ukuran layar kecil
     privileges: [],
     activeGroups: new Set(), // Menyimpan menu yang aktif
     activeSubMenus: {}, // Menyimpan status submenu, { menuGroup: { subGroup: boolean } }
+    floatingMenu: {
+      show: false,
+      top: 0,
+      items: [],
+    },
   }),
   computed: {
     menu: function () {
@@ -126,9 +167,7 @@ export default {
     },
     getLevel: function () {
       return (menuGroup) => {
-        let subGroup = this.privileges.filter(
-          (x) => x.MenuGroup === menuGroup
-        );
+        let subGroup = this.privileges.filter((x) => x.MenuGroup === menuGroup);
         if (
           subGroup.length === 1 &&
           subGroup[0].SubGroup === null &&
@@ -154,16 +193,14 @@ export default {
     },
     getMenuName: function () {
       return (menuGroup) => {
-        return this.privileges.filter(
-          (item) => item.MenuGroup === menuGroup
-        )[0].MenuName;
+        return this.privileges.filter((item) => item.MenuGroup === menuGroup)[0]
+          .MenuName;
       };
     },
     getImageName: function () {
       return (menuGroup) => {
-        return this.privileges.filter(
-          (item) => item.MenuGroup === menuGroup
-        )[0].ImageName;
+        return this.privileges.filter((item) => item.MenuGroup === menuGroup)[0]
+          .ImageName;
       };
     },
     getSubMenu: function () {
@@ -172,11 +209,11 @@ export default {
           ...new Set(
             this.privileges
               .filter(
-                (item) => item.MenuGroup === menuGroup && item.SubGroup != null
+                (item) => item.MenuGroup === menuGroup && item.SubGroup != null,
                 //  &&
                 // item.MenuGroup != item.SubGroup
               )
-              .map((x) => x.SubGroup)
+              .map((x) => x.SubGroup),
           ),
         ];
       };
@@ -184,12 +221,10 @@ export default {
     getMenu: function () {
       return (menuGroup, subGroup) => {
         if (subGroup == null) {
-          return this.privileges.filter(
-            (item) => item.MenuGroup === menuGroup
-          );
+          return this.privileges.filter((item) => item.MenuGroup === menuGroup);
         } else {
           return this.privileges.filter(
-            (item) => item.MenuGroup === menuGroup && item.SubGroup == subGroup
+            (item) => item.MenuGroup === menuGroup && item.SubGroup == subGroup,
           );
         }
       };
@@ -229,13 +264,32 @@ export default {
       );
     },
     handleToggle: function () {
-      this.$sidebarToggle.toggleSidebarMinified();
+      const { $sidebarToggle } = useNuxtApp();
+      $sidebarToggle.toggleSidebarMinified();
     },
     checkScreenSize: function () {
       this.isSmallScreen = window.innerWidth <= 768; // Sesuaikan breakpoint sesuai kebutuhan
     },
+    showFloatingMenu(menuGroup, subGroup, event) {
+      const { $sidebarToggle } = useNuxtApp();
+
+      // Hanya tampilkan floating jika sidebar minified
+      if (!$sidebarToggle.isSidebarMinified.value) return;
+
+      clearTimeout(this.hideTimer);
+      const rect = event.currentTarget.getBoundingClientRect();
+      this.floatingMenu.top = rect.top;
+      this.floatingMenu.items = this.getMenu(menuGroup, subGroup);
+      this.floatingMenu.show = true;
+    },
+    hideFloatingMenu() {
+      this.hideTimer = setTimeout(() => (this.floatingMenu.show = false), 200);
+    },
+    clearHideTimer() {
+      clearTimeout(this.hideTimer);
+    },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("resize", this.checkScreenSize);
   },
 };
