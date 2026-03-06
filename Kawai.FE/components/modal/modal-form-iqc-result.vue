@@ -195,21 +195,28 @@ export default {
         });
     },
     confirm: function (inspectionResult) {
-      let payload = {
-        InspectionId: this.id,
-        InspectionResult: inspectionResult,
-      };
+      confirmSubmit(
+        () =>
+          new Promise((resolve) => {
+            let payload = {
+              InspectionId: this.id,
+              InspectionResult: inspectionResult,
+            };
 
-      this.ds
-        .confirm(payload)
-        .then((datas) => {
-          toastSuccess("Transaction on process!");
-          this.$emit("submitted");
-        })
-        .catch((err) => {
-          this.errors = err?.Errors;
-          toastDanger(err?.Message);
-        });
+            this.ds
+              .confirm(payload)
+              .then((datas) => {
+                toastSuccess("Transaction on process!");
+                this.$emit("submitted");
+              })
+              .catch((err) => {
+                this.errors = err?.Errors;
+                toastDanger(err?.Message);
+              });
+          }),
+        null,
+        `If you submit <strong>${inspectionResult.toUpperCase()}</strong>, you CAN'T recover it. Are you sure to <strong>SUBMIT</strong> the data?`,
+      );
     },
   },
 };

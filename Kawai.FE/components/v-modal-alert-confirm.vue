@@ -16,7 +16,7 @@
         <div class="modal-body">
           <span v-html="message || 'Are you sure want to continue?'"></span>
           <div class="d-flex justify-content-end mt-4">
-            <button class="btn btn-light btn-sm rounded-pill"
+            <button class="btn btn-danger btn-sm rounded-pill"
               @click="onNo"
               :disabled="isLoading"
             >
