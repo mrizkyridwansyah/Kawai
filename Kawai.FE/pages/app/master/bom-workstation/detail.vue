@@ -231,6 +231,7 @@
 export default {
   data: () => ({
     errors: {},
+   headerTrolley: null,
     filter: {
       factory: null,
       process: null,
@@ -278,22 +279,77 @@ computed: {
 
    this.loadData();  
   },
+  watch: {
+    "filter.trolley_cls"(val) {
+
+    if (!val) return;
+
+    // jika masih trolley dari header → jangan load API
+    if (val === this.headerTrolley) return;
+
+    this.dsBOMSetting.loadQty(val)
+      .then((res) => {
+
+        const qty = res.Data?.MaxQtySet ?? 0;
+
+        this.model.QtySet = qty;
+
+      });
+
+  },
+ 
+},
   methods: {
-loadData() {
+    
+  loadMaxQty(trolleyCls) {
+
+    this.dsBOMSetting.loadQty(trolleyCls)
+      .then((res) => {
+
+        const qty = res.Data?.MaxQtySet ?? 0;
+
+        // isi ke textbox Max Qty Set
+        this.model.QtySet = qty;
+
+      })
+      .catch(() => {
+        toastDanger("Failed load Max Qty");
+      });
+
+  },
+ loadData() {
   return this.dsBOMSetting
     .load(this.filter.linecode, this.filter.item, this.filter.workstation)
     .then((dt) => {
-      // DETAIL
+
       this.allowed.bomsetting = dt.Data.BomSetting ?? [];
 
-      // HEADER
       const header = dt.Data.Header?.[0]?.[0];
+
       if (header) {
-        this.model.QtySet = header.QtySet;
+        this.model.QtySet = header.QtySet; // 200
         this.filter.trolley_cls = header.Trolley_Cls;
+
+        this.headerTrolley = header.Trolley_Cls; // simpan trolley awal
       }
+
     });
 },
+// loadData() {
+//   return this.dsBOMSetting
+//     .load(this.filter.linecode, this.filter.item, this.filter.workstation)
+//     .then((dt) => {
+//       // DETAIL
+//       this.allowed.bomsetting = dt.Data.BomSetting ?? [];
+
+//       // HEADER
+//       const header = dt.Data.Header?.[0]?.[0];
+//       if (header) {
+//         this.model.QtySet = header.QtySet;
+//         this.filter.trolley_cls = header.Trolley_Cls;
+//       }
+//     });
+// },
 
   allowSettingBOM(e, item) {
     this.allowed.bomsetting.find(
@@ -301,6 +357,7 @@ loadData() {
     ).AllowSetting = e.target.checked;
   },
 
+  
   submit() {
       if (!this.filter.trolley_cls) {
         toastWarning("Please Select Trolley Cls");
@@ -356,7 +413,7 @@ loadData() {
         this.isLoading = false;
       });
   }
-}
+    }
   
 };
 </script>

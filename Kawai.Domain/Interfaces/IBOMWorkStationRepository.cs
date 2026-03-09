@@ -11,6 +11,7 @@ public interface IBOMWorkStationRepository
     Task<List<BOMWorkStationHeaderDto>> GetBOMWorkStationHeader(string linecode, string parentitem_code, string workstationcode);
     Task<List<BOMWorkStationDetailDto>> GetBOMWorkStationDetail(string linecode, string parentitem_code, string workstationcode);
     Task<List<BOMWorkStationDto>> GetModelClsDDL(string keyword);
+    Task<BOMWorkStationDto> GetDataQty(string trolley_Cls);
     Task<List<BOMWorkStationDto>> GetItemByModelClsDDL(string keyword, string modelCls);
     Task SaveBOMWorkStation(BOMWorkStation bomsetting,string userId);
     Task CopyBomWorkStation(string fromline, string toline, string itemcode, string userId);

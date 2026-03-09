@@ -48,7 +48,7 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
            .ToList();
 
         var stopPoints3 = wssettinglist.SettingList
-        .Where(x => x.AllowSetting == true && !string.IsNullOrEmpty(x.StopPointCode2))
+        .Where(x => x.AllowSetting == true && !string.IsNullOrEmpty(x.StopPointCode3))
         .Select(x => x.StopPointCode3)
         .Distinct()
         .ToList();
@@ -80,7 +80,7 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
         var parameters = new DynamicParameters();
         parameters.Add("@StopPoints", table.AsTableValuedParameter("dbo.tvp_StopPointList"));
         parameters.Add("@StopPoints2", table2.AsTableValuedParameter("dbo.tvp_StopPointList2"));
-        parameters.Add("@StopPoints3", table2.AsTableValuedParameter("dbo.tvp_StopPointList3"));
+        parameters.Add("@StopPoints3", table3.AsTableValuedParameter("dbo.tvp_StopPointList3"));
         parameters.Add("@LineCode", wssettinglist.LineCode);
 
         commands.Add((

@@ -124,9 +124,11 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
     }
 
-
-
-
+    public async Task<BOMWorkStationDto> GetDataQty(string trolley_Cls)
+    {
+        string sp = "sp_Wms_BOMWorkStation_GetQty";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<BOMWorkStationDto>(sp, new { Trolley_Cls = trolley_Cls });
+    }
 
     public async Task<Dictionary<string, object>> Capture(string parentitem_code, string workStationCode)
     {

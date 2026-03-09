@@ -48,9 +48,9 @@ public class StopPointController : HahaController
     }
 
     [HttpGet("ddlsearchbyaddress")]
-    public async Task<IActionResult> DDLSearchbyAddress(string keyword, string ids)
+    public async Task<IActionResult> DDLSearchbyAddress(string keyword, string line, string workstation,string ids)
     {
-        var results = await _stoppointRepository.GetDDLByAddress(keyword);
+        var results = await _stoppointRepository.GetDDLByAddress(keyword, line, workstation);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

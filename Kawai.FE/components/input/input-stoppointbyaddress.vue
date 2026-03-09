@@ -1,7 +1,7 @@
 <template>
   <table>
     <tr>
-      <td :style="this.styleCode">
+      <td :style="styleCode">
         <input-multiselect
           v-model="tempValue"
           :options="list"
@@ -13,7 +13,6 @@
           :searchable="true"
           :label="displayLabel"
           track-by="StopPointCode"
-          trackBy="StopPointCode"
           :hide-selected="true"
           :internal-search="false"
           :loading="isLoading"
@@ -25,29 +24,29 @@
           :disabled="disabled !== undefined || false"
           select-label=""
           deselect-label=""
-          
         />
+
         <div class="invalid-feedback d-block" v-if="errors">
           {{ errors[0] }}
         </div>
-        <small class="form-text text-muted" v-if="description">{{
-          description
-        }}</small>
+
+        <small class="form-text text-muted" v-if="description">
+          {{ description }}
+        </small>
       </td>
-      
     </tr>
   </table>
 </template>
 
 <script>
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
-
 export default {
   model: {
     prop: "modelValue",
     event: "update",
   },
+
   emits: ["update:modelValue"],
+
   props: [
     "modelValue",
     "type",
@@ -60,71 +59,107 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "includeTemp",
     "styleCode",
     "styleDesc",
+    "line",
+    "workstation"
   ],
-  data: () => ({
-    isLoading: false,
-    list: [],
-    tempValue: null,
-    debounce: null,
-  }),
+
+  data() {
+    return {
+      isLoading: false,
+      list: [],
+      tempValue: null,
+      debounce: null,
+    };
+  },
+
   computed: {
-    cClass: function () {
-      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
+    cClass() {
+      return (this["class"] ?? "") + (this.errors ? " is-invalid" : "");
     },
-    selectedItem: function () {
-      return this.list.find((x) => x.StopPointCode === this.tempValue) || null;
-    },
+
     displayLabel() {
       return this.tempValue ? "StopPointCode" : "DDLDescription";
     },
   },
-  watch: {
-    modelValue: function (after, before) {
-      if (!after) this.tempValue = null;
 
+  watch: {
+    modelValue(after) {
+      if (!after) {
+        this.tempValue = null;
+        return;
+      }
+
+      // sync value dari parent
+      this.tempValue = after;
+
+      // load list agar label muncul
       this.load("", after);
     },
-    tempValue: function (after) {
-      if (!after) this.$emit("update:modelValue", null);
+
+    tempValue(after) {
+      if (!after) {
+        this.$emit("update:modelValue", null);
+      }
+    },
+
+    line: function(after) {
+      this.tempValue = null;
+      this.load('', this.modelValue);
+    },
+    workstation: function(after) {
+      this.tempValue = null;
+      this.load('', this.modelValue);
     },
   },
-  mounted: function () {
+
+  mounted() {
+    if (this.modelValue) {
+      this.tempValue = this.modelValue;
+    }
+
     this.load("", this.modelValue);
   },
+
   methods: {
-    change: function (v) {
+    change(v) {
       if (this.onSelect) this.onSelect(v);
 
       this.$emit("update:modelValue", v);
     },
-    search: function (q) {
+
+    search(q) {
       this.load(q, null);
     },
-    open: function () {
+
+    open() {
       this.load("", null);
     },
-    load: function (q = "", d = "") {
+
+    load(q = "", d = "") {
       this.list = [];
       this.isLoading = true;
-      if (this.debounce != null) clearTimeout(this.debounce);
+
+      if (this.debounce) clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/stoppoint/ddlsearchbyaddress?keyword=${q || ""}&ids=${d || ""}${
-              this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"
-            }`,
+            `/stoppoint/ddlsearchbyaddress?keyword=${q || ""}&ids=${d || ""}&line=${this.line || 'ALL'}&workstation=${this.workstation || 'ALL'}`
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.StopPointCode;
+            const data = p.data.Data || [];
+
+            if (d && data.length > 0) {
+              this.tempValue = data[0].StopPointCode;
             }
-            this.list = p.data.Data;
+
+            this.list = data;
           })
-          .finally(() => (this.isLoading = false));
+          .finally(() => {
+            this.isLoading = false;
+          });
 
         clearTimeout(this.debounce);
       }, 200);
@@ -135,7 +170,7 @@ export default {
 
 <style>
 .input-wrapper {
-  max-width: 12em!important;
+  max-width: 12em !important;
   width: 100%;
 }
 </style>

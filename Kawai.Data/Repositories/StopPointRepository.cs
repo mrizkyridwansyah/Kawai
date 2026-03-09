@@ -60,10 +60,10 @@ public class StopPointRepository : IStopPointRepository
     }
 
 
-    public async Task<List<StopPointDto>> GetDDLByAddress(string keyword)
+    public async Task<List<StopPointDto>> GetDDLByAddress(string keyword , string line , string workstation)
     {
         string sp = "sp_Wms_StopPoint_DDLByAddress";
-        return (await _dbExecutor.QueryListAsync<StopPointDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<StopPointDto>(sp, new { Keyword = keyword ?? "",Line = line  , Workstation = workstation })).ToList();
     }
 
 

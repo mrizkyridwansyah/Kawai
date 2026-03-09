@@ -8,7 +8,7 @@ public interface IStopPointRepository
 {
     Task<List<StopPointDto>> GetAll(RequestParameter param);
     Task<List<StopPointDto>> GetDDL(string keyword);
-    Task<List<StopPointDto>> GetDDLByAddress(string keyword);
+    Task<List<StopPointDto>> GetDDLByAddress(string keyword ,string line, string workstation);
     Task<StopPointDto> GetData(string StopPointCode);
     Task Create(StopPoint stoppoint, string userId);
     Task Update(StopPoint stoppoint, string userId);
