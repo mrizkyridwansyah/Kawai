@@ -294,15 +294,35 @@ export default {
       this.groupLists = [];
     },
     search: function () {
-      // let rangePeriodDays = this.$func.dateDiffInDays(
-      //   this.filter.PeriodFrom,
-      //   this.filter.PeriodUntil
-      // );
+      let rangePeriodDays = this.$func.dateDiffInDays(
+        this.filter.PeriodFrom,
+        this.filter.PeriodUntil
+      );
 
-      // if (rangePeriodDays > 30) {
-      //   toastWarning("Range Period only 30 days.");
-      //   return;
-      // }
+      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
+        return;
+      }
+
+      if (rangePeriodDays > 30) {
+        toastWarning("Jarak Periode hanya 30 hari.");
+        return;
+      }
+
+      if(!this.filter.SupplierCode) {
+        toastWarning("Silahkan pilih supplier.");
+        return;
+      }
+
+      if(!this.filter.PONumber) {
+        toastWarning("Silahkan pilih PO.");
+        return;
+      }
+
+      if(!this.filter.RemainingCls) {
+        toastWarning("Silahkan pilih filter remaining.");
+        return;
+      }
 
       this.ds.setPage(1);
       this.ds.setLength(1000);

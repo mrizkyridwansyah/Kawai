@@ -270,8 +270,28 @@ export default {
         this.filter.PeriodUntil
       );
 
+      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
+        return;
+      }
+
       if (rangePeriodDays > 30) {
-        toastWarning("Range Period only 30 days.");
+        toastWarning("Jarak Periode hanya 30 hari.");
+        return;
+      }
+
+      if(!this.filter.ManufactureCode) {
+        toastWarning("Silahkan pilih process.");
+        return;
+      }
+
+      if(!this.filter.LineCode) {
+        toastWarning("Silahkan pilih line.");
+        return;
+      }
+
+      if(!this.filter.RemainingCls) {
+        toastWarning("Silahkan pilih filter remaining.");
         return;
       }
 

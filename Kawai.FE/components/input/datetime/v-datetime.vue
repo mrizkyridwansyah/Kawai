@@ -34,8 +34,7 @@
       type="text"
       :value="inputValue"
       v-bind="$attrs"
-      readonly
-      @click="open"
+      @blur="manualInput"
     />
     <input
       v-if="hiddenName"
@@ -396,11 +395,15 @@ export default {
     },
     manualInput: function (e) {
       // 1️⃣ Jika format “dd MMM yyyy”
-      if (
-        this.type === "date" &&
-        this.format === "dd MMM yyyy" &&
-        e.target.value
-      ) {
+      if (this.type === "date" && this.format === "dd MMM yyyy") {
+        if (!e.target.value) {
+          if (this.modelValue) {
+            const c = DateTime.fromISO(this.modelValue).setZone(this.zone);
+            e.target.value = c.toFormat("dd MMM yyyy");
+          }
+          return;
+        }
+
         const c = DateTime.fromFormat(e.target.value, "dd MMM yyyy");
         if (!c.invalid) {
           this.datetime = c.setZone(this.zone);
@@ -413,10 +416,14 @@ export default {
 
       if (this.type == "month") {
         if (!e.target.value) {
-          this.$emit("update:modelValue", null);
+          if (this.modelValue) {
+            const c = DateTime.fromISO(this.modelValue).setZone(this.zone);
+            e.target.value = c.toFormat("MMM yyyy");
+          }
           return;
         }
-        var c = DateTime.fromFormat(e.target.value, "MM/yyyy");
+        
+        var c = DateTime.fromFormat(e.target.value, "MMM yyyy");
         if (c.invalid == null) {
           this.datetime = datetimeFromISO(c);
           this.emitInput();
@@ -425,9 +432,13 @@ export default {
         }
         return;
       }
+
       if (this.type == "year") {
         if (!e.target.value) {
-          this.$emit("update:modelValue", null);
+          if (this.modelValue) {
+            const c = DateTime.fromISO(this.modelValue).setZone(this.zone);
+            e.target.value = c.toFormat("yyyy");
+          }
           return;
         }
         var c = DateTime.fromFormat(e.target.value, "yyyy");
@@ -439,6 +450,7 @@ export default {
         }
         return;
       }
+
       if (e.target.value?.length == 10) {
         var c = DateTime.fromFormat(e.target.value, "dd/MM/yyyy");
         if (c.invalid == null) {

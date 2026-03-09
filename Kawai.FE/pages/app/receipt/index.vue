@@ -437,6 +437,11 @@ export default {
         return false;
       }
 
+      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
+        return;
+      }
+
       if ((this.filter.ReceiptId || "") == "") {
         toastDanger("Silahkan pilih no. receipt");
         return false;
