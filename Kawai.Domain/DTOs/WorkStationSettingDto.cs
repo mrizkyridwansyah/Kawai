@@ -10,6 +10,7 @@ public class WorkStationSettingDto: DataTableDto
     public string DDLDescription { get; set; }
     public bool AllowSetting { get; set; }
     public string WorkStationName { get; set; }
+    public string WorkStationNameLenght { get; set; }
     public DateTime? RegisterDate { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? LastUpdate { get; set; }

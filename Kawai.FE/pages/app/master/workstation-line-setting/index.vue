@@ -92,6 +92,7 @@
                 <th class="text-center">Description</th>
                 <th class="text-center">Stop Point Code #1</th>
                 <th class="text-center">Stop Point Code #2</th>
+                <th class="text-center">Stop Point Code #3</th>
                 <th class="text-center">Register Date</th>
                 <th class="text-center">Register User</th>
                 <th class="text-center">Last Update</th>
@@ -137,6 +138,16 @@
                     :include-temp="true"
                     :errors="item.errors?.StopPointCode2"
                     @update:modelValue="(value) => onStopPointChange2(value, item)"
+                  /></div>
+                </td>
+                <td style="width: 150px !important;">
+                  <div style="justify-items: center; display: grid">
+                  <input-stoppointbyaddress
+                    v-model="item.StopPointCode3"
+                    :width="'100%'"
+                    :include-temp="true"
+                    :errors="item.errors?.StopPointCode3"
+                    @update:modelValue="(value) => onStopPointChange3(value, item)"
                   /></div>
                 </td>
                 <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
@@ -276,6 +287,40 @@ export default {
         }
       }
     },
+
+     onStopPointChange3: function (value, item) {
+      //jika belum centang allowsetting maka error
+      if (!item.AllowSetting) {
+        toastWarning("Please allow setting before set Stop Point Code");
+        return;
+      }
+
+      item.StopPointCode3 = value;
+      this.validateDuplicateStopPoint3(item);
+    },
+    validateDuplicateStopPoint3: function (item) {
+      const duplicate = this.ds.data.Items.find(
+        (x) =>
+          x.StopPointCode3 === item.StopPointCode3 &&
+          x.WorkStationCode !== item.WorkStationCode
+      );
+      if (duplicate) {
+        toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode3);
+        //clear value
+    
+        // item.errors = {
+        //   ...item.errors,
+        //   // StopPointCode: "Duplicate Stop Point Code",
+    
+        // };
+      } else if (item.errors) {
+        delete item.errors.StopPointCode3;
+        if (Object.keys(item.errors).length === 0) {
+          delete item.errors;
+        }
+      }
+    },
+
     submit: function () {
       if (!this.filter.supplier) {
         toastWarning("Please select process!");
@@ -380,7 +425,7 @@ export default {
       if (checked && existingIndex === -1) {
         this.selectedPrint.push({
           Key: item.Barcode,
-          Value: item.WorkStationName,
+          Value: item.WorkStationNameLenght,
         });
       } else if (!checked && existingIndex !== -1) {
         this.selectedPrint.splice(existingIndex, 1);

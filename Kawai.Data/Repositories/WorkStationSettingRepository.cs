@@ -47,6 +47,12 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
            .Distinct()
            .ToList();
 
+        var stopPoints3 = wssettinglist.SettingList
+        .Where(x => x.AllowSetting == true && !string.IsNullOrEmpty(x.StopPointCode2))
+        .Select(x => x.StopPointCode3)
+        .Distinct()
+        .ToList();
+
         // =========================
         // Build Table Valued Parameter
         // =========================
@@ -64,9 +70,17 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
             table2.Rows.Add(sp2);
         }
 
+        var table3 = new DataTable();
+        table3.Columns.Add("StopPointCode3", typeof(string));
+        foreach (var sp3 in stopPoints3)
+        {
+            table3.Rows.Add(sp3);
+        }
+
         var parameters = new DynamicParameters();
         parameters.Add("@StopPoints", table.AsTableValuedParameter("dbo.tvp_StopPointList"));
         parameters.Add("@StopPoints2", table2.AsTableValuedParameter("dbo.tvp_StopPointList2"));
+        parameters.Add("@StopPoints3", table2.AsTableValuedParameter("dbo.tvp_StopPointList3"));
         parameters.Add("@LineCode", wssettinglist.LineCode);
 
         commands.Add((
@@ -90,6 +104,7 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
                 wsSet.AllowSetting,
                 wsSet.StopPointCode, //input address untuk prod result
                 wsSet.StopPointCode2, //input address untuk prod result
+                wsSet.StopPointCode3, //input address untuk prod result
                 UserID = userId
             }, CommandType.StoredProcedure));
         }
