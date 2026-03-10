@@ -41,6 +41,25 @@ public class TradeRepository : ITradeRepository
         return (await _dbExecutor.QueryListAsync<TradeDto>(sp, new { Keyword = keyword ?? "" })).ToList();
     }
 
+    public async Task<List<TradeDto>> GetDDLCustomer()
+    {
+        string sp = "sp_Wms_Trade_Customer";
+        var data = (await _dbExecutor.QueryListAsync<TradeDto>(sp)).ToList();
+
+        foreach (var item in data)
+        {
+            if (string.Equals(item.Trade_Code, "All", StringComparison.OrdinalIgnoreCase))
+            {
+                item.Trade_Code = "ALL";
+                item.Trade_Name = "ALL";
+            }
+
+            item.DDLDescription = $"{item.Trade_Code} - {item.Trade_Name}";
+        }
+
+        return data;
+    }
+
 
     public async Task SaveTradeDelivery(TradeSaveDelivery tradedeliverylist,string userId)
     {

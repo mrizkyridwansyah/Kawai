@@ -81,6 +81,29 @@ public class TradeController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddlsearch-customer")]
+    public async Task<IActionResult> DDLSearchCustomer([FromQuery] string keyword, [FromQuery] string ids)
+    {
+        var results = await _tradeRepository.GetDDLCustomer();
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            var key = keyword.Trim();
+            results = results.Where(x =>
+                (!string.IsNullOrEmpty(x.Trade_Code) && x.Trade_Code.Contains(key, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(x.Trade_Name) && x.Trade_Name.Contains(key, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.Trade_Code)).ToList();
+        }
+
+        return Success(results);
+    }
+
 
 
     [HttpGet("detail")]
