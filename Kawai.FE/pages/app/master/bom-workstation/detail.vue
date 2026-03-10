@@ -372,10 +372,10 @@ computed: {
       x => x.AllowSetting === true
     );
 
-    if (details.length === 0) {
-      toastWarning("Please select child item setting (minimal 1 data)!");
-      return;
-    }
+    // if (details.length === 0) {
+    //   toastWarning("Please select child item setting (minimal 1 data)!");
+    //   return;
+    // }
 
     this.isLoading = true;
 
