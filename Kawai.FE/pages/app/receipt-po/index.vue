@@ -200,7 +200,6 @@
                   <input-text
                     v-model="model.RegisterNo"
                     :errors="errors?.RegisterNo"
-                    :disabled
                     style="width: 360px"
                   />
                 </td>
