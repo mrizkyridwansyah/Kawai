@@ -65,6 +65,7 @@ export default {
     list: [],
     tempValue: null,
     debounce: null,
+    lastRequestKey: null,
   }),
   computed: {
     cClass: function () {
@@ -72,31 +73,35 @@ export default {
     },
   },
   watch: {
-    modelValue: function (after) {
-      if (!after) this.tempValue = null;
-      this.load("", after);
+    modelValue: function (after, before) {
+      if (after === before) return;
+      this.tempValue = after || null;
     },
     tempValue: function (after) {
-      if (!after) this.$emit("update:modelValue", null);
+      if (!after && this.modelValue) this.$emit("update:modelValue", null);
     },
     customer: function () {
-      this.tempValue = null;
-      this.$emit("update:modelValue", null);
+      this.tempValue = "ALL";
+      this.lastRequestKey = null;
+      this.$emit("update:modelValue", "ALL");
       this.load("", null);
     },
     dateFrom: function () {
-      this.tempValue = null;
-      this.$emit("update:modelValue", null);
+      this.tempValue = "ALL";
+      this.lastRequestKey = null;
+      this.$emit("update:modelValue", "ALL");
       this.load("", null);
     },
     dateTo: function () {
-      this.tempValue = null;
-      this.$emit("update:modelValue", null);
+      this.tempValue = "ALL";
+      this.lastRequestKey = null;
+      this.$emit("update:modelValue", "ALL");
       this.load("", null);
     },
   },
   mounted: function () {
-    this.load("", this.modelValue);
+    this.tempValue = this.modelValue || null;
+    this.load("", null);
   },
   methods: {
     change: function (v) {
@@ -108,16 +113,20 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     load: function (q = "", d = "") {
-      this.list = [];
-
       if (!this.dateFrom || !this.dateTo) {
         this.isLoading = false;
         return;
       }
 
+      const dateFrom = this.$func.asUtcStringDateOnly(new Date(this.dateFrom));
+      const dateTo = this.$func.asUtcStringDateOnly(new Date(this.dateTo));
+      const requestKey = `${q || ""}|${d || ""}|${this.customer || "ALL"}|${dateFrom}|${dateTo}`;
+      if (requestKey === this.lastRequestKey) return;
+
+      this.lastRequestKey = requestKey;
       this.isLoading = true;
       if (this.debounce != null) clearTimeout(this.debounce);
 
@@ -126,17 +135,17 @@ export default {
           .get(
             `/shipping-instruction/ddlsearch?keyword=${q || ""}&custCode=${
               this.customer || "ALL"
-            }&dateFrom=${this.$func.asUtcStringDateOnly(
-              new Date(this.dateFrom),
-            )}&dateTo=${this.$func.asUtcStringDateOnly(
-              new Date(this.dateTo),
-            )}&ids=${d || ""}`,
+            }&dateFrom=${dateFrom}&dateTo=${dateTo}&ids=${d || ""}`,
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.SI_No;
+            const rows = p?.data?.Data || [];
+            if (d && rows.length > 0) {
+              this.tempValue = rows[0]?.SI_No || null;
             }
-            this.list = p.data.Data;
+            this.list = rows;
+          })
+          .catch(() => {
+            this.lastRequestKey = null;
           })
           .finally(() => (this.isLoading = false));
 

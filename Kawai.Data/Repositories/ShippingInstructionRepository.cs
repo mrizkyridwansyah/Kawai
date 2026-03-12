@@ -1,5 +1,4 @@
 using Kawai.Data.SqlConnections;
-using Kawai.Data;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -20,11 +19,11 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         var fromDate = dateFrom ?? new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var toDate = dateTo ?? fromDate.AddMonths(1).AddDays(-1);
         var customer = string.IsNullOrWhiteSpace(custCode) || string.Equals(custCode, "ALL", StringComparison.OrdinalIgnoreCase)
-            ? "All"
+            ? "ALL"
             : custCode;
 
         var data = (await _dbExecutor.QueryListAsync<ShippingInstructionFilterDto>(
-            "sp_Wms_ShippingInstruction_Filter_DLL",
+            "sp_Wms_ShippingInstruction_DLL",
             new
             {
                 CustCode = customer,
