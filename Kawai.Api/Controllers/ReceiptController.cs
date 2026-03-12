@@ -54,6 +54,14 @@ public class ReceiptController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("list-claim-detail")]
+    public async Task<IActionResult> GetListClaimDetail([FromBody] RequestParameter parameter)
+    {
+        var results = await _receiptRepository.GetListClaimDetail(parameter);
+        return DataTableResult(parameter, results);
+    }
+
+
 
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] Receipt model)

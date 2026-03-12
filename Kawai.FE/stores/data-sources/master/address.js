@@ -164,7 +164,50 @@ export const useAddress = defineStore('Address', {
     },
     exportQR: function (selectedPrint) {
       return new Promise((resolve, reject) => {
+       
         app.$http.post(`/address/export/qrcode`, selectedPrint)
+          .then(({ data }) => {
+            if (data.Data) {
+              const byteCharacters = atob(data.Data); // decode base64
+              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+              const byteArray = new Uint8Array(byteNumbers);
+
+              const blob = new Blob([byteArray], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              });
+
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', 'QRCode_Address.xlsx');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+
+              resolve();
+            } else {
+              reject(data);
+            }
+          })
+          .catch(async (err) => {
+              reject(err?.response?.data);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      })
+    },
+
+     exportQRALL: function (filters) {
+       let filterExport = {
+          Page: 1,
+          Length: 1000000,
+          Filters: filters,
+          Sorts: {},
+        };
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/address/export/qrcodeall`, filterExport)
           .then(({ data }) => {
             if (data.Data) {
               const byteCharacters = atob(data.Data); // decode base64

@@ -10,6 +10,7 @@ public interface IReceiptRepository
     #region WEB
     Task<List<ReceiptDto>> GetList(RequestParameter parameter);
     Task<List<PODetailDto>> GetListPODetail(RequestParameter parameter);
+    Task<List<ClaimDetailDto>> GetListClaimDetail(RequestParameter parameter);
     Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id);
     Task<ReceiptDto> GetDataHeader(long id);
     Task Create(Receipt receipt, string userId);

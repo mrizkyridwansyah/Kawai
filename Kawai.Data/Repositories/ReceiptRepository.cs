@@ -43,6 +43,29 @@ public class ReceiptRepository : IReceiptRepository
         })).ToList();
     }
 
+    public async Task<List<ClaimDetailDto>> GetListClaimDetail(RequestParameter param)
+    {
+        var paramFactory = param.GetParam("FactoryCode");
+        var paramReceiptId = param.GetParam("ReceiptId");
+        var paramClaimNumber = param.GetParam("ClaimNumber");
+        var paramSupplier = param.GetParam("SupplierCode");
+        var paramDateFrom = param.GetParam("DateFrom");
+        var paramDateUntil = param.GetParam("DateUntil");
+
+        string sp = "sp_Wms_Receipt_ListClaimDetail";
+        return (await _dbExecutor.QueryListAsync<ClaimDetailDto>(sp, new
+        {
+            FactoryCode = paramFactory,
+            ReceiptId = paramReceiptId,
+            ClaimNumber = paramClaimNumber,
+            SupplierCode = paramSupplier,
+            DateFrom = paramDateFrom,
+            DateUntil = paramDateUntil,
+        })).ToList();
+    }
+
+
+
     public async Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id)
     {
          

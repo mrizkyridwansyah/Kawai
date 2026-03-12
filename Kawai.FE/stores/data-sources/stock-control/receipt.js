@@ -131,6 +131,27 @@ export const useReceipt = defineStore('Receipt', {
           .finally(_ => this.isLoading = false);
       })
     },
+
+    listClaimDetail: function (filters) {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/list-claim-detail`, filters)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoading = false);
+      })
+    },
     loadInquiry: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
