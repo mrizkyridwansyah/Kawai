@@ -255,6 +255,7 @@ export default {
     },
     shippingRows: [],
     selectedRow: null,
+    isLoading: false,
     isLoadingSearch: false,
     isSubmitting: false,
     isSubmittingDetail: false,
