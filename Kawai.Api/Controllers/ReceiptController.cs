@@ -85,6 +85,14 @@ public class ReceiptController : HahaController
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] Receipt model)
     {
+        string[] bcTypeNotRequiredRegisterNo = ["BC 2.3", "BC 2.6.2", "BC 4.0"];
+        Dictionary<string, List<string>> Errors = [];
+
+        if (!bcTypeNotRequiredRegisterNo.Contains(model.BCType) && String.IsNullOrEmpty(model.RegisterNo))
+            AddError(Errors, "RegisterNo", "Register No is required for BC Type " + model.BCType);
+
+        if (Errors.Any()) return Invalid(Errors);
+
         var before = await _receiptRepository.Capture(model.Id.Value);
 
         await _receiptRepository.Update(model, Auth.User.UserID);

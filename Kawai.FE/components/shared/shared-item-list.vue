@@ -20,9 +20,9 @@
       </div>
     </div>
   </div>
-  <div>
+  <div class="table-wrapper">
     <table
-      class="x-table mt-3 w-100"
+      class="x-table w-100"
       v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
     >
       <thead>
@@ -56,7 +56,8 @@
         </tr>
       </tbody>
     </table>
-
+  </div>
+  <div>
     <v-loading-2 class="m-5 p-5" v-if="ds.isLoading" />
     <div>
       <v-table-pagination
@@ -161,3 +162,25 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.table-wrapper {
+  max-height: 450px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.x-table {
+  width: 100%;
+  border-collapse: separate;
+  border-collapse: collapse;
+}
+
+.x-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+
+</style>

@@ -208,10 +208,12 @@ export default {
               .then((datas) => {
                 toastSuccess("Transaction on process!");
                 this.$emit("submitted");
+                resolve();
               })
               .catch((err) => {
                 this.errors = err?.Errors;
                 toastDanger(err?.Message);
+                resolve();
               });
           }),
         null,

@@ -18,6 +18,7 @@ public class ReceiptDto: DataTableDto
     public string VehicleNo { get; set; }
     public string Transport { get; set; }
     public string ReferenceNo { get; set; }
+    public string RegisterNo { get; set; }
     public string Remarks { get; set; }
     public DateTime? DeliveryDatePOFrom { get; set; }
     public DateTime? DeliveryDatePOUntil { get; set; }

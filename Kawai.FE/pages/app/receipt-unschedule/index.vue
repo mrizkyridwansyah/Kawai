@@ -171,7 +171,7 @@
                 :is-loading="isLoading"
               />
 
-                <v-button
+              <v-button
                 :action="print"
                 label="Print Label PDF"
                 icon="file-pdf"
@@ -370,6 +370,7 @@ export default {
     "filter.ReceiptId": function () {
       if (this.filter.ReceiptId) this.getReceipt();
       else {
+        let today = new Date();
         this.isNew = true;
         this.items = [];
         this.filter.ReceiptId = null;
@@ -379,10 +380,10 @@ export default {
           DNNumber: "",
           FactoryCode: null,
           SupplierCode: null,
-          DNDate: null,
+          DNDate: today,
           BCNumber: "",
           BCType: "",
-          BCDate: null,
+          BCDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -397,7 +398,6 @@ export default {
     let today = new Date();
     this.model.BCDate = today;
     this.model.DNDate = today;
-
   },
   methods: {
     deepClone: function (obj) {
@@ -421,6 +421,7 @@ export default {
       this.items.push(obj);
     },
     reset: function () {
+      let today = new Date();
       this.isNew = true;
       this.filter = {
         FactoryCode: null,
@@ -432,10 +433,10 @@ export default {
         DNNumber: "",
         FactoryCode: null,
         SupplierCode: null,
-        DNDate: null,
+        DNDate: today,
         BCNumber: "",
         BCType: "",
-        BCDate: null,
+        BCDate: today,
         VehicleNo: "",
         Transport: null,
         ReferenceNo: null,
@@ -446,6 +447,7 @@ export default {
     },
     changeNew: function (e) {
       if (e.target.checked) {
+        let today = new Date();
         this.isNew = true;
         this.items = [];
         this.filter.ReceiptId = null;
@@ -455,10 +457,10 @@ export default {
           DNNumber: "",
           FactoryCode: null,
           SupplierCode: null,
-          DNDate: null,
+          DNDate: today,
           BCNumber: "",
           BCType: "",
-          BCDate: null,
+          BCDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -530,7 +532,7 @@ export default {
         .finally(() => (this.isLoading = false));
     },
 
-   print: function () {
+    print: function () {
       if (this.model.Id == null || this.model.Id == undefined) {
         toastDanger("Silahkan pilih Receipt No!");
         return;

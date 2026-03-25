@@ -163,6 +163,7 @@ public class ReceiptRepository : IReceiptRepository
             receipt.VehicleNo,
             receipt.Transport,
             receipt.Remarks,
+            receipt.RegisterNo,
             Details = DataTableHelper.ToDataTable(receipt.Details),
             UpdateBy = userId
         });
