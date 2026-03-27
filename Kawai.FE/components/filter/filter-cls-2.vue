@@ -69,6 +69,8 @@ export default {
     "class",
     "styleCode",
     "styleDesc",
+    "showOptionAll",
+    "defaultOptionAll"
   ],
   data: () => ({
     isLoading: false,
@@ -123,6 +125,10 @@ export default {
       this.isLoading = true;
       if (this.debounce != null) clearTimeout(this.debounce);
 
+      if((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
+        d = "";
+      }
+
       this.debounce = setTimeout(() => {
         this.$http
           .get(
@@ -134,7 +140,25 @@ export default {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.ClsCode;
             }
-            this.list = p.data.Data;
+
+            if((this.defaultOptionAll || "") == "ALL" && ((this.tempValue || "") == "")) {
+              this.tempValue = "ALL";
+              this.$emit("update:modelValue", "ALL");
+            }
+
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [
+                    {
+                      ClsCode: "ALL",
+                      Description: "ALL",
+                      DDLDescription: "ALL",
+                    },
+                    ...p.data.Data,
+                  ]
+                : p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 

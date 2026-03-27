@@ -44,7 +44,10 @@ public static class ExcelHelper
         bool bold = false, bool italic = false,
         int fontSize = 12, XLAlignmentHorizontalValues hAlign = XLAlignmentHorizontalValues.Center,
         XLAlignmentVerticalValues vAlign = XLAlignmentVerticalValues.Center,
-        XLColor? background = null)
+        XLBorderStyleValues border = XLBorderStyleValues.Thin,
+        XLColor? background = null,
+        XLColor? fontColor = null
+        )
     {
         var range = ws.Range(startRow, startCol, endRow, endCol);
         var style = range.Style;
@@ -53,8 +56,8 @@ public static class ExcelHelper
         style.Font.FontSize = fontSize;
         style.Alignment.Horizontal = hAlign;
         style.Alignment.Vertical = vAlign;
-        style.Font.FontColor = XLColor.White;
-        style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        style.Font.FontColor = fontColor == null ? XLColor.White : fontColor;
+        style.Border.OutsideBorder = border;
 
         if (background != null)
         {
@@ -260,7 +263,7 @@ public static class ExcelHelper
         var firstCol = ws.FirstColumnUsed().ColumnNumber();
         var lastCol = ws.LastColumnUsed().ColumnNumber();
 
-        if(lastRow > 10000)
+        if (lastRow > 10000)
             throw new Exception("Upload gagal: maksimal 10.000 baris per file.");
 
         // HEADER
