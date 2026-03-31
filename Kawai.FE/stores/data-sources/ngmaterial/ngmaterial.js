@@ -242,17 +242,45 @@ export const useNGClaim = defineStore('NGClaim', {
 
       })
     },
-    printLabel: function (data) {
-      this.isLoading = true;
+   PrintSuratJalan: function (filter) {
       return new Promise((resolve, reject) => {
-        app.$http.post(`/ngclaim/print-label`, data)
+         
+
+        app.$http.post(`/ngclaim/report-surat-jalan`, filter)
           .then(({ data }) => {
-            resolve(data);
+            if (data.Data) {
+              const byteCharacters = atob(data.Data); // decode base64
+              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+              const byteArray = new Uint8Array(byteNumbers);
+
+              const blob = new Blob([byteArray], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              });
+
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', 'SuratJalan.xlsx');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+
+              resolve();
+            } else {
+              reject(data);
+            }
           })
-          .catch((err) => reject(err.response?.data))
-          .finally(_ => this.isLoading = false);
+          .catch(async (err) => {
+            reject(err?.response?.data);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
       })
     },
+
+   
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {
         let filterExport = {

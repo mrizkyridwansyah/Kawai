@@ -47,7 +47,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
           <div
             class="p-2 header-summary-content"
-            style="background-color: #0db951"
+            style="background-color: #e60808"
           >
             <span class="title-summary">NG QC</span>
             <br />
@@ -76,8 +76,8 @@
                 >
                   <thead>
                     <tr>
-                      <th class="text-center">No</th>
-                      <th class="text-center">Date</th>
+                      <!-- <th class="text-center">No</th> -->
+                      <th style="width:10px !important;">Date</th>
                       <th class="text-center">Supplier</th>
                       <th class="text-center">DN</th>
                       <th class="text-center">Item</th>
@@ -89,7 +89,7 @@
                   <tbody>
                     <tr v-for="(item, i) in list">
                       <!-- <td class="text-right">{{ i + 1 }}.</td>-->
-                      <td class="text-center">{{ item.ReceiptNo }}</td>
+                      <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
                       <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                       <td>{{ item.SupplierName }}</td>
                       <td>{{ item.DNNumber }}</td>
@@ -128,15 +128,15 @@
               <span style="font-size: 1.05em" class="ml-3">QC Inprogress</span>
             </div>
             <div class="panel-body">
-              
+               <div class="v-table-wrapper">
                 <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
                 <thead>
                   <tr>
-                    <th class="text-center">No</th>
-                    <th class="text-center">Date</th>
+                    <!-- <th class="text-center">No</th> -->
+                    <th class="text-center" style="width: fit-content;">Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">DN</th>
                     <th class="text-center">Item</th>
@@ -146,7 +146,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in listPending">
-                     <td class="text-center">{{ item.ReceiptNo }}</td>
+                     <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
                     <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
@@ -162,6 +162,7 @@
               </table>
               <v-data-empty class="mt-3" v-if="listPending.length == 0" />
             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -174,13 +175,14 @@
               <span style="font-size: 1.05em" class="ml-3">Passed QC</span>
             </div>
             <div class="panel-body">
+              <div class="v-table-wrapper"> 
                <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
                 <thead>
                   <tr >
-                    <th class="text-center">No</th>
+                    <!-- <th class="text-center">No</th> -->
                     <th class="text-center">Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">DN</th>
@@ -191,7 +193,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in listPassed">
-                     <td class="text-center">{{ item.ReceiptNo }}</td>
+                     <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
                     <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
@@ -207,6 +209,7 @@
               </table>
               <v-data-empty class="mt-3" v-if="listPassed.length == 0" />
             </div>
+            </div>
           </div>
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -216,13 +219,14 @@
               <span style="font-size: 1.05em" class="ml-3">NG QC</span>
             </div>
             <div class="panel-body">
+              <div class="v-table-wrapper">
                <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
                 <thead>
                   <tr class="datatable-color">
-                    <th class="text-center">No</th>
+                    <!-- <th class="text-center">No</th> -->
                     <th class="text-center">Date</th>
                     <th class="text-center">Supplier</th>
                     <th class="text-center">DN</th>
@@ -233,7 +237,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in listNG">
-                     <td class="text-center">{{ item.ReceiptNo }}</td>
+                    <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
                     <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                     <td>{{ item.SupplierName }}</td>
                     <td>{{ item.DNNumber }}</td>
@@ -248,6 +252,7 @@
                 </tbody>
               </table>
               <v-data-empty class="mt-3" v-if="listNG.length == 0" />
+            </div>
             </div>
           </div>
         </div>

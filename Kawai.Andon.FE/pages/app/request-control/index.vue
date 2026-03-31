@@ -103,8 +103,8 @@
                     <th class="text-center">Request No</th>
                     <th class="text-center">Production Date</th>
                     <th class="text-center">Line</th>
+                    <th class="text-center">Item</th>
                     <th class="text-center">Work Station</th>
-                    <th class="text-center">Picking Area</th>
                     <th class="text-center">Preparation Status</th>
                     <th class="text-center">Trolly Number</th>
                     <th class="text-center">Current Position</th>
@@ -117,8 +117,8 @@
                     <td>{{ item.RequestNo }}</td>
                     <td>{{ $func.formatDate(item.ProductionDate)}}</td>
                      <td>{{ item.Line }}</td>
-                    <td>{{ item.WorkStation }}</td>
                     <td>{{ item.PickingArea }}</td>
+                    <td>{{ item.WorkStation }}</td>
                     <td>{{ item.PreparationStatus }}</td>
                     <td>{{ item.TrollyNumber }}</td>
                     <td>{{ item.CurrentPosition }}</td>
@@ -222,7 +222,7 @@ export default {
         //header-panel change text to "Remaining Item" dan nama area bukan codenya
         const headerPanel = document.getElementById("header-panel");
         if (headerPanel) {
-          headerPanel.innerText = `Remaining Item - Material Type (Group)`;
+          headerPanel.innerText = `Remaining Item - Material Type (${this.filter.areaName})`;
         }
               
         //hide filter id="containerfilter" after search
