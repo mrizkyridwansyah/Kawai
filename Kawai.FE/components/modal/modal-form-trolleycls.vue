@@ -7,8 +7,8 @@
           v-model="model.Trolley_Cls"
           :disabled="mode === 'edit'"
           :errors="errors?.Trolley_Cls"
-          style="width: 50px"
-          maxlength="2"
+          style="width: 100px"
+          maxlength="15"
         />
       </td>
     </tr>

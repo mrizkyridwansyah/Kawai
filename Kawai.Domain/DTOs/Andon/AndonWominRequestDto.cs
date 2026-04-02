@@ -8,6 +8,7 @@ public class AndonWominRequestDto: DataTableDto
     public string Line { get; set; }
     public string WorkStation { get; set; }
     public string PickingArea { get; set; }
+    public string Model { get; set; }
     public string PreparationStatus { get; set; }
     public string TrollyNumber { get; set; }
     public string CurrentPosition { get; set; }

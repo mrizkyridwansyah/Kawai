@@ -5,7 +5,7 @@ namespace Kawai.Domain.Models;
 public class TrolleyCls
 {
     [Required(ErrorMessage = "Trolley Cls tidak boleh kosong")]
-    [MaxLength(2, ErrorMessage = "Trolley Cls tidak boleh lebih dari 2 karakter")]
+    [MaxLength(15, ErrorMessage = "Trolley Cls tidak boleh lebih dari 15 karakter")]
     public string Trolley_Cls { get; set; }
 
     [Required(ErrorMessage = "Description tidak boleh kosong")]
