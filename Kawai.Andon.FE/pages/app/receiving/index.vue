@@ -325,12 +325,13 @@ export default {
 
 .title-summary {
   color: white;
-  font-size: 1.5em;
+  font-size: 1.4em;
 }
 
 .qty-summary {
   color: white;
   font-size: 3em;
+  font-weight: bold;
 }
 
 .icon-title {

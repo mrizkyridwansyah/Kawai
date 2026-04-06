@@ -124,6 +124,22 @@ public class ReceiptRepository : IReceiptRepository
         return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "", UserId = userId })).ToList();
     }
 
+    public async Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId)
+    {
+        string sp = "sp_Wms_Receipt_DDLDN";
+
+        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            Status = status ?? "",
+            FactoryCode = String.IsNullOrEmpty(factory) ? "ALL" : factory,
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            PeriodFrom = periodFrom,
+            PeriodUntil = periodUntil,
+            UserId = userId
+        })).ToList();
+    }
+
     public async Task Create(Receipt receipt, string userId)
     {
         receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode");

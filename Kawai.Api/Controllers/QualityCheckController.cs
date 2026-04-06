@@ -110,5 +110,18 @@ public class QualityCheckController : HahaController
         return Pending(message);
     }
 
+    [HttpPost("print/report-ng")]
+    public async Task<IActionResult> PrintReportNG(long receiptId, [FromServices] RazorViewRenderer renderer)
+    {
+        var results = await _qualitycheckRepository.PrintReportNG(receiptId);
+        if (results == null || !results.Any()) return Invalid("No Data NG");
 
+        var fullHtml = await renderer.RenderAsync(
+            "Templates/QCReport.cshtml",
+            results);
+
+        var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
+        Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+        return File(pdfBytes, "application/pdf", "QC_Report_" + results[0].DNNumber);
+    }
 }

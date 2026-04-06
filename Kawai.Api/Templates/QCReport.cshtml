@@ -1,0 +1,240 @@
+﻿@model List<Kawai.Domain.DTOs.QualityCheckReportDto>
+@{
+	var firstData = Model != null && Model.Count > 0 ? Model[0] : null;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Quality Confirmation Report</title>
+	<style>
+		@@page {
+			size: A4 portrait;
+			margin: 5mm;
+		}
+
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+		}
+
+		.container {
+			width: 100%;
+		}
+
+		h5 {
+			text-align: center;
+			margin: 5px 0;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 8px;
+		}
+
+		td,
+		th {
+			border: 1px solid #000;
+			padding: 4px;
+			vertical-align: middle;
+		}
+
+		.no-border {
+			border: none;
+		}
+
+		.header-table td {
+			border: none;
+			font-size: 10px;
+			padding: 2px 4px;
+		}
+
+		.small {
+			font-size: 8px;
+		}
+
+		.center {
+			text-align: center;
+		}
+
+		.right {
+			text-align: right;
+		}
+
+		.bold {
+			font-weight: bold;
+		}
+
+		.table-main th {
+			background: #f2f2f2;
+		}
+
+		.table-main td {
+			height: 10px;
+		}
+
+		.table-title td {
+			border: none;
+			border-bottom: 1px solid #000;
+			font-size: 8px;
+		}
+
+		.row-large td {
+			height: 28px;
+		}
+
+		.label-td {
+			width: 70px;
+		}
+
+		.titik-dua {
+			width: 5px;
+		}
+
+		.td-pemisah {
+			border: none !important;
+			width: 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<table class="header-table">
+			<tr>
+				<td class="bold">@firstData?.FactoryName</td>
+			</tr>
+			<tr>
+				<td class="bold">QA/QC Dept.</td>
+			</tr>
+		</table>
+
+		<div style="border: 1px solid #000">
+			<div style="display: flex">
+				<div style="min-width: 70%; padding-right: 10px">
+					<table class="table-title">
+						<tr>
+							<td colspan="7"
+								style="text-align: center; font-weight: bold; font-size: 10px; border: none">
+								<span>Quality Confirmation Report</span>
+							</td>
+						</tr>
+						<tr>
+							<td class="label-td">No. Invoice/Jalan</td>
+							<td class="titik-dua">:</td>
+							<td>@firstData?.DNNumber</td>
+							<td class="td-pemisah"></td>
+							<td class="label-td">Nama Vendor</td>
+							<td class="titik-dua">:</td>
+							<td>@firstData?.SupplierName</td>
+						</tr>
+						<tr>
+							<td class="label-td">Tgl. Kedatangan</td>
+							<td class="titik-dua">:</td>
+							<td>@firstData?.ReceiptDate.ToString("dd MMMM yyyy")</td>
+							<td class="td-pemisah"></td>
+							<td class="label-td" style="border: none">Lot</td>
+							<td style="border: none">:</td>
+							<td style="border: none"></td>
+						</tr>
+						<tr>
+							<td class="label-td">Tgl. Issue QCR</td>
+							<td class="titik-dua">:</td>
+							<td>@firstData?.InspectionResultDate.ToString("dd MMMM yyyy")</td>
+						</tr>
+					</table>
+				</div>
+				<table style="width: 100%; table-layout: fixed; font-size: 8px;">
+					<tr>
+						<td colspan="3"
+							style="text-align: left; font-weight: bold; font-size: 10px; border: none">
+							<span>No. @firstData?.DocumentNo</span>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center; width: 1em !important">QC</td>
+						<td style="text-align: center; width: 1em !important">Warehouse</td>
+						<td style="text-align: center; width: 1em !important; border-right: none;">PPIC</td>
+					</tr>
+					<tr>
+						<td style="height: 3em; width: 1em !important"></td>
+						<td style="height: 3em; width: 1em !important"></td>
+						<td style="height: 3em; width: 1em !important; border-right: none"></td>
+					</tr>
+				</table>
+			</div>
+			<br />
+			<table class="table-main">
+				<tr class="center bold">
+					<th rowspan="2" style="border-left: none;">No</th>
+					<th rowspan="2">Part No</th>
+					<th rowspan="2">Name Part</th>
+					<th rowspan="2">Model</th>
+					<th rowspan="2">No PPR</th>
+					<th colspan="2">Quantity</th>
+					<th rowspan="2">Salah Part</th>
+					<th colspan="3">Rincian NG</th>
+					<th rowspan="2" style="border-right: none;">Catatan</th>
+				</tr>
+
+				<tr class="center bold small">
+					<th>NG</th>
+					<th>Ver OK</th>
+					<th>Vendor</th>
+					<th>Proses</th>
+					<th>Lain-lain</th>
+				</tr>
+
+				<!-- DATA ROW -->
+				@{
+					int idx = 1;
+				}
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td class="center" style="border-left: none;">@idx</td>
+						<td class="left">@item.ItemCode</td>
+						<td class="left">@item.ItemName</td>
+						<td class="left">@item.Model</td>
+						<td class="left">@item.NoPPR</td>
+						<td class="right">@item.TotalQtyNG</td>
+						<td class="left"></td>
+						<td class="left"></td>
+						<td class="right">@item.TotalQtyNG</td>
+						<td class="left"></td>
+						<td class="left"></td>
+						<td class="left" style="border-right: none;">@item.Remarks</td>
+					</tr>
+
+					idx++;
+				}
+
+				@if ((10 - Model.Count) > 0)
+				{
+					for (int i = 0; i < (10 - Model.Count); i++)
+					{
+						<tr>
+							<td class="center" style="border-left: none;"></td>
+							<td class="left"></td>
+							<td class="left"></td>
+							<td class="left"></td>
+							<td class="left"></td>
+							<td class="right"></td>
+							<td class="left"></td>
+							<td class="left"></td>
+							<td class="right"></td>
+							<td class="left"></td>
+							<td class="left"></td>
+							<td class="left" style="border-right: none;"></td>
+						</tr>
+
+					}
+				}
+			</table>
+		</div>
+	</div>
+</body>
+</html>
+
