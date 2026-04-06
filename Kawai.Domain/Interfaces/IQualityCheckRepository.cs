@@ -13,5 +13,6 @@ public interface IQualityCheckRepository
     Task Confirm(QualityCheckConfirm payload, string userid);
     Task<Dictionary<string, object>> Capture(long id);
    
+    Task<List<QualityCheckReportDto>> PrintReportNG(long receiptId);
 
 }

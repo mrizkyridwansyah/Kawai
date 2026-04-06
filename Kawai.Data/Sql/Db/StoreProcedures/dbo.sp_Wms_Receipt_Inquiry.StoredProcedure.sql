@@ -111,7 +111,12 @@ begin
 			isnull(xx.QtyScan, 0) QtyScan,
 			cc.Description Currency,
 			Price = isnull(pod.Price, pm.Price),
-			Amount = isnull(pod.Price, pm.Price) * dtl.ReceiptQty
+			Amount = isnull(pod.Price, pm.Price) * dtl.ReceiptQty,
+			[StatusIQC] = 
+			case when iqch.InspectionResult is null then ''Not Yet''
+				 when iqch.InspectionResult = ''Accepted'' then ''OK''
+				 when iqch.InspectionResult = ''Rejected'' then ''NG''
+				 else ''HOLD'' end
 		FROM PartReceiptHeader a
 		inner join PartReceiptDetail dtl on a.Id = dtl.ReceiptId
 		inner join Company_Profile fak on a.CompanyCode = fak.Company_Code
@@ -139,6 +144,7 @@ begin
 			(select dbo.ConvertToDateTimeFromFuckingString(Start_Date)) and 
 			(select dbo.ConvertToDateTimeFromFuckingString(End_Date))
 		left join Curr_Cls cc on cc.Curr_Cls = isnull(pod.Currency_Code, pm.Currency_Code)
+		LEFT JOIN IQC_Inspection_Header iqch on a.ReceiptNo = iqch.ReceiptNo and dtl.ItemCode = iqch.ItemCode and iqch.Soruce = ''Incoming Material''
 		WHERE
 			(@Keyword IS NULL OR
 				a.DNNumber LIKE ''%'' + @Keyword + ''%'' OR
@@ -147,7 +153,7 @@ begin
 				mi.Item_Name LIKE ''%'' + @Keyword + ''%'')
 			and 1 = case when isnull(@ReceiptId, 0) = 0 THEN 1 WHEN isnull(@ReceiptId, 0) = a.Id THEN 1 ELSE 0 END
 			AND a.ReceiptDate BETWEEN @PeriodFrom AND @PeriodUntil
-			and 1 = case when @SupplierCode = ''ALL'' THEN 1 WHEN @SupplierCode = SupplierCode THEN 1 ELSE 0 END
+			and 1 = case when @SupplierCode = ''ALL'' THEN 1 WHEN @SupplierCode = a.SupplierCode THEN 1 ELSE 0 END
 			and 1 = case when @FactoryCode = ''ALL'' THEN 1 WHEN @FactoryCode = CompanyCode THEN 1 ELSE 0 END
 			and 1 = case when isnull(@CompleteStatus, ''ALL'') = ''ALL'' then 1 
 				   when @CompleteStatus = ''YES'' and isnull(OutstandingScan, 1) = 0 then 1

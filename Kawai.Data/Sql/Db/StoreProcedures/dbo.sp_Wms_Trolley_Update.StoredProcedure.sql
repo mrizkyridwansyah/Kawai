@@ -26,9 +26,9 @@ begin
 	update MS_Trolley 
 	set 
 		Description = @Description, 
-		Trolley_Cls = @Trolley_Cls,
 		IsActive = @IsActive,
-		Lastuser = @UpdateBy, 
+		Trolley_Cls = @Trolley_Cls,
+		 Lastuser = @UpdateBy, 
 		LastUpdate = getdate() 
 	where TrolleyCode = @TrolleyCode
 end

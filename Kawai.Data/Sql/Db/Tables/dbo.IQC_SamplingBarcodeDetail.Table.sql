@@ -10,6 +10,7 @@ CREATE TABLE [IQC_SamplingBarcodeDetail](
 	[SampleQTY] [numeric](18, 2) NOT NULL,
 	[RegisterDate] [datetime] NULL,
 	[RegisterUser] [varchar](25) NULL,
+	[NGCode] [varchar](25) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[SamplingID] ASC

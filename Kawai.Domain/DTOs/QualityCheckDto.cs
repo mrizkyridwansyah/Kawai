@@ -44,3 +44,24 @@ public class QualityCheckResultDto: DataTableDto
     public byte[] AttachmentFileBase64 { get; set; }
 
 }
+
+public class QualityCheckReportDto
+{
+    public string FactoryName { get; set; }
+    public string DocumentNo { get; set; }
+    public long ReceiptId { get; set; }
+    public long InspectionId { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string Model { get; set; }
+    public string NoPPR { get; set; }
+    public decimal TotalQtyNG { get; set; }
+    public string Remarks { get; set; }
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
+    public DateTime InspectionDate { get; set; }
+    public DateTime InspectionResultDate { get; set; }
+    public string DNNumber { get; set; }
+    public DateTime ReceiptDate { get; set; }
+}
+

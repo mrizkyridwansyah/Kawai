@@ -37,8 +37,9 @@ BEGIN
 	SELECT A.RequestDetailNo RequestNo, B.ProductionDate , B.LineCode 
 	,D.Line_Name as Line , A.WorkStationCode , C.WorkStationName as WorkStation,
 	E.StatusDescription PreparationStatus, 
-	(Select  top 1 AreaName from MS_Area dd where DD.ItemType = @Area) PickingArea,
-	
+	--(Select  top 1 AreaName from MS_Area dd where DD.ItemType = @Area) PickingArea,
+	LTRIM(RTRIM(F.Item_Name)) PickingArea,
+	G.Description as Model,
 	A.Trolley_No as TrollyNumber ,
 	(Select Top 1 AreaName from MS_Address ss Left JOIN MS_Area cc ON ss.AreaCode = cc.AreaCode where StopPointCode = (select LastPosition from MS_Trolley where TrolleyCode = 	A.Trolley_No))  CurrentPosition ,
 	'' NextLocation, TotalItem=1, Remaining=0 ,
@@ -50,6 +51,8 @@ BEGIN
 	Left Join MS_WorkStation C ON C.WorkStationCode = A.WorkStationCode
 	Left Join Manufacture_Line D on D.Line_Code = B.LineCode
 	left join RequestStatusCls E ON E.RequestStatusID = A.RequestStatusID
+	left join Item_Master F ON F.Item_Code = B.ParentItem_Code
+	LEFT JOIN Model_Cls G ON G.Model_Cls = F.Model_Cls
 	 
 	where AreaCode = @Area
 
@@ -62,7 +65,8 @@ BEGIN
 	 ,WorkStationCode	
 	 ,WorkStation	
 	 ,PreparationStatus	
-	 ,PickingArea	
+	 ,PickingArea	 
+	 ,Model
 	 ,TrollyNumber	
 	 ,CurrentPosition	
 	  	, (Select Top 1 AreaName from MS_Address ss Left JOIN MS_Area cc ON ss.AreaCode = cc.AreaCode where StopPointCode =(select Top 1 Stop_Point from PartMaterialRequestSendRobotDetail ddd where  ddd.RequestSendID =A.RefNumber and ddd.Pickup_Seq > a.Picking_Seq )) NextLocation	
@@ -77,4 +81,7 @@ BEGIN
 	 
 
 END
+
+
+ 
 GO

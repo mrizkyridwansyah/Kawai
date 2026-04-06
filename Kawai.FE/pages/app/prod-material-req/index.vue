@@ -123,7 +123,7 @@
                   <td style="padding: 10px; vertical-align: top">:</td>
                   <td style="padding: 10px">
                     <label class="form-label">{{
-                      calculation.Header.LastCalculation
+                      calculation.Header?.LastCalculation ?? ""
                     }}</label>
                   </td>
                 </tr>
@@ -134,7 +134,7 @@
                   <td style="padding: 10px; vertical-align: top">:</td>
                   <td style="padding: 10px">
                     <label class="form-label">{{
-                      calculation.Header.FactoryName
+                      calculation.Header?.FactoryName ?? ""
                     }}</label>
                   </td>
                 </tr>
@@ -145,7 +145,7 @@
                   <td style="padding: 10px; vertical-align: top">:</td>
                   <td style="padding: 10px">
                     <label class="form-label">{{
-                      calculation.Header.ProcessName
+                      calculation.Header?.ProcessName ?? ""
                     }}</label>
                   </td>
                 </tr>
@@ -156,7 +156,7 @@
                   <td style="padding: 10px; vertical-align: top">:</td>
                   <td style="padding: 10px">
                     <label class="form-label">{{
-                      calculation.Header.LineName
+                      calculation.Header?.LineName ?? ""
                     }}</label>
                   </td>
                 </tr>
@@ -167,7 +167,7 @@
                   <td style="padding: 10px; vertical-align: top">:</td>
                   <td style="padding: 10px">
                     <label class="form-label">{{
-                      calculation.Header.ModelName
+                      calculation.Header?.ModelName ?? ""
                     }}</label>
                   </td>
                 </tr>

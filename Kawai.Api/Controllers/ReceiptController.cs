@@ -123,6 +123,19 @@ public class ReceiptController : HahaController
         return Success(results.Take(100));
     }
 
+    [HttpGet("dn-ddlsearch")]
+    public async Task<IActionResult> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string ids)
+    {
+        var results = await _receiptRepository.DNDDLSearch(keyword, factory, supplier, periodFrom, periodUntil, status, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.Id.ToString())).ToList();
+        }
+
+        return Success(results.Take(100));
+    }
+
     [HttpPost("print-label")]
     public async Task<IActionResult> PrintLabel(long receiptId)
     {

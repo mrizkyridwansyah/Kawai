@@ -43,10 +43,21 @@ begin
 
 	begin transaction receiptTransaction
 	begin try
+		DECLARE @registerNox TABLE (RegisterNo VARCHAR(100))
+		DECLAre @registerNo varchar(100)
+
+		IF @BCType NOT IN ('BC 2.3', 'BC 2.6.2', 'BC 4.0')
+		BEGIN
+			INSERT INTO @registerNox
+			EXEC sp_GetNoRegister @ReceiptDate, 'R', @RegisterBy
+
+			SELECT top 1 @registerNo = RegisterNo FROM @registerNox
+		END
+
 		insert into PartReceiptHeader 
-		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode, ReferenceNo)
+		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode, ReferenceNo, RegisterNo)
 		values 
-		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, '', 'RECEIPT UNSCHEDULE', @FactoryCode, @ReferenceNo)
+		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, '', 'RECEIPT UNSCHEDULE', @FactoryCode, @ReferenceNo, @registerNo)
 
 		declare @newid bigint = (select SCOPE_IDENTITY())
 
@@ -67,7 +78,7 @@ begin
 		select 
 			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, '' , it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
 			dtl.UnitCls, pm.Currency_Code, pm.Price, pm.Price * dtl.ReceiptQty , hd.DNNumber, 0, null DailySeq_No, '', @Transport,
-			getdate(), @RegisterBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, hd.Id
+			getdate(), @RegisterBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id
 		From PartReceiptHeader hd
 		inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 		left join Item_Master it on dtl.ItemCode = it.Item_Code

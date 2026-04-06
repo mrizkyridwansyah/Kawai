@@ -38,6 +38,8 @@ public interface IReceiptRepository
     Task<List<ReceiptDto>> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string userId);
     Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string userId);
 
+    Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
+
 
     Task<Dictionary<string, object>> Capture(long id);
     Task<Dictionary<string, object>> CaptureDataGrouping(string refNo);

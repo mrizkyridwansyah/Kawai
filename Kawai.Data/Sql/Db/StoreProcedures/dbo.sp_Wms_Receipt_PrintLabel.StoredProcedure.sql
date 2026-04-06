@@ -5,6 +5,7 @@ GO
 
 CREATE   procedure [sp_Wms_Receipt_PrintLabel]
 	@ReceiptId		varchar(50),
+	@MustPrint	bit = null,
 	@UserId			varchar(25)
 as
 begin
@@ -32,8 +33,11 @@ begin
 
 	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @ReceiptId)
 	begin
-		update PartReceiptDetailBarcode set PrintStatus = null, PrintDate = null, PrintUser = @UserId 
-		where ReceiptId = @ReceiptId
+		if isnull(@MustPrint, 0) = 1
+		begin
+			update PartReceiptDetailBarcode set PrintStatus = null, PrintDate = null, PrintUser = @UserId 
+			where ReceiptId = @ReceiptId
+		end
 	end
 	else
 	begin
@@ -92,8 +96,18 @@ begin
 					set @tempQty = @ReceiptQty
 				end
 
-				insert into PartReceiptDetailBarcode (ReceiptDetailId, ReceiptId, ReceiptDate, PONumber,ItemCode, BarcodeNo, LotNo, SublotNo, Qty, WarehouseCode)
-				values (@ReceiptDetailId, @ReceiptId, @ReceiptDate, isnull(@PONumber, ''), @ItemCode, @NewBarcode, @NewLot, @SublotNo, @tempQty, @WarehouseCode)
+				if isnull(@MustPrint, 0) = 1
+				begin
+					insert into PartReceiptDetailBarcode (ReceiptDetailId, ReceiptId, ReceiptDate, PONumber,ItemCode, BarcodeNo, LotNo, SublotNo, Qty, WarehouseCode)
+					values (@ReceiptDetailId, @ReceiptId, @ReceiptDate, isnull(@PONumber, ''), @ItemCode, @NewBarcode, @NewLot, @SublotNo, @tempQty, @WarehouseCode)
+				end
+				else
+				begin
+					insert into PartReceiptDetailBarcode 
+					(ReceiptDetailId, ReceiptId, ReceiptDate, PONumber,ItemCode, BarcodeNo, LotNo, SublotNo, Qty, WarehouseCode, PrintDate, PrintStatus, PrintUser)
+					values 
+					(@ReceiptDetailId, @ReceiptId, @ReceiptDate, isnull(@PONumber, ''), @ItemCode, @NewBarcode, @NewLot, @SublotNo, @tempQty, @WarehouseCode, getdate(), 1, @UserId)
+				end
 
 				set @ReceiptQty -= @tempQty
 			end
