@@ -4,13 +4,13 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [MS_PeriodSetting](
 	[Period] [varchar](10) NOT NULL,
-	[InventoryYear] [int] NOT NULL,
-	[InventoryMonth] [int] NOT NULL,
+	[Year] [int] NOT NULL,
+	[Month] [int] NOT NULL,
 	[StartPeriod] [datetime] NULL,
 	[EndPeriod] [datetime] NULL,
 	[StartSO] [datetime] NULL,
 	[FinishSO] [datetime] NULL,
-	[StatusStock] [varchar](50) NULL,
+	[Active] [bit] NULL,
 	[RegisterDate] [datetime] NULL,
 	[RegisterUser] [varchar](35) NULL,
 	[LastUpdate] [datetime] NULL,

@@ -40,6 +40,14 @@ CREATE Proc [sp_Wms_WorkStationSetting_List]
 				ISNULL((Select Top 1 1 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),0) AllowSetting,   
 				A.WorkStationCode,A.WorkStationName,
 				(Select Top 1 StopPointCode From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode,
+				(Select Top 1 StopPointCode2 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode2,
+			    (Select Top 1 StopPointCode3 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode3,
+				 A.WorkStationName
+				+'' | Stop Point 1 : '' +ISNULL((Select Top 1 StopPointCode From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),'''')    
+				+'' | Stop Point 2 :  '' +ISNULL((Select Top 1 StopPointCode2 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),'''')   
+			    +'' | Stop Point 3 :  '' +ISNULL((Select Top 1 StopPointCode3 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),'''') WorkStationNameLenght,
+				
+				
 				A.RegisterUser , 
 				A.RegisterDate ,
 				(Select Top 1 RegisterUser From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode) LastUser,
@@ -60,6 +68,13 @@ CREATE Proc [sp_Wms_WorkStationSetting_List]
 				A.WorkStationCode,
 				A.WorkStationName,
 				(Select Top 1 StopPointCode From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode,
+				(Select Top 1 StopPointCode2 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode2,
+				(Select Top 1 StopPointCode3 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode)  StopPointCode3,
+				 A.WorkStationName
+				+'' | Stop Point 1 : '' +ISNULL((Select Top 1 StopPointCode From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),'''')    
+				+'' | Stop Point 2 :  '' +ISNULL((Select Top 1 StopPointCode2 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),'''')   
+			    +'' | Stop Point 3 :  '' +ISNULL((Select Top 1 StopPointCode3 From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode),'''') WorkStationNameLenght,
+				
 				A.RegisterUser , 
 				A.RegisterDate ,
 				(Select Top 1 RegisterUser From WorkStationLineSetting B where B.LineCode = '''+ @LineCode +''' and B.WorkStationCode = A.WorkStationCode) LastUser,

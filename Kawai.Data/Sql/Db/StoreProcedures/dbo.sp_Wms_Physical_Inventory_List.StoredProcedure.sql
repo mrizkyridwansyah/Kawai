@@ -41,9 +41,7 @@ begin
 			ON uc.unit_cls = im.unit_cls
 		LEFT JOIN StockOpname so 
 			ON sd.BarcodeNo = so.BarcodeNo
-		WHERE year(sd.ProductionDate) = year(@Period)
-		AND	month(sd.ProductionDate) = MONTH(@Period)
-		AND (
+		WHERE (
 				@WarehouseCode IS NULL 
 				OR @WarehouseCode = '' 
 				OR sd.WarehouseCode = @WarehouseCode
@@ -86,6 +84,7 @@ begin
 				OR im.item_name	LIKE '%' + @Keyword + '%' 
 				OR uc.description	LIKE '%' + @Keyword + '%' 
 			)
+		and Qty > 0
 	)
 		
 
@@ -125,9 +124,7 @@ begin
 		ON sd.AddressCode = ma.AddressCode
 	LEFT JOIN SS_UserSetup us
 		ON so.LastUser = us.UserID
-	WHERE year(sd.ProductionDate) = year(@Period)
-	AND	month(sd.ProductionDate) = MONTH(@Period)
-	AND	(
+	WHERE (
 			@WarehouseCode IS NULL 
 			OR @WarehouseCode = '' 
 			OR sd.WarehouseCode = @WarehouseCode
@@ -170,6 +167,8 @@ begin
 			OR im.item_name	LIKE '%' + @Keyword + '%' 
 			OR uc.description	LIKE '%' + @Keyword + '%' 		
 		)
+
+	and Qty > 0
 
 	ORDER BY 
 		CASE WHEN RIGHT(LOWER(@Sort), 3) = 'asc'  THEN sd.ItemCode END ASC,

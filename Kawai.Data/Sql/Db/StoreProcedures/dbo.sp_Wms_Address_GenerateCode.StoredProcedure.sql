@@ -9,5 +9,5 @@ create   procedure [sp_Wms_Address_GenerateCode]
 	@AreaCode varchar(25)
 as
 	declare @lastSN int = isnull((select max(cast(right(AddressCode, 3) as int)) from MS_Address where warehousecode = @WarehouseCode and AreaCode = @AreaCode), 0) + 1
-	select rtrim(@WarehouseCode) + '/' + rtrim(@AreaCode) + '/' + right(('000' + cast(@lastSN as varchar)), 3)
+	select rtrim(@WarehouseCode) + '/' + rtrim(right(@AreaCode, 3)) + '/' + right(('000' + cast(@lastSN as varchar)), 3)
 GO

@@ -17,6 +17,12 @@ begin
 		return;
 	end
 
+	if   exists (select 1 from StockDetail where RefNo = @TrolleyCode and Qty > 0)
+	begin
+		raiserror('Trolley already used another process',16,1)
+		return;
+	end
+
 	delete from  MS_Trolley where TrolleyCode = @TrolleyCode
 end
 GO

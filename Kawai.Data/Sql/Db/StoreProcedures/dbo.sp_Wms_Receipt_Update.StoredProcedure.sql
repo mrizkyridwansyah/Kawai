@@ -16,6 +16,7 @@ CREATE   procedure [sp_Wms_Receipt_Update]
 	@VehicleNo		varchar(15),
 	@Transport		varchar(15),
 	@Remarks		varchar(max),
+	@RegisterNo		varchar(max),
 	@Details		tvp_ReceiptDetail READONLY,
 	@UpdateBy		varchar(25)
 as
@@ -47,6 +48,12 @@ begin
 	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
 	begin
 		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
+		return
+	end
+
+	if exists (select 1 from PartReceiptHeader where RegisterNo = @RegisterNo and Id <> @Id)
+	begin
+		raiserror('Register No sudah ada!', 16, 1)
 		return
 	end
 
@@ -87,7 +94,8 @@ begin
 		LastUpdate	= GETDATE(), 
 		LastUser	= @UpdateBy, 
 		Transport	= @Transport, 
-		Remarks		= @Remarks
+		Remarks		= @Remarks,
+		RegisterNo	= @RegisterNo
 	where Id = @Id
 
 	-- HAPUS DETAIL LAMA
@@ -117,7 +125,7 @@ begin
 	select 
 		@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
 		dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport, NULL,
-		getdate(), @UpdateBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, @Id
+		getdate(), @UpdateBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, @RegisterNo, @Id
 	From PartReceiptHeader hd
 	inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 	left join Item_Master it on dtl.ItemCode = it.Item_Code

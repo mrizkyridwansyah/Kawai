@@ -28,6 +28,7 @@ begin
 		a.Transport,
 		a.ReferenceNo,
 		a.Remarks,
+		a.RegisterNo,
 		@minDeliveryDate [DeliveryDatePOFrom],
 		@maxDeliveryDate [DeliveryDatePOUntil],
 		case when @countPO > 1 then 'ALL' else @firstPO end [PONumber],

@@ -17,6 +17,7 @@ CREATE TABLE [PartMaterialRequestHeader](
 	[RegisterUser] [varchar](25) NULL,
 	[LastUpdate] [datetime] NULL,
 	[LastUser] [varchar](25) NULL,
+	[RefNo] [varchar](100) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[RequestID] ASC

@@ -22,6 +22,7 @@ CREATE TABLE [PartMaterialRequestItemDetailScan](
 	[RegisterUser] [varchar](25) NULL,
 	[LastUpdate] [datetime] NULL,
 	[LastUser] [varchar](25) NULL,
+	[BarcodeNo_Original] [varchar](50) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[IDScan] ASC

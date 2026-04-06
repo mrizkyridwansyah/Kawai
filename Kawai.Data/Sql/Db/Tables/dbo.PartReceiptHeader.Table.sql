@@ -23,6 +23,9 @@ CREATE TABLE [PartReceiptHeader](
 	[Remarks] [varchar](max) NULL,
 	[SourceMenu] [varchar](100) NULL,
 	[CompanyCode] [varchar](25) NULL,
+	[ReferenceNo] [varchar](50) NULL,
+	[RegisterNo] [varchar](100) NULL,
+	[ReportNGDocNo] [varchar](25) NULL,
  CONSTRAINT [PK_PartReceiptHeader] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

@@ -293,11 +293,11 @@ BEGIN
 		(
 			Select * from 
 			(
-				select RequestDetailID, ChildRequirement_Qty - ISNULL(SUM(B.Qty),0) Nilai 
+			    select A.ItemCode, RequestDetailID, ChildRequirement_Qty - ISNULL(SUM(B.Qty),0) Nilai 
 				from PartMaterialRequestItemDetail A 
 				LEFT JOIN PartMaterialRequestItemDetailScan B ON A.IDSeq = B.IDSeq and A.ItemCode = B.ItemCode  
-				where RequestDetailID = @ReqID
-				Group by RequestDetailID, ChildRequirement_Qty
+				where A.RequestDetailID = @ReqID
+				Group by RequestDetailID, ChildRequirement_Qty , A.ItemCode
 			) A where Nilai > 0
 		)
 		BEGIN

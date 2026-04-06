@@ -9,7 +9,7 @@ CREATE TABLE [PartMaterialRequestDetail](
 	[WorkStationCode] [char](15) NOT NULL,
 	[AreaCode] [varchar](25) NOT NULL,
 	[SEQ] [int] NOT NULL,
-	[RackNumber] [varchar](25) NULL,
+	[Trolley_No] [varchar](25) NULL,
 	[RefNumber] [varchar](25) NULL,
 	[RequestStatusID] [int] NOT NULL,
 	[Remarks] [varchar](255) NULL,

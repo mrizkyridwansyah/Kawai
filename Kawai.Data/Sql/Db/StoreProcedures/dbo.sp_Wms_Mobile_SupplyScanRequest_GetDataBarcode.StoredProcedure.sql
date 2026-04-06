@@ -69,7 +69,7 @@ begin
 		'' RequestNo, 
 		'' ProductionDate, 
 		LotNo, 
-		uc.[Description] UnitDesc,
+		CAST(isnull(CAST(@planQty as Numeric(18,0)), 0) as varchar)+' ' + uc.[Description] UnitDesc,
 		sd.ItemCode, 
 		mi.Item_Name ItemName,  
 		isnull(@planQty, 0) PlanQty,  
