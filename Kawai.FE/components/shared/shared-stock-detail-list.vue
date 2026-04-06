@@ -18,6 +18,7 @@
             <th class="text-center">Barcode No</th>
             <!-- <th class="text-center">Sublot No</th> -->
             <th class="text-center">Qty</th>
+             <th class="text-center">Status</th>
             <th class="text-center">Last Update</th>
             <th class="text-center">Last User</th>
           </tr>
@@ -29,6 +30,7 @@
             <td>{{ item.BarcodeNo }}</td>
             <!-- <td class="text-right">{{ item.SublotNo }}</td> -->
             <td class="text-right">{{ $func.formatMoney(item.CurrentQty) }}</td>
+            <td>{{ item.Status }}</td>
             <td class="text-left">{{ $func.formatDateTime(item.LastUpdate) }}</td>
             <td class="text-left">{{ item.LastUser }}</td>
           </tr>
@@ -40,7 +42,7 @@
 
 <script>
 export default {
-  props: ["warehouse", "area", "address", "item", "lotno"],
+  props: ["warehouse", "area", "address", "item", "lotno" , "status"],
   data: () => ({
     filter: {
       keyword: null,
@@ -84,6 +86,9 @@ export default {
     lotno: function () {
       this.search();
     },
+    status: function () {
+      this.search();
+    },
     "filter.keyword": function () {
       this.search();
     },
@@ -105,6 +110,7 @@ export default {
           AreaCode: this.area || "",
           AddressCode: this.address || "",
           LotNo: this.lotno || "",
+          Status: this.status || "",
         },
       ];
 
@@ -117,6 +123,7 @@ export default {
       this.area = null;
       this.address = null;
       this.lotno = null;
+      this.status = null;
       this.search();
     },
   },
