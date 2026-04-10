@@ -1,11 +1,10 @@
 <template>
   <v-frame title="Stock Inquiry By Category" icon="boxes-stacked">
     <template #frame-content>
-
-       <table width="100%">
-        <tr style="height: 38px">
-          <td style="width: 10%"><label class="form-label">Category</label></td>
-          <td style="width: 34%">
+      <table>
+        <tr>
+          <td><label class="form-label">Category</label></td>
+          <td style="padding-left: 15px">
             <filter-cls-2
               class="form-control"
               type-data="ClasificationPart_Cls"
@@ -14,29 +13,12 @@
               style-desc="width: 300px"
             />
           </td>
-          <td style="width: 1%"></td>
-          <td style="width: 10%">
-            <label class="form-label">Lot No</label>
-          </td>
-          <td style="width: 34%">
-             <filter-lot-by-stock
-              class="form-control"
-              v-model="filter.lotno"
-              warehouse="ALL"
-              area="ALL"
-              address="ALL"
-              :item="filter.item"
-              :category="filter.category"
-              :show-option-all="true"
-              style="width: 200px"
-            />
-          </td>
-
-          <td style="width: 10%"></td>
         </tr>
-        <tr style="height: 38px">
-          <td style="width: 10%"><label class="form-label">Item</label></td>
-          <td style="width: 34%">
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Item</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
             <filter-item-by-stock
               class="form-control"
               v-model="filter.item"
@@ -49,21 +31,12 @@
               style-desc="width: 300px"
             />
           </td>
-          <td style="width: 1%"></td>
-          <td style="width: 10%"><label class="form-label">Stock Status</label></td>
-          <td style="width: 34%">
-             <filter-status-receipt
-              class="form-control"
-              v-model="filter.status"
-              style="width: 110px"
-            />
-          </td>
-
-          <td style="width: 10%"></td>
         </tr>
-        <tr style="height: 38px">
-          <td style="width: 10%"><label class="form-label">Warehouse</label></td>
-          <td style="width: 34%">
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Warehouse</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
             <filter-warehouse-by-stock
               class="form-control"
               v-model="filter.warehouse"
@@ -73,17 +46,25 @@
               style-desc="width: 300px"
             />
           </td>
-          <td style="width: 1%"></td>
-          <td style="width: 10%"></td>
-          <td style="width: 34%"></td>
-
-          <td style="width: 10%"></td>
         </tr>
-      </table>
-
-
-      <table>
-        
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Lot No</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-lot-by-stock
+              class="form-control"
+              v-model="filter.lotno"
+              warehouse="ALL"
+              area="ALL"
+              address="ALL"
+              :item="filter.item"
+              :category="filter.category"
+              :show-option-all="true"
+              style="width: 200px"
+            />
+          </td>
+        </tr>
         <tr>
           <td style="padding-top: 5px" colspan="2">
             <div class="d-flex flex-fill">
@@ -102,7 +83,7 @@
         child-key="children"
         :group-by-fields="groupByFields"
         :frozen-column-left="3"
-        :start-collapse-level="1"
+        :start-collapse-level="0"
         :is-loading="ds.isLoading"
         :is-server-error="ds.isServerError"
         :is-network-error="ds.isNetworkError"
@@ -133,7 +114,7 @@
       :address="this.detail.address"
       :item="this.detail.item"
       :lotno="this.detail.lotno"
-      :status="this.detail.status"
+      :counter="this.counter"
     />
   </v-modal>
 </template>
@@ -154,7 +135,6 @@ export default {
       item: null,
       lotno: null,
       warehouse: null,
-       status: null,
     },
     detail: {
       warehouse: null,
@@ -162,15 +142,15 @@ export default {
       area: null,
       address: null,
       lotno: null,
-       status: null,
     },
+    counter:0,
     columns: [],
     rawData: [],
     groupByFields: [
       ["ItemCode", ["ItemCode", "ItemName"]],
       ["WarehouseCode", ["WarehouseCode", "WarehouseName"]],
       ["AreaCode", ["AreaCode", "AreaName"]],
-      ["LotNo", ["LotNo","Status"]],
+      ["LotNo", ["LotNo"]],
     ],
     sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
     treeData: [],
@@ -191,9 +171,6 @@ export default {
     "filter.lotno": function () {
       this.treeData = [];
     },
-     "filter.status": function () {
-      this.treeData = [];
-    },
     "ds.data.Items": function () {
       this.rawData = this.ds.data.Items;
       this.treeData = this.buildTree(this.rawData);
@@ -212,8 +189,6 @@ export default {
         { text: "Warehouse", dataField: "WarehouseCode", width: "max-content" },
         { text: "Area", dataField: "AreaCode", width: "max-content" },
         { text: "Lot No", dataField: "LotNo", width: "max-content" },
-        { text: "Stock Status", dataField: "Status", width: "max-content" ,
-          align: "center" },
         {
           text: "Begin",
           dataField: "BeginQty",
@@ -279,11 +254,6 @@ export default {
         return false;
       }
 
-       if ((this.filter.status || "") == "") {
-        toastDanger("Silahkan pilih status");
-        return false;
-      }
-
       return true;
     },
     onSearch: function() {
@@ -300,7 +270,6 @@ export default {
           WarehouseCode: this.filter.warehouse || "",
           Category: this.filter.category || "",
           LotNo: this.filter.lotno || "",
-          Status: this.filter.status || "",
         },
       ];
 
@@ -315,7 +284,6 @@ export default {
       this.filter.category = null;
       this.filter.item = null;
       this.filter.lotno = null;
-      this.filter.status = null;
       this.search(false);
     },
     buildTree: function (items, level = 0, path = []) {
@@ -374,7 +342,7 @@ export default {
       this.detail.address = row.children[0].AddressCode;
       this.detail.item = row.children[0].ItemCode;
       this.detail.lotno = row.children[0].LotNo;
-      this.detail.status = row.children[0].Status;
+      this.counter++;
       this.$bvModal.show("modal-detail");
     },
   },

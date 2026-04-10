@@ -42,7 +42,7 @@
 
 <script>
 export default {
-  props: ["warehouse", "area", "address", "item", "lotno" , "status"],
+  props: ["warehouse", "area", "address", "item", "lotno", "counter"],
   data: () => ({
     filter: {
       keyword: null,
@@ -86,7 +86,7 @@ export default {
     lotno: function () {
       this.search();
     },
-    status: function () {
+    counter: function () {
       this.search();
     },
     "filter.keyword": function () {
@@ -110,7 +110,6 @@ export default {
           AreaCode: this.area || "",
           AddressCode: this.address || "",
           LotNo: this.lotno || "",
-          Status: this.status || "",
         },
       ];
 
@@ -123,7 +122,6 @@ export default {
       this.area = null;
       this.address = null;
       this.lotno = null;
-      this.status = null;
       this.search();
     },
   },

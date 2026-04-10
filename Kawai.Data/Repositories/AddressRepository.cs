@@ -33,10 +33,18 @@ public class AddressRepository : IAddressRepository
         return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area })).ToList();
     }
 
-    public async Task<List<AddressDto>> DDLSearchByStock(string keyword, string warehouse, string area, string item)
+    public async Task<List<AddressDto>> DDLSearchByStock(string keyword, string warehouse, string area, string item, string statusReceipt, string statusHoldNG)
     {
         string sp = "sp_Wms_Address_DDLByStock";
-        return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
+        return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            WarehouseCode = warehouse,
+            AreaCode = area,
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG
+        })).ToList();
     }
 
     public async Task<List<AddressDto>> GetDDLPrivileges(string keyword, string warehouse, string area, string userId)
@@ -45,15 +53,24 @@ public class AddressRepository : IAddressRepository
         return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, UserId = userId })).ToList();
     }
 
-    public async Task<List<AddressDto>> DDLPrivilegesSearchByStock(string keyword, string warehouse, string area, string item, string userId)
+    public async Task<List<AddressDto>> DDLPrivilegesSearchByStock(string keyword, string warehouse, string area, string item, string statusReceipt, string statusHoldNG, string userId)
     {
         string sp = "sp_Wms_AddressPrivileges_DDLByStock";
-        return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouse, AreaCode = area, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item, UserId = userId })).ToList();
+        return (await _dbExecutor.QueryListAsync<AddressDto>(sp, new 
+        { 
+            Keyword = keyword ?? "", 
+            WarehouseCode = warehouse, 
+            AreaCode = area, 
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG,
+            UserId = userId 
+        })).ToList();
     }
 
     public async Task Create(Address address, string userId)
     {
-       // address.AddressCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Address_GenerateCode", new { address.WarehouseCode, address.AreaCode });
+        // address.AddressCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Address_GenerateCode", new { address.WarehouseCode, address.AreaCode });
         string sql = @"sp_Wms_Address_Create";
         await _dbExecutor.ExecuteAsync(sql, new
         {

@@ -19,8 +19,12 @@
       @open="open"
       :select="change"
       :class="cClass"
-      :multiple="multiple !== undefined || false"
-      :disabled="disabled !== undefined || false"
+      :multiple="
+        (multiple !== undefined || multiple === true) && multiple !== false
+      "
+      :disabled="
+        (disabled !== undefined || disabled === true) && disabled !== false
+      "
       select-label=""
       deselect-label=""
     />
@@ -52,25 +56,22 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "statusReceipt",
   ],
   data: () => ({
     isLoading: false,
     lists: [
-      // {
-      //   Id: "ALL",
-      //   Name: "ALL",
-      // },
       {
-        Id: "OK",
-        Name: "OK",
+        Id: "ALL",
+        Name: "All",
       },
       {
-        Id: "HOLD",
-        Name: "HOLD",
+        Id: "Vendor",
+        Name: "Vendor",
       },
-       {
-        Id: "NG",
-        Name: "NG",
+      {
+        Id: "Process",
+        Name: "Process",
       },
     ],
     list: [],
@@ -85,11 +86,21 @@ export default {
   watch: {
     modelValue: function (after, before) {
       if (!after) this.tempValue = null;
-
       this.load("", after);
     },
+    statusReceipt(after) {
+      this.tempValue = null;
+      let val = this.modelValue;
+
+      if (after === "OK") {
+        val = "ALL";
+        this.$emit("update:modelValue", "ALL");
+      }
+
+      this.load("", val);
+    },
     tempValue: function (after) {
-      if (!after) this.$emit("update:modelValue", null);
+      if (!after) this.$emit("update:modelValue", "");
     },
   },
   mounted: function () {
@@ -109,9 +120,13 @@ export default {
     },
     load: function (q = "", d = "") {
       this.isLoading = true;
-      this.list = this.lists.filter((o) =>
-        o.Name.toLowerCase().includes(q.toLowerCase())
-      );
+      this.list = this.lists
+        .filter(
+          (x) =>
+            this.statusReceipt != "OK" ||
+            (this.statusReceipt == "OK" && x.Id == "ALL"),
+        )
+        .filter((o) => o.Name.toLowerCase().includes(q.toLowerCase()));
 
       if (d) this.list = this.lists.filter((o) => o.Id == d);
 

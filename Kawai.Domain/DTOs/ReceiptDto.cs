@@ -114,4 +114,5 @@ public class ReceiptInquiryDto: DataTableDto
     public decimal Price { get; set; }
     public decimal Amount { get; set; }
     public string StatusIQC { get; set; }
+    public string StatusHoldNG { get; set; }
 }

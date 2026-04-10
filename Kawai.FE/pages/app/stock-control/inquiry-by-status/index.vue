@@ -1,15 +1,58 @@
 <template>
-  <v-frame title="Stock Inquiry By Location" icon="boxes-stacked">
+  <v-frame title="Stock Inquiry By Status" icon="boxes-stacked">
     <template #frame-content>
       <table>
         <tr>
-          <td><label class="form-label">Warehouse</label></td>
-          <td style="padding-left: 15px">
+          <td><label class="form-label">Status</label></td>
+          <td style="padding-left: 15px; width: 150px">
+            <filter-status-receipt
+              class="form-control"
+              v-model="filter.statusReceipt"
+              style="width: 150px"
+            />
+          </td>
+          <td style="padding-left: 5px">
+            <filter-status-receipt-hold-ng
+              class="form-control"
+              v-model="filter.statusHoldNg"
+              :status-receipt="filter.statusReceipt"
+              :disabled="this.filter.statusReceipt == 'OK'"
+              style="width: 150px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Item</label>
+          </td>
+          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
+            <filter-item-by-stock
+              class="form-control"
+              v-model="filter.item"
+              warehouse="ALL"
+              area="ALL"
+              address="ALL"
+              category="ALL"
+              :status-receipt="filter.statusReceipt"
+              :status-hold-ng="filter.statusHoldNg"
+              :show-option-all="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">Warehouse</label>
+          </td>
+          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
             <filter-warehouse-by-stock
               class="form-control"
               v-model="filter.warehouse"
-              item-code="ALL"
-              :show-option-all="false"
+              :item-code="filter.item"
+              :status-receipt="filter.statusReceipt"
+              :status-hold-ng="filter.statusHoldNg"
+              :show-option-all="true"
               style-code="width: 150px"
               style-desc="width: 300px"
             />
@@ -19,30 +62,14 @@
           <td style="padding-top: 5px">
             <label class="form-label">Area</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px">
+          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
             <filter-area-by-stock
               class="form-control"
               v-model="filter.area"
               :warehouse="filter.warehouse"
-              item="ALL"
-              :show-option-all="true"
-              style-code="width: 150px"
-              style-desc="width: 300px"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Item</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <filter-item-by-stock
-              class="form-control"
-              v-model="filter.item"
-              :warehouse="filter.warehouse"
-              :area="filter.area"
-              address="ALL"
-              category="ALL"
+              :item="filter.item"
+              :status-receipt="filter.statusReceipt"
+              :status-hold-ng="filter.statusHoldNg"
               :show-option-all="true"
               style-code="width: 150px"
               style-desc="width: 300px"
@@ -53,15 +80,17 @@
           <td style="padding-top: 5px">
             <label class="form-label">Lot No</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px">
+          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
             <filter-lot-by-stock
               class="form-control"
               v-model="filter.lotno"
               :warehouse="filter.warehouse"
               :area="filter.area"
               address="ALL"
-              category="ALL"
               :item="filter.item"
+              category="ALL"
+              :status-receipt="filter.statusReceipt"
+              :status-hold-ng="filter.statusHoldNg"
               :show-option-all="true"
               style="width: 200px"
             />
@@ -84,7 +113,7 @@
         :columns="columns"
         child-key="children"
         :group-by-fields="groupByFields"
-        :frozen-column-left="2"
+        :frozen-column-left="3"
         :start-collapse-level="0"
         :is-loading="ds.isLoading"
         :is-server-error="ds.isServerError"
@@ -127,58 +156,59 @@ export default {
     breadcrumbs: [
       { title: "Report", active: false, to: "" },
       {
-        title: "Stock Inquiry By Area",
+        title: "Stock Inquiry By Item",
         active: true,
-        to: "/stock-control/inquiry-by-area",
+        to: "/stock-control/inquiry-by-item",
       },
     ],
     filter: {
+      statusReceipt: null,
+      statusHoldNg: null,
+      item: null,
       warehouse: null,
       area: null,
-      item: null,
       lotno: null,
     },
     detail: {
       warehouse: null,
       item: null,
       area: null,
+      address: null,
       lotno: null,
     },
     counter: 0,
     columns: [],
     rawData: [],
     groupByFields: [
-      ["ItemName", ["ItemCode", "ItemName"]],
+      ["ItemCode", ["ItemCode", "ItemName"]],
+      ["WarehouseCode", ["WarehouseCode", "WarehouseName"]],
       ["AreaCode", ["AreaCode", "AreaName"]],
       ["LotNo", ["LotNo"]],
     ],
-    sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
+    sumFields: ["CurrentQty"],
     treeData: [],
   }),
   computed: {
     ds: function () {
-      return useStockByArea();
+      return useStockByStatus();
     },
   },
   mounted: function () {
     this.getColumns();
+    this.filter.statusReceipt = "OK";
     this.search(false);
   },
   watch: {
-    "filter.warehouse": function () {
-      this.rawData = [];
+    "filter.statusReceipt": function () {
       this.treeData = [];
     },
-    "filter.area": function () {
-      this.rawData = [];
+    "filter.statusHoldNg": function () {
       this.treeData = [];
     },
     "filter.item": function () {
-      this.rawData = [];
       this.treeData = [];
     },
     "filter.lotno": function () {
-      this.rawData = [];
       this.treeData = [];
     },
     "ds.data.Items": function () {
@@ -189,33 +219,20 @@ export default {
   methods: {
     getColumns: function () {
       this.columns = [
-        // { text: "Warehouse Code", dataField: "WarehouseCode", width: "250px" },
-        // { text: "Warehouse Name", dataField: "WarehouseName", width: "250px" },
+        {
+          text: "Item Code",
+          dataField: "ItemCode",
+          width: "max-content",
+          align: "left",
+        },
         { text: "Item Name", dataField: "ItemName", width: "max-content" },
+        { text: "Warehouse", dataField: "WarehouseCode", width: "max-content" },
         { text: "Area", dataField: "AreaCode", width: "max-content" },
         { text: "Lot No", dataField: "LotNo", width: "max-content" },
         {
-          text: "Begin",
-          dataField: "BeginQty",
-          width: "max-content",
-          align: "right",
-        },
-        {
-          text: "Receipt",
-          dataField: "ReceiptQty",
-          width: "max-content",
-          align: "right",
-        },
-        {
-          text: "Supply",
-          dataField: "SupplyQty",
-          width: "max-content",
-          align: "right",
-        },
-        {
           text: "Current",
           dataField: "CurrentQty",
-          width: "max-content",
+          width: "100px",
           align: "right",
         },
         {
@@ -223,12 +240,17 @@ export default {
           isRender: true,
           showAtLevel: [this.groupByFields.length - 1],
           action: (row) => this.openModal(row),
-          width: "max-content",
+          width: "100px",
           align: "center",
         },
       ];
     },
     validSearch: function () {
+      if ((this.filter.item || "") == "") {
+        toastDanger("Silahkan pilih item");
+        return false;
+      }
+
       if ((this.filter.warehouse || "") == "") {
         toastDanger("Silahkan pilih warehouse");
         return false;
@@ -236,11 +258,6 @@ export default {
 
       if ((this.filter.area || "") == "") {
         toastDanger("Silahkan pilih area");
-        return false;
-      }
-
-      if ((this.filter.item || "") == "") {
-        toastDanger("Silahkan pilih item");
         return false;
       }
 
@@ -265,6 +282,8 @@ export default {
           WarehouseCode: this.filter.warehouse || "",
           AreaCode: this.filter.area || "",
           LotNo: this.filter.lotno || "",
+          StatusReceipt: this.filter.statusReceipt || "",
+          StatusHoldNG: this.filter.statusHoldNg || "",
         },
       ];
 
@@ -331,7 +350,7 @@ export default {
 
       return result;
     },
-    openModal: function (row) {
+    openModal(row) {
       this.detail.warehouse = row.children[0].WarehouseCode;
       this.detail.area = row.children[0].AreaCode;
       this.detail.address = row.children[0].AddressCode;

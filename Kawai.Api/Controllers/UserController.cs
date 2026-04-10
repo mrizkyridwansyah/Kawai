@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using Kawai.Api.Models;
+﻿using Kawai.Api.Models;
 using Kawai.Api.Services;
 using Kawai.Data;
 using Kawai.Domain.DTOs.Log;
@@ -8,8 +7,6 @@ using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Converters;
-using OpenTelemetry;
 using System.Diagnostics;
 
 namespace Kawai.Api.Controllers;

@@ -68,6 +68,8 @@ export default {
     "warehouseCode",
     "areaCode",
     "itemCode",
+    "statusReceipt",
+    "statusHoldNg",
     "showOptionAll",
   ],
   data: () => ({
@@ -115,6 +117,14 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
+    statusReceipt: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    statusHoldNg: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
@@ -148,9 +158,7 @@ export default {
           .get(
             `/address/ddl-address-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouse=${this.warehouseCode}&area=${this.areaCode}&item=${
-              this.itemCode
-            }`
+            }&warehouse=${this.warehouseCode}&area=${this.areaCode}&item=${this.itemCode}&statusReceipt=${this.statusReceipt || ""}&statusHoldNG=${this.statusHoldNg || ""}`
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

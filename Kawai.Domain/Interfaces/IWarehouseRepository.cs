@@ -12,12 +12,12 @@ public interface IWarehouseRepository
 
     Task<List<WarehouseDto>> GetDDL(string keyword, string factoryCode);
     Task<List<WarehouseDto>> GetDDLWarehouseLine(string keyword, string factoryCode);
-    Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string factoryCode, string item);
+    Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string factoryCode, string item, string statusReceipt, string statusHoldNG);
 
     Task<List<WarehouseDto>> GetDDLPrivileges(string keyword, string factoryCode, string userId);
     Task<List<WarehouseDto>> GetDDLSubconPrivileges(string keyword, string factoryCode, string userId);
     Task<List<WarehouseDto>> GetDDLPrivilegesWarehouseLine(string keyword, string factoryCode, string userId);
-    Task<List<WarehouseDto>> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string userId);
+    Task<List<WarehouseDto>> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string statusReceipt, string statusHoldNG, string userId);
 
     Task<WarehouseDto> GetData(string warehouseCode);
     Task Create(Warehouse warehouse, string userId);

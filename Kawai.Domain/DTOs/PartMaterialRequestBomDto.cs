@@ -25,8 +25,8 @@ public class PartMaterialRequestBomDetilDto : DataTableDto
     public string PONumber { get; set; }
     public string WarehouseCode { get; set; }
     public string WarehouseName { get; set; }
-    public string AreaCode { get; set; }
-    public string AreaName { get; set; }
+    public string ClassificationCode { get; set; }
+    public string ClassificationName { get; set; }
     public string ParentItemCode { get; set; }
     public string ParentItemName { get; set; }
     public string ChildItemCode { get; set; }
@@ -36,4 +36,7 @@ public class PartMaterialRequestBomDetilDto : DataTableDto
     public decimal RequirementQty { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
+    public string PickingNo { get; set; }
+    public string Status { get; set; }
+    public decimal? TotalScan { get; set; }
 }

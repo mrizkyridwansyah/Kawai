@@ -181,7 +181,7 @@ export default {
           .finally(() => (this.isLoading = false));
 
         clearTimeout(this.debounce);
-      }, 200);
+      }, 500);
     },
   },
 };

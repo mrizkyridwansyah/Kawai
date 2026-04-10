@@ -67,23 +67,21 @@
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+            class="table table-striped table-bordered mb-0 align-middle"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
           >
             <thead>
               <tr>
-                <th class="text-center">Schedule Date</th>
-                <th class="text-center">Line</th>
+                <th class="text-center">PO Date</th>
+                <th class="text-center">Child Cls</th>
                 <th class="text-center">Parent Item</th>
                 <th class="text-center">Parent Item Name</th>
                 <th class="text-center">Qty Set</th>
                 <th class="text-center">Child Item Code</th>
                 <th class="text-center">Child Item Name</th>
-                <th class="text-center">Requirement Qty</th>
-                <th class="text-center">Current Stock</th>
-                <th class="text-center">Request User</th>
-                <th class="text-center">Request Date</th>
+                <th class="text-center">Req. Qty</th>
+                <th class="text-center">Crn. Qty</th>
               </tr>
             </thead>
             <tbody>
@@ -93,7 +91,7 @@
               >
                 <tr>
                   <td>{{ $func.formatDate(item.PODate) }}</td>
-                  <td>{{ item.AreaName }}</td>
+                  <td>{{ item.ClassificationName }}</td>
                   <td>{{ item.ParentItemCode }}</td>
                   <td>{{ item.ParentItemName }}</td>
                   <td class="text-right">
@@ -123,8 +121,6 @@
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
                   <td><a href="javascript:void(0)" @click="() => viewStock(dtl.ChildItemCode)">View Detail</a></td>
-                  <td>{{ dtl.RegisterUser }}</td>
-                  <td>{{ $func.formatDate(dtl.RegisterDate) }}</td>
                 </tr>
               </template>
             </tbody>
@@ -178,7 +174,7 @@ export default {
             item.PONumber,
             item.PODate,
             item.WarehouseCode,
-            item.AreaCode,
+            item.ClassificationCode,
             item.ParentItemCode,
           ].join("|");
 
@@ -291,5 +287,14 @@ export default {
 
 .toggle-button:hover {
   opacity: 0.85;
+}
+
+
+table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20; /* harus lebih tinggi dari sticky kiri */
+  background: #8ec5fc;
+  vertical-align: middle
 }
 </style>

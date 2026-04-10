@@ -36,6 +36,13 @@ public class StockController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("inquiry/status")]
+    public async Task<IActionResult> InquiryByStatus([FromBody] RequestParameter parameter)
+    {
+        var results = await _stockRepository.InquiryByStatus(parameter);
+        return DataTableResult(parameter, results);
+    }
+
     [HttpPost("inquiry/detail")]
     public async Task<IActionResult> List([FromBody] RequestParameter parameter)
     {
@@ -57,9 +64,9 @@ public class StockController : HahaController
     }
 
     [HttpGet("ddl-lot-no-search-by-stock")]
-    public async Task<IActionResult> DDLLotSearchByStock(string keyword, string ids, string warehouse, string area, string address, string item, string category)
+    public async Task<IActionResult> DDLLotSearchByStock(string keyword, string ids, string warehouse, string area, string address, string item, string category, string statusReceipt, string statusHoldNG)
     {
-        var results = await _stockRepository.DDLLotNoByStock(keyword, warehouse, area, address, item, category);
+        var results = await _stockRepository.DDLLotNoByStock(keyword, warehouse, area, address, item, category, statusReceipt, statusHoldNG);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

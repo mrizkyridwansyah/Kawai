@@ -63,6 +63,8 @@ export default {
     "address",
     "item",
     "category",
+    "statusReceipt",
+    "statusHoldNg",
     "showOptionAll",
     "style",
   ],
@@ -107,6 +109,14 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
+    statusReceipt: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    statusHoldNg: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
   },
   mounted: function () {
     this.load("", this.modelValue);
@@ -138,7 +148,7 @@ export default {
               d || ""
             }&warehouse=${this.warehouse}&area=${this.area}&address=${
               this.address
-            }&item=${this.item}&category=${this.category}`,
+            }&item=${this.item}&category=${this.category}&statusReceipt=${this.statusReceipt || ""}&statusHoldNG=${this.statusHoldNg || ""}`,
           )
           .then((p) => {
             this.list =

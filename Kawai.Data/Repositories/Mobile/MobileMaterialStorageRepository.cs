@@ -29,8 +29,8 @@ public class MobileMaterialStorageRepository : IMobileMaterialStorageRepository
 
     public async Task<MaterialStorageDto> GetDataBarcode(string barcodeNo, bool onlyTemp)
     {
-        string sp = "sp_Wms_Mobile_MaterialStorage_GetDataBarcode";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<MaterialStorageDto>(sp, new { BarcodeNo = barcodeNo, OnlyTemporary = onlyTemp });
+        string sp = onlyTemp ? "sp_Wms_Mobile_MaterialStorage_GetDataBarcode" : "sp_Wms_Mobile_MaterialStorage_GetDataBarcodeMerge";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<MaterialStorageDto>(sp, new { BarcodeNo = barcodeNo });
     }
 
     public async Task Save(MobileMaterialStorage payload, string userId)
