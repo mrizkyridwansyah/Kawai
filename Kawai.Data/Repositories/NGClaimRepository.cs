@@ -90,7 +90,7 @@ public class NGClaimRepository : INGClaimRepository
         return (await _dbExecutor.QueryListAsync<NGClaimReportDto>(sp, new
         {
             FactoryCode = factory,
-            ClainID = claimid
+            ClaimID = claimid
         })).ToList();
     }
 

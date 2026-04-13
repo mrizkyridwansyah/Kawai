@@ -36,6 +36,9 @@ public class NGClaimReportDto : DataTableDto
     public string CompanyName { get; set; }
     public string CompanyAddress { get; set; }
     public string Phone { get; set; }
+    public string TanggalSurat { get; set; }
+    public string Kendaraan { get; set; }
+    public string NoKendaraan { get; set; }
     public string No { get; set; }
     public string CustPONo { get; set; }
     public string BCType { get; set; }

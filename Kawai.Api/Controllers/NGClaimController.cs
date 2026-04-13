@@ -147,55 +147,67 @@ public class NGClaimController : HahaController
         // ===============================
         // HEADER PERUSAHAAN
         // ===============================
-        ws.Cell(row, 1).Value = results[1].CompanyName.ToString();
-        ws.Range(row, 1, row, 6).Merge().Style.Font.SetBold().Font.FontSize = 14;
+        ws.Cell(row, 6).Value = results[0].TanggalSurat.ToString();
+  
+
+
+        row += 2;
+        ws.Cell(row, 1).Value = results[0].CompanyName.ToString();
+        ws.Range(row, 1, row, 5).Merge().Style.Font.SetBold().Font.FontSize = 14;
+
+        ws.Cell(row, 6).Value = "Surat Jalan";
+        ws.Cell(row, 6).Style.Font.Bold = true;
+        ws.Cell(row, 6).Style.Font.FontSize = 16;
+
         row++;
 
-        ws.Cell(row, 1).Value = results[1].CompanyAddress.ToString();
+        ws.Cell(row, 1).Value = results[0].CompanyAddress.ToString();
         ws.Range(row, 1, row, 6).Merge();
         row++;
 
-        ws.Cell(row, 1).Value =   results[1].Phone.ToString();  
+        ws.Cell(row, 1).Value =   results[0].Phone.ToString();  
         ws.Range(row, 1, row, 6).Merge();
         row += 2;
 
         // ===============================
         // JUDUL
         // ===============================
-        ws.Cell(row, 6).Value = "Surat Jalan";
-        ws.Cell(row, 6).Style.Font.Bold = true;
-        ws.Cell(row, 6).Style.Font.FontSize = 16;
+       
         row += 2;
 
         // ===============================
         // INFORMASI
         // ===============================
         ws.Cell(row, 1).Value = "No";
-        ws.Cell(row, 2).Value = ":";
-        ws.Cell(row, 3).Value = "";
+        ws.Cell(row, 2).Value =   ":" + results[0].No.ToString();
+
+        ws.Cell(row, 5).Value = "Delivery To";
+        ws.Cell(row, 6).Value = ":" + results[0].Delivery.ToString();
         row++;
 
         ws.Cell(row, 1).Value = "Cust PO No";
-        ws.Cell(row, 2).Value = ":" + results[1].CustPONo.ToString();
+        ws.Cell(row, 2).Value = ":" + results[0].CustPONo.ToString();
         row++;
 
         ws.Cell(row, 1).Value = "BC Type";
-        ws.Cell(row, 2).Value = ":" + results[1].BCType.ToString();
+        ws.Cell(row, 2).Value = ":" + results[0].BCType.ToString();
         row++;
 
         ws.Cell(row, 1).Value = "BC Number";
-        ws.Cell(row, 2).Value = ":" + results[1].BCNumber.ToString();
+        ws.Cell(row, 2).Value = ":" + results[0].BCNumber.ToString();
+
+        ws.Cell(row, 5).Value = "Model";
+        ws.Cell(row, 6).Value = ":" + results[0].Model.ToString();
         row++;
 
         ws.Cell(row, 1).Value = "QTY";
-        ws.Cell(row, 2).Value = ":";
-        ws.Cell(row, 3).Value =   results[1].Qty.ToString();
+        ws.Cell(row, 2).Value = ":" + results[0].Qty.ToString(); 
         row += 2;
 
         // ===============================
         // KALIMAT PENGIRIMAN
         // ===============================
-        ws.Cell(row, 1).Value = "Kami Kirimkan barang-barang tersebut dibawah ini dengan kendaraan:";
+        ws.Cell(row, 1).Value = "Kami Kirimkan barang-barang tersebut dibawah ini dengan kendaraan:" + results[0].Kendaraan.ToString() + "No " + results[0].NoKendaraan.ToString(); 
         ws.Range(row, 1, row, 6).Merge();
         row += 2;
 
@@ -220,8 +232,8 @@ public class NGClaimController : HahaController
         foreach (var item in results)
         {
             ws.Cell(row, 1).Value = no++;
-            ws.Cell(row, 2).Value = item.ItemCode;
-            ws.Cell(row, 3).Value = item.ItemName;
+            ws.Cell(row, 2).Value = item.ItemName;
+            ws.Cell(row, 3).Value = item.ItemCode;
             ws.Cell(row, 4).Value = item.QtyNG;
             ws.Cell(row, 5).Value = item.UnitCls;
             ws.Cell(row, 6).Value = item.Remarks;
@@ -238,6 +250,9 @@ public class NGClaimController : HahaController
 
         row += 2;
 
+        ws.Cell(row, 1).Value = "* Please return this original letter  to " + results[0].CompanyName.ToString();
+        ws.Range(row, 1, row, 6).Merge();
+
         // ===============================
         // FOOTER
         // ===============================
@@ -245,6 +260,16 @@ public class NGClaimController : HahaController
         ws.Cell(row, 3).Value = "Approved by";
         ws.Cell(row, 5).Value = "Checked by";
         ws.Cell(row, 6).Value = "Received by";
+        ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+
+        row += 4;
+
+        ws.Cell(row, 1).Value = results[0].DeliveryByPosition.ToString();
+        ws.Cell(row, 3).Value = results[0].ApprovedByPosition.ToString();
+        ws.Cell(row, 5).Value = results[0].CheckedByPosition.ToString();
+        ws.Cell(row, 6).Value = results[0].ReceivedByPosition.ToString();
+        ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
         ws.Columns().AdjustToContents();
 

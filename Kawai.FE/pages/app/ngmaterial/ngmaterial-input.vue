@@ -61,7 +61,7 @@
           <input-claim
             class="form-control"
             :disabled="isNew"
-            status="DRAFT"
+            status="NEW"
             :supplier-code="filter.SupplierCode"
             :period-from="filter.PeriodFrom"
             :period-until="filter.PeriodUntil"
@@ -155,7 +155,7 @@
             :is-loading="isLoading"
           />
           <v-button-print
-            label="Print Label"
+            label="Print Surat Jalan"
             class="mr-1"
             :print="printSuratJalan"
             :is-loading="isLoading"
@@ -357,7 +357,7 @@ export default {
     },
     printSuratJalan: function () {
       this.ds
-        .printSuratJalan( {
+        .PrintSuratJalan( {
               factory: this.filter.SupplierCode,
               claimid: this.filter.ClaimId
             })
