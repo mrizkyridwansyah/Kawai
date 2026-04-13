@@ -50,7 +50,7 @@ begin
 
 	DECLARE @sql NVARCHAR(MAX) = N'
 	  SELECT 
-		ma.WarehouseCode, mw.WH_Name WarehouseName, ma.AreaCode, ml.AreaName, ma.AddressCode, ma.AddressName,
+		ma.WarehouseCode, mw.WH_Name WarehouseName, ma.AreaCode, ml.AreaName, ma.AddressCode, ma.AddressName, ma.StopPointCode StopPointDescs,
 		ma.RegisterDate, us.FullName RegisterUser, ma.UpdateDate LastUpdate, us2.FullName LastUser, TotalRow = @TotalRow
 	  FROM MS_Address ma
 	  LEFT JOIN WareHouse_Master mw ON mw.WH_Code = ma.WarehouseCode

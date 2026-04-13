@@ -36,6 +36,7 @@ begin
 		and (BarcodeNo like '%'+@Keyword+'%') 
 		and ItemCode = @ItemCode 
 		and Qty > 0
+		and Picking_No is null
 	)
 
 	declare @sql varchar(max) = 
@@ -54,6 +55,7 @@ begin
 		where 1=1
 		and (BarcodeNo like ''%'+@Keyword+'%'') 
 		and sd.ItemCode = '''+ @ItemCode + ''' and sd.Qty > 0
+		and sd.Picking_No is null
 		'+ @sqlSort +'
 		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
 		FETCH NEXT ' + cast(@Length as varchar(10)) + ' ROWS ONLY

@@ -8,23 +8,33 @@ CREATE OR ALTER FUNCTION [ConvertToDateTimeFromFuckingString] (
 RETURNS DATETIME
 AS
 BEGIN
-    DECLARE @Result DATETIME;
+    DECLARE @Result DATETIME
+    DECLARE @Formatted VARCHAR(10)
 
     IF @DateString = '99999999'
     BEGIN
-        SET @Result = '9999-12-31';
+        RETURN '9999-12-31'
     END
-    ELSE IF LEN(@DateString) = 8 
-         AND ISNUMERIC(@DateString) = 1
-         AND ISDATE(STUFF(STUFF(@DateString, 5, 0, '-'), 8, 0, '-')) = 1
+
+    IF LEN(@DateString) = 8 
+       AND @DateString NOT LIKE '%[^0-9]%'
     BEGIN
-        SET @Result = CONVERT(DATETIME, STUFF(STUFF(@DateString, 5, 0, '-'), 8, 0, '-'), 120);
+        -- yyyy d d M M  ?  yyyy-MM-dd
+        SET @Formatted =
+            SUBSTRING(@DateString,1,4) + '-' +
+            SUBSTRING(@DateString,7,2) + '-' +
+            SUBSTRING(@DateString,5,2)
+
+        IF ISDATE(@Formatted) = 1
+            SET @Result = CONVERT(DATETIME, @Formatted, 120)
+        ELSE
+            SET @Result = NULL
     END
     ELSE
     BEGIN
-        SET @Result = NULL;
+        SET @Result = NULL
     END
 
-    RETURN @Result;
+    RETURN @Result
 END
 GO

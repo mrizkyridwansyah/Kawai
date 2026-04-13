@@ -24,7 +24,7 @@ public class MobileLoadingTrolleyTransactionHandler : ITransactionHandler
         var json = JsonSerializer.Serialize(payload);
         var model = JsonSerializer.Deserialize<MobileLoadingTrolley>(json);
 
-        await _loadingTrolleyRepo.Save(model, userId);
+        await _loadingTrolleyRepo.ScanBarcode(model, userId);
 
         var after = await _loadingTrolleyRepo.Capture(model.TrolleyNo);
 

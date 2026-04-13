@@ -16,6 +16,7 @@ BEGIN
     SET NOCOUNT ON;
 
 	DECLARE @Filters NVARCHAR(MAX) = NULL
+    DECLARE @ExpiredDay_TEMP INT = 1
 
     ----------------------------------------------------------------
     -- 1?? SIMULASI DATA (DUMMY DATA)
@@ -37,18 +38,64 @@ BEGIN
         Status NVARCHAR(20)
     );
 
-    INSERT INTO #Data VALUES
-    ('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-02-20', '2025-02-20', 1, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-03-01', '2025-03-01', 2, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-01-15', '2025-01-15', 3, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-04-10', '2025-04-10', 4, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-02-28', '2025-02-28', 5, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-02-20', '2025-02-20', 1, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-03-01', '2025-03-01', 2, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-01-15', '2025-01-15', 3, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-04-10', '2025-04-10', 4, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-02-28', '2025-02-28', 5, 0, @ExpiredUntil, 'EXPIRED'),
-    ('WH-01-300', 'Gudang RAW', '5Z5683', 'Material', 'KARTON TOP', 'Pcs', '0882-0006', '2025-02-28', '2025-02-28', 5, 0, @ExpiredUntil, 'EXPIRED');
+    INSERT INTO #Data --VALUES
+    --('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-02-20', '2025-02-20', 1, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-03-01', '2025-03-01', 2, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-01-15', '2025-01-15', 3, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-04-10', '2025-04-10', 4, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-100', 'Gudang RAW', '5Z5681', 'Material', 'KARTON TOP', 'Pcs', '0882-0004', '2025-02-28', '2025-02-28', 5, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-02-20', '2025-02-20', 1, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-03-01', '2025-03-01', 2, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-01-15', '2025-01-15', 3, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-04-10', '2025-04-10', 4, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-200', 'Gudang RAW', '5Z5682', 'Material', 'KARTON TOP', 'Pcs', '0882-0005', '2025-02-28', '2025-02-28', 5, 0, @ExpiredUntil, 'EXPIRED'),
+    --('WH-01-300', 'Gudang RAW', '5Z5683', 'Material', 'KARTON TOP', 'Pcs', '0882-0006', '2025-02-28', '2025-02-28', 5, 0, @ExpiredUntil, 'EXPIRED');
+
+    /* DATA DUMMY - PENGGUNAAN SEMENTARA */
+	SELECT 
+	    stock.Warehouse_Code, 
+	    warehouse.WH_Name,
+	    stock.Item_Code,
+	    cls.Description AS Part_Number,
+	    item.Item_Name,
+	    unit.Description AS Unit,
+	    LotNo = null,/* stock.Lot_No, */
+	    CONVERT(VARCHAR(MAX), pr.Receipt_Date /*partMast.LPBDate*/, 106) AS Receipt_Date,
+	    CONVERT(VARCHAR(MAX), pr.Receipt_Date /*partDet.ManufactureDate*/, 106) AS Manufacture_Date,
+	    @ExpiredDay_TEMP /*item.Expired_Day*/ AS Expire_Day,
+	    /*
+		CASE
+		    WHEN ((SELECT dbo.fn_ClosingDiff()) = '0') THEN 
+			    cast(convert(decimal(10,2),stock.LM_Current) AS varchar) 
+		    WHEN ((SELECT dbo.fn_ClosingDiff()) = '1') THEN 
+			    cast(convert(decimal(10,2),stock.TM_Current) AS varchar) 
+		    WHEN ((SELECT dbo.fn_ClosingDiff()) = '2') THEN 
+			    cast(convert(decimal(10,2),stock.NM_Current) AS varchar) 
+	    ENd AS Qty,
+		*/
+		1 AS Qty,
+	    CONVERT(VARCHAR(MAX), DATEADD(DAY,180, pr.Receipt_Date /*partMast.LPBDate*/) , 106) AS Expire_Date,
+	    IIF(
+	    (CAST(DATEADD(DAY, @ExpiredDay_TEMP /*item.Expired_Day*/, pr.Receipt_Date /*partMast.LPBDate*/) AS DATE)) < @ExpiredUntil, --Condition
+	    'Expired', --True
+	    'Not Expired' --False
+	    ) AS [Status]
+    FROM dbo.Stock_Master stock --Master
+	    LEFT JOIN dbo.WareHouse_Master warehouse ON stock.Warehouse_Code = warehouse.WH_Code
+	    LEFT JOIN dbo.Item_Master item ON stock.Item_Code = item.Item_Code 
+			AND stock.Warehouse_Code = item.WH_Code
+	    LEFT JOIN dbo.vw_FinishGoodCls cls ON item.FinishGoodPart_Cls = cls.Code 
+	    LEFT JOIN dbo.Unit_Cls unit ON item.Unit_Cls = unit.Unit_Cls
+		LEFT JOIN dbo.Part_Receipt pr ON item.Item_Code = pr.Item_Code 
+			AND pr.Warehouse_Code = item.WH_Code
+	    --LEFT JOIN dbo.PartReceiptDetail partDet ON item.Item_Code = partDet.ItemCode
+			--AND stock.Warehouse_Code = partDet.WareHouse_Code 
+			--AND stock.Lot_No = partDet.LotNo
+
+	  --  JOIN dbo.ST_PartsMaterialReceipt_Master partMast ON partDet.LPBNo = partMast.LPBNo
+    WHERE 
+    CAST(DATEADD(DAY, @ExpiredDay_TEMP /*item.Expired_Day*/, pr.Receipt_Date /*partMast.LPBDate*/) AS DATE) < @ExpiredUntil
+    ORDER BY stock.Warehouse_Code
 
     ----------------------------------------------------------------
     -- 2?? AMBIL FILTER DARI JSON (OPTIONAL)

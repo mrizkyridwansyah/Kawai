@@ -10,12 +10,13 @@ public interface IReceiptRepository
     #region WEB
     Task<List<ReceiptDto>> GetList(RequestParameter parameter);
     Task<List<PODetailDto>> GetListPODetail(RequestParameter parameter);
+    Task<List<ClaimDetailDto>> GetListClaimDetail(RequestParameter parameter);
     Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id);
     Task<ReceiptDto> GetDataHeader(long id);
     Task Create(Receipt receipt, string userId);
     Task Update(Receipt receipt, string userId);
     Task Remove(long id);
-    Task PrintLabel(long id, string userId);
+    Task PrintLabel(long id, string userId, bool? mustBePrint);
     Task<List<ReceiptInquiryDto>> Inquiry(RequestParameter parameter);
     Task<List<ReceiptDetailBarcodeDto>> InquiryDetail(RequestParameter parameter);
     #endregion
@@ -36,6 +37,8 @@ public interface IReceiptRepository
 
     Task<List<ReceiptDto>> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string userId);
     Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string userId);
+
+    Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
 
 
     Task<Dictionary<string, object>> Capture(long id);

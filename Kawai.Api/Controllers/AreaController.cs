@@ -54,9 +54,9 @@ public class AreaController : HahaController
     }
 
     [HttpGet("ddl-area-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string item, string ids)
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string item, string statusReceipt, string statusHoldNG, string ids)
     {
-        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, item);
+        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, statusReceipt, statusHoldNG, item);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -90,9 +90,9 @@ public class AreaController : HahaController
     }
 
     [HttpGet("ddl-area-search-by-stock-privileges")]
-    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string warehouse, string item, string ids)
+    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string warehouse, string item, string statusReceipt, string statusHoldNG, string ids)
     {
-        var results = await _areaRepository.DDLPrivilegesSearchByStock(keyword, warehouse, item, Auth.User.UserID);
+        var results = await _areaRepository.DDLPrivilegesSearchByStock(keyword, warehouse, item, statusReceipt, statusHoldNG, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

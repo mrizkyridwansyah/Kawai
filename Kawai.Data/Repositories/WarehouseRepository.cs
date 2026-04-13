@@ -49,14 +49,16 @@ public class WarehouseRepository : IWarehouseRepository
         })).ToList();
     }
 
-    public async Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string factoryCode, string item)
+    public async Task<List<WarehouseDto>> DDLSearchByStock(string keyword, string factoryCode, string item, string statusReceipt, string statusHoldNG)
     {
         string sp = "sp_Wms_Warehouse_DDLByStock";
         return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
         {
             Keyword = keyword ?? "",
             FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
-            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG,
         })).ToList();
     }
 
@@ -93,7 +95,7 @@ public class WarehouseRepository : IWarehouseRepository
         })).ToList();
     }
 
-    public async Task<List<WarehouseDto>> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string userId)
+    public async Task<List<WarehouseDto>> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string statusReceipt, string statusHoldNG, string userId)
     {
         string sp = "sp_Wms_WarehousePrivileges_DDLByStock";
         return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new
@@ -101,6 +103,8 @@ public class WarehouseRepository : IWarehouseRepository
             Keyword = keyword ?? "",
             FactoryCode = String.IsNullOrEmpty(factoryCode) ? "ALL" : factoryCode,
             ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG,
             UserId = userId
         })).ToList();
     }

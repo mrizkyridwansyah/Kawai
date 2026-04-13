@@ -3,7 +3,7 @@
     :id="id"
     :title="title"
     :size="size"
-    :body-class="bodyClass || ''"
+    :body-class="['my-modal-body', bodyClass]"
     class="zoom"
     top
     :fullscreen="fullscreen"
@@ -71,7 +71,11 @@ export default {
     max-height: fit-content !important;
   }
   
-  .submit-wrapper {
+  .my-modal-body {
+    overflow-x: scroll;
+  }
+
+.submit-wrapper {
     position: fixed;
     bottom: 0;
     left: 0;

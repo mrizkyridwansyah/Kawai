@@ -32,7 +32,7 @@ begin
 		Adm_Group = @AdmGroup, 
 		StockControl_Cls = @StockControlCls, 
 		NG_Cls = @NGCls, 
-		Use_EndDay = format(@UseEndDate, 'yyyyMMdd'), 
+		Use_EndDay = format(@UseEndDate, 'yyyyddMM'), 
 		Last_User = @UpdateBy, 
 		Last_Update = getdate() 
 	where WH_Code = @WarehouseCode

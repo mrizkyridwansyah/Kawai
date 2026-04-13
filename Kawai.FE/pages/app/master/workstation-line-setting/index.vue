@@ -90,7 +90,9 @@
                 <th class="text-center">Print</th>
                 <th class="text-center">WS Code</th>
                 <th class="text-center">Description</th>
-                <th class="text-center">Stop Point Code</th>
+                <th class="text-center">Stop Point Code #1</th>
+                <th class="text-center">Stop Point Code #2</th>
+                <th class="text-center">Stop Point Code #3</th>
                 <th class="text-center">Register Date</th>
                 <th class="text-center">Register User</th>
                 <th class="text-center">Last Update</th>
@@ -120,12 +122,38 @@
                 <td>{{ item.WorkStationName }}</td>
                 <td style="width: 150px !important;">
                   <div style="justify-items: center; display: grid">
-                  <input-stoppoint
-                    v-model="item.StopPointCode"
+                  <input-stoppointbyaddress
+                    :line="filter.linecode"
+                     :workstation="item.WorkStationCode"
+                      v-model="item.StopPointCode"
                     :width="'100%'"
                     :include-temp="true"
                     :errors="item.errors?.StopPointCode"
                     @update:modelValue="(value) => onStopPointChange(value, item)"
+                  /></div>
+                </td>
+                 <td style="width: 150px !important;">
+                  <div style="justify-items: center; display: grid">
+                  <input-stoppointbyaddress 
+                     :line="filter.linecode"
+                      :workstation="item.WorkStationCode"
+                      v-model="item.StopPointCode2"
+                    :width="'100%'" 
+                    :include-temp="true"
+                    :errors="item.errors?.StopPointCode2"
+                    @update:modelValue="(value) => onStopPointChange2(value, item)"
+                  /></div>
+                </td>
+                <td style="width: 150px !important;">
+                  <div style="justify-items: center; display: grid">
+                  <input-stoppointbyaddress 
+                     :line="filter.linecode"
+                     :workstation="item.WorkStationCode"
+                      v-model="item.StopPointCode3"
+                    :width="'100%'"
+                    :include-temp="true"
+                    :errors="item.errors?.StopPointCode3"
+                    @update:modelValue="(value) => onStopPointChange3(value, item)"
                   /></div>
                 </td>
                 <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
@@ -232,6 +260,59 @@ export default {
         }
       }
     },
+
+     onStopPointChange2: function (value, item) {
+      //jika belum centang allowsetting maka error
+      if (!item.AllowSetting) {
+        toastWarning("Please allow setting before set Stop Point Code");
+        return;
+      }
+
+      item.StopPointCode2 = value;
+      this.validateDuplicateStopPoint2(item);
+    },
+    validateDuplicateStopPoint2: function (item) {
+      const duplicate = this.ds.data.Items.find(
+        (x) =>
+          x.StopPointCode2 === item.StopPointCode2 &&
+          x.WorkStationCode !== item.WorkStationCode
+      );
+      if (duplicate) {
+        toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode2);
+      } else if (item.errors) {
+        delete item.errors.StopPointCode2;
+        if (Object.keys(item.errors).length === 0) {
+          delete item.errors;
+        }
+      }
+    },
+
+     onStopPointChange3: function (value, item) {
+      //jika belum centang allowsetting maka error
+      if (!item.AllowSetting) {
+        toastWarning("Please allow setting before set Stop Point Code");
+        return;
+      }
+
+      item.StopPointCode3 = value;
+      this.validateDuplicateStopPoint3(item);
+    },
+    validateDuplicateStopPoint3: function (item) {
+      const duplicate = this.ds.data.Items.find(
+        (x) =>
+          x.StopPointCode3 === item.StopPointCode3 &&
+          x.WorkStationCode !== item.WorkStationCode
+      );
+      if (duplicate) {
+        toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode3);
+      } else if (item.errors) {
+        delete item.errors.StopPointCode3;
+        if (Object.keys(item.errors).length === 0) {
+          delete item.errors;
+        }
+      }
+    },
+
     submit: function () {
       if (!this.filter.supplier) {
         toastWarning("Please select process!");
@@ -242,7 +323,18 @@ export default {
         toastWarning("Please select line!");
         return;
       }
+
+  // CEK apakah ada yang dicentang
+  const hasChecked = this.ds.data.Items.some(x => x.AllowSetting);
+
+  if (!hasChecked) {
+    toastWarning("Please check at least one Setting!");
+    return;
+  }
+
      const usedStopPoints = new Set();
+     const usedStopPoints2 = new Set();
+     const usedStopPoints3 = new Set();
 
     for (let item of this.ds.data.Items) {
       
@@ -257,6 +349,30 @@ export default {
 
         usedStopPoints.add(item.StopPointCode);
       }
+
+      if (item.AllowSetting && item.StopPointCode2) {
+        console.log("Checking Stop Point Code: ", usedStopPoints2);
+        if (usedStopPoints2.has(item.StopPointCode2)) {
+          toastWarning(
+            "Duplicate Stop Point Code : " + item.StopPointCode2
+          );
+          return;
+        }
+
+        usedStopPoints2.add(item.StopPointCode2);
+      }
+
+       if (item.AllowSetting && item.StopPointCode3) {
+        console.log("Checking Stop Point Code: ", usedStopPoints3);
+        if (usedStopPoints3.has(item.StopPointCode3)) {
+          toastWarning(
+            "Duplicate Stop Point Code : " + item.StopPointCode3
+          );
+          return;
+        }
+
+        usedStopPoints3.add(item.StopPointCode3);
+      }
     }
       this.isLoading = true;
  
@@ -266,9 +382,11 @@ export default {
           WorkStationCode: item.WorkStationCode,
           AllowSetting: item.AllowSetting,
           StopPointCode: item.StopPointCode,
+          StopPointCode2: item.StopPointCode2,
+          StopPointCode3: item.StopPointCode3,
         })),
       };
-
+debugger;
       this.ds
         .submitworkstationsetting(payload)
         .then(() => {
@@ -286,27 +404,36 @@ export default {
       const newValue = item.AllowSetting ? 1 : 0;
     },
 
-    search: function () {
-      if (!this.filter.supplier) {
-        toastWarning("Please select process!");
-        return;
-      }
+   search: function () {
+  if (!this.filter.supplier) {
+    toastWarning("Please select process!");
+    return;
+  }
 
-      if (!this.filter.linecode) {
-        toastWarning("Please select line!");
-        return;
-      }
-      this.ds.setSort(this.filter.sorts);
-      let filters = [
-        {
-          Keyword: this.filter.keyword || "",
-          LineCode: this.filter.linecode || "",
-        },
-      ];
+  if (!this.filter.linecode) {
+    toastWarning("Please select line!");
+    return;
+  }
 
-      this.ds.setFilter(filters);
-      this.ds.load();
+  this.ds.setSort(this.filter.sorts);
+
+  let filters = [
+    {
+      Keyword: this.filter.keyword || "",
+      LineCode: this.filter.linecode || "",
     },
+  ];
+
+  this.ds.setFilter(filters);
+
+  this.ds.load().then(() => {
+    this.ds.data.Items.forEach(x => {
+      x.StopPointCode = x.StopPointCode ?? "";
+      x.StopPointCode2 = x.StopPointCode2 ?? "";
+      x.StopPointCode3 = x.StopPointCode3 ?? "";
+    });
+  });
+},
     reset: function () {
       this.filter.factory = null;
       this.filter.supplier = null;
@@ -323,6 +450,9 @@ export default {
         this.selectedPrint.push({
           Key: item.Barcode,
           Value: item.WorkStationName,
+          Value1: item.StopPointCode,
+          Value2: item.StopPointCode2,
+          Value3: item.StopPointCode3,
         });
       } else if (!checked && existingIndex !== -1) {
         this.selectedPrint.splice(existingIndex, 1);

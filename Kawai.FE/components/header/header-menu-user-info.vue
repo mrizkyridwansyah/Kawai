@@ -52,7 +52,7 @@
                 }"
               ></i>
             </h6>
-            <div>{{ notif.Description }}</div>
+            <div style="white-space: break-spaces;">{{ notif.Description }}</div>
             <div class="text-muted fs-10px">{{ notif.TimeAgo }}</div>
           </div>
         </a>

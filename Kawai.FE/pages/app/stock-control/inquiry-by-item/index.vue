@@ -116,6 +116,7 @@
       :address="this.detail.address"
       :item="this.detail.item"
       :lotno="this.detail.lotno"
+      :counter="this.counter"
     />
   </v-modal>
 </template>
@@ -144,12 +145,13 @@ export default {
       address: null,
       lotno: null,
     },
+    counter: 0,
     columns: [],
     rawData: [],
     groupByFields: [
       ["ItemCode", ["ItemCode", "ItemName"]],
-      ["WarehouseName", ["WarehouseCode", "WarehouseName"]],
-      ["AreaName", ["AreaCode", "AreaName"]],
+      ["WarehouseCode", ["WarehouseCode", "WarehouseName"]],
+      ["AreaCode", ["AreaCode", "AreaName"]],
       ["LotNo", ["LotNo"]],
     ],
     sumFields: ["BeginQty", "ReceiptQty", "SupplyQty", "CurrentQty"],
@@ -182,13 +184,13 @@ export default {
         {
           text: "Item Code",
           dataField: "ItemCode",
-          width: "200px",
+          width: "max-content",
           align: "left",
         },
-        { text: "Item Name", dataField: "ItemName", width: "200px" },
-        { text: "Warehouse", dataField: "WarehouseName", width: "200px" },
-        { text: "Area", dataField: "AreaName", width: "200px" },
-        { text: "Lot No", dataField: "LotNo", width: "200px" },
+        { text: "Item Name", dataField: "ItemName", width: "max-content" },
+        { text: "Warehouse", dataField: "WarehouseCode", width: "max-content" },
+        { text: "Area", dataField: "AreaCode", width: "max-content" },
+        { text: "Lot No", dataField: "LotNo", width: "max-content" },
         {
           text: "Begin",
           dataField: "BeginQty",
@@ -342,6 +344,7 @@ export default {
       this.detail.address = row.children[0].AddressCode;
       this.detail.item = row.children[0].ItemCode;
       this.detail.lotno = row.children[0].LotNo;
+      this.counter++;
       this.$bvModal.show("modal-detail");
     },
   },

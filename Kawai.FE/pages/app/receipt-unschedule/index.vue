@@ -90,7 +90,7 @@
           <td style="padding-left: 15px; padding-top: 5px">
             <input-date
               v-model="model.BCDate"
-              style-date="width: 115px"
+              style-date="width: 120px"
               :errors="errors?.BCDate"
             />
           </td>
@@ -100,7 +100,7 @@
           <td style="padding-left: 15px; padding-top: 5px">
             <input-date
               v-model="model.DNDate"
-              style-date="width: 115px"
+              style-date="width: 120px"
               :errors="errors?.DNDate"
             />
           </td>
@@ -168,6 +168,14 @@
                 label="Print Label"
                 class="mr-1"
                 :print="printLabel"
+                :is-loading="isLoading"
+              />
+
+              <v-button
+                :action="print"
+                label="Print Label PDF"
+                icon="file-pdf"
+                cClass="ml-1 btn-green"
                 :is-loading="isLoading"
               />
             </div>
@@ -362,6 +370,7 @@ export default {
     "filter.ReceiptId": function () {
       if (this.filter.ReceiptId) this.getReceipt();
       else {
+        let today = new Date();
         this.isNew = true;
         this.items = [];
         this.filter.ReceiptId = null;
@@ -371,10 +380,10 @@ export default {
           DNNumber: "",
           FactoryCode: null,
           SupplierCode: null,
-          DNDate: null,
+          DNDate: today,
           BCNumber: "",
           BCType: "",
-          BCDate: null,
+          BCDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -385,7 +394,11 @@ export default {
       }
     },
   },
-  mounted: function () {},
+  mounted: function () {
+    let today = new Date();
+    this.model.BCDate = today;
+    this.model.DNDate = today;
+  },
   methods: {
     deepClone: function (obj) {
       return typeof structuredClone === "function"
@@ -408,6 +421,7 @@ export default {
       this.items.push(obj);
     },
     reset: function () {
+      let today = new Date();
       this.isNew = true;
       this.filter = {
         FactoryCode: null,
@@ -419,10 +433,10 @@ export default {
         DNNumber: "",
         FactoryCode: null,
         SupplierCode: null,
-        DNDate: null,
+        DNDate: today,
         BCNumber: "",
         BCType: "",
-        BCDate: null,
+        BCDate: today,
         VehicleNo: "",
         Transport: null,
         ReferenceNo: null,
@@ -433,6 +447,7 @@ export default {
     },
     changeNew: function (e) {
       if (e.target.checked) {
+        let today = new Date();
         this.isNew = true;
         this.items = [];
         this.filter.ReceiptId = null;
@@ -442,10 +457,10 @@ export default {
           DNNumber: "",
           FactoryCode: null,
           SupplierCode: null,
-          DNDate: null,
+          DNDate: today,
           BCNumber: "",
           BCType: "",
-          BCDate: null,
+          BCDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -515,6 +530,19 @@ export default {
           toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
+    },
+
+    print: function () {
+      if (this.model.Id == null || this.model.Id == undefined) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+      this.dsReceipt
+        .print(this.model.Id)
+        .then((data) => {
+          toastSuccess(data || "Print Label berhasil!");
+        })
+        .catch((err) => toastDanger(err.Message));
     },
     submit: function () {
       this.isLoading = true;

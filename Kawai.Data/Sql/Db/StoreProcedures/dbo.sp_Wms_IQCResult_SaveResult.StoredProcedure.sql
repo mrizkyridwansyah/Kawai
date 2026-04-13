@@ -26,7 +26,7 @@ begin
 
 	update IQC_Inspection_Header 
 	set 
-		TotalQtyNG = @QtyNG, LastUpdate = getdate(), Remarks = @Remarks 
+		TotalQtyNG = @QtyNG, LastUpdate = getdate(), Remarks = @Remarks, StatusQC = 'INPUT'
 	where InspectionID = @InspectionId
 
 	if not exists (select 1 from IQC_Attachment where InspectionID = @InspectionId)

@@ -25,10 +25,11 @@ begin
 	(
 		select * From @Details a
 		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-		where b.QtyPacking is null
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
+		where isnull(b.QtyPacking, mi.Number_Box) <= 0
 	)
 	begin
-		raiserror('Qty Packing Item Supplier ini belum disetting!', 16, 1)
+		raiserror('Qty Packing Item ini belum disetting!', 16, 1)
 		return
 	end
 
@@ -66,19 +67,34 @@ begin
 
 	begin transaction receiptTransaction
 	begin try
+		DECLARE @registerNox TABLE (RegisterNo VARCHAR(100))
+		DECLAre @registerNo varchar(100)
+
+		IF @BCType NOT IN ('BC 2.3', 'BC 2.6.2', 'BC 4.0')
+		BEGIN
+			INSERT INTO @registerNox
+			EXEC sp_GetNoRegister @ReceiptDate, 'R', @RegisterBy
+
+			SELECT top 1 @registerNo = RegisterNo FROM @registerNox
+		END
+
 		insert into PartReceiptHeader 
-		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode)
+		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode, RegisterNo)
 		values 
-		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, @Remarks, 'RECEIPT PO', @FactoryCode)
+		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, @Remarks, 'RECEIPT PO', @FactoryCode, @registerNo)
 
 		declare @newid bigint = (select SCOPE_IDENTITY())
 
 		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
 		select 
-			@newid, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, a.TotalPacking, a.ReceiptQty, @Remarks
+			@newid, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks
 		from @Details a 
+		left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
 
 		declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
+		DECLARE @BCTypeVal varchar(100) = (SELECT Description fROM BCType_Cls	WHERE BCType_Cls = @BCType)
+
 
 		insert into Part_Receipt 
 		(
@@ -88,11 +104,12 @@ begin
 		)
 		select 
 			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
-			dtl.UnitCls, null Currency, null Price, null Amount, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport,
-			getdate(), @RegisterBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, hd.Id
+			dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport,
+			getdate(), @RegisterBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id
 		From PartReceiptHeader hd
 		inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 		left join Item_Master it on dtl.ItemCode = it.Item_Code
+		left join PurchaseOrder_Detail pod on dtl.ItemCode = pod.Item_Code and dtl.PONumber = pod.PO_No
 		where hd.Id = @newid
 
 		select @newid

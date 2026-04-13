@@ -17,6 +17,18 @@ begin
 		return;
 	end
 
+	if exists (select 1 from MS_Address where AreaCode = @AreaCode)
+	begin
+		raiserror('Data Area already used as reference data',16,1)
+		return;
+	end
+
+	if exists (select 1 from StockDetail where AreaCode = @AreaCode)
+	begin
+		raiserror('Data Area already used as reference data',16,1)
+		return;
+	end
+
 	delete from MS_Area where Areacode = @AreaCode
 end
 GO

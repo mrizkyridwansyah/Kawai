@@ -12,8 +12,10 @@ CREATE   procedure [sp_Wms_Receipt_Inquiry]
 	@Keyword varchar(max) = '',
 	@FactoryCode varchar(25)	= null,
 	@SupplierCode varchar(25)	= null,
+	@ReceiptId bigint	= null,
 	@PeriodFrom date			= null,
-	@PeriodUntil date			= null
+	@PeriodUntil date			= null,
+	@CompleteStatus varchar(10) = 'ALL'
 as
 begin
 	declare @sqlSort varchar(max) = ''
@@ -54,6 +56,15 @@ begin
 		SELECT COUNT(1) AS TotalRow
 		FROM PartReceiptHeader a
 		inner join PartReceiptDetail dtl on a.Id = dtl.ReceiptId
+		LEFT JOIN 
+		(
+			select 
+				ReceiptId,
+				SUM(case when isnull(IsVerified, 0) = 1 then 1 else 0 end) TotalScan, 
+				SUM(case when isnull(IsVerified, 0) = 0 then 1 else 0 end) OutstandingScan 
+				from PartReceiptDetailBarcode 
+			group by ReceiptId
+		) dtlb  on a.Id = dtlb.ReceiptId
 		inner join Item_Master mi on dtl.ItemCode = mi.Item_Code
 		left join trade_master b on a.SupplierCode = b.Trade_Code
 		WHERE 1=1
@@ -65,15 +76,21 @@ begin
 			OR ItemCode LIKE '%' + @Keyword + '%' 
 			OR mi.Item_Name LIKE '%' + @Keyword + '%' 
 		)
+		and 1 = case when isnull(@ReceiptId, 0) = 0 THEN 1 WHEN isnull(@ReceiptId, 0) = a.Id THEN 1 ELSE 0 END
 		and a.ReceiptDate between @PeriodFrom and @PeriodUntil
 		and 1 = case when @SupplierCode = 'ALL' THEN 1 WHEN @SupplierCode = SupplierCode THEN 1 ELSE 0 END
 		and 1 = case when @FactoryCode = 'ALL' THEN 1 WHEN @FactoryCode = a.CompanyCode THEN 1 ELSE 0 END
+		and 1 = case when isnull(@CompleteStatus, 'ALL') = 'ALL' then 1 
+				   when @CompleteStatus = 'YES' and isnull(OutstandingScan, 1) = 0 then 1
+				   when @CompleteStatus = 'NO' and isnull(OutstandingScan, 1) > 0 then 1
+				   else 0 end
 	)
 
 	DECLARE @sql NVARCHAR(MAX) = N'
 		SELECT
 			TotalRows = @TotalRow,
 			a.Id,
+			dtl.Id ReceiptDetailId,
 			a.ReceiptNo, 
 			a.ReceiptDate,
 			a.CompanyCode FactoryCode,
@@ -91,26 +108,57 @@ begin
 			dtl.UnitCls,
 			uc.Description UnitClsDescription,
 			dtl.ReceiptQty Qty,
+			isnull(xx.QtyScan, 0) QtyScan,
 			cc.Description Currency,
-			pod.Price,
-			Amount = pod.Price * dtl.ReceiptQty
+			Price = isnull(pod.Price, pm.Price),
+			Amount = isnull(pod.Price, pm.Price) * dtl.ReceiptQty,
+			[StatusIQC] = 
+			case when iqch.InspectionResult is null then ''Not Yet''
+				 when iqch.InspectionResult = ''Accepted'' then ''OK''
+				 when iqch.InspectionResult = ''Rejected'' then ''NG''
+				 else ''HOLD'' end
 		FROM PartReceiptHeader a
 		inner join PartReceiptDetail dtl on a.Id = dtl.ReceiptId
 		inner join Company_Profile fak on a.CompanyCode = fak.Company_Code
 		inner join Item_Master mi on dtl.ItemCode = mi.Item_Code
+		left join 
+		(
+			select ReceiptDetailId, ReceiptId, sum(Qty) QtyScan 
+			From PartReceiptDetailBarcode
+			where isnull(IsVerified, 0) = 1
+			group by ReceiptDetailId, ReceiptId
+		) xx on a.Id = xx.ReceiptId and dtl.Id = xx.ReceiptDetailId
+		LEFT JOIN 
+		(
+			select 
+				ReceiptId,
+				SUM(case when isnull(IsVerified, 0) = 1 then 1 else 0 end) TotalScan, 
+				SUM(case when isnull(IsVerified, 0) = 0 then 1 else 0 end) OutstandingScan 
+				from PartReceiptDetailBarcode 
+			group by ReceiptId
+		) dtlb  on a.Id = dtlb.ReceiptId
 		left join PurchaseOrder_Detail pod on dtl.PONumber = pod.PO_No and dtl.ItemCode = pod.Item_Code
 		left join Unit_Cls uc on dtl.UnitCls = uc.Unit_Cls
 		LEFT JOIN trade_master b ON a.SupplierCode = b.Trade_Code
-		left join Curr_Cls cc on cc.Curr_Cls = pod.Currency_Code
+		left join Price_Master pm on dtl.ItemCode = pm.Item_Code and a.SupplierCode = pm.Trade_Code and Price_Cls = ''01'' AND a.ReceiptDate BETWEEN 
+			(select dbo.ConvertToDateTimeFromFuckingString(Start_Date)) and 
+			(select dbo.ConvertToDateTimeFromFuckingString(End_Date))
+		left join Curr_Cls cc on cc.Curr_Cls = isnull(pod.Currency_Code, pm.Currency_Code)
+		LEFT JOIN IQC_Inspection_Header iqch on a.ReceiptNo = iqch.ReceiptNo and dtl.ItemCode = iqch.ItemCode and iqch.Soruce = ''Incoming Material''
 		WHERE
 			(@Keyword IS NULL OR
 				a.DNNumber LIKE ''%'' + @Keyword + ''%'' OR
 				dtl.PONumber LIKE ''%'' + @Keyword + ''%'' OR
 				dtl.ItemCode LIKE ''%'' + @Keyword + ''%'' OR
 				mi.Item_Name LIKE ''%'' + @Keyword + ''%'')
+			and 1 = case when isnull(@ReceiptId, 0) = 0 THEN 1 WHEN isnull(@ReceiptId, 0) = a.Id THEN 1 ELSE 0 END
 			AND a.ReceiptDate BETWEEN @PeriodFrom AND @PeriodUntil
-			and 1 = case when @SupplierCode = ''ALL'' THEN 1 WHEN @SupplierCode = SupplierCode THEN 1 ELSE 0 END
+			and 1 = case when @SupplierCode = ''ALL'' THEN 1 WHEN @SupplierCode = a.SupplierCode THEN 1 ELSE 0 END
 			and 1 = case when @FactoryCode = ''ALL'' THEN 1 WHEN @FactoryCode = CompanyCode THEN 1 ELSE 0 END
+			and 1 = case when isnull(@CompleteStatus, ''ALL'') = ''ALL'' then 1 
+				   when @CompleteStatus = ''YES'' and isnull(OutstandingScan, 1) = 0 then 1
+				   when @CompleteStatus = ''NO'' and isnull(OutstandingScan, 1) > 0 then 1
+				   else 0 end
 			
 		' +
 		CASE 
@@ -124,12 +172,14 @@ begin
 
 	EXEC sp_executesql
 		@sql,
-		N'@Keyword VARCHAR(MAX), @FactoryCode VARCHAR(25), @SupplierCode VARCHAR(25), @PeriodFrom DATE, @PeriodUntil DATE, @Offset INT, @Length INT, @TotalRow INT',
+		N'@Keyword VARCHAR(MAX), @FactoryCode VARCHAR(25), @SupplierCode VARCHAR(25), @ReceiptId BIGINT, @PeriodFrom DATE, @PeriodUntil DATE, @CompleteStatus VARCHAR(10), @Offset INT, @Length INT, @TotalRow INT',
 		@Keyword = @Keyword,
 		@FactoryCode = @FactoryCode,
 		@SupplierCode = @SupplierCode,
+		@ReceiptId = @ReceiptId,
 		@PeriodFrom = @PeriodFrom,
 		@PeriodUntil = @PeriodUntil,
+		@CompleteStatus = @CompleteStatus,
 		@Offset = @offset,
 		@Length = @Length,
 		@TotalRow = @TotalRow;

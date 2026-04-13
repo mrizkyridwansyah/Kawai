@@ -12,6 +12,7 @@ public class StockDto: DataTableDto
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
     public string LotNo { get; set; }
+    public string Status { get; set; }
     public string BarcodeNo { get; set; }
     public int SublotNo { get; set; }
     public decimal PreMonthQty { get; set; }

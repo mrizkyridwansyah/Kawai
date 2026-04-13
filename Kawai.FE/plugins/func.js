@@ -206,12 +206,6 @@ export default defineNuxtPlugin(nuxtApp => {
     isValidEmail: function(email) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     },
-    unitStatus: function(status) {
-      if(status == 'AVAILABLE') return 'AVAILABLE';
-      if(status == 'ON_PROCESS') return 'ON PROCESS';
-
-      return status;
-    },
     asUtcString: function(date) {
       // Get the local components
       const year = date.getFullYear();

@@ -71,6 +71,7 @@ export default {
     "showOptionAll",
     "styleCode",
     "styleDesc",
+    "defaultOptionAll"
   ],
   data: () => ({
     isLoading: false,
@@ -138,6 +139,10 @@ export default {
 
       if (this.debounce != null) clearTimeout(this.debounce);
 
+      if((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
+        d = "";
+      }
+
       this.debounce = setTimeout(() => {
         this.$http
           .get(
@@ -152,6 +157,11 @@ export default {
           .then((p) => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.Trade_Code;
+            }
+
+            if((this.defaultOptionAll || "") == "ALL" && ((this.tempValue || "") == "")) {
+              this.tempValue = "ALL";
+              this.$emit("update:modelValue", "ALL");
             }
 
             this.list =
@@ -171,7 +181,7 @@ export default {
           .finally(() => (this.isLoading = false));
 
         clearTimeout(this.debounce);
-      }, 200);
+      }, 500);
     },
   },
 };

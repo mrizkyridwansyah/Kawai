@@ -129,6 +129,14 @@ public class WorkStationSettingController : HahaController
         style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
+        // Style for value cells
+        var style2 = workbook.Style;
+        style2.Font.Bold = true;
+        style2.Font.FontSize = 14;
+        style2.Alignment.WrapText = true;
+        style2.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+        style2.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
         foreach (var rowMap in rows)
         {
             int startRow = rowIdx;
@@ -142,9 +150,12 @@ public class WorkStationSettingController : HahaController
 
             // Insert value cell with style
             string value = rowMap.TryGetValue("Value", out var val) ? val?.ToString() ?? "" : "";
+            string value1 = rowMap.TryGetValue("Value1", out var val1) ? val1?.ToString() ?? "" : "";
+            string value2 = rowMap.TryGetValue("Value2", out var val2) ? val2?.ToString() ?? "" : "";
+            string value3 = rowMap.TryGetValue("Value3", out var val3) ? val3?.ToString() ?? "" : "";
             var valueCell = row.Cell(colIdx++);
-            valueCell.Value = value;
-            valueCell.Style = style;
+            valueCell.Value = value + Environment.NewLine + value1 + Environment.NewLine + value2 + Environment.NewLine + value3;
+            valueCell.Style = style2;
             ws.Column(3).Width = 40;
 
             // Set outer border for range with QR + value

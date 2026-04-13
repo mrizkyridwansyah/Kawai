@@ -68,6 +68,8 @@ export default {
     "multiple",
     "class",
     "itemCode",
+    "statusReceipt",
+    "statusHoldNg",
     "showOptionAll",
     "styleCode",
     "styleDesc",
@@ -116,6 +118,14 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
+    statusReceipt: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    statusHoldNg: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
   },
   mounted: function () {
     this.load("", this.modelValue);
@@ -145,7 +155,7 @@ export default {
           .get(
             `/warehouse/ddl-warehouse-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&item=${this.itemCode}&factoryCode=${this.factoryCode || ""}`,
+            }&item=${this.itemCode}&factoryCode=${this.factoryCode || ""}&statusReceipt=${this.statusReceipt || ""}&statusHoldNG=${this.statusHoldNg || ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

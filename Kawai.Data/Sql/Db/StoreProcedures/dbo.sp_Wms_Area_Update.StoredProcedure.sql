@@ -8,6 +8,7 @@ create   procedure [sp_Wms_Area_Update]
 	@AreaCode varchar(25),
 	@AreaName varchar(200),
 	@ItemType varchar(25),
+	@PickingSequence int,
 	@UpdateBy varchar(25)
 as
 begin
@@ -40,7 +41,7 @@ begin
 		return;
 	end
 
-	update MS_Area set Areaname = @AreaName, ItemType = @ItemType, UpdateBy = @UpdateBy, UpdateDate = getdate() 
+	update MS_Area set Areaname = @AreaName, ItemType = @ItemType, PickingSequence = @PickingSequence, UpdateBy = @UpdateBy, UpdateDate = getdate() 
 	where warehousecode = @WarehouseCode and Areacode = @AreaCode
 end
 GO

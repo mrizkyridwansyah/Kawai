@@ -43,6 +43,29 @@ public class ReceiptRepository : IReceiptRepository
         })).ToList();
     }
 
+    public async Task<List<ClaimDetailDto>> GetListClaimDetail(RequestParameter param)
+    {
+        var paramFactory = param.GetParam("FactoryCode");
+        var paramReceiptId = param.GetParam("ReceiptId");
+        var paramClaimNumber = param.GetParam("ClaimNumber");
+        var paramSupplier = param.GetParam("SupplierCode");
+        var paramDateFrom = param.GetParam("DateFrom");
+        var paramDateUntil = param.GetParam("DateUntil");
+
+        string sp = "sp_Wms_Receipt_ListClaimDetail";
+        return (await _dbExecutor.QueryListAsync<ClaimDetailDto>(sp, new
+        {
+            FactoryCode = paramFactory,
+            ReceiptId = paramReceiptId,
+            ClaimNumber = paramClaimNumber,
+            SupplierCode = paramSupplier,
+            DateFrom = paramDateFrom,
+            DateUntil = paramDateUntil,
+        })).ToList();
+    }
+
+
+
     public async Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id)
     {
          
@@ -101,6 +124,22 @@ public class ReceiptRepository : IReceiptRepository
         return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new { Keyword = keyword ?? "", UserId = userId })).ToList();
     }
 
+    public async Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId)
+    {
+        string sp = "sp_Wms_Receipt_DDLDN";
+
+        return (await _dbExecutor.QueryListAsync<ReceiptDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            Status = status ?? "",
+            FactoryCode = String.IsNullOrEmpty(factory) ? "ALL" : factory,
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            PeriodFrom = periodFrom,
+            PeriodUntil = periodUntil,
+            UserId = userId
+        })).ToList();
+    }
+
     public async Task Create(Receipt receipt, string userId)
     {
         receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode");
@@ -140,6 +179,7 @@ public class ReceiptRepository : IReceiptRepository
             receipt.VehicleNo,
             receipt.Transport,
             receipt.Remarks,
+            receipt.RegisterNo,
             Details = DataTableHelper.ToDataTable(receipt.Details),
             UpdateBy = userId
         });
@@ -151,12 +191,13 @@ public class ReceiptRepository : IReceiptRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new { Id = id });
     }
 
-    public async Task PrintLabel(long id, string userId)
+    public async Task PrintLabel(long id, string userId, bool? mustBePrint)
     {
         string sqlHeader = "sp_Wms_Receipt_PrintLabel";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
             ReceiptId = id,
+            MustPrint = mustBePrint ?? true,
             UserId = userId
         });
     }

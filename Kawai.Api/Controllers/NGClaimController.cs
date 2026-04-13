@@ -133,6 +133,130 @@ public class NGClaimController : HahaController
         return Success(results.Take(100));
     }
 
+    [HttpPost("report-surat-jalan")]
+    public async Task<IActionResult> ExportExcel(string factory, long claimid)
+    {
+        var results = await _ngclaimRepository.GetListReport(factory, claimid);
+        if (results == null || !results.Any()) return NoContent();
+
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Surat Jalan");
+
+        int row = 1;
+
+        // ===============================
+        // HEADER PERUSAHAAN
+        // ===============================
+        ws.Cell(row, 1).Value = results[1].CompanyName.ToString();
+        ws.Range(row, 1, row, 6).Merge().Style.Font.SetBold().Font.FontSize = 14;
+        row++;
+
+        ws.Cell(row, 1).Value = results[1].CompanyAddress.ToString();
+        ws.Range(row, 1, row, 6).Merge();
+        row++;
+
+        ws.Cell(row, 1).Value =   results[1].Phone.ToString();  
+        ws.Range(row, 1, row, 6).Merge();
+        row += 2;
+
+        // ===============================
+        // JUDUL
+        // ===============================
+        ws.Cell(row, 6).Value = "Surat Jalan";
+        ws.Cell(row, 6).Style.Font.Bold = true;
+        ws.Cell(row, 6).Style.Font.FontSize = 16;
+        row += 2;
+
+        // ===============================
+        // INFORMASI
+        // ===============================
+        ws.Cell(row, 1).Value = "No";
+        ws.Cell(row, 2).Value = ":";
+        ws.Cell(row, 3).Value = "";
+        row++;
+
+        ws.Cell(row, 1).Value = "Cust PO No";
+        ws.Cell(row, 2).Value = ":" + results[1].CustPONo.ToString();
+        row++;
+
+        ws.Cell(row, 1).Value = "BC Type";
+        ws.Cell(row, 2).Value = ":" + results[1].BCType.ToString();
+        row++;
+
+        ws.Cell(row, 1).Value = "BC Number";
+        ws.Cell(row, 2).Value = ":" + results[1].BCNumber.ToString();
+        row++;
+
+        ws.Cell(row, 1).Value = "QTY";
+        ws.Cell(row, 2).Value = ":";
+        ws.Cell(row, 3).Value =   results[1].Qty.ToString();
+        row += 2;
+
+        // ===============================
+        // KALIMAT PENGIRIMAN
+        // ===============================
+        ws.Cell(row, 1).Value = "Kami Kirimkan barang-barang tersebut dibawah ini dengan kendaraan:";
+        ws.Range(row, 1, row, 6).Merge();
+        row += 2;
+
+        // ===============================
+        // HEADER TABLE
+        // ===============================
+        ws.Cell(row, 1).Value = "No";
+        ws.Cell(row, 2).Value = "Nama Part";
+        ws.Cell(row, 3).Value = "Kode Part";
+        ws.Cell(row, 4).Value = "QTY Pengiriman";
+        ws.Cell(row, 5).Value = "Satuan";
+        ws.Cell(row, 6).Value = "Keterangan";
+
+        ws.Range(row, 1, row, 6).Style.Font.Bold = true;
+        ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+        int tableStart = row;
+        row++;
+
+        int no = 1;
+
+        foreach (var item in results)
+        {
+            ws.Cell(row, 1).Value = no++;
+            ws.Cell(row, 2).Value = item.ItemCode;
+            ws.Cell(row, 3).Value = item.ItemName;
+            ws.Cell(row, 4).Value = item.QtyNG;
+            ws.Cell(row, 5).Value = item.UnitCls;
+            ws.Cell(row, 6).Value = item.Remarks;
+
+            row++;
+        }
+
+        // ===============================
+        // BORDER TABLE
+        // ===============================
+        var tableRange = ws.Range(tableStart, 1, row - 1, 6);
+        tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+        row += 2;
+
+        // ===============================
+        // FOOTER
+        // ===============================
+        ws.Cell(row, 1).Value = "Delivered by";
+        ws.Cell(row, 3).Value = "Approved by";
+        ws.Cell(row, 5).Value = "Checked by";
+        ws.Cell(row, 6).Value = "Received by";
+
+        ws.Columns().AdjustToContents();
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms);
+        var fileBytes = ms.ToArray();
+        var base64File = Convert.ToBase64String(fileBytes);
+
+        return Success(base64File);
+    }
+
+
     //[HttpPost("print-label")]
     //public async Task<IActionResult> PrintLabel(NGClaim payload)
     //{

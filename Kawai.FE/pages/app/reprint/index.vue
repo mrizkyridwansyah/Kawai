@@ -106,8 +106,8 @@
                 <th class="text-center">SubLotNo</th>
                  <th class="text-center">Qty</th>
                  <th class="text-center">Source</th>
-                <th class="text-center">Print Date</th>
                 <th class="text-center">Print User</th>
+                <th class="text-center">Print Date</th>
                  
               </tr>
             </thead>

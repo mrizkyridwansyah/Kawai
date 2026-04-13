@@ -31,6 +31,20 @@ begin
 		return
 	END
 
+	if exists 
+	(
+		select 1 from IQC_SamplingBarcodeDetail dtl
+		inner join IQC_Inspection_Header hd on dtl.InspectionID = hd.InspectionID 
+		where hd.PO_Number = @PONumber 
+		and hd.ItemCode = @ItemCode 
+		and hd.Soruce = 'Material NG' 
+		and hd.StatusQC = 'CONFIRMED'
+	)
+	begin
+		raiserror('Material NG dari PO barcode ini sudah diconfirm!', 16,1)
+		return
+	end
+
 	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Material NG')
 
 	begin transaction ngTransaction
@@ -52,6 +66,7 @@ begin
 				, LastUpdate
 				, TotalQtySample
 				, Soruce
+				, StatusQC
 			)
 			select 
 				a.PONumber,
@@ -66,14 +81,18 @@ begin
 				getdate(),
 				null,
 				0,
-				'Material NG'
+				'Material NG',
+				'NEW'
 			From PartReceiptDetailBarcode a
 			inner join PartReceiptHeader b on a.ReceiptId = b.Id
 			inner join Item_Master mi on a.ItemCode = mi.Item_Code
 			where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo
 
 			SET @InspectionId = (select SCOPE_IDENTITY())
+		end
 
+		if not exists (select 1 from IQC_SamplingBarcodeDetail where InspectionID = @InspectionId and BarcodeNo = @BarcodeNo)
+		begin
 			insert into IQC_SamplingBarcodeDetail 
 			(
 				InspectionID

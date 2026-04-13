@@ -41,8 +41,8 @@ public class PickingListReportController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["Warehouse", "Product Code", "Product Name", "Lot No",
-                "Pre Month", "Receipt", "Supply", "Loss / Reject","Current","Inventory","Remarks","User"];
+        List<string> headers = ["Cust. Code", "Cust. Name", "Shipping Instruction No.", "Shipping Instruction Date",
+                "Part Number", "Description", "Serial No.", "Address", "Picking Date", "Time", "Picking By"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
         foreach (var result in results)
@@ -51,31 +51,27 @@ public class PickingListReportController : HahaController
             var row = ws.Row(rowIdx);
             int colIdx = 1;
 
-            ExcelHelper.SetCell(row, colIdx, result.Warehouse);
+            ExcelHelper.SetCell(row, colIdx, result.Cust_Code);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ProductCode);
+            ExcelHelper.SetCell(row, colIdx, result.Trade_Name);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ProductName);
+            ExcelHelper.SetCell(row, colIdx, result.SI_NO);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LotNo);
+            ExcelHelper.SetCell(row, colIdx, result.SI_Date.HasValue ? result.SI_Date.Value.ToString("dd-MMM-yy") : "");
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.PreMonth);
+            ExcelHelper.SetCell(row, colIdx, result.Item_Code);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Receipt);
+            ExcelHelper.SetCell(row, colIdx, result.Item_Name);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Supply);
+            ExcelHelper.SetCell(row, colIdx, result.Serial_No);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LossReject);
+            ExcelHelper.SetCell(row, colIdx, result.Address);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Current);
+            ExcelHelper.SetCell(row, colIdx, result.Picking_Date.HasValue ? result.Picking_Date.Value.ToString("dd-MMM-yy") : "");
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Inventory);
+            ExcelHelper.SetCell(row, colIdx, result.Picking_Time.HasValue ? result.Picking_Time.Value.ToString(@"hh\:mm\:ss") : "");
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Remarks);
-            colIdx++;
-            //ExcelHelper.SetCell(row, colIdx, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
-            //colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LastUser);
+            ExcelHelper.SetCell(row, colIdx, result.Picking_Name);
         }
 
         ExcelHelper.AutofitColumns(ws, 1, headers.Count);

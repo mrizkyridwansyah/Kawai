@@ -30,6 +30,39 @@ public class NGClaimDto: DataTableDto
     public string RegisterUser { get; set; }
 }
 
+public class NGClaimReportDto : DataTableDto
+{
+
+    public string CompanyName { get; set; }
+    public string CompanyAddress { get; set; }
+    public string Phone { get; set; }
+    public string No { get; set; }
+    public string CustPONo { get; set; }
+    public string BCType { get; set; }
+    public string BCNumber { get; set; }
+    public string Qty { get; set; }
+    public string Delivery { get; set; }
+    public string Model { get; set; }
+    public string VehicleNo { get; set; }
+    public string Transport { get; set; }
+    public string SJDate { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string QtyNG { get; set; }
+    public string UnitCls { get; set; }
+    public string Remarks { get; set; }
+    public string DeliveryBy { get; set; }
+    public string ApprovedBy { get; set; }
+    public string CheckedBy { get; set; }
+    public string ReceivedBy { get; set; }
+    public string DeliveryByPosition { get; set; }
+    public string ApprovedByPosition { get; set; }
+    public string CheckedByPosition { get; set; }
+    public string ReceivedByPosition { get; set; }
+
+    
+}
+
 // INI DIPAKE DI WEB & MOBILE
 public class NGClaimDetailDto : DataTableDto
 {

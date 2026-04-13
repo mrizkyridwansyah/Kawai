@@ -62,9 +62,9 @@ public class WarehouseController : HahaController
     }
 
     [HttpGet("ddl-warehouse-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string factoryCode, string item, string ids)
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string factoryCode, string item, string statusReceipt, string statusHoldNG, string ids)
     {
-        var results = await _warehouseRepository.DDLSearchByStock(keyword, factoryCode, item);
+        var results = await _warehouseRepository.DDLSearchByStock(keyword, factoryCode, item, statusReceipt, statusHoldNG);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -114,9 +114,9 @@ public class WarehouseController : HahaController
     }
 
     [HttpGet("ddl-warehouse-search-by-stock-privileges")]
-    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string ids)
+    public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string factoryCode, string item, string statusReceipt, string statusHoldNG, string ids)
     {
-        var results = await _warehouseRepository.DDLPrivilegesSearchByStock(keyword, factoryCode, item, Auth.User.UserID);
+        var results = await _warehouseRepository.DDLPrivilegesSearchByStock(keyword, factoryCode, item, statusReceipt, statusHoldNG, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

@@ -82,7 +82,19 @@ public class NGClaimRepository : INGClaimRepository
         })).ToList();
     }
 
-    
+
+    public async Task<List<NGClaimReportDto>> GetListReport(string factory, long claimid)
+    {
+        string sp = "sp_Wms_NGClaimMaterial_Report";
+
+        return (await _dbExecutor.QueryListAsync<NGClaimReportDto>(sp, new
+        {
+            FactoryCode = factory,
+            ClainID = claimid
+        })).ToList();
+    }
+
+
 
     public async Task Create(NGClaim ngclaim, string userId)
     {

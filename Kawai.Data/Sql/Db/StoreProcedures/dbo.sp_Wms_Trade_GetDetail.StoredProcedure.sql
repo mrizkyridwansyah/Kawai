@@ -9,9 +9,13 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Trade_GetDetail]
 	@Trade_Code varchar(25)
 as
 begin
-
+if not exists (select 1 from Trade_Master where Trade_Code = @Trade_Code)
+	begin
+		raiserror('Trade Code didn''t Exists',16,1)
+		return;
+	end
 select 
- A.Trade_Code
+ RTRIM(A.Trade_Code) Trade_Code
 ,A.Trade_Cls
 ,B.Description as Trade_Cls_Descs
 ,A.Trade_Name
@@ -31,18 +35,18 @@ select
 ,A.Telephone
 ,A.Fax
 ,A.Closing_Day
-,A.Pay_Day
+, A.Pay_Day 
 ,A.InvoicePay_Days
-,A.Affiliate_Cls
+,case when ISNULL(A.Affiliate_Cls,'0') = '0' then 'false' else 'true' end Affiliate_Cls 
 ,G.Description as  Affiliate_Cls_Descs
-,A.Insurance_Cls
+, isnull(A.Insurance_Cls,'0') Insurance_Cls
 ,H.Description as  Insurance_Cls_Descs
 ,A.NPWP_No
 ,A.NPWP_Name
 ,A.NPWP_Address
 ,A.NPWP_City
 ,A.NPPKP_No
-,A.Invoice_To
+,ISNULL(A.Invoice_To,'') Invoice_To
 ,A.PO_Cls
 ,D.Description as  PO_Cls_Descs
 ,A.Price_Condition
@@ -78,7 +82,7 @@ select
 ,A.NoIzin_Date
 ,A.NITKU
 
-from Trade_Master A
+from Trade_Master A with (Nolock)
 Left JOIN vw_Cls B ON A.Trade_Cls = B.ClsCode and B.TypeData = 'Trade_Cls'
 Left JOIN vw_Cls C ON A.Country_Cls = C.ClsCode and C.TypeData = 'Country_Cls'
 Left JOIN vw_Cls D ON A.PO_Cls = D.ClsCode and D.TypeData = 'PO_Cls'
@@ -93,6 +97,8 @@ Left JOIN vw_Cls L ON A.Epte_Cls = L.ClsCode and L.TypeData = 'Epte_Cls'
 Left JOIN vw_Cls M ON A.NG_Cls = M.ClsCode and M.TypeData = 'NG_Cls'
 Left JOIN vw_Cls N ON A.POPayment_Terms = N.ClsCode and N.TypeData = 'PaymentTerm_Cls'
 left join vw_User us on A.Last_User = us.UserID
+
+ where   RTRIM(Trade_Code)  = @Trade_Code
  
 end
 GO

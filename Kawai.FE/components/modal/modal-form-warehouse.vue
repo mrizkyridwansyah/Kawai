@@ -62,7 +62,7 @@
         <input-date
           v-model="model.UseEndDate"
           :errors="errors?.UseEndDate"
-          style-date="width: 120px"
+          style-date="width: 125px"
         />
       </td>
       <td style="padding-top: 5px;">

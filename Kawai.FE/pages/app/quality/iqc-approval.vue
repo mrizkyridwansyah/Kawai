@@ -67,8 +67,35 @@
           </td>
         </tr>
         <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">DN Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <filter-dn-number
+              class="form-control"
+              v-model="filter.DNNumber"
+              :factory-code="filter.FactoryCode"
+              :supplier-code="filter.SupplierCode"
+              :period-from="filter.PeriodFrom"
+              :period-until="filter.PeriodUntil"
+              :show-option-all="true"
+              style="width: 140px"
+            />
+          </td>
+        </tr>
+        <tr>
           <td colspan="4" style="padding-top: 5px">
-            <v-button-search-reset :search="search" :reset="resetFilter" />
+            <div class="d-flex flex-fill">
+              <v-button-search-reset :search="search" :reset="resetFilter" />
+              <v-button
+                :disabled="(filter.DNNumber || 'ALL') == 'ALL'"
+                :action="print"
+                label="Report NG"
+                icon="file-excel"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
+            </div>
           </td>
         </tr>
       </table>
@@ -189,6 +216,7 @@ export default {
       SupplierCode: null,
       Status: null,
       Source: null,
+      DNNumber: null,
       PeriodFrom: null,
       PeriodUntil: null,
     },
@@ -223,6 +251,7 @@ export default {
     this.filter.PeriodUntil = today;
     this.filter.Source = "ALL";
     this.filter.Status = "ALL";
+    this.filter.DNNumber = "ALL";
   },
   methods: {
     load: function () {
@@ -232,6 +261,10 @@ export default {
           SupplierCode: this.filter.SupplierCode || "",
           Source: this.filter.Source || "",
           StatusInspection: this.filter.Status || "",
+          ReceiptId:
+            this.filter.DNNumber == "ALL"
+              ? ""
+              : this.filter.DNNumber.toString(),
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom),
           ),
@@ -247,6 +280,13 @@ export default {
     search: function () {
       if (!this.filter.SupplierCode) {
         toastDanger("Silahkan pilih Supplier!");
+        return;
+      }
+
+      if (
+        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
+      ) {
+        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
         return;
       }
 
@@ -274,6 +314,23 @@ export default {
       this.filter.PeriodUntil = today;
       this.filter.Source = "ALL";
       this.filter.Status = "ALL";
+      this.filter.DNNumber = "ALL";
+    },
+    print: function () {
+      if ((this.filter.DNNumber || "") == "") {
+        toastDanger("Silahkan pilih DN Number");
+        return;
+      }
+
+      this.ds
+        .printReportNG(this.filter.DNNumber)
+        .then((_) => {
+          toastSuccess("Print Report NG berhasil!");
+        })
+        .catch((err) => {
+          console.log(err, "asdf");
+          toastDanger(err.message);
+        });
     },
   },
 };

@@ -11,6 +11,16 @@ public class BOMWorkStation
 
 
 }
+
+public class CopyBomWorkstation
+{
+    public string FromLine { get; set; }
+    public string ToLine { get; set; }
+    public string ItemCode { get; set; }
+     
+}
+
+
 public class BOMWorkStationList
 {
     public string ChildItem_Code { get; set; }

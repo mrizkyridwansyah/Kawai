@@ -10,7 +10,7 @@ create   procedure [sp_Wms_Area_GetDetail]
 	@AreaCode varchar(25)
 as
 begin
-	select WarehouseCode, AreaCode, AreaName, ItemType From MS_Area
+	select WarehouseCode, AreaCode, AreaName, ItemType, PickingSequence From MS_Area
 	where AreaCode = @AreaCode
 end
 GO

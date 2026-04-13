@@ -47,6 +47,19 @@ public class StopPointController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddlsearchbyaddress")]
+    public async Task<IActionResult> DDLSearchbyAddress(string keyword, string line, string workstation,string ids)
+    {
+        var results = await _stoppointRepository.GetDDLByAddress(keyword, line, workstation);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.StopPointCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
 
     [HttpGet("detail")]
     public async Task<IActionResult> Get(string id)

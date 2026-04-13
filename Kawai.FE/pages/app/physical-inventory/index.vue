@@ -192,9 +192,9 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in lists || []" :key="idx">
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.WarehouseName }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.AreaName }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.AddressName }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">{{ item.WarehouseCode }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">{{ item.AreaCode }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">{{ item.AddressCode }}</td>
                 <td :class="scanStatusClass(item.StatusScan)">{{ item.BarcodeNo }}</td>
                 <td :class="scanStatusClass(item.StatusScan)">{{ item.ItemCode }}</td>
                 <td :class="scanStatusClass(item.StatusScan)">{{ item.ItemDesc }}</td>
@@ -304,6 +304,31 @@ export default {
       item._oldInventory = item.Inventory;
     },  
     async search() {
+
+    if (!this.filter.warehouse) {
+        toastDanger("Silahkan pilih Warehouse!");
+        return;
+      }
+
+   if (!this.filter.area) {
+        toastDanger("Silahkan pilih area!");
+        return;
+      }
+
+  if (!this.filter.address) {
+        toastDanger("Silahkan pilih address!");
+        return;
+      }
+
+   if (!this.filter.item) {
+        toastDanger("Silahkan pilih item!");
+        return;
+      }
+
+      if (!this.filter.lotNo) {
+        toastDanger("Silahkan pilih lotNo!");
+        return;
+      }
       this.ds.setSort(this.filter.sorts);
       let filters = [
         {

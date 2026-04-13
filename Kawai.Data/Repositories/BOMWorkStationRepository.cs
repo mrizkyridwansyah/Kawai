@@ -46,6 +46,19 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         return (await _dbExecutor.QueryListAsync<BOMWorkStationDto>(sp, new { Keyword = keyword ?? "", ModelCls = modelCls })).ToList();
     }
 
+    public async Task CopyBomWorkStation(string fromline, string toline, string itemcode, string userId)
+    {
+        string sql = @"sp_Wms_BOMWorkStation_CopyData";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            FromLine = fromline,
+            ToLine = toline,
+            ItemCode = itemcode,
+            UserID = userId
+        });
+    }
+
+
     public async Task SaveBOMWorkStation(BOMWorkStation model, string userId)
     {
       
@@ -111,9 +124,11 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
     }
 
-
-
-
+    public async Task<BOMWorkStationDto> GetDataQty(string trolley_Cls)
+    {
+        string sp = "sp_Wms_BOMWorkStation_GetQty";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<BOMWorkStationDto>(sp, new { Trolley_Cls = trolley_Cls });
+    }
 
     public async Task<Dictionary<string, object>> Capture(string parentitem_code, string workStationCode)
     {

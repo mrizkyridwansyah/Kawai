@@ -5,7 +5,7 @@ GO
 CREATE TABLE [IQC_Inspection_Header](
 	[InspectionID] [int] IDENTITY(1,1) NOT NULL,
 	[PO_Number] [varchar](50) NULL,
-	[ReceiptNo] [varchar](50) NULL,
+	[ReceiptNo] [varchar](100) NULL,
 	[SupplierCode] [char](15) NULL,
 	[ItemCode] [varchar](50) NULL,
 	[ItemName] [varchar](100) NULL,
@@ -14,12 +14,13 @@ CREATE TABLE [IQC_Inspection_Header](
 	[InspectionResult] [varchar](20) NULL,
 	[InspectionResultApproval] [char](35) NULL,
 	[InspectionResultDate] [datetime] NULL,
-	[TotalQtySample] [numeric](18, 2) NOT NULL,
-	[TotalQtyNG] [numeric](18, 2) NULL,
 	[Remarks] [text] NULL,
 	[RegisterDate] [datetime] NULL,
 	[LastUpdate] [datetime] NULL,
+	[TotalQtySample] [numeric](18, 2) NOT NULL,
+	[TotalQtyNG] [numeric](18, 2) NULL,
 	[Soruce] [varchar](20) NULL,
+	[StatusQC] [varchar](10) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[InspectionID] ASC

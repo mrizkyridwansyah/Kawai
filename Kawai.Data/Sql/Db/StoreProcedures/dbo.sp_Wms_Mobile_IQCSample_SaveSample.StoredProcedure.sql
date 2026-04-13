@@ -26,9 +26,10 @@ begin
 		return
 	end
 
-	declare @PONumber varchar(100), @ItemCode varchar(25), @Qty numeric(18,9)
-	select @PONumber = PONumber, @ItemCode = ItemCode, @Qty = Qty
-	From PartReceiptDetailBarcode 
+	declare @PONumber varchar(100), @ItemCode varchar(25), @Qty numeric(18,9), @ReceiptNo varchar(100)
+	select @PONumber = a.PONumber, @ItemCode = a.ItemCode, @Qty = a.Qty, @ReceiptNo = b.ReceiptNo
+	From PartReceiptDetailBarcode a 
+	inner join PartReceiptHeader b on a.ReceiptId = b.Id
 	where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo
 
 	IF @QtySample > @Qty
@@ -37,11 +38,11 @@ begin
 		return
 	END
 
-	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Incoming Material')
+	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where PO_Number = @PONumber and ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Incoming Material')
 
 	begin transaction sampleTransaction
 	begin try
-		if not exists (select 1 from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Incoming Material')
+		if not exists (select 1 from IQC_Inspection_Header where PO_Number = @PONumber and ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Incoming Material')
 		begin
 			insert into IQC_Inspection_Header 
 			(
@@ -58,10 +59,11 @@ begin
 				, LastUpdate
 				, TotalQtySample
 				, Soruce
+				, StatusQC
 			)
 			select 
 				a.PONumber,
-				b.ReceiptNo,
+				@ReceiptNo,
 				b.SupplierCode,
 				a.ItemCode,
 				mi.Item_Name,
@@ -72,7 +74,8 @@ begin
 				getdate(),
 				null,
 				0,
-				'Incoming Material'
+				'Incoming Material',
+				'NEW'
 			From PartReceiptDetailBarcode a
 			inner join PartReceiptHeader b on a.ReceiptId = b.Id
 			inner join Item_Master mi on a.ItemCode = mi.Item_Code

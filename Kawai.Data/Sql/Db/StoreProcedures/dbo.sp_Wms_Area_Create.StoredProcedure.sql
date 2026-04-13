@@ -8,6 +8,7 @@ create   procedure [sp_Wms_Area_Create]
 	@AreaCode varchar(25),
 	@AreaName varchar(200),
 	@ItemType varchar(25),
+	@PickingSequence int,
 	@RegisterBy varchar(25)
 as
 begin
@@ -23,7 +24,13 @@ begin
 		return;
 	end
 
-	insert into MS_Area (warehousecode, Areacode, Areaname, ItemType, registerby, registerdate)
-	values (@WarehouseCode, @AreaCode, @AreaName, @ItemType, @RegisterBy, getdate())
+	if exists(select top 1 1 from MS_Area where AreaCode=@AreaCode)
+	begin
+		raiserror('Area Code already Exists',16,1)
+		return;
+	end
+
+	insert into MS_Area (warehousecode, Areacode, Areaname, ItemType, PickingSequence, registerby, registerdate)
+	values (@WarehouseCode, @AreaCode, @AreaName, @ItemType, @PickingSequence, @RegisterBy, getdate())
 end
 GO

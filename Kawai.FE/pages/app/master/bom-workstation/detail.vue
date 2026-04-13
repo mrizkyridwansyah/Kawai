@@ -18,7 +18,7 @@
                       v-model="filter.item"
                     :modelCls="filter.modelcls"
                      :disabled="true"
-                    style-code="width: 110px"
+                    style-code="width: 150px"
                     style-desc="width: 250px"
                   /></td>
    
@@ -135,6 +135,25 @@
           <!-- BEGIN tab-content -->
           <div class="tab-content panel rounded-0 p-3 m-0">
             <!-- BEGIN tab-pane MENU -->
+          <div
+  class="d-flex align-items-center mb-2 p-2"
+  style="gap:10px; background:#2f2f2f; border-radius:6px;"
+>
+  <!-- SORT BUTTON -->
+ 
+
+  <!-- SEARCH INPUT -->
+  <div style="flex:1;">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      v-model="filter.keyword"
+      placeholder="Search..."
+       style="background:#f1f1f1;"
+    />
+  </div>
+
+</div>
             <div class="table-scroll">
               <table
                 class="table table-striped table-bordered mb-0 align-middle sticky-header-table"
@@ -143,6 +162,9 @@
                   <tr>
                     <th class="text-center" style="vertical-align: middle">
                       Setting
+                    </th>
+                    <th class="text-center" style="vertical-align: middle">
+                      Type Material
                     </th>
                     <th class="text-center" style="vertical-align: middle">
                       Child Item
@@ -168,7 +190,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, idx) in allowed.bomsetting">
+                  <tr v-for="(item, idx) in filteredBomSetting" :key="item.ChildItem_Code">
                     <td>
                       <div style="justify-items: center">
                         <input-checkbox
@@ -177,6 +199,7 @@
                         />
                       </div>
                     </td>
+                    <td>{{ item.TypeMaterial }}</td>
                     <td>{{ item.ChildItem_Code }}</td>
                     <td>{{ item.ChildItem_Name }}</td>
                     <td>
@@ -208,6 +231,7 @@
 export default {
   data: () => ({
     errors: {},
+   headerTrolley: null,
     filter: {
       factory: null,
       process: null,
@@ -226,11 +250,25 @@ export default {
       bomsetting: [],
     },
   }),
-  computed: {
-    dsBOMSetting: function () {
-      return useBOMWorkstationDetail();
-    },
+computed: {
+  dsBOMSetting() {
+    return useBOMWorkstationDetail();
   },
+
+  filteredBomSetting() {
+    if (!this.filter.keyword) {
+      return this.allowed.bomsetting;
+    }
+
+    const keyword = this.filter.keyword.toLowerCase();
+
+    return this.allowed.bomsetting.filter(x =>
+      (x.ChildItem_Code ?? "").toLowerCase().includes(keyword) ||
+      (x.ChildItem_Name ?? "").toLowerCase().includes(keyword) ||
+      (x.TypeMaterial ?? "").toLowerCase().includes(keyword)
+    );
+  }
+},
   mounted: function () {
     this.filter.factory = this.$route.query.factory;
     this.filter.supplier = this.$route.query.process;
@@ -241,22 +279,77 @@ export default {
 
    this.loadData();  
   },
+  watch: {
+    "filter.trolley_cls"(val) {
+
+    if (!val) return;
+
+    // jika masih trolley dari header → jangan load API
+    if (val === this.headerTrolley) return;
+
+    this.dsBOMSetting.loadQty(val)
+      .then((res) => {
+
+        const qty = res.Data?.MaxQtySet ?? 0;
+
+        this.model.QtySet = qty;
+
+      });
+
+  },
+ 
+},
   methods: {
-loadData() {
+    
+  loadMaxQty(trolleyCls) {
+
+    this.dsBOMSetting.loadQty(trolleyCls)
+      .then((res) => {
+
+        const qty = res.Data?.MaxQtySet ?? 0;
+
+        // isi ke textbox Max Qty Set
+        this.model.QtySet = qty;
+
+      })
+      .catch(() => {
+        toastDanger("Failed load Max Qty");
+      });
+
+  },
+ loadData() {
   return this.dsBOMSetting
     .load(this.filter.linecode, this.filter.item, this.filter.workstation)
     .then((dt) => {
-      // DETAIL
+
       this.allowed.bomsetting = dt.Data.BomSetting ?? [];
 
-      // HEADER
       const header = dt.Data.Header?.[0]?.[0];
+
       if (header) {
-        this.model.QtySet = header.QtySet;
+        this.model.QtySet = header.QtySet; // 200
         this.filter.trolley_cls = header.Trolley_Cls;
+
+        this.headerTrolley = header.Trolley_Cls; // simpan trolley awal
       }
+
     });
 },
+// loadData() {
+//   return this.dsBOMSetting
+//     .load(this.filter.linecode, this.filter.item, this.filter.workstation)
+//     .then((dt) => {
+//       // DETAIL
+//       this.allowed.bomsetting = dt.Data.BomSetting ?? [];
+
+//       // HEADER
+//       const header = dt.Data.Header?.[0]?.[0];
+//       if (header) {
+//         this.model.QtySet = header.QtySet;
+//         this.filter.trolley_cls = header.Trolley_Cls;
+//       }
+//     });
+// },
 
   allowSettingBOM(e, item) {
     this.allowed.bomsetting.find(
@@ -264,6 +357,7 @@ loadData() {
     ).AllowSetting = e.target.checked;
   },
 
+  
   submit() {
       if (!this.filter.trolley_cls) {
         toastWarning("Please Select Trolley Cls");
@@ -278,10 +372,10 @@ loadData() {
       x => x.AllowSetting === true
     );
 
-    if (details.length === 0) {
-      toastWarning("Please select child item setting (minimal 1 data)!");
-      return;
-    }
+    // if (details.length === 0) {
+    //   toastWarning("Please select child item setting (minimal 1 data)!");
+    //   return;
+    // }
 
     this.isLoading = true;
 
@@ -319,7 +413,7 @@ loadData() {
         this.isLoading = false;
       });
   }
-}
+    }
   
 };
 </script>

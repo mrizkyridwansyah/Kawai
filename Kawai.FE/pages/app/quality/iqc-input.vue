@@ -267,6 +267,11 @@ export default {
         return;
       }
 
+      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
+        return;
+      }
+
       this.$nextTick(() => setTimeout(() => this.load(), 500));
     },
     showModal: function (dt, mode) {

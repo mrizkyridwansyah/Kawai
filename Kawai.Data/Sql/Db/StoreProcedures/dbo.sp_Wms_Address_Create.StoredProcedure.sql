@@ -23,7 +23,13 @@ begin
 		return;
 	end
 
+	if   exists (select 1 from MS_Address where  AddressCode = @AddressCode)
+	begin
+		raiserror('Address Code already Exists',16,1)
+		return;
+	end
+
 	insert into MS_Address(WarehouseCode, AreaCode, AddressCode, AddressName, RegisterBy, RegisterDate)
-	values (@WarehouseCode, @AreaCode, @AddressCode, @AddressName, @RegisterBy, getdate())
+	values (@WarehouseCode, @AreaCode,  RTRIM(LTRIM(@AddressCode)), @AddressName, @RegisterBy, getdate())
 end
 GO

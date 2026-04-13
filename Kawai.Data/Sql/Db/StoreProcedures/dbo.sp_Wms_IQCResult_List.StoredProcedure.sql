@@ -8,7 +8,8 @@ CREATE   procedure [sp_Wms_IQCResult_List]
 	@Source varchar(25) = null,
 	@StatusInspection varchar(20) = null,-- ALL, OK, NG
 	@PeriodFrom date	,--= '2025-11-27',
-	@PeriodUntil date	 --= '2025-11-30'
+	@PeriodUntil date	,--= '2025-11-30'
+	@ReceiptId bigint	 
 as
 begin
 	IF ISNULL(@SupplierCode, '') = ''
@@ -33,7 +34,7 @@ begin
 		QtyNG = isnull(iqch.TotalQtyNG, 0), 
 		iqch.RegisterDate,  iqch.InspectorID RegisterUser, qcus.FullName RegisterUserName,
 		iqch.InspectionDate, iqch.InspectorID, qcus.FullName InspectorName,
-		iqch.InspectionResult, iqch.InspectionResultDate ApprovalDate, iqch.InspectionResultApproval ApprovalUser, approver.FullName ApprovalUserName
+		iqch.InspectionResult, iqch.InspectionResultDate ApprovalDate, iqch.InspectionResultApproval ApprovalUser, approver.FullName ApprovalUserName, iqch.StatusQC
 	from IQC_Inspection_Header iqch
 	inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
 	inner join Trade_Master sp on iqch.SupplierCode = sp.Trade_Code
@@ -45,6 +46,7 @@ begin
 	and 1 = CASE WHEN @SupplierCode = 'ALL' THEN 1 WHEN @SupplierCode = iqch.SupplierCode THEN 1 ELSE 0 END
 	and 1 = CASE WHEN @StatusInspection = 'ALL' THEN 1 WHEN @StatusInspection = iqch.InspectionResult THEN 1 ELSE 0 END
 	and 1 = CASE WHEN @Source = 'ALL' THEN 1 WHEN @Source = iqch.Soruce THEN 1 ELSE 0 END
+	and 1 = CASE WHEN @ReceiptId = 0 THEN 1 WHEN @ReceiptId = prh.Id THEN 1 ELSE 0 END
 	and cast(iqch.InspectionDate as date) between @PeriodFrom and @PeriodUntil
 	order by iqch.InspectionDate
 end

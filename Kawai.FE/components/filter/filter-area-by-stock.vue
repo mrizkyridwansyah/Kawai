@@ -69,6 +69,8 @@ export default {
     "class",
     "warehouse",
     "item",
+    "statusReceipt",
+    "statusHoldNg",
     "showOptionAll",
     "styleCode",
     "styleDesc",
@@ -114,6 +116,14 @@ export default {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
+    statusReceipt: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
+    statusHoldNg: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
+    },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
@@ -147,7 +157,7 @@ export default {
           .get(
             `/area/ddl-area-search-by-stock?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouse=${this.warehouse || ""}&item=${this.item}`,
+            }&warehouse=${this.warehouse || ""}&item=${this.item}&statusReceipt=${this.statusReceipt || ""}&statusHoldNG=${this.statusHoldNg || ""}`,
           )
           .then((p) => {
             this.list =

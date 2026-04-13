@@ -31,7 +31,7 @@
           </td>
           <td>{{ $func.formatDate(item.PODate) }}</td>
           <td>{{ item.SupplierName }}</td>
-          <td>{{ item.WarehouseName }}</td>
+          <td>{{ item.WarehouseCode }}</td>
         </tr>
       </tbody>
     </table>

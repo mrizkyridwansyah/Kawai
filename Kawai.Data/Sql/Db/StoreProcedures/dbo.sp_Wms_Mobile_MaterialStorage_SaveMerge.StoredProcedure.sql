@@ -86,13 +86,13 @@ begin
 	(
 		[Status], ProcessMenu, RefNo, 
 		WarehouseCode, AreaCode, AddressCode, ItemCode, BarcodeNo, LotNo,
-		RefWarehouseCode, RefAreaCode, RefAddressCode, RefItemCode, RefBarcodeNo, RefLotNo, 
+		RefNo2, RefWarehouseCode, RefAreaCode, RefAddressCode, RefItemCode, RefBarcodeNo, RefLotNo, 
 		QtyTrans, Remarks, ReferenceNo, LogDate, UserID
 	)
 	select 
 		'OUT', 'Material Merge Storage Mobile', RefNo, 
 		FromWarehouseCode, FromAreaCode, FromAddressCode, ItemCode, BarcodeNo, LotNo, 
-		ToWarehouseCode, ToAreaCode, ToAddressCode, ItemCode, BarcodeNo, LotNo, 
+		@RefNo, ToWarehouseCode, ToAreaCode, ToAddressCode, ItemCode, BarcodeNo, LotNo, 
 		Qty, 'Material Merge Storage Mobile ke ' + isnull(ToAddressName, ''), RefNo, 
 		getdate(), @UserId
 	from @tbl
@@ -108,7 +108,7 @@ begin
 		from @tbl where Urutan = @i
 
 		exec sp_Wms_Stock_UpSertStockDetail @ref, @fromWH, @fromArea, @fromAddress, @item, @barcode, @lot, 0, NULL, @sublot, @UserId, 'OK'
-		exec sp_Wms_Stock_UpSertStockHeader @transDate, @ref, @fromWH, @fromArea, @item, @lot, 0, NULL, 'S', @UserId
+		exec sp_Wms_Stock_UpSertStockHeader @transDate, @ref, @fromWH, @fromArea, @item, @lot, @qty, NULL, 'S', @UserId
 
 		exec sp_Wms_Stock_UpSertStockDetail @RefNo, @ToWarehouseCode, @ToAreaCode, @AddressCode, @item, @barcode, @lot, @qty, @ivtQty, @sublot, @UserId, 'OK'
 		exec sp_Wms_Stock_UpSertStockHeader @transDate, @RefNo, @ToWarehouseCode, @ToAreaCode, @item, @lot, @qty, @ivtQty, 'R', @UserId
@@ -120,13 +120,13 @@ begin
 	(
 		[Status], ProcessMenu, RefNo, 
 		WarehouseCode, AreaCode, AddressCode, ItemCode, BarcodeNo, LotNo,
-		RefWarehouseCode, RefAreaCode, RefAddressCode, RefItemCode, RefBarcodeNo, RefLotNo, 
+		RefNo2, RefWarehouseCode, RefAreaCode, RefAddressCode, RefItemCode, RefBarcodeNo, RefLotNo, 
 		QtyTrans, Remarks, ReferenceNo, LogDate, UserID
 	)
 	select 
 		'IN', 'Material Merge Storage Mobile', @RefNo, 
 		ToWarehouseCode, ToAreaCode, ToAddressCode, ItemCode, BarcodeNo, LotNo, 
-		FromWarehouseCode, FromAreaCode, FromAddressCode, ItemCode, BarcodeNo, LotNo, 
+		RefNo, FromWarehouseCode, FromAreaCode, FromAddressCode, ItemCode, BarcodeNo, LotNo, 
 		Qty, 'Material Merge Storage Mobile dari ' + isnull(FromWarehouseName, ''), RefNo, 
 		getdate(), @UserId
 	from @tbl

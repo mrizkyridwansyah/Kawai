@@ -34,6 +34,31 @@ public class PODetailDto : DataTableDto
     public string LastUser { get; set; }
 }
 
+public class ClaimDetailDto : DataTableDto
+{
+    public long? ReceiptId { get; set; }
+    public long? ReceiptDetailId { get; set; }
+    public string PONumber { get; set; }
+    public DateTime PODate { get; set; }
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string UnitClsCode { get; set; }
+    public string UnitClsName { get; set; }
+    public decimal Qty { get; set; }
+    public decimal TotalReceiptQty { get; set; }
+    public decimal ReceiptQty { get; set; }
+    public decimal RemainingQty { get; set; }
+    public decimal QtyPacking { get; set; }
+    public decimal TotalPacking { get; set; }
+    public string NoSeri { get; set; }
+    public DateTime? ProductionDate { get; set; }
+    public DateTime? LastUpdate { get; set; }
+    public string LastUser { get; set; }
+}
+
+
 public class LabelBarcodeDetailDto : DataTableDto
 {
 

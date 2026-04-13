@@ -1,4 +1,5 @@
 ﻿using Kawai.Data.SqlConnections;
+using Kawai.Domain;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -23,6 +24,7 @@ public class QualityCheckRepository : IQualityCheckRepository
         var paramSource = param.GetParam("Source");
         var paramDateFrom = param.GetParam("PeriodFrom");
         var paramDateUntil = param.GetParam("PeriodUntil");
+        var paramReceiptId = param.GetParam("ReceiptId");
 
         return (await _dbExecutor.QueryListAsync<QualityCheckDto>(sp, new
         {
@@ -31,6 +33,7 @@ public class QualityCheckRepository : IQualityCheckRepository
             StatusInspection = paramStatus,
             PeriodFrom = paramDateFrom,
             PeriodUntil = paramDateUntil,
+            ReceiptId = String.IsNullOrEmpty(paramReceiptId) ? 0 : paramReceiptId.ToInt32(),
         })).ToList();
     }
 
@@ -97,8 +100,12 @@ public class QualityCheckRepository : IQualityCheckRepository
         })).ToList();
     }
 
-
-
-
-
+    public async Task<List<QualityCheckReportDto>> PrintReportNG(long receiptId)
+    {
+        string sp = "sp_Wms_QualityCheck_PrintReportNG";
+        return (await _dbExecutor.QueryListAsync<QualityCheckReportDto>(sp, new
+        {
+            ReceiptId = receiptId,
+        })).ToList();
+    }
 }

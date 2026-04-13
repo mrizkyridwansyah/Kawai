@@ -48,7 +48,7 @@
                 <td>{{ item.ItemName }}</td>
                 <td>{{ item.FinishGoodPartClsDesc }}</td>
                 <td>{{ item.DrawingNumber }}</td>
-                <td>{{ item.WarehouseName }}</td>
+                <td>{{ item.WarehouseCode }}</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                 <td>{{ item.LastUser }}</td>
               </tr>

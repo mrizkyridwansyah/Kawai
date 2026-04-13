@@ -131,6 +131,27 @@ export const useReceipt = defineStore('Receipt', {
           .finally(_ => this.isLoading = false);
       })
     },
+
+    listClaimDetail: function (filters) {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/list-claim-detail`, filters)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoading = false);
+      })
+    },
     loadInquiry: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
@@ -224,42 +245,48 @@ export const useReceipt = defineStore('Receipt', {
     },
 
     print: function (id) {
-  this.isLoading = true;
+      this.isLoading = true;
 
-  return app.$http.post(
-    `/receipt/print-barcodes?receiptId=${id}`,
-    null,
-    { responseType: 'blob' }
-  )
-  .then(res => {
-    const blob = res.data instanceof Blob
-      ? res.data
-      : new Blob([res.data], { type: 'application/pdf' });
+      return app.$http.post(
+        `/receipt/print-barcodes?receiptId=${id}`,
+        null,
+        { responseType: 'blob' }
+      )
+        .then(res => {
+          const blob = res.data instanceof Blob
+            ? res.data
+            : new Blob([res.data], { type: 'application/pdf' });
 
-    const url = window.URL.createObjectURL(blob);
+          const url = window.URL.createObjectURL(blob);
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'labels.pdf';
-    document.body.appendChild(link);
-    link.click();
+          const contentDisposition = res.headers['content-disposition'];
+          let fileName = 'default.pdf';
+          if (contentDisposition) {
+            const match = contentDisposition.match(/filename="(.+)"/);
+            if (match.length === 2) fileName = match[1];
+          }
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
 
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  })
-  .catch(err => {
-    if (err?.code === 'ERR_NETWORK')
-      this.isNetworkError = true;
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(err => {
+          if (err?.code === 'ERR_NETWORK')
+            this.isNetworkError = true;
 
-    if (err?.code === 'ERR_BAD_RESPONSE')
-      this.isServerError = true;
+          if (err?.code === 'ERR_BAD_RESPONSE')
+            this.isServerError = true;
 
-    throw err;
-  })
-  .finally(() => {
-    this.isLoading = false;
-  });
-},
+          throw err;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {
         let filterExport = {

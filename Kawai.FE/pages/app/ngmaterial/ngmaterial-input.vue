@@ -157,7 +157,7 @@
           <v-button-print
             label="Print Label"
             class="mr-1"
-            :print="printLabel"
+            :print="printSuratJalan"
             :is-loading="isLoading"
           />
           <button
@@ -355,9 +355,12 @@ export default {
     check: function (e, item) {
       item.Selected = e.target.checked;
     },
-    printLabel: function () {
+    printSuratJalan: function () {
       this.ds
-        .printLabel(this.model)
+        .printSuratJalan( {
+              factory: this.filter.SupplierCode,
+              claimid: this.filter.ClaimId
+            })
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.reset();

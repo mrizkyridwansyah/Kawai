@@ -54,6 +54,9 @@ public class PartMaterialRequestWominController : HahaController
     {
         var logs = new List<DataLogDto>();
 
+        if (models == null || !models.Any())
+            return Invalid("Invalid Request Data");
+
         foreach (var item in models)
         {
             var before = await _partMaterialRequestWominRepository.Capture(item.ProductionId);

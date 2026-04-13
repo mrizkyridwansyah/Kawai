@@ -6,7 +6,7 @@
           <td style="padding-top: 5px">
             <label class="form-label">Schedule Date</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px; width: 160px">
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="filter.PeriodFrom"
               style-date="width: 100px !important"
@@ -270,8 +270,28 @@ export default {
         this.filter.PeriodUntil
       );
 
+      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
+        return;
+      }
+
       if (rangePeriodDays > 30) {
-        toastWarning("Range Period only 30 days.");
+        toastWarning("Jarak Periode hanya 30 hari.");
+        return;
+      }
+
+      if(!this.filter.ManufactureCode) {
+        toastWarning("Silahkan pilih process.");
+        return;
+      }
+
+      if(!this.filter.LineCode) {
+        toastWarning("Silahkan pilih line.");
+        return;
+      }
+
+      if(!this.filter.RemainingCls) {
+        toastWarning("Silahkan pilih filter remaining.");
         return;
       }
 

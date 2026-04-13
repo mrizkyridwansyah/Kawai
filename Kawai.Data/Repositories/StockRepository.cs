@@ -29,6 +29,11 @@ public class StockRepository : IStockRepository
         string sp = "sp_Wms_StockInquiry_InquiryByCategory";
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, parameter.ToQueryObject())).ToList();
     }
+    public async Task<List<StockDto>> InquiryByStatus(RequestParameter parameter)
+    {
+        string sp = "sp_Wms_StockInquiry_InquiryByStatus";
+        return (await _dbExecutor.QueryListAsync<StockDto>(sp, parameter.ToQueryObject())).ToList();
+    }
     public async Task<List<StockDto>> InquiryDetail(RequestParameter parameter)
     {
         string sp = "sp_Wms_StockInquiry_InquiryDetail";
@@ -46,7 +51,7 @@ public class StockRepository : IStockRepository
             ItemCode = !String.IsNullOrEmpty(item) ? item : "ALL"
         })).ToList();
     }
-    public async Task<List<StockDto>> DDLLotNoByStock(string keyword, string warehouse, string area, string address, string item, string category)
+    public async Task<List<StockDto>> DDLLotNoByStock(string keyword, string warehouse, string area, string address, string item, string category, string statusReceipt, string statusHoldNG)
     {
         string sp = "sp_Wms_StockInquiry_DDLLotNoByStock";
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, new
@@ -56,7 +61,9 @@ public class StockRepository : IStockRepository
             AreaCode = !String.IsNullOrEmpty(area) ? area : "ALL",
             AddressCode = !String.IsNullOrEmpty(address) ? address : "ALL",
             ItemCode = !String.IsNullOrEmpty(item) ? item : "ALL",
-            Category = !String.IsNullOrEmpty(category) ? category : "ALL"
+            Category = !String.IsNullOrEmpty(category) ? category : "ALL",
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG,
         })).ToList();
     }
 

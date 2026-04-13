@@ -14,6 +14,7 @@ CREATE TABLE [MS_Address](
 	[RegisterDate] [datetime] NULL,
 	[UpdateBy] [varchar](50) NULL,
 	[UpdateDate] [datetime] NULL,
+	[StopPointCode] [varchar](25) NULL
  CONSTRAINT [PK_MS_Area] PRIMARY KEY CLUSTERED 
 (
 	[WarehouseCode] ASC,

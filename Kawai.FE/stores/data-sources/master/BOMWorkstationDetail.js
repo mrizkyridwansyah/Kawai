@@ -30,6 +30,28 @@ export const useBOMWorkstationDetail = defineStore('BOMSetting', {
                     .finally(_ => this.isLoading = false);
             })
         },
+
+        loadQty: function (t) {
+            this.isLoading = true;
+            this.isNetworkError = this.isServerError = false;
+            return new Promise((resolve, reject) => {
+                app.$http.get(`/bomworkstation/detailqty?id=${t}`)
+                    .then(({ data }) => {
+                        this.data = data.Data;
+                        resolve(data);
+                    })
+                    .catch(err => {
+                        if (err.code == 'ERR_NETWORK')
+                            this.isNetworkError = true;
+
+                        if (err.code == 'ERR_BAD_RESPONSE')
+                            this.isServerError = true;
+
+                        reject(err);
+                    })
+                    .finally(_ => this.isLoading = false);
+            })
+        },
         submit: function (data) {
             this.isLoading = true;
             return new Promise((resolve, reject) => {

@@ -18,6 +18,7 @@ public class ReceiptDto: DataTableDto
     public string VehicleNo { get; set; }
     public string Transport { get; set; }
     public string ReferenceNo { get; set; }
+    public string RegisterNo { get; set; }
     public string Remarks { get; set; }
     public DateTime? DeliveryDatePOFrom { get; set; }
     public DateTime? DeliveryDatePOUntil { get; set; }
@@ -112,4 +113,6 @@ public class ReceiptInquiryDto: DataTableDto
     public string Currency { get; set; }
     public decimal Price { get; set; }
     public decimal Amount { get; set; }
+    public string StatusIQC { get; set; }
+    public string StatusHoldNG { get; set; }
 }

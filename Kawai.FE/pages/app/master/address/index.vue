@@ -50,6 +50,12 @@
                 cClass=""
                 :is-loading="isLoadingPrint"
               />
+               <v-button-print
+                :print="printall"
+                label="Print All"
+                cClass="ml-1"
+                :is-loading="isLoadingPrintAll"
+              />
               <v-button-search-reset
                 class="ms-1"
                 :search="search"
@@ -239,6 +245,7 @@ export default {
     selectedPrint: [],
     selectedSet: [],
     isLoadingPrint: false,
+    isLoadingPrintAll: false,
   }),
   computed: {
     ds: function () {
@@ -292,6 +299,12 @@ export default {
 
       if (!this.filter.area) {
         toastWarning("Please choose area!");
+        return;
+      }
+
+      if (this.selectedSet.length === 0) {
+        toastWarning("Please select address");
+        this.isLoadingPrint = false;
         return;
       }
 
@@ -437,6 +450,48 @@ export default {
           .finally(() => {
             setTimeout(() => {
               this.isLoadingPrint = false;
+            }, 1000);
+          });
+      });
+    },
+
+    printall: function () {
+      this.isLoadingPrintAll = true;
+       if (!this.filter.warehouse) {
+        toastWarning("Please choose warehouse!");
+       this.isLoadingPrintAll = false;
+        return;
+      }
+
+      if (!this.filter.area) {
+        toastWarning("Please choose area!");
+         this.isLoadingPrintAll = false;
+        return;
+      }
+
+      let filters = [
+        {
+          WarehouseCode: this.filter.warehouse,
+          AreaCode: this.filter.area,
+        },
+      ];
+
+      
+
+      new Promise((resolve, reject) => {
+        this.ds
+          .exportQRALL(filters)
+          .then((_) => {
+            resolve();
+          })
+
+          .catch((err) => {
+            toastDanger(err?.Message);
+            resolve();
+          })
+          .finally(() => {
+            setTimeout(() => {
+              this.isLoadingPrintAll = false;
             }, 1000);
           });
       });

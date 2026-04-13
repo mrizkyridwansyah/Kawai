@@ -212,17 +212,17 @@ export default {
         {
           text: "From Area",
           dataField: "FromAreaName",
-          width: "150px",
+          width: "max-content",
         },
         {
           text: "To Area",
           dataField: "ToAreaName",
-          width: "150px",
+          width: "max-content",
         },
         {
           text: "Doc. Reference",
           dataField: "DocReference",
-          width: "150px",
+          width: "max-content",
           align: "left",
         },
         {

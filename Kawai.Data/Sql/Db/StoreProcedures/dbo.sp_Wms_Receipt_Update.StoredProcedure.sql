@@ -16,6 +16,7 @@ CREATE   procedure [sp_Wms_Receipt_Update]
 	@VehicleNo		varchar(15),
 	@Transport		varchar(15),
 	@Remarks		varchar(max),
+	@RegisterNo		varchar(max),
 	@Details		tvp_ReceiptDetail READONLY,
 	@UpdateBy		varchar(25)
 as
@@ -24,10 +25,11 @@ begin
 	(
 		select * From @Details a
 		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-		where b.QtyPacking is null
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
+		where isnull(b.QtyPacking, mi.Number_Box) <= 0
 	)
 	begin
-		raiserror('Qty Packing Item Supplier ini belum disetting!', 16, 1)
+		raiserror('Qty Packing Item ini belum disetting!', 16, 1)
 		return
 	end
 
@@ -46,6 +48,12 @@ begin
 	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
 	begin
 		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
+		return
+	end
+
+	if exists (select 1 from PartReceiptHeader where RegisterNo = @RegisterNo and Id <> @Id)
+	begin
+		raiserror('Register No sudah ada!', 16, 1)
 		return
 	end
 
@@ -86,7 +94,8 @@ begin
 		LastUpdate	= GETDATE(), 
 		LastUser	= @UpdateBy, 
 		Transport	= @Transport, 
-		Remarks		= @Remarks
+		Remarks		= @Remarks,
+		RegisterNo	= @RegisterNo
 	where Id = @Id
 
 	-- HAPUS DETAIL LAMA
@@ -97,14 +106,18 @@ begin
 	-- INSERT DETAIL BARU
 	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
 	select 
-		@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, a.TotalPacking, a.ReceiptQty, @Remarks
+		@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks
 	from @Details a 
+	left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
+	left join Item_Master mi on a.ItemCode = mi.Item_Code
 
 	-- HAPUS DETAIL LAMA DI PART RECEIPT EZR
 	DELETE FROM Part_Receipt WHERE RefWMSReceiptId = @Id
 
 	-- INSERT DETAIL BARU KE PART RECEIPT EZR
 	declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
+	DECLARE @BCTypeVal varchar(100) = (SELECT Description fROM BCType_Cls	WHERE BCType_Cls = @BCType)
+
 	insert into Part_Receipt 
 	(
 		Seq_No, Supplier_Code, PO_No, Warehouse_Code, Address, Receipt_Cls, Receipt_Date, Item_Code, Qty, SerialNoFrom, SerialNoTo, 
@@ -113,11 +126,12 @@ begin
 	)
 	select 
 		@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
-		dtl.UnitCls, null Currency, null Price, null Amount, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport, NULL,
-		getdate(), @UpdateBy, getdate(), hd.BCType, hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, @Id
+		dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport, NULL,
+		getdate(), @UpdateBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @RegisterNo, @Id
 	From PartReceiptHeader hd
 	inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 	left join Item_Master it on dtl.ItemCode = it.Item_Code
+	left join PurchaseOrder_Detail pod on dtl.ItemCode = pod.Item_Code and dtl.PONumber = pod.PO_No
 	where hd.Id = @Id
 end
 GO

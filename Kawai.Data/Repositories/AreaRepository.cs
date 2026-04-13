@@ -33,10 +33,17 @@ public class AreaRepository : IAreaRepository
         return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode })).ToList();
     }
 
-    public async Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouseCode, string item)
+    public async Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouseCode, string item, string statusReceipt, string statusHoldNG)
     {
         string sp = "sp_Wms_Area_DDLByStock";
-        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item })).ToList();
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new 
+        { 
+            Keyword = keyword ?? "", 
+            WarehouseCode = warehouseCode, 
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG,
+        })).ToList();
     }
 
     public async Task<List<AreaDto>> GetDDLPrivileges(string keyword, string warehouseCode, string userId)
@@ -45,10 +52,18 @@ public class AreaRepository : IAreaRepository
         return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, UserId = userId })).ToList();
     }
 
-    public async Task<List<AreaDto>> DDLPrivilegesSearchByStock(string keyword, string warehouseCode, string item, string userId)
+    public async Task<List<AreaDto>> DDLPrivilegesSearchByStock(string keyword, string warehouseCode, string item, string statusReceipt, string statusHoldNG, string userId)
     {
         string sp = "sp_Wms_AreaPrivileges_DDLByStock";
-        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item, UserId = userId })).ToList();
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new 
+        { 
+            Keyword = keyword ?? "", 
+            WarehouseCode = warehouseCode, 
+            ItemCode = String.IsNullOrEmpty(item) ? "ALL" : item,
+            StatusReceipt = String.IsNullOrEmpty(statusReceipt) ? "ALL" : statusReceipt,
+            StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG,
+            UserId = userId 
+        })).ToList();
     }
 
     public async Task Create(Area area, string userId)

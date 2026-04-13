@@ -17,6 +17,7 @@ public interface INGClaimRepository
     Task Approve(NGClaim ngclaim, string userId);
     Task Remove(long claimid);
     Task PrintLabel(long claimid, string userId);
+    Task<List<NGClaimReportDto>> GetListReport(string factory, long claimid);
     Task<List<NGClaimDto>> DDLSearch(string keyword,   string supplier, DateTime? periodFrom, DateTime? periodUntil, string status,   string userId);
     Task<Dictionary<string, object>> Capture(long claimid);
     

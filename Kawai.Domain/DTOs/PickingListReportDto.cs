@@ -2,17 +2,16 @@
 
 public class PickingListReportDto : DataTableDto
 {
-    public string AreaCode { get; set; }
-    public string Warehouse { get; set; }
-    public string ProductCode { get; set; }
-    public string ProductName { get; set; }
-    public string LotNo { get; set; }
-    public decimal PreMonth { get; set; }
-    public decimal Receipt { get; set; }
-    public decimal Supply { get; set; }
-    public decimal LossReject { get; set; }
-    public decimal Current { get; set; }
-    public decimal Inventory { get; set; }
-    public string Remarks { get; set; }
-    public string LastUser { get; set; }
+    public string Cust_Code { get; set; }
+    public string Trade_Name { get; set; }
+    public string SI_NO { get; set; }
+    public DateTime? SI_Date { get; set; }
+    public string Item_Code { get; set; }
+    public string Item_Name { get; set; }
+    public string Serial_No { get; set; }
+    public string Address { get; set; }
+    public DateTime? Picking_Date { get; set; }
+    public TimeSpan? Picking_Time { get; set; }
+    public string Picking_By { get; set; }
+    public string Picking_Name { get; set; }
 }
