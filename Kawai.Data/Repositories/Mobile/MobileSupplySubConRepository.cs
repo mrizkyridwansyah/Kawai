@@ -5,7 +5,7 @@ using Kawai.Domain.Models.Mobile;
 
 namespace Kawai.Data.Repositories.Mobile;
 
-public class MobileSupplySubConRepository: IMobileSupplySubconRepository
+public class MobileSupplySubConRepository : IMobileSupplySubconRepository
 {
     private readonly DbExecutor _dbExecutor;
 
@@ -66,9 +66,12 @@ public class MobileSupplySubConRepository: IMobileSupplySubconRepository
             param: new { RequestNo = requestNo, ItemCode = itemCode },
             async multi =>
             {
-                var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
+                var header = (await multi.ReadAsync<dynamic>())?.FirstOrDefault();
                 var details = (await multi.ReadAsync<dynamic>()).ToList();
-                header.ScanDetails = details;
+
+                if (header != null)
+                    header.ScanDetails = details;
+
                 return header;
             }
         );

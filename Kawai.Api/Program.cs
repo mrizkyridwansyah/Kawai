@@ -70,6 +70,7 @@ builder.Services.AddScoped<ITransactionHandler, MobileLoadingTrolleyTransactionH
 builder.Services.AddScoped<ITransactionHandler, MobileSupplyScanRequestTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, QualityCheckConfirmTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, RobotMovingTrolleyTransactionHandler>();
+builder.Services.AddScoped<ITransactionHandler, MobileSupplySubconTransactionHandler>();
 
 //ini daftarin consumer rabbitmq, buat consume message di queueing =>  transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
 builder.Services.AddHostedService<TransactionConsumerAsync>();
