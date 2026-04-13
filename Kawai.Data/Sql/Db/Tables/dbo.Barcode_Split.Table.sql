@@ -28,6 +28,7 @@ CREATE TABLE [Barcode_Split](
 	[CompleteStatus] [bit] NOT NULL,
 	[IsAutomatic] [bit] NOT NULL,
 	[LotNoNew] [varchar](50) NULL,
-	[FromWarehouse] [varchar](25) NULL
+	[FromWarehouse] [varchar](25) NULL,
+	[SourceNG] [bit] NULL
 ) ON [PRIMARY]
 GO

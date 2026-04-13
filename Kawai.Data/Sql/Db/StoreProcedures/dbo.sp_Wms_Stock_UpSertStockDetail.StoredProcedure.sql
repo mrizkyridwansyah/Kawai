@@ -15,7 +15,8 @@ CREATE   procedure [sp_Wms_Stock_UpSertStockDetail]
 	@InventoryQty	numeric(18,9),
 	@SublotNo		int,
 	@UserId			varchar(25),
-	@StatusReceipt	varchar(20) = null
+	@StatusReceipt	varchar(20) = null,
+	@StatusHoldNG	varchar(50) = null
 as
 begin
 	if exists 
@@ -25,15 +26,19 @@ begin
 		and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
 	) 
 	begin
-		update StockDetail set Qty = @QtyAfter, InventoryQty = @InventoryQty, Lastupdate = getdate(), LastUser = @UserId
+		update StockDetail 
+		set 
+			Qty = @QtyAfter, InventoryQty = @InventoryQty, Lastupdate = getdate(), LastUser = @UserId, 
+			StatusReceipt = isnull(@StatusReceipt, StatusReceipt),
+			StatusHoldNG = isnull(@StatusHoldNG, StatusHoldNG)
 		where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and AddressCode = @AddressCode 
 		and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
 		--and Qty >= @QtyAfter
 	end
 	else 
 	begin
-		insert into StockDetail (RefNo, WarehouseCode, AreaCode, AddressCode, BarcodeNo, ItemCode, LotNo, SublotNo, Qty, InventoryQty, StatusReceipt, RegisterDate, RegisterUser)
-		values (@RefNo, @WarehouseCode, @AreaCode, @AddressCode, @BarcodeNo, @ItemCode, @LotNo, @SublotNo, @QtyAfter, @InventoryQty, @StatusReceipt, getdate(), @UserId)
+		insert into StockDetail (RefNo, WarehouseCode, AreaCode, AddressCode, BarcodeNo, ItemCode, LotNo, SublotNo, Qty, InventoryQty, StatusReceipt, StatusHoldNG, RegisterDate, RegisterUser)
+		values (@RefNo, @WarehouseCode, @AreaCode, @AddressCode, @BarcodeNo, @ItemCode, @LotNo, @SublotNo, @QtyAfter, @InventoryQty, @StatusReceipt, @StatusHoldNG, getdate(), @UserId)
 	end
 
 	update StockOpname 

@@ -23,7 +23,7 @@ as
 begin
 	if exists 
 	(
-		select * From @Details a
+		select 1 From @Details a
 		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
 		left join Item_Master mi on a.ItemCode = mi.Item_Code
 		where isnull(b.QtyPacking, mi.Number_Box) <= 0
@@ -51,9 +51,12 @@ begin
 		return
 	end
 
-	if exists (select 1 from PartReceiptHeader where RegisterNo = @RegisterNo and Id <> @Id)
+	declare @warehouseSubcon varchar(25), @tradeCls varchar(3) 
+	select @warehouseSubcon = Subcon_WH_Code, @TradeCls = Trade_Cls from Trade_Master where Trade_Code = @SupplierCode
+
+	if @tradeCls = '3' and isnull(@warehouseSubcon, '') = ''
 	begin
-		raiserror('Register No sudah ada!', 16, 1)
+		raiserror('Warehouse Subcon belum disetting di Trade Master!', 16, 1)
 		return
 	end
 
@@ -81,6 +84,58 @@ begin
 		return
 	end
 
+	if @tradeCls = '3'
+	begin
+		declare @tblRequirementMaterial table (PONumber varchar(100), ParentItem varchar(25), ItemCode varchar(25), BOMQty numeric(18,9), ReceiptQty numeric(18,9))
+		insert into @tblRequirementMaterial
+		select dtl.PONumber, dtl.ItemCode, bom.Item_Code, bom.Qty, dtl.ReceiptQty
+		From BOM_Master bom 
+		inner join @Details dtl on bom.Parent_ItemCode = dtl.ItemCode
+
+		declare @pickingNos table (PONumber varchar(100), ParentItem varchar(25), PickingNo varchar(100))
+		insert into @pickingNos
+		select distinct hd.PO_NO, hd.ParentItem_Code, dtl.RefNumber 
+		From PartMaterialRequestDetail_PO dtl
+		inner join PartMaterialRequestHeader_PO hd on dtl.RequestID = hd.RequestID
+		inner join PartMaterialRequestItemDetail_PO dtli on dtl.RequestDetailID = dtli.RequestDetailID
+		inner join @Details req on hd.PO_NO = req.PONumber
+
+		declare @tblPOItemSummaryBOM table (PONumber varchar(100), ParentItem varchar(25), QtyReceipt numeric(18,9), QtyMinCanReceipt numeric(18,9))
+		insert into @tblPOItemSummaryBOM
+		select res.PONumber, res.ParentItem, res.QtyReceipt, min(QtyCanReceipt) from 
+		(
+			select 
+				req.PONumber, req.ParentItem, 
+				QtyReceipt = req.ReceiptQty,
+				QtyCanReceipt = floor(isnull(stok.OutstandingQty, 0) / req.BOMQty)
+			from @tblRequirementMaterial req
+			left join
+			(
+				select x.PONumber, x.ParentItem, ItemCode, sum(Qty) OutstandingQty 
+				From StockDetail std
+				inner join @pickingNos x on isnull(std.Picking_No, '') = x.PickingNo
+				where 1=1
+				and WarehouseCode = @warehouseSubcon 
+				and Qty > 0 
+				group by x.PONumber, x.ParentItem, ItemCode
+			) stok on req.PONumber = stok.PONumber and req.ParentItem = stok.ParentItem and stok.ItemCode = req.ItemCode
+		) res
+		group by res.PONumber, res.ParentItem, res.QtyReceipt
+
+		declare @msg varchar(max)
+		if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
+		begin
+			SELECT @msg = STRING_AGG(
+				PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
+				', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
+			, '; ')
+			FROM @tblPOItemSummaryBOM
+			WHERE QtyMinCanReceipt < QtyReceipt
+			RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
+			return	
+		end
+	end
+	
 	-- UPDATE DATA RECEIPT HEADER
 	update PartReceiptHeader 
 	set 

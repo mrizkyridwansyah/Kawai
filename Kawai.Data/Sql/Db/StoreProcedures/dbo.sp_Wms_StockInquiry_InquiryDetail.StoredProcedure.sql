@@ -32,23 +32,13 @@ begin
 		set @sqlSort = 'order by SublotNo'
 	end 
 
-	declare @TotalRows int = 
-	(
-		select count (1)
-		from StockDetail
-		where 1=1
-		and (BarcodeNo like '%'+@Keyword+'%') 
-		and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and AddressCode = @AddressCode
-		and ItemCode = @ItemCode and LotNo = @LotNo and Qty > 0
-	)
-
 	declare @sql varchar(max) = 
 	'
 		select 
 			sd.WarehouseCode, mw.WH_Name WarehouseName,
 			sd.AreaCode, isnull(ma.AreaName, ''Temporary'') AreaName,
 			sd.AddressCode, isnull(mad.AddressName, ''Temporary'') AddressName,
-			sd.ItemCode, mi.Item_Name ItemName, sd.LotNo, sd.BarcodeNo, sd.SublotNo, sd.Qty CurrentQty, isnull(sd.LastUpdate, sd.RegisterDate) LastUpdate, us.FullName LastUser, '''+cast(@TotalRows as varchar)+''' TotalRows
+			sd.ItemCode, mi.Item_Name ItemName, sd.LotNo, sd.BarcodeNo, sd.SublotNo, sd.Qty CurrentQty, isnull(sd.LastUpdate, sd.RegisterDate) LastUpdate, us.FullName LastUser, sd.StatusReceipt Status, isnull(sd.StatusHoldNG, sd.StatusReceipt) StatusDesc, count(1) over() TotalRows
 		from StockDetail sd
 		left join Warehouse_Master mw on sd.WarehouseCode = mw.WH_Code
 		left join MS_Area ma on sd.AreaCode = ma.AreaCode

@@ -32,6 +32,20 @@ begin
 	inner join PartReceiptHeader b on a.ReceiptId = b.Id
 	where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo
 
+	if exists 
+	(
+		select 1 
+		from IQC_Inspection_Header 
+		where ReceiptNo = @ReceiptNo 
+		and ItemCode = @ItemCode 
+		and Soruce = 'Incoming Material' 
+		and isnull(InspectionResult, '') <> ''
+	)
+	begin
+		raiserror('Sampel Receipt sudah diapprove!', 16, 1)
+		return
+	end
+
 	IF @QtySample > @Qty
 	BEGIN
 		raiserror('Qty Sample tidak boleh melebihi Qty Receipt!', 16,1)

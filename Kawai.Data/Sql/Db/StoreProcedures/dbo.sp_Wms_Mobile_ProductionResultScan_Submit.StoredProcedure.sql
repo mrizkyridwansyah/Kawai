@@ -73,6 +73,29 @@ BEGIN
 
 		DECLARE @ProdResultID bigint = (select SCOPE_IDENTITY())
 		--PRINT(' prod result : '+cast(@ProdResultID as varchar))
+		
+		DECLARE @RefNo VARCHAR(50),@Workstation varchar(50),@Stoppoint VARCHAR(50)
+		SELECT @RefNo=c.RefNumber, @Workstation=c.WorkStationCode,@Stoppoint=e.StopPointCode
+		FROM dbo.PartMaterialRequestItemDetailScan a 
+		LEFT JOIN PartMaterialRequestItemDetail b ON b.IDSeq=a.IDSeq
+		LEFT JOIN PartMaterialRequestDetail c ON c.RequestDetailID=b.RequestDetailID
+		LEFT JOIN PartMaterialRequestHeader d ON d.RequestID=c.RequestID
+		LEFT JOIN WorkStationLineSetting e ON e.LineCode=d.LineCode and e.WorkStationCode=c.WorkStationCode
+		WHERE D.ParentItem_Code=@ItemCode AND D.ProductionID=@SeqNo
+				
+		INSERT INTO StockDetail
+		( RefNo, WarehouseCode, AreaCode, AddressCode, BarcodeNo, ItemCode, LotNo, SublotNo, Qty, InventoryQty, ExpiredDate, ProductionDate, ReceiptDate, Supplier, PrintCls, 
+		  DisposalCls, StatusReceipt, Picking_No, RegisterDate, RegisterUser)
+		SELECT  TOP 1 RefNo=@RefNo, @LineCode, AreaCode=@Workstation, AddressCode=@Stoppoint, BarcodeNo, @ItemCode, LotNo,  SublotNo=NULL, Qty,InventoryQty= NULL , ExpiredDate=NULL, ProductionDate=Schedule_Date, 
+				ReceiptDate=NULL, Supplier=NULL, PrintCls=NULL, 
+				DisposalCls=NULL, StatusReceipt=NULL, Picking_No=NULL, GETDATE(), @UserID 
+		FROM ProductionResultDetail A
+		JOIN @Daily_Production B ON B.Lot_No=a.LotNo
+		WHERE BarcodeNo=@BarcodeNo
+
+		DECLARE @Date date = GetDate()	
+	
+		exec sp_Wms_Stock_UpSertStockHeader @Date, @RefNo,  @LineCode, @Workstation, @ItemCode, @LotNo, 1, NULL, 'R', @UserId
 
 		BEGIN TRY
 			----INSERT CONSUMPTION & UPDATE STOCK-----

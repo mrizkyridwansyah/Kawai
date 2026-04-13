@@ -20,6 +20,12 @@ begin
 		return
 	end
 
+	if not exists (select 1 From StockDetail where BarcodeNo = @BarcodeNo and Qty > 0 and StatusReceipt = 'OK')
+	begin
+		raiserror('Data Stock belum OK!', 16,1)
+		return
+	end
+
 	--if exists (select 1 from StockDetail where RefNo = @TrolleyNo and BarcodeNo = @BarcodeNo and Qty > 0)
 	--begin
 	--	raiserror('Barcode sudah ada didalam troli!', 16,1)

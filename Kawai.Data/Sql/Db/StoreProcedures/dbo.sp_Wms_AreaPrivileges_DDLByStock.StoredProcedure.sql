@@ -11,7 +11,9 @@ CREATE   procedure [sp_Wms_AreaPrivileges_DDLByStock]
 	@UserId varchar(25) = '',
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
-	@ItemCode		varchar(25)
+	@ItemCode		varchar(25),
+	@StatusReceipt	varchar(25),
+	@StatusHoldNG	varchar(50)
 as
 begin
 	select * From 
@@ -30,6 +32,8 @@ begin
 		and (@WarehouseCode = 'ALL' or a.WarehouseCode = @WarehouseCode)
 		and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 		and Qty > 0
+		and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
+		and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 	) res
 	where 1=1
 	and (AreaCode like '%' + @Keyword + '%' or AreaName like '%' + @Keyword + '%')

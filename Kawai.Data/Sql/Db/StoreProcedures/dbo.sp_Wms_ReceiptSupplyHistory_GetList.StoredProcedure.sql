@@ -72,10 +72,17 @@ begin
 	) res
 	LEFT JOIN 
 	(
-		SELECT * fROM StockHeader 
+		SELECT 
+			WarehouseCode, AreaCode, ItemCode, LotNo, 
+			isnull(sum(TMPreMonth),0) TMPreMonth,
+			isnull(sum(TMLossReject),0) TMLossReject,
+			isnull(sum(TMCurrent),0) TMCurrent
+		fROM StockHeader 
 		WHERE WarehouseCode = @WarehouseCode 
 		AND AreaCode = @AreaCode
 		and ItemCode = @ItemCode
+		AND (@LotNo = 'ALL' or LotNo = @LotNo)
+		group by WarehouseCode, AreaCode, ItemCode, LotNo
 	) sm on res.AreaCode = sm.AreaCode and res.LotNo = sm.LotNo
 	LEFT JOIN Item_Master mi on res.ItemCode = mi.Item_Code
 	LEFT JOIN vw_WarehouseLine mw on res.WarehouseCode = mw.WarehouseCode

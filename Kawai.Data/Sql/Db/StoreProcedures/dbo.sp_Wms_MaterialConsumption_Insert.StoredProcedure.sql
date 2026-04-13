@@ -46,15 +46,15 @@ BEGIN
 		
 		SELECT LineCode,scan.WorkStationCode,StopPointCode,ParentItem_Code,scan.ItemCode,RTRIM(itm.Item_Name) ItemName,bom.QtyBom,scan.BarcodeNo,stock.LotNo,stock.QtyStock,COALESCE(QtyUsed,0) QtyUsed,RefNo as RefNoStock
 		FROM (	SELECT c.RefNumber, d.LineCode,c.WorkStationCode,e.StopPointCode,D.ParentItem_Code,A.ItemCode,a.BarcodeNo,a.Qty,a.RegisterDate
-				FROM dbo.PartMaterialRequestItemDetailScan_TRIALCONSUMPT a 
-				LEFT JOIN PartMaterialRequestItemDetail_TRIALCONSUMPT b ON b.IDSeq=a.IDSeq
-				LEFT JOIN PartMaterialRequestDetail_TRIALCONSUMPT c ON c.RequestDetailID=b.RequestDetailID
-				LEFT JOIN PartMaterialRequestHeader_TRIALCONSUMPT d ON d.RequestID=c.RequestID
+				FROM dbo.PartMaterialRequestItemDetailScan a 
+				LEFT JOIN PartMaterialRequestItemDetail b ON b.IDSeq=a.IDSeq
+				LEFT JOIN PartMaterialRequestDetail c ON c.RequestDetailID=b.RequestDetailID
+				LEFT JOIN PartMaterialRequestHeader d ON d.RequestID=c.RequestID
 				LEFT JOIN WorkStationLineSetting e ON e.LineCode=d.LineCode and e.WorkStationCode=c.WorkStationCode
 				WHERE D.ParentItem_Code=@ParentItem AND D.ProductionID=@ProductionID
 			) scan 
 		JOIN (
-				SELECT RefNo,Picking_No,WarehouseCode,AreaCode,AddressCode,ItemCode,BarcodeNo,LotNo,Qty AS QtyStock FROM StockDetail_TRIALCONSUMPT 
+				SELECT RefNo,Picking_No,WarehouseCode,AreaCode,AddressCode,ItemCode,BarcodeNo,LotNo,Qty AS QtyStock FROM StockDetail
 				WHERE COALESCE(Qty,0)>0
 			 ) stock ON stock.WarehouseCode=scan.LineCode AND stock.AreaCode=scan.WorkStationCode AND stock.AddressCode=scan.StopPointCode 
 				AND stock.ItemCode=scan.ItemCode AND stock.BarcodeNo=scan.BarcodeNo
@@ -106,7 +106,7 @@ BEGIN
 				VALUES (@ResultDetailID,@BarcodeNoConsumpt,@ItemCodeConsumpt,@ItemNameConsumpt,@LotNoConsumpt,@PackingQty,@UserID,GETDATE())
 
 				--update stock detail
-				UPDATE StockDetail_TRIALCONSUMPT
+				UPDATE StockDetail
 				SET Qty=Qty-@PackingQty,Lastupdate=GETDATE(),LastUser=@UserID
 				WHERE COALESCE(Qty,0)>0 AND BarcodeNo=@BarcodeNoConsumpt AND ItemCode=@ItemCodeConsumpt AND LotNo=@LotNoConsumpt
 				

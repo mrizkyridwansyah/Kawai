@@ -55,7 +55,7 @@ begin
 		where 1=1
 		and (BarcodeNo like ''%'+@Keyword+'%'') 
 		and sd.ItemCode = '''+ @ItemCode + ''' and sd.Qty > 0
-		and sd.Picking_No is null
+		and isnull(sd.Picking_No, '''') = ''''
 		'+ @sqlSort +'
 		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
 		FETCH NEXT ' + cast(@Length as varchar(10)) + ' ROWS ONLY

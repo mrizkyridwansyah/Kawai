@@ -8,9 +8,17 @@ CREATE procedure [sp_Wms_PartMaterialRequestWomin_Save]
 	@UserId varchar(25)
 as
 begin
+	declare @prodIdSampling bigint = (select top 1 ProductionId from @NewRequest)
+	declare @prefixFactory varchar(5)
+	select @prefixFactory = fak.PrefixGlobalBarcode From Company_Profile fak
+	inner join Manufacture_Line ml on fak.Company_Code = ml.Company_Code
+	inner join
+	(
+		select Factory_code, Line_Code From Daily_Production where Seq_No = @prodIdSampling
+	) dp on dp.Factory_code = ml.Manufacture_Code and dp.Line_Code = ml.Line_Code
 
 	declare @RowCount int = (select count(1) from @NewRequest)
-	declare @prefix varchar(10) = 'REQ.' + FORMAT(GETDATE(), 'yyyyMM')
+	declare @prefix varchar(20) = @prefixFactory + 'REQ.' + FORMAT(GETDATE(), 'yyyyMM')
 	declare @lastSequence int
 	exec GenerateNumeratorBatch @Prefix = @prefix, @RowCount = @RowCount, @LastSequence = @lastSequence OUTPUT
 
@@ -162,7 +170,7 @@ begin
 		) x
 	)
 
-	declare @prefixDetail varchar(14) = 'REQ.DTL.' + FORMAT(GETDATE(), 'yyyyMM')
+	declare @prefixDetail varchar(14) = @prefixFactory + 'REQ.DTL.' + FORMAT(GETDATE(), 'yyyyMM')
 	declare @lastSequenceDetail int
 
 	exec GenerateNumeratorBatch @Prefix = @prefixDetail, @RowCount = @RowCount, @LastSequence = @lastSequenceDetail OUTPUT

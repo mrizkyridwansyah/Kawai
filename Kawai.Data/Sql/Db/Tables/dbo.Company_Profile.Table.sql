@@ -57,6 +57,7 @@ CREATE TABLE [Company_Profile](
 	[No_KPPBC] [char](50) NULL,
 	[No_Izin] [char](50) NULL,
 	[NoDoc_BC40] [char](50) NULL,
+	[PrefixGlobalBarcode] [varchar](5) NULL
  CONSTRAINT [PK_Company_Profile] PRIMARY KEY CLUSTERED 
 (
 	[Company_Code] ASC

@@ -80,7 +80,8 @@ begin
 		,[Source]	
 		,WarehouseCode	
 		,AreaCode	
-		,AddressCode , Qty from 
+		,AddressCode , Qty ,
+		'''+ CAST(@TotalRows as varchar) + ''' TotalRows   from 
 		(select A.BarcodeNo , A.ItemCode, C.Item_Name as ItemName ,  D.WH_Name as Warehouse ,  ISNULL(E.AreaName,''Temporary'') as Area ,
 		ISNULL(F.AddressName,''Temporary'') as [Address] ,
 		A.LotNo , A.SublotNo , PrintDate , PrintUser , ''Receipt'' [Source], B.WarehouseCode , B.AreaCode , B.AddressCode , B.Qty

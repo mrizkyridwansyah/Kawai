@@ -18,6 +18,22 @@ begin
 		return
 	end
 
+	if exists 
+	(
+		select 1 
+		from StockDetail 
+		where BarcodeNo = @BarcodeNo
+		and Qty > 0 
+		and WarehouseCode in 
+		(
+			select Subcon_WH_Code from Trade_Master where Trade_Cls = '3'
+		) 
+	)
+	begin
+		raiserror('Lokasi stock berada di warehouse subcon!', 16,1)
+		return
+	end
+
 	declare @PONumber varchar(100), @ItemCode varchar(25)
 	select @PONumber = PONumber, @ItemCode = ItemCode
 	From PartReceiptDetailBarcode 

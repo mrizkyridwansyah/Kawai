@@ -142,7 +142,7 @@ public class ReceiptRepository : IReceiptRepository
 
     public async Task Create(Receipt receipt, string userId)
     {
-        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode");
+        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode", new { receipt.FactoryCode });
         string sqlHeader = "sp_Wms_Receipt_Create";
         long newId = await _dbExecutor.QuerySingleOrDefaultAsync<long>(sqlHeader, new
         {

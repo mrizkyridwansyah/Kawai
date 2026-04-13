@@ -20,10 +20,12 @@ CREATE TABLE [StockDetail](
 	[PrintCls] [bit] NULL,
 	[DisposalCls] [bit] NULL,
 	[StatusReceipt] [varchar](10) NULL,
+	[Picking_No] [varchar](25) NULL,
 	[RegisterDate] [datetime] NULL,
 	[RegisterUser] [varchar](15) NULL,
 	[Lastupdate] [datetime] NULL,
 	[LastUser] [varchar](15) NULL,
+	[StatusHoldNG] [varchar](50) NULL
  CONSTRAINT [PK_Stock_Detail] PRIMARY KEY CLUSTERED 
 (
 	[RefNo] ASC,

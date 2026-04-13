@@ -7,7 +7,9 @@ create   procedure [sp_Wms_WarehousePrivileges_DDLByStock]
 	@FactoryCode varchar(25),
 	@UserId varchar(25) = '',
 	@Keyword		varchar(max) = '',
-	@ItemCode		varchar(25)
+	@ItemCode		varchar(25),
+	@StatusReceipt	varchar(25),
+	@StatusHoldNG	varchar(50)
 as
 begin
 	select 
@@ -26,5 +28,7 @@ begin
 	and (@FactoryCode = 'ALL' or b.FactoryCode = @FactoryCode)
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0
+	and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
+	and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 end
 GO

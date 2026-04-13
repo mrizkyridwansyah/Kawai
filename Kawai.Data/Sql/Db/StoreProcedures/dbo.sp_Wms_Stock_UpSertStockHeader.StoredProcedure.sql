@@ -44,10 +44,10 @@ begin
 	end
 	else if @Type = 'S'
 	begin
-		if @QtyTrans < 0
-		begin
-			set @QtyTrans = @QtyTrans * (-1)
-		end
+		--if @QtyTrans < 0
+		--begin
+		--	set @QtyTrans = @QtyTrans * (-1)
+		--end
 
 		if exists 
 		(

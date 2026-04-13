@@ -12,7 +12,9 @@ create   procedure [sp_Wms_AddressPrivileges_DDLByStock]
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
-	@ItemCode		varchar(25)
+	@ItemCode		varchar(25),
+	@StatusReceipt	varchar(25),
+	@StatusHoldNG	varchar(50)
 as
 begin
 	declare @tblAreaPrivileges table (area varchar(25))
@@ -32,6 +34,8 @@ begin
 	and a.AreaCode = @AreaCode
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0
+	and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
+	and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 	and (a.AddressCode like '%'+ @Keyword +'%' or b.AddressName like '%'+ @Keyword +'%')
 
 end

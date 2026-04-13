@@ -93,6 +93,22 @@ BEGIN
         RETURN
     END
 
+	if exists 
+	(
+		select 1 
+		from StockDetail 
+		where BarcodeNo = @BarcodeNo
+		and Qty > 0 
+		and WarehouseCode in 
+		(
+			select Subcon_WH_Code from Trade_Master where Trade_Cls = '3'
+		) 
+	)
+	begin
+		raiserror('Lokasi stock berada di warehouse subcon!', 16,1)
+		return
+	end
+
     DECLARE @QtyScan NUMERIC(18,0)
     SELECT @QtyScan = ISNULL(PlanQty,0) - ISNULL(QtyScan,0) 
     FROM #zTempData 
@@ -147,9 +163,12 @@ BEGIN
         BEGIN
             PRINT('split')
 
+			declare @factoryCode varchar(25) = (select Company_Code From WareHouse_Master where WH_Code = @FromWarehouseCode)
+			declare @prefixFactory varchar(5) = (select PrefixGlobalBarcode From Company_Profile where Company_Code = @factoryCode)
+
             DECLARE @NewBarcode VARCHAR(50)
 			declare @dt varchar(8) = format(getdate(), 'yyyyMMdd')
-			declare @prefixBarcode varchar(10) = 'FQR' + @dt
+			declare @prefixBarcode varchar(20) = @prefixFactory + 'FQR' + @dt
 			EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcode OUTPUT;			
 
             IF NOT EXISTS(

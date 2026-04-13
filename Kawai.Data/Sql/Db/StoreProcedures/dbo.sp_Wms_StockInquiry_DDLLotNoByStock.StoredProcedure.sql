@@ -10,7 +10,9 @@ CREATE   procedure [sp_Wms_StockInquiry_DDLLotNoByStock]
 	@AreaCode		varchar(25),
 	@AddressCode	varchar(25),
 	@ItemCode		varchar(25),
-	@Category		varchar(25)
+	@Category		varchar(25),
+	@StatusReceipt	varchar(25),
+	@StatusHoldNG	varchar(50)
 as
 begin
 	select distinct a.LotNo From StockDetail a
@@ -25,5 +27,7 @@ begin
 	and (@AddressCode = 'ALL' or a.AddressCode = @AddressCode)
 	and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
 	and Qty > 0
+	and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
+	and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 end
 GO

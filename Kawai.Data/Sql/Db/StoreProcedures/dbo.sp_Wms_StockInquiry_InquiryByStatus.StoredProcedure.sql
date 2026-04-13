@@ -2,7 +2,8 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE procedure [sp_Wms_StockInquiry_InquiryByCategory]
+
+create   procedure [sp_Wms_StockInquiry_InquiryByStatus]
 --declare
 	-- PARAMETER WAJIB
 	@Page int = 1,
@@ -13,11 +14,12 @@ CREATE procedure [sp_Wms_StockInquiry_InquiryByCategory]
 	@Keyword varchar(max) = '',
 
 	-- PARAMETER FILTER
-	@Category varchar(25) = 'ALL',
 	@WarehouseCode varchar(25) = 'ALL',
 	@AreaCode varchar(25) = 'ALL',
 	@ItemCode varchar(25) = 'ALL',
-	@LotNo varchar(100)	 = 'ALL'
+	@LotNo varchar(100)	 = 'ALL',
+	@StatusReceipt varchar(25) = 'OK',
+	@StatusHoldNG varchar(25) = 'ALL'
 as
 begin
 	declare @sqlSort varchar(max) = ''
@@ -32,28 +34,8 @@ begin
 	end 
 	else 
 	begin
-		set @sqlSort = 'order by mw.WarehouseName'
+		set @sqlSort = 'order by mi.Item_Name'
 	end 
-
-	declare @TotalRows int = 
-	(
-		select count(1) TotalRow
-		from 
-		(
-			select WarehouseCode
-			From StockDetail a inner join 
-			(
-				select Item_Code From Item_Master where ClasificationPart_Cls = @Category
-			) mi on a.ItemCode = mi.Item_Code
-			where 1=1 
-			and Qty > 0
-			and (@WarehouseCode = 'ALL' or @WarehouseCode = WarehouseCode)
-			and (@AreaCode = 'ALL' or @AreaCode = AreaCode)
-			and (@ItemCode = 'ALL' or @ItemCode = ItemCode)
-			and (@LotNo = 'ALL' or @LotNo = LotNo)
-			group by WarehouseCode
-		) res
-	)
 
 	declare @sql varchar(max) = 
 	'
@@ -70,7 +52,7 @@ begin
 				sd.AreaCode, xx.AreaName,
 				sd.AddressCode, xx.AddressName,
 				sd.ItemCode ItemCode, xx.ItemName,
-				sd.LotNo LotNo,  xx.TotalRows,
+				sd.LotNo LotNo, xx.TotalRows, 
 				CurrentQty = ISNULL(SUM(sd.Qty),0)
 			From StockDetail sd
 			inner join 
@@ -86,16 +68,15 @@ begin
 					(
 						select sdx.ItemCode, mi.Item_Name, count(1) over () TotalRows
 						From StockDetail sdx 
-						INNER join 
-						(
-							select * from Item_Master where ClasificationPart_Cls = '''+ @Category + '''
-						) mi on sdx.ItemCode = mi.Item_Code
+						left join Item_Master mi on sdx.ItemCode = mi.Item_Code
 						where 1=1
 						and sdx.Qty > 0
 						and ('''+ @WarehouseCode + ''' = ''ALL'' or '''+ @WarehouseCode + ''' = sdx.WarehouseCode)
 						and ('''+ @AreaCode + ''' = ''ALL'' or '''+ @AreaCode + ''' = sdx.AreaCode)
 						and ('''+ @ItemCode + ''' = ''ALL'' or '''+ @ItemCode + ''' = sdx.ItemCode)
 						and ('''+ @LotNo + ''' = ''ALL'' or '''+ @LotNo + ''' = sdx.LotNo)
+						and ('''+ @StatusReceipt + ''' = ''ALL'' or '''+ @StatusReceipt + ''' = sdx.StatusReceipt)
+						and ('''+ @StatusHoldNG + ''' = ''ALL'' or '''+ @StatusHoldNG + ''' = sdx.StatusHoldNG)
 						group by sdx.ItemCode, mi.Item_Name
 						'+ @sqlSort +'
 						OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
@@ -124,6 +105,8 @@ begin
 					and ('''+ @AreaCode + ''' = ''ALL'' or '''+ @AreaCode + ''' = sdt.AreaCode)
 					and ('''+ @ItemCode + ''' = ''ALL'' or '''+ @ItemCode + ''' = sdt.ItemCode)
 					and ('''+ @LotNo + ''' = ''ALL'' or '''+ @LotNo + ''' = sdt.LotNo)
+					and ('''+ @StatusReceipt + ''' = ''ALL'' or '''+ @StatusReceipt + ''' = sdt.StatusReceipt)
+					and ('''+ @StatusHoldNG + ''' = ''ALL'' or '''+ @StatusHoldNG + ''' = sdt.StatusHoldNG)
 					group by sdt.RefNo, sdt.WarehouseCode, sdt.AreaCode, sdt.AddressCode, sdt.ItemCode, mw.WarehouseName, isnull(ml.AreaName, ''Temporary''), isnull(mx.AddressName, ''Temporary''), mi.Item_Name, sdt.LotNo, mi.TotalRows
 				) res
 			) xx 
@@ -145,6 +128,7 @@ begin
 			and sm2.ItemCode = sd.ItemCode and sm2.LotNo = sd.LotNo
 		) sm
 		order by sd.ItemName, sd.WarehouseName, sd.AreaName, sd.AddressName, sd.LotNo
+
 	'
 
 	print @sql

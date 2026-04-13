@@ -10,7 +10,9 @@ CREATE   procedure [sp_Wms_Item_DDLByStock]
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
 	@AddressCode	varchar(25),
-	@Category		varchar(25)
+	@Category		varchar(25),
+	@StatusReceipt	varchar(25),
+	@StatusHoldNG	varchar(50)
 as
 begin
 	select distinct a.ItemCode, b.Item_Name ItemName, RTRIM(Item_Code) + ' | ' + Item_Name DDLDescription 
@@ -23,5 +25,7 @@ begin
 	and (@AddressCode = 'ALL' or AddressCode = @AddressCode)
 	and (@Category = 'ALL' or ClasificationPart_Cls = @Category)
 	and Qty > 0
+	and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
+	and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 end
 GO

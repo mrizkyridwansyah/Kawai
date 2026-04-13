@@ -24,6 +24,23 @@ begin
 		return
 	end
 
+	declare @receiptNo varchar(100) = (select ReceiptNo from PartReceiptHeader where Id = @ReceiptId)
+	declare @itemCode varchar(25) = (select ItemCode from PartReceiptDetailBarcode where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo)
+
+	if exists 
+	(
+		select 1 
+		from IQC_Inspection_Header 
+		where ReceiptNo = @receiptNo 
+		and ItemCode = @itemCode 
+		and Soruce = 'Incoming Material' 
+		and isnull(InspectionResult, '') <> ''
+	)
+	begin
+		raiserror('Sampel Receipt sudah diapprove!', 16, 1)
+		return
+	end
+
 	SELECT
 		a.Id ReceiptDetailBarcodeId, a.ReceiptDetailId, a.ReceiptId,
 		smp.SamplingID SampleId, smp.InspectionID InspectionId,

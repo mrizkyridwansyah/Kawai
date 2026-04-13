@@ -10,20 +10,22 @@ CREATE procedure [sp_Wms_Receipt_Verify]
 as
 	DECLARE @msgError varchar(max)
 
-	IF EXISTS 
-	(
-		SELECT 1 FROM @Details a
-		left join PartReceiptDetailBarcode b on a.ReceiptDetailBarcodeId = b.Id 
-		WHERE b.Id is null
-	)
+	declare @tblReceipDetailBarcodes table (Id bigint, Barcode varchar(100), ReceiptId bigint, Warehouse varchar(25))
+	insert into @tblReceipDetailBarcodes
+	SELECT b.Id, b.BarcodeNo, b.ReceiptId, b.WarehouseCode FROM @Details a
+	left join PartReceiptDetailBarcode b on a.ReceiptDetailBarcodeId = b.Id 
+
+	IF EXISTS (SELECT 1 FROM @tblReceipDetailBarcodes WHERE Id is null)
 	BEGIN
-		declare @barcodes varchar(max) = 
-		(
-			SELECT STRING_AGG(a.BarcodeNo, ',') FROM @Details a
-			left join PartReceiptDetailBarcode b on a.ReceiptDetailBarcodeId = b.Id 
-			WHERE b.Id is null		
-		)
+		declare @barcodes varchar(max) = (SELECT STRING_AGG(Barcode, ',') FROM @tblReceipDetailBarcodes WHERE Id is null)
 		set @msgError = 'Data Receipt Barcode ('+isnull(@barcodes, '')+') tidak ditemukan!'
+		RAISERROR(@msgError, 16, 1)
+		RETURN
+	END
+
+	IF (SELECT count(distinct ReceiptId) FROM @tblReceipDetailBarcodes) > 1
+	BEGIN
+		set @msgError = 'Grouping Receipt Barcode harus dalam 1 DN yang sama!'
 		RAISERROR(@msgError, 16, 1)
 		RETURN
 	END
@@ -51,15 +53,14 @@ as
 
 	declare @invalidBarcodes varchar(max) = 
 	(
-		select STRING_AGG(a.BarcodeNo, ', ') From 
+		select STRING_AGG(a.Barcode, ', ') From 
 		(
-			select dtl.ReceiptId, dtl.WarehouseCode, dtl.BarcodeNo from PartReceiptDetailBarcode dtl
-			inner join @Details x on dtl.Id = x.ReceiptDetailBarcodeId 
+			select dtl.ReceiptId, dtl.Warehouse, dtl.Barcode from @tblReceipDetailBarcodes dtl
 		) a 
 		left join 
 		(
-			select * from SS_UserWarehousePrivilege where UserID = @VerifiedBy and isnull(AllowAccess, 0) = 1
-		) b on a.WarehouseCode = b.WarehouseCode
+			select WarehouseCode from SS_UserWarehousePrivilege where UserID = @VerifiedBy and isnull(AllowAccess, 0) = 1
+		) b on a.Warehouse = b.WarehouseCode
 		where b.WarehouseCode is null
 	)
 
@@ -98,7 +99,7 @@ as
 
 		UPDATE PartReceiptHeader SET StatusReceipt = 'PENDING', LastUpdate = GETDATE(), LastUser = @VerifiedBy WHERE Id = @ReceiptId
 
-		EXEC sp_Wms_Stock_UpSertStockDetail @RefNo, @WarehouseCode, @AreaCode, @AddressCode, @ItemCode, @BarcodeNo, @LotNo, @QtyVerify, NULL, NULL, @VerifiedBy, 'HOLD'
+		EXEC sp_Wms_Stock_UpSertStockDetail @RefNo, @WarehouseCode, @AreaCode, @AddressCode, @ItemCode, @BarcodeNo, @LotNo, @QtyVerify, NULL, NULL, @VerifiedBy, 'HOLD', 'Vendor'
 		EXEC sp_Wms_Stock_UpSertStockHeader @TransDate, @RefNo, @WarehouseCode, @AddressCode, @ItemCode, @LotNo, @QtyVerify, NULL, 'R', @VerifiedBy
 
 		insert into ReceiptSupplyHistory 

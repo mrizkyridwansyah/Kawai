@@ -15,15 +15,25 @@ begin
 		return
 	end
 
-	if not exists (select 1 from StockDetail where RefNo = @RefNo and Qty > 0 and StatusReceipt = 'OK')
-	begin
-		raiserror('Status Stock belum OK!', 16,1)
-		return
-	end
-
 	if isnull((select sum(Qty) from StockDetail where RefNo = @RefNo), 0) = 0
 	begin
 		raiserror('Qty Stock sudah habis!', 16,1)
+		return
+	end
+
+	if exists 
+	(
+		select 1 
+		from StockDetail 
+		where RefNo = @RefNo
+		and Qty > 0 
+		and WarehouseCode in 
+		(
+			select Subcon_WH_Code from Trade_Master where Trade_Cls = '3'
+		) 
+	)
+	begin
+		raiserror('Lokasi stock berada di warehouse subcon!', 16,1)
 		return
 	end
 
@@ -32,6 +42,61 @@ begin
 		raiserror('Address tidak ditemukan!', 16,1)
 		return
 	end
+
+	DECLARE @ToWarehouseCode varchar(25), @ToAreaCode varchar(25), @ToAddressName varchar(max)
+	select @ToWarehouseCode = a.WarehouseCode, @ToAreaCode = AreaCode, @ToAddressName = AddressName
+	From MS_Address a
+	left join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
+	where AddressCode = @AddressCode
+
+	if not exists (select 1 from SS_UserWarehousePrivilege where WarehouseCode = @ToWarehouseCode and UserID = @UserId and AllowAccess = 1)
+	begin
+		raiserror('User tidak memiliki hak akses ke address tersebut!', 16,1)
+		return
+	end
+
+	declare @listStatusReceiptFromParamBarcodes table (StatusReceipt varchar(50))
+	insert into @listStatusReceiptFromParamBarcodes
+	select distinct(StatusReceipt) StatusReceipt 
+	From StockDetail where RefNo = @RefNo and Qty > 0	
+
+	declare @msg varchar(max)
+
+	if (select count(1) from @listStatusReceiptFromParamBarcodes) > 1
+	begin
+		declare @x varchar(max) = (select STRING_AGG(StatusReceipt, ',') from @listStatusReceiptFromParamBarcodes)
+		set @msg = 'Stock terdapat barcode dengan status berbeda (' + @x + ')'
+		raiserror(@msg, 16,1)
+		return
+	end
+
+	if exists (select 1 from @listStatusReceiptFromParamBarcodes where StatusReceipt not in ('OK', 'NG'))
+	begin
+		raiserror('Hanya Status Stock OK / NG yang bisa dipindahkan!', 16,1)
+		return
+	end
+
+	declare @ngCls varchar(5) = 
+	(
+		select b.NG_Cls from MS_Address a
+		inner join WareHouse_Master b on a.WarehouseCode = b.WH_Code
+		where AddressCode = @AddressCode
+	)
+
+	declare @statusBarcodes varchar(50) = (select top 1 StatusReceipt from @listStatusReceiptFromParamBarcodes)
+	if @statusBarcodes = 'NG' and @ngCls <> '01'
+	begin
+		set @msg = 'Stock yang NG tidak boleh dipindahkan ke warehouse GOOD'
+		raiserror(@msg, 16,1)
+		return
+	end
+	else if @statusBarcodes = 'OK' and @ngCls = '01'
+	begin
+		set @msg = 'Stock yang GOOD tidak boleh dipindahkan ke warehouse NG'
+		raiserror(@msg, 16,1)
+		return
+	end
+
 
 	declare @tbl table 
 	(
@@ -49,18 +114,6 @@ begin
 		ToAddressName varchar(max), 
 		Qty numeric(18,9)
 	)
-
-	DECLARE @ToWarehouseCode varchar(25), @ToAreaCode varchar(25), @ToAddressName varchar(max)
-	select @ToWarehouseCode = a.WarehouseCode, @ToAreaCode = AreaCode, @ToAddressName = AddressName
-	From MS_Address a
-	left join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
-	where AddressCode = @AddressCode
-
-	if not exists (select 1 from SS_UserWarehousePrivilege where WarehouseCode = @ToWarehouseCode and UserID = @UserId and AllowAccess = 1)
-	begin
-		raiserror('User tidak memiliki hak akses ke address tersebut!', 16,1)
-		return
-	end
 
 	insert into @tbl
 	select 

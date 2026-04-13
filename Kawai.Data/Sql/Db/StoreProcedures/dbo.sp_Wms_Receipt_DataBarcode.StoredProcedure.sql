@@ -25,11 +25,11 @@ begin
 	(
 		select * From 
 		(
-			select * from PartReceiptDetailBarcode where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo
+			select WarehouseCode from PartReceiptDetailBarcode where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo
 		) a 
 		inner join 
 		(
-			select * from SS_UserWarehousePrivilege where UserID = @UserId and isnull(AllowAccess, 0) = 1
+			select WarehouseCode from SS_UserWarehousePrivilege where UserID = @UserId and isnull(AllowAccess, 0) = 1
 		) b on a.WarehouseCode = b.WarehouseCode
 	)
 	begin
