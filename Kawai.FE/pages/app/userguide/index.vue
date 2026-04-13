@@ -3,10 +3,10 @@
     <template #frame-content>
       <table class="ml-2">
         <tr>
-          <td style="padding-top: 5px;">
+          <td style="padding-top: 5px">
             <label class="form-label">Sub Menu</label>
           </td>
-          <td style="padding-left: 15px; padding-top: 5px;">
+          <td style="padding-left: 15px; padding-top: 5px">
             <filter-userguide
               class="form-control"
               v-model="filter.menu"
@@ -18,7 +18,6 @@
         <tr>
           <td colspan="2">
             <div class="d-flex flex-fill mt-3">
-              
               <v-button
                 label="Preview"
                 icon="file-pdf"
@@ -33,43 +32,39 @@
                 cClass="btn btn-danger btn-elevate txt-light ms-1 btn-search"
                 @click="clearPdf"
               />
-
             </div>
           </td>
         </tr>
-
-       
       </table>
-      
+
       <div>
-<div v-if="totalPages > 0" class="mt-4 text-center">
-              
-                 <div class="mb-2">
-                <v-button
-                  label="Prev Page"
-                   cClass="ml-1 btn-info"
-                  @click="prevPage"
-                  :disabled="pageNum <= 1"
-                />
+        <div v-if="totalPages > 0" class="mt-4 text-center">
+          <div class="mb-2">
+            <v-button
+              label="Prev Page"
+              icon="arrow-left"
+              cClass="ml-1 btn-info"
+              @click="prevPage"
+              :disabled="pageNum <= 1"
+            />
 
-                <span class="mx-2">
-                  Page {{ pageNum }} / {{ totalPages }}
-                </span>
+            <span class="mx-2"> Page {{ pageNum }} / {{ totalPages }} </span>
 
-                <v-button
-                  label="Next Page"
-                   cClass="ml-1 btn-info"
-                  @click="nextPage"
-                  :disabled="pageNum >= totalPages"
-                />
-              </div>
-            </div>
+            <v-button
+              label="Next Page"
+              icon="arrow-right"
+              cClass="ml-1 btn-info"
+              @click="nextPage"
+              :disabled="pageNum >= totalPages"
+            />
+          </div>
+        </div>
       </div>
-     <div class="pdf-container">
-  <div :class="['pdf-wrapper', { active: totalPages > 0 }]">
-    <canvas ref="pdfCanvas"></canvas>
-  </div>
-</div>
+      <div class="pdf-container">
+        <div :class="['pdf-wrapper', { active: totalPages > 0 }]">
+          <canvas ref="pdfCanvas"></canvas>
+        </div>
+      </div>
     </template>
   </v-frame>
 </template>
@@ -95,24 +90,20 @@ export default {
   methods: {
     async loadPdf() {
       try {
-         if ((this.filter.menu || "") == "") {
-        toastDanger("Silahkan pilih sub menu");
-        return false;
-          }
+        if ((this.filter.menu || "") == "") {
+          toastDanger("Silahkan pilih sub menu");
+          return false;
+        }
 
         this.isLoading = true;
 
-        const url = this.filter.menu
-        
-          ? `/file/${this.filter.menu}.pdf`
-          : "";
+        const url = this.filter.menu ? `/file/${this.filter.menu}.pdf` : "";
 
         console.log("Loading PDF:", url);
 
         const loadingTask = pdfjsLib.getDocument(url);
         const pdf = await loadingTask.promise;
 
-         
         pdfDocInstance = pdf;
 
         this.totalPages = pdf.numPages;
@@ -121,9 +112,8 @@ export default {
         this.$nextTick(() => {
           this.renderPage();
         });
-
       } catch (err) {
-          toastDanger("File PDF Not Found");
+        toastDanger("File PDF Not Found");
       } finally {
         this.isLoading = false;
       }
@@ -149,10 +139,7 @@ export default {
           canvasContext: context,
           viewport: viewport,
         }).promise;
-
-      } catch (err) {
-        
-      }
+      } catch (err) {}
     },
 
     nextPage() {
@@ -169,17 +156,17 @@ export default {
       }
     },
 
- clearPdf() {
-  pdfDocInstance = null;
-  this.totalPages = 0;
-  this.pageNum = 1;
+    clearPdf() {
+      pdfDocInstance = null;
+      this.totalPages = 0;
+      this.pageNum = 1;
 
-  const canvas = this.$refs.pdfCanvas;
-  if (canvas) {
-    canvas.width = 0;
-    canvas.height = 0;
-  }
-},
+      const canvas = this.$refs.pdfCanvas;
+      if (canvas) {
+        canvas.width = 0;
+        canvas.height = 0;
+      }
+    },
   },
 };
 </script>
@@ -199,18 +186,16 @@ thead {
   padding: 10px;
 }
 
-
 .pdf-wrapper {
   border: none;
   box-shadow: none;
   background: transparent;
 }
 
-
 .pdf-wrapper.active {
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>
