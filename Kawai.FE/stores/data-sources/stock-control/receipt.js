@@ -209,10 +209,32 @@ export const useReceipt = defineStore('Receipt', {
           .finally(_ => this.isCreating = false);
       })
     },
+    createclaim: function (data) {
+      this.isCreating = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/create-claim`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isCreating = false);
+      })
+    },
     update: function (data) {
       this.isEditing = true;
       return new Promise((resolve, reject) => {
         app.$http.patch(`/receipt/update`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isEditing = false);
+      })
+    },
+    updateclaim: function (data) {
+      this.isEditing = true;
+      return new Promise((resolve, reject) => {
+        app.$http.patch(`/receipt/update-claim`, data)
           .then(({ data }) => {
             resolve(data);
           })

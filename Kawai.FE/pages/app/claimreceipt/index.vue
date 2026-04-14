@@ -622,7 +622,7 @@ export default {
     },
     createReceipt: function () {
       this.ds
-        .create(this.model)
+        .createclaim(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;
@@ -652,7 +652,7 @@ export default {
     },
     update: function () {													 				 
       this.ds
-        .update(this.model)
+        .updateclaim(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;
