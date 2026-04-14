@@ -15,6 +15,8 @@ public interface IReceiptRepository
     Task<ReceiptDto> GetDataHeader(long id);
     Task Create(Receipt receipt, string userId);
     Task Update(Receipt receipt, string userId);
+    Task CreateClaim(Receipt receipt, string userId);
+    Task UpdateClaim(Receipt receipt, string userId);
     Task Remove(long id);
     Task PrintLabel(long id, string userId, bool? mustBePrint);
     Task<List<ReceiptInquiryDto>> Inquiry(RequestParameter parameter);

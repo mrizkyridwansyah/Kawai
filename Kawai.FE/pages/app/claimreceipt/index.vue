@@ -59,8 +59,10 @@
                 <td style="padding-top: 5px; padding-left: 15px" colspan="3">
                   <input-claim
             class="form-control"
-            status="ALL"
+            status="APPROVED"
+													  
             :supplier-code="filter.SupplierCode"
+												
             :period-from="filter.PeriodFrom"
             :period-until="filter.PeriodUntil"
             v-model="filter.PONumber"
@@ -201,6 +203,7 @@
                   <input-text
                     v-model="model.RegisterNo"
                     :errors="errors?.RegisterNo"
+					:disabled="isNew"				 
                     style="width: 360px"
                   />
                 </td>
@@ -377,6 +380,7 @@ export default {
     listClaimDetail: [],
     debounce: null,
     isLoading: false,
+	prevRegisterNo: "",				   
     errors: {},
   }),
   computed: {
@@ -384,7 +388,12 @@ export default {
       return useReceipt();
     },
      
+					 
   },
+						
+							   
+	  
+	
   watch: {
     "filter.PONumber": function () {
       this.listClaimDetail = [];
@@ -415,10 +424,10 @@ export default {
           DNNumber: "",
           FactoryCode: null,
           SupplierCode: null,
-          DNDate: null,
+          DNDate: today,
           BCNumber: "",
           BCType: "",
-          BCDate: null,
+          BCDate: today,
           VehicleNo: "",
           Transport: null,
           RegisterNo: null,
@@ -585,6 +594,7 @@ export default {
         this.filter.PeriodFrom = this.model.DeliveryDatePOFrom;
         this.filter.PeriodUntil = this.model.DeliveryDatePOUntil;
         this.filter.PONumber = this.model.PONumber;
+		this.prevRegisterNo = this.model.RegisterNo;											
         this.$nextTick(() => setTimeout(() => this.searchPoDetail(), 500));
       });
     },
@@ -599,7 +609,7 @@ export default {
         {
           FactoryCode: this.filter.FactoryCode,
           ReceiptId: this.filter.ReceiptId?.toString() || "0",
-          PONumber: this.filter.PONumber,
+          PONumber: this.filter.PONumber.toString(),
           SupplierCode: this.filter.SupplierCode,
           DateFrom: this.filter.PeriodFrom,
           DateUntil: this.filter.PeriodUntil,
@@ -626,12 +636,28 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     updateReceipt: function () {
+	     if (this.prevRegisterNo != this.model.RegisterNo) {
+        confirmSubmit(
+          () =>
+            new Promise((resolve) => {
+              this.update();
+              resolve();
+            }),
+          () => this.isLoading = false,
+          `You change the <strong>Register No</strong>. Are you sure to <strong>CONTINUE</strong> changes?`,
+        );
+      } else {
+        this.update();
+      }
+    },
+    update: function () {													 				 
       this.ds
         .update(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+		  this.prevRegisterNo = this.model.RegisterNo;											  
           // this.reset();
         })
         .catch((err) => {

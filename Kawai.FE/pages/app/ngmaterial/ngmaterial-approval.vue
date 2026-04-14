@@ -45,12 +45,17 @@
           >BC Type</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            type-data="BCType_Cls"
-            v-model="model.BCType"
-            :errors="errors?.BCType"
-            :disabled="true"
-          />
+           
+          <filter-cls-2
+                    class="form-control"
+                    type-data="BCType_Cls"
+                    v-model="model.BCType"
+                    :errors="errors?.BCType"
+                    style-code="width: 120px"
+                    style-desc="width: 240px"
+                     :disabled="true"
+                  />
+
         </div>
       </div>
       <div class="row mt-1">
@@ -112,12 +117,18 @@
           >Transport By</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            type-data="Transport_Cls"
-            v-model="model.Transport"
-            :errors="errors?.Transport"
-            :disabled="true"
-          />
+           <filter-cls-2
+                    class="form-control"
+                    type-data="Transport_Cls"
+                    v-model="model.Transport"
+                    :errors="errors?.Transport"
+                    style-code="width: 120px"
+                    style-desc="width: 240px"
+                     :disabled="true"
+                  />
+
+          
+          
         </div>
       </div>
       <div class="row mt-1">

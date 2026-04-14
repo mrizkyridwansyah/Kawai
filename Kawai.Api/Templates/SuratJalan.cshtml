@@ -1,0 +1,253 @@
+﻿@model List<Kawai.Domain.DTOs.NGClaimReportDto>
+@{
+    var first = Model != null && Model.Count > 0 ? Model[0] : null;
+}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Surat Jalan</title>
+
+    <style>
+        @@page {
+            size: A4 portrait;
+            margin: 8mm;
+        }
+
+        body {
+            font-family: Arial;
+            font-size: 10px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td, th {
+            padding: 3px 5px;
+        }
+
+        .no-border {
+            border: none !important;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .header td {
+            border: none;
+            padding: 1px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .small {
+            font-size: 9px;
+        }
+
+        .sign td {
+            height: 70px;
+            text-align: center;
+            vertical-align: bottom;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER ATAS -->
+    <table class="header">
+        <tr>
+            <td class="bold"> </td>
+            <td class="right">@first?.TanggalSurat</td>
+        </tr>
+        <tr>
+            <td class="bold">&nbsp;</td>
+            <td class="right">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="bold">@first?.CompanyName</td>
+            <td class="bold" style="text-align: right;">Surat Jalan</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @first?.CompanyAddress
+            </td>
+        <tr>
+            <td style="border-bottom: 1px solid black;" colspan="2">
+                 @first?.Phone 
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br />
+
+    <!-- INFORMASI -->
+    <table>
+        <tr>
+            <td style="width:15%">No</td>
+            <td style="width:1%">:</td>
+            <td>@first?.No</td>
+
+            <td class="no-border"></td>
+
+            <td style="width:15%">Delivery To</td>
+            <td style="width:1%">:</td>
+            <td>@first?.Delivery</td>
+        </tr>
+        <tr>
+            <td style="width:15%">Cust PO No</td>
+            <td style="width:1%">:</td>
+            <td>@first?.CustPONo</td>
+
+            <td class="no-border"></td>
+
+            <td style="width:15%"> </td>
+            <td style="width:1%"> </td>
+            <td> </td>
+        </tr>
+
+        <tr>
+            <td>BC Type</td>
+            <td>:</td>
+            <td>@first?.BCType</td>
+
+            <td class="no-border"></td>
+
+            <td>Model</td>
+            <td>:</td>
+            <td>@first?.Model</td>
+        </tr>
+
+        <tr>
+            <td>BC Number</td>
+            <td>:</td>
+            <td>@first?.BCNumber</td>
+
+            <td class="no-border small"></td>
+
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>QTY</td>
+            <td>:</td>
+            <td>@first?.Qty</td>
+
+            <td class="no-border"></td>
+
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br />
+
+    <!-- DESKRIPSI -->
+    <table>
+        <tr>
+            <td class="no-border">
+                Kami kirimkan barang-barang tersebut dibawah ini dengan kendaraan :
+                <span class="line">@first?.Kendaraan</span>
+                &nbsp; No :
+                <span class="line-short">@first?.NoKendaraan</span>
+            </td>
+        </tr>
+    </table>
+
+    <br />
+
+    <!-- TABLE BARANG -->
+    <table style=" border-collapse: collapse;">
+        <tr class="border: 1px solid black;center bold">
+            <th style="border: 1px solid black;width:5%">No</th>
+            <th style="border: 1px solid black;">Nama Part</th>
+            <th style="border: 1px solid black;width:15%">Kode Part</th>
+            <th style="border: 1px solid black;width:15%">QTY Pengiriman</th>
+            <th style="border: 1px solid black;width:10%">Satuan</th>
+            <th style="border: 1px solid black;width:20%">Keterangan</th>
+        </tr>
+
+        @{
+            int no = 1;
+        }
+
+        @foreach (var item in Model)
+        {
+            <tr style="border: 1px solid black;">
+                <td style="border: 1px solid black;" class="center">@no</td>
+                <td style="border: 1px solid black;">@item.ItemName</td>
+                <td style="border: 1px solid black;" class="center">@item.ItemCode</td>
+                <td style="border: 1px solid black;" class="right">@item.QtyNG</td>
+                <td style="border: 1px solid black;" class="center">@item.UnitCls</td>
+                <td style="border: 1px solid black;">@item.Remarks</td>
+            </tr>
+            no++;
+        }
+
+        @for (int i = Model.Count; i < 1; i++)
+        {
+            <tr style="border: 1px solid black;">
+                <td style="border: 1px solid black;">&nbsp;</td>
+                <td style="border: 1px solid black;"></td>
+                <td style="border: 1px solid black;"></td>
+                <td style="border: 1px solid black;"></td>
+                <td style="border: 1px solid black;"></td>
+                <td style="border: 1px solid black;"></td>
+            </tr>
+        }
+    </table>
+
+    <br />
+
+    <!-- NOTE -->
+    <table>
+        <tr>
+            <td class="no-border small">
+                * Please return this original letter to <span class="line-short">@first?.CompanyName</span>
+            </td>
+        </tr>
+    </table>
+
+    <br />
+    <br />
+
+    <!-- SIGN -->
+    <table class="sign">
+        <tr class="bold">
+            <td>Delivered by,</td>
+            <td>Approved by,</td>
+            <td>Checked by,</td>
+            <td>Received by,</td>
+        </tr>
+        <tr>
+            <td>WH.Member</td>
+            <td>WH.Function Head</td>
+            <td>Security</td>
+            <td>Customer</td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -134,152 +134,168 @@ public class NGClaimController : HahaController
     }
 
     [HttpPost("report-surat-jalan")]
-    public async Task<IActionResult> ExportExcel(string factory, long claimid)
+    public async Task<IActionResult> ExportExcel(string factory, long claimid, [FromServices] RazorViewRenderer renderer)
     {
         var results = await _ngclaimRepository.GetListReport(factory, claimid);
-        if (results == null || !results.Any()) return NoContent();
+        if (results == null || !results.Any()) return Invalid("No Data");
 
-        using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Surat Jalan");
+        var fullHtml = await renderer.RenderAsync(
+            "Templates/SuratJalan.cshtml",
+            results);
 
-        int row = 1;
+        var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
+        Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+        return File(pdfBytes, "application/pdf", "SuratJalan_" + results[0].CustPONo);
+    }
 
-        // ===============================
-        // HEADER PERUSAHAAN
-        // ===============================
-        ws.Cell(row, 6).Value = results[0].TanggalSurat.ToString();
+
+    //[HttpPost("report-surat-jalan")]
+    //public async Task<IActionResult> ExportExcel(string factory, long claimid)
+    //{
+    //    var results = await _ngclaimRepository.GetListReport(factory, claimid);
+    //    if (results == null || !results.Any()) return NoContent();
+
+    //    using var workbook = new XLWorkbook();
+    //    var ws = workbook.Worksheets.Add("Surat Jalan");
+
+    //    int row = 1;
+
+    //    // ===============================
+    //    // HEADER PERUSAHAAN
+    //    // ===============================
+    //    ws.Cell(row, 6).Value = results[0].TanggalSurat.ToString();
   
 
 
-        row += 2;
-        ws.Cell(row, 1).Value = results[0].CompanyName.ToString();
-        ws.Range(row, 1, row, 5).Merge().Style.Font.SetBold().Font.FontSize = 14;
+    //    row += 2;
+    //    ws.Cell(row, 1).Value = results[0].CompanyName.ToString();
+    //    ws.Range(row, 1, row, 5).Merge().Style.Font.SetBold().Font.FontSize = 14;
 
-        ws.Cell(row, 6).Value = "Surat Jalan";
-        ws.Cell(row, 6).Style.Font.Bold = true;
-        ws.Cell(row, 6).Style.Font.FontSize = 16;
+    //    ws.Cell(row, 6).Value = "Surat Jalan";
+    //    ws.Cell(row, 6).Style.Font.Bold = true;
+    //    ws.Cell(row, 6).Style.Font.FontSize = 16;
 
-        row++;
+    //    row++;
 
-        ws.Cell(row, 1).Value = results[0].CompanyAddress.ToString();
-        ws.Range(row, 1, row, 6).Merge();
-        row++;
+    //    ws.Cell(row, 1).Value = results[0].CompanyAddress.ToString();
+    //    ws.Range(row, 1, row, 6).Merge();
+    //    row++;
 
-        ws.Cell(row, 1).Value =   results[0].Phone.ToString();  
-        ws.Range(row, 1, row, 6).Merge();
-        row += 2;
+    //    ws.Cell(row, 1).Value =   results[0].Phone.ToString();  
+    //    ws.Range(row, 1, row, 6).Merge();
+    //    row += 2;
 
-        // ===============================
-        // JUDUL
-        // ===============================
+    //    // ===============================
+    //    // JUDUL
+    //    // ===============================
        
-        row += 2;
+    //    row += 2;
 
-        // ===============================
-        // INFORMASI
-        // ===============================
-        ws.Cell(row, 1).Value = "No";
-        ws.Cell(row, 2).Value =   ":" + results[0].No.ToString();
+    //    // ===============================
+    //    // INFORMASI
+    //    // ===============================
+    //    ws.Cell(row, 1).Value = "No";
+    //    ws.Cell(row, 2).Value =   ":" + results[0].No.ToString();
 
-        ws.Cell(row, 5).Value = "Delivery To";
-        ws.Cell(row, 6).Value = ":" + results[0].Delivery.ToString();
-        row++;
+    //    ws.Cell(row, 5).Value = "Delivery To";
+    //    ws.Cell(row, 6).Value = ":" + results[0].Delivery.ToString();
+    //    row++;
 
-        ws.Cell(row, 1).Value = "Cust PO No";
-        ws.Cell(row, 2).Value = ":" + results[0].CustPONo.ToString();
-        row++;
+    //    ws.Cell(row, 1).Value = "Cust PO No";
+    //    ws.Cell(row, 2).Value = ":" + results[0].CustPONo.ToString();
+    //    row++;
 
-        ws.Cell(row, 1).Value = "BC Type";
-        ws.Cell(row, 2).Value = ":" + results[0].BCType.ToString();
-        row++;
+    //    ws.Cell(row, 1).Value = "BC Type";
+    //    ws.Cell(row, 2).Value = ":" + results[0].BCType.ToString();
+    //    row++;
 
-        ws.Cell(row, 1).Value = "BC Number";
-        ws.Cell(row, 2).Value = ":" + results[0].BCNumber.ToString();
+    //    ws.Cell(row, 1).Value = "BC Number";
+    //    ws.Cell(row, 2).Value = ":" + results[0].BCNumber.ToString();
 
-        ws.Cell(row, 5).Value = "Model";
-        ws.Cell(row, 6).Value = ":" + results[0].Model.ToString();
-        row++;
+    //    ws.Cell(row, 5).Value = "Model";
+    //    ws.Cell(row, 6).Value = ":" + results[0].Model.ToString();
+    //    row++;
 
-        ws.Cell(row, 1).Value = "QTY";
-        ws.Cell(row, 2).Value = ":" + results[0].Qty.ToString(); 
-        row += 2;
+    //    ws.Cell(row, 1).Value = "QTY";
+    //    ws.Cell(row, 2).Value = ":" + results[0].Qty.ToString(); 
+    //    row += 2;
 
-        // ===============================
-        // KALIMAT PENGIRIMAN
-        // ===============================
-        ws.Cell(row, 1).Value = "Kami Kirimkan barang-barang tersebut dibawah ini dengan kendaraan:" + results[0].Kendaraan.ToString() + "No " + results[0].NoKendaraan.ToString(); 
-        ws.Range(row, 1, row, 6).Merge();
-        row += 2;
+    //    // ===============================
+    //    // KALIMAT PENGIRIMAN
+    //    // ===============================
+    //    ws.Cell(row, 1).Value = "Kami Kirimkan barang-barang tersebut dibawah ini dengan kendaraan:" + results[0].Kendaraan.ToString() + "No " + results[0].NoKendaraan.ToString(); 
+    //    ws.Range(row, 1, row, 6).Merge();
+    //    row += 2;
 
-        // ===============================
-        // HEADER TABLE
-        // ===============================
-        ws.Cell(row, 1).Value = "No";
-        ws.Cell(row, 2).Value = "Nama Part";
-        ws.Cell(row, 3).Value = "Kode Part";
-        ws.Cell(row, 4).Value = "QTY Pengiriman";
-        ws.Cell(row, 5).Value = "Satuan";
-        ws.Cell(row, 6).Value = "Keterangan";
+    //    // ===============================
+    //    // HEADER TABLE
+    //    // ===============================
+    //    ws.Cell(row, 1).Value = "No";
+    //    ws.Cell(row, 2).Value = "Nama Part";
+    //    ws.Cell(row, 3).Value = "Kode Part";
+    //    ws.Cell(row, 4).Value = "QTY Pengiriman";
+    //    ws.Cell(row, 5).Value = "Satuan";
+    //    ws.Cell(row, 6).Value = "Keterangan";
 
-        ws.Range(row, 1, row, 6).Style.Font.Bold = true;
-        ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+    //    ws.Range(row, 1, row, 6).Style.Font.Bold = true;
+    //    ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-        int tableStart = row;
-        row++;
+    //    int tableStart = row;
+    //    row++;
 
-        int no = 1;
+    //    int no = 1;
 
-        foreach (var item in results)
-        {
-            ws.Cell(row, 1).Value = no++;
-            ws.Cell(row, 2).Value = item.ItemName;
-            ws.Cell(row, 3).Value = item.ItemCode;
-            ws.Cell(row, 4).Value = item.QtyNG;
-            ws.Cell(row, 5).Value = item.UnitCls;
-            ws.Cell(row, 6).Value = item.Remarks;
+    //    foreach (var item in results)
+    //    {
+    //        ws.Cell(row, 1).Value = no++;
+    //        ws.Cell(row, 2).Value = item.ItemName;
+    //        ws.Cell(row, 3).Value = item.ItemCode;
+    //        ws.Cell(row, 4).Value = item.QtyNG;
+    //        ws.Cell(row, 5).Value = item.UnitCls;
+    //        ws.Cell(row, 6).Value = item.Remarks;
 
-            row++;
-        }
+    //        row++;
+    //    }
 
-        // ===============================
-        // BORDER TABLE
-        // ===============================
-        var tableRange = ws.Range(tableStart, 1, row - 1, 6);
-        tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-        tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+    //    // ===============================
+    //    // BORDER TABLE
+    //    // ===============================
+    //    var tableRange = ws.Range(tableStart, 1, row - 1, 6);
+    //    tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+    //    tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-        row += 2;
+    //    row += 2;
 
-        ws.Cell(row, 1).Value = "* Please return this original letter  to " + results[0].CompanyName.ToString();
-        ws.Range(row, 1, row, 6).Merge();
+    //    ws.Cell(row, 1).Value = "* Please return this original letter  to " + results[0].CompanyName.ToString();
+    //    ws.Range(row, 1, row, 6).Merge();
 
-        // ===============================
-        // FOOTER
-        // ===============================
-        ws.Cell(row, 1).Value = "Delivered by";
-        ws.Cell(row, 3).Value = "Approved by";
-        ws.Cell(row, 5).Value = "Checked by";
-        ws.Cell(row, 6).Value = "Received by";
-        ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+    //    // ===============================
+    //    // FOOTER
+    //    // ===============================
+    //    ws.Cell(row, 1).Value = "Delivered by";
+    //    ws.Cell(row, 3).Value = "Approved by";
+    //    ws.Cell(row, 5).Value = "Checked by";
+    //    ws.Cell(row, 6).Value = "Received by";
+    //    ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
 
-        row += 4;
+    //    row += 4;
 
-        ws.Cell(row, 1).Value = results[0].DeliveryByPosition.ToString();
-        ws.Cell(row, 3).Value = results[0].ApprovedByPosition.ToString();
-        ws.Cell(row, 5).Value = results[0].CheckedByPosition.ToString();
-        ws.Cell(row, 6).Value = results[0].ReceivedByPosition.ToString();
-        ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+    //    ws.Cell(row, 1).Value = results[0].DeliveryByPosition.ToString();
+    //    ws.Cell(row, 3).Value = results[0].ApprovedByPosition.ToString();
+    //    ws.Cell(row, 5).Value = results[0].CheckedByPosition.ToString();
+    //    ws.Cell(row, 6).Value = results[0].ReceivedByPosition.ToString();
+    //    ws.Range(row, 1, row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-        ws.Columns().AdjustToContents();
+    //    ws.Columns().AdjustToContents();
 
-        using var ms = new MemoryStream();
-        workbook.SaveAs(ms);
-        var fileBytes = ms.ToArray();
-        var base64File = Convert.ToBase64String(fileBytes);
+    //    using var ms = new MemoryStream();
+    //    workbook.SaveAs(ms);
+    //    var fileBytes = ms.ToArray();
+    //    var base64File = Convert.ToBase64String(fileBytes);
 
-        return Success(base64File);
-    }
+    //    return Success(base64File);
+    //}
 
 
     //[HttpPost("print-label")]

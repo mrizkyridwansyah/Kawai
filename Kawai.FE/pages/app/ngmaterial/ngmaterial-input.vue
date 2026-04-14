@@ -45,11 +45,16 @@
           >BC Type</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            type-data="BCType_Cls"
-            v-model="model.BCType"
-            :errors="errors?.BCType"
-          />
+           <filter-cls-2
+                    class="form-control"
+                    type-data="BCType_Cls"
+                    v-model="model.BCType"
+                    :errors="errors?.BCType"
+                    style-code="width: 120px"
+                    style-desc="width: 240px"
+                  />
+
+           
         </div>
       </div>
       <div class="row mt-1">
@@ -110,11 +115,15 @@
           >Transport By</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-cls
-            type-data="Transport_Cls"
-            v-model="model.Transport"
-            :errors="errors?.Transport"
-          />
+          <filter-cls-2
+                    class="form-control"
+                    type-data="Transport_Cls"
+                    v-model="model.Transport"
+                    :errors="errors?.Transport"
+                    style-code="width: 120px"
+                    style-desc="width: 210px"
+                  />
+           
         </div>
       </div>
       <div class="row mt-1">
@@ -357,12 +366,12 @@ export default {
     },
     printSuratJalan: function () {
       this.ds
-        .PrintSuratJalan( {
-              factory: this.filter.SupplierCode,
-              claimid: this.filter.ClaimId
-            })
+        .PrintSuratJalan1(  
+               this.filter.SupplierCode,
+                this.filter.ClaimId
+             )
         .then((dt) => {
-          toastSuccess("Data saved successfully!");
+          toastSuccess("Download successfully!");
           this.reset();
         })
         .catch((err) => {

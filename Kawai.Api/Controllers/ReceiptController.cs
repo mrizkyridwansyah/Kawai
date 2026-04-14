@@ -82,6 +82,54 @@ public class ReceiptController : HahaController
         return Success(after);
     }
 
+    [HttpPost("create-claim")]
+    public async Task<IActionResult> CreateClaim([FromBody] Receipt model)
+    {
+        await _receiptRepository.CreateClaim(model, Auth.User.UserID);
+
+        var after = await _receiptRepository.Capture(model.Id.Value);
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Material",
+            EntityId = model.Id.ToString(),
+            ReferenceId = model.ReceiptNo,
+            Before = null,
+            After = after,
+            Action = DataLogAction.Create
+        });
+
+        return Success(after);
+    }
+
+    [HttpPatch("update-claim")]
+    public async Task<IActionResult> UpdateClaim([FromBody] Receipt model)
+    {
+        string[] bcTypeNotRequiredRegisterNo = ["BC 2.3", "BC 2.6.2", "BC 4.0"];
+        Dictionary<string, List<string>> Errors = [];
+
+        if (!bcTypeNotRequiredRegisterNo.Contains(model.BCType) && String.IsNullOrEmpty(model.RegisterNo))
+            AddError(Errors, "RegisterNo", "Register No is required for BC Type " + model.BCType);
+
+        if (Errors.Any()) return Invalid(Errors);
+
+        var before = await _receiptRepository.Capture(model.Id.Value);
+
+        await _receiptRepository.UpdateClaim(model, Auth.User.UserID);
+
+        var after = await _receiptRepository.Capture(model.Id.Value);
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Material",
+            EntityId = model.Id.ToString(),
+            ReferenceId = model.ReceiptNo,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update
+        });
+        return Success(after);
+    }
+
+
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] Receipt model)
     {
