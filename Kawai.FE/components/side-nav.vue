@@ -273,14 +273,27 @@ export default {
     showFloatingMenu(menuGroup, subGroup, event) {
       const { $sidebarToggle } = useNuxtApp();
 
-      // Hanya tampilkan floating jika sidebar minified
       if (!$sidebarToggle.isSidebarMinified.value) return;
 
       clearTimeout(this.hideTimer);
+
       const rect = event.currentTarget.getBoundingClientRect();
-      this.floatingMenu.top = rect.top;
+
+      const viewportHeight = window.innerHeight;
+
+      let top = rect.top;
+
+      // kalau overflow bawah layar → geser ke atas
+      const estimatedHeight = this.getMenu(menuGroup, subGroup).length * 40;
+
+      if (top + estimatedHeight > viewportHeight) {
+        top = Math.max(10, viewportHeight - estimatedHeight - 20);
+      }
+
+      this.floatingMenu.top = top;
       this.floatingMenu.items = this.getMenu(menuGroup, subGroup);
       this.floatingMenu.show = true;
+
     },
     hideFloatingMenu() {
       this.hideTimer = setTimeout(() => (this.floatingMenu.show = false), 200);
@@ -296,6 +309,23 @@ export default {
 </script>
 
 <style>
+.app-sidebar-content {
+  height: 93vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+.app-sidebar-float-submenu-container {
+  max-height: 90vh;     /* biar gak lebih tinggi dari layar */
+  overflow-y: auto;     /* INI yang bikin bisa scroll */
+  overflow-x: hidden;
+}
+
+.app-sidebar-float-submenu-container {
+  scrollbar-gutter: stable;
+}
+
 .menu-caret::before {
   content: "\f105";
   /* Unicode untuk panah kanan */
