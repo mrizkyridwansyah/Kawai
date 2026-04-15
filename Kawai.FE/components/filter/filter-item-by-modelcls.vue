@@ -23,7 +23,9 @@
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
-        :disabled="disabled !== undefined || false"
+		:disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
         select-label=""
         deselect-label=""
       />
@@ -69,6 +71,8 @@ export default {
     "showOptionAll",
      "styleCode",
     "styleDesc",
+					
+					  
   ],
   data: () => ({
     isLoading: false,
@@ -128,7 +132,7 @@ export default {
     },
     open: function () {
       this.isOpen = true;
-      this.load("", this.modelValue);
+      this.load("", null);
     },
     close: function() {
       this.isOpen = false;
@@ -138,6 +142,10 @@ export default {
       this.isLoading = true;
       if (this.debounce != null) clearTimeout(this.debounce);
 
+																
+			   
+	   
+
       this.debounce = setTimeout(() => {
         this.$http
           .get(
@@ -146,6 +154,15 @@ export default {
             }&modelCls=${this.modelCls}`
           )
           .then((p) => {
+											  
+													   
+			 
+
+																						  
+									 
+													 
+			 
+
             this.list =
               (this.showOptionAll || false) &&
               (q || "") == "" &&

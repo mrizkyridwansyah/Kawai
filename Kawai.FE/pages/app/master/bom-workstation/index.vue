@@ -224,6 +224,12 @@ export default {
     },
   },
   watch: {
+    "filter.modelcls": function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.filter.item = null;
+          this.ds.data.Items = [];
+        }
+      },
     "filter.keyword": function () {
       this.search();
     },
