@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Hangfire;
 using Kawai.Api.Services;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -157,26 +158,26 @@ public class ItemController : HahaController
             cell.Row = 2;
             foreach (var result in results)
             {
-                mae.DrawObject(cell.Row, 1,  result.ItemCode);
-                mae.DrawObject(cell.Row, 2,  result.ItemName);
-                mae.DrawObject(cell.Row, 3,  result.WarehouseCode);
-                mae.DrawObject(cell.Row, 4,  result.WarehouseName);
-                mae.DrawObject(cell.Row, 5,  result.SupplierCode);
-                mae.DrawObject(cell.Row, 6,  result.SupplierName);
-                mae.DrawObject(cell.Row, 7,  result.ManufactureCode);
-                mae.DrawObject(cell.Row, 8,  result.ManufactureName);
-                mae.DrawObject(cell.Row, 9,  result.FinishGoodPartClsDesc);
-                mae.DrawObject(cell.Row, 10,  result.PartClsDesc);
-                mae.DrawObject(cell.Row, 11,  result.ReserveClsDesc);
-                mae.DrawObject(cell.Row, 12,  result.SupplyClsDesc);
-                mae.DrawObject(cell.Row, 13,  result.ProvisionClsDesc);
-                mae.DrawObject(cell.Row, 14,  result.MaterialClsDesc);
-                mae.DrawObject(cell.Row, 15,  result.ProductionClsDesc);
-                mae.DrawObject(cell.Row, 16,  result.PackingStyleClsDesc);
-                mae.DrawObject(cell.Row, 17,  result.UnitClsDesc);
-                mae.DrawObject(cell.Row, 18,  result.StockControlClsDesc);
-                mae.DrawObject(cell.Row, 19,  result.UseEndDay.HasValue ? result.UseEndDay.Value.ToString("dd MMM yyyy") : "");
-                mae.DrawObject(cell.Row, 20,  result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
+                mae.DrawObject(cell.Row, 1, result.ItemCode);
+                mae.DrawObject(cell.Row, 2, result.ItemName);
+                mae.DrawObject(cell.Row, 3, result.WarehouseCode);
+                mae.DrawObject(cell.Row, 4, result.WarehouseName);
+                mae.DrawObject(cell.Row, 5, result.SupplierCode);
+                mae.DrawObject(cell.Row, 6, result.SupplierName);
+                mae.DrawObject(cell.Row, 7, result.ManufactureCode);
+                mae.DrawObject(cell.Row, 8, result.ManufactureName);
+                mae.DrawObject(cell.Row, 9, result.FinishGoodPartClsDesc);
+                mae.DrawObject(cell.Row, 10, result.PartClsDesc);
+                mae.DrawObject(cell.Row, 11, result.ReserveClsDesc);
+                mae.DrawObject(cell.Row, 12, result.SupplyClsDesc);
+                mae.DrawObject(cell.Row, 13, result.ProvisionClsDesc);
+                mae.DrawObject(cell.Row, 14, result.MaterialClsDesc);
+                mae.DrawObject(cell.Row, 15, result.ProductionClsDesc);
+                mae.DrawObject(cell.Row, 16, result.PackingStyleClsDesc);
+                mae.DrawObject(cell.Row, 17, result.UnitClsDesc);
+                mae.DrawObject(cell.Row, 18, result.StockControlClsDesc);
+                mae.DrawObject(cell.Row, 19, result.UseEndDay.HasValue ? result.UseEndDay.Value.ToString("dd MMM yyyy") : "");
+                mae.DrawObject(cell.Row, 20, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
                 mae.DrawObject(cell.Row, 21, result.LastUser);
 
                 cell.Row++;
@@ -214,7 +215,8 @@ public class ItemController : HahaController
         ];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
-        ws.Cell(2, 1).InsertData(results.Select(r => new {
+        ws.Cell(2, 1).InsertData(results.Select(r => new
+        {
             r.ItemCode,
             r.ItemName,
             r.WarehouseCode,
@@ -238,45 +240,23 @@ public class ItemController : HahaController
             r.LastUser
         }));
 
-        //foreach (var result in results)
-        //{
-        //    rowIdx++;
-        //    var row = ws.Row(rowIdx);
-        //    int colIdx = 1;
-
-        //    ExcelHelper.SetCell(row, colIdx, result.ItemCode);
-        //    ExcelHelper.SetCell(row, colIdx++, result.ItemName);
-        //    ExcelHelper.SetCell(row, colIdx++, result.WarehouseCode);
-        //    ExcelHelper.SetCell(row, colIdx++, result.WarehouseName);
-        //    ExcelHelper.SetCell(row, colIdx++, result.SupplierCode);
-        //    ExcelHelper.SetCell(row, colIdx++, result.SupplierName);
-        //    ExcelHelper.SetCell(row, colIdx++, result.ManufactureCode);
-        //    ExcelHelper.SetCell(row, colIdx++, result.ManufactureName);
-        //    ExcelHelper.SetCell(row, colIdx++, result.FinishGoodPartClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.PartClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.ReserveClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.SupplyClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.ProvisionClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.MaterialClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.ProductionClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.PackingStyleClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.UnitClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.StockControlClsDesc);
-        //    ExcelHelper.SetCell(row, colIdx++, result.UseEndDay.HasValue ? result.UseEndDay.Value.ToString("dd MMM yyyy") : "");
-        //    ExcelHelper.SetCell(row, colIdx++, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
-        //    ExcelHelper.SetCell(row, colIdx++, result.LastUser);
-        //}
-
-        //ExcelHelper.AutofitColumns(ws, 1, headers.Count);
-
         var range = ws.Range(1, 1, rowIdx, headers.Count);
         ExcelHelper.SetBorders(range);
 
         using var ms = new MemoryStream();
         workbook.SaveAs(ms, false);
-        var fileBytes = ms.ToArray();
-        var base64File = Convert.ToBase64String(fileBytes);
+        ms.Position = 0;
 
-        return Success(base64File);
+        return File(ms.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "export.xlsx");
+    }
+
+    [HttpPost("export/excel-using-job")]
+    public async Task<IActionResult> ExportExcelUsingJob(RequestParameter param)
+    {
+        string key = Guid.NewGuid().ToString();
+        BackgroundJob.Enqueue<ExportExcelService>(service => service.ExportExcelItem(param, Auth.User.UserID, key));
+        return Pending(message: "Data Export sedang diproses!");
     }
 }

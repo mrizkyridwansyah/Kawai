@@ -216,6 +216,7 @@ public class ItemRepository : IItemRepository
         string sql = "sp_Wms_Item_Delete";
         int i = await _dbExecutor.ExecuteAsync(sql, new { ItemCode = itemCode });
     }
+
     public async Task<Dictionary<string, object>> Capture(string itemCode)
     {
         string sp = "sp_Wms_Item_Capture";
@@ -227,5 +228,4 @@ public class ItemRepository : IItemRepository
         return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
 
     }
-
 }

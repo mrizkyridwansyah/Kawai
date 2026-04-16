@@ -85,7 +85,7 @@ public class HahaController : ControllerBase
             {
                 Code = 202,
                 Status = "PENDING",
-                Message = "Transaction accepted and on process!",
+                Message = !String.IsNullOrEmpty(message) ? message : "Transaction accepted and on process!",
                 Data = data,
             })
         };

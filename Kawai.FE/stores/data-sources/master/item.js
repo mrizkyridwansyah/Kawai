@@ -120,6 +120,24 @@ export const useItem = defineStore('Item', {
 
       })
     },
+    exportExcelUsingJob: function() {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        let filterExport = {
+          Page: 1,
+          Length: 1000000,
+          Filters: [],
+          Sorts: {},
+        };
+
+        app.$http.post(`/item/export/excel-using-job`, filterExport)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
     exportExcel: function () {
       return new Promise((resolve, reject) => {
         let filterExport = {
@@ -129,33 +147,22 @@ export const useItem = defineStore('Item', {
           Sorts: {},
         };
 
-        app.$http.post(`/item/export/excel`, filterExport)
-          .then(({ data }) => {
-            if (data.Data) {
-              const byteCharacters = atob(data.Data); // decode base64
-              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
-              const byteArray = new Uint8Array(byteNumbers);
+        app.$http.post('/item/export/excel', filterExport, {
+          responseType: 'blob'
+        })
+          .then(res => {
+            const url = URL.createObjectURL(res.data);
 
-              const blob = new Blob([byteArray], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-              });
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'List_Item.xlsx';
+            link.click();
 
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', 'List_Item.xlsx');
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-
-              resolve();
-            } else {
-              reject(data);
-            }
+            URL.revokeObjectURL(url);
+            resolve();
           })
           .catch(async (err) => {
-              reject(err?.response?.data);
+            reject(err?.response?.data);
           })
           .finally(() => {
             this.isLoading = false;

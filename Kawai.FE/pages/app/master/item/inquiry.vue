@@ -6,7 +6,7 @@
         :filter="filter"
         :keyword-keys="keywordKeys"
         :export-excel="true"
-        :export-excel-action="exportExcel"
+        :export-excel-action="exportExcelUsingJob"
         :data-items="ds.data.Items"
         :frozen-column-left="2"
         :ds="ds"
@@ -195,7 +195,21 @@ export default {
       return new Promise((resolve, reject) => {
         this.ds
           .exportExcel()
-          .then((_) => {
+          .then((dt) => {
+            resolve();
+          })
+          .catch((err) => {
+            toastDanger(err?.Message);
+            resolve();
+          });
+      });
+    },
+    exportExcelUsingJob: function () {
+      return new Promise((resolve, reject) => {
+        this.ds
+          .exportExcelUsingJob()
+          .then((dt) => {
+            toastInfo(dt.Message);
             resolve();
           })
           .catch((err) => {
