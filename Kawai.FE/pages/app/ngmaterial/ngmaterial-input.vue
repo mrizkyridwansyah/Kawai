@@ -7,10 +7,12 @@
           >Supplier</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade
+          <filter-trade-2
             v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
             :disabled="filter.ClaimId != null"
+             style-code="width: 120px"
+                    style-desc="width: 275px"
           />
         </div>
         <label
@@ -22,6 +24,7 @@
             v-model="model.BCNumber"
             maxlength="50"
             :errors="errors?.BCNumber"
+             style="width: 400px"
           />
         </div>
       </div>
@@ -51,7 +54,7 @@
                     v-model="model.BCType"
                     :errors="errors?.BCType"
                     style-code="width: 120px"
-                    style-desc="width: 240px"
+                    style-desc="width: 140px"
                   />
 
            
@@ -102,11 +105,13 @@
           >Police No</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+           
           <input-text
-            v-model="model.VehicleNo"
-            maxlength="15"
-            :errors="errors?.VehicleNo"
-          />
+              v-model="model.VehicleNo"
+              :errors="errors?.VehicleNo"
+              style="width: 120px"
+              maxlength="15"
+            />
         </div>
       </div>
       <div class="row mt-1">
@@ -121,7 +126,7 @@
                     v-model="model.Transport"
                     :errors="errors?.Transport"
                     style-code="width: 120px"
-                    style-desc="width: 210px"
+                    style-desc="width: 120px"
                   />
            
         </div>
@@ -136,6 +141,7 @@
             v-model="model.DNNumber"
             maxlength="50"
             :errors="errors?.DNNumber"
+             style="width: 325px"
           />
         </div>
         <div class="col-xl-2 col-lg-2 col-md-8 col-sm-8 col-xs-10"></div>
@@ -166,6 +172,7 @@
           <v-button-print
             label="Print Surat Jalan"
             class="mr-1"
+            icon="print"
             :print="printSuratJalan"
             :is-loading="isLoading"
           />

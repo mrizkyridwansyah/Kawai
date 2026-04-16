@@ -7,11 +7,15 @@
           >Supplier</label
         >
         <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <filter-trade
-             v-model="filter.SupplierCode"
+       
+           <filter-trade-2
+            v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
             :disabled="filter.ClaimId != null"
+             style-code="width: 120px"
+                    style-desc="width: 275px"
           />
+
         </div>
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
@@ -22,6 +26,7 @@
             v-model="model.BCNumber"
             :errors="errors?.BCNumber"
             :disabled="true"
+             style="width: 400px"
           />
         </div>
       </div>
@@ -107,6 +112,7 @@
           <input-text
             v-model="model.VehicleNo"
             :errors="errors?.VehicleNo"
+               style="width: 120px"
             :disabled="true"
           />
         </div>
@@ -123,7 +129,7 @@
                     v-model="model.Transport"
                     :errors="errors?.Transport"
                     style-code="width: 120px"
-                    style-desc="width: 240px"
+                    style-desc="width: 120px"
                      :disabled="true"
                   />
 
@@ -141,6 +147,7 @@
             v-model="model.DNNumber"
             :errors="errors?.DNNumber"
             :disabled="true"
+            style="width: 325px"
           />
         </div>
         <div class="col-xl-2 col-lg-2 col-md-8 col-sm-8 col-xs-10"></div>
