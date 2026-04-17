@@ -62,19 +62,23 @@ export default {
       },
       {
         Id: "02",
-        Name: "Stock Control",
+        Name: "Receiving",
       },
       {
         Id: "03",
-        Name: "Quality Control",
+        Name: "Production",
       },
        {
         Id: "04",
-        Name: "Production",
+        Name: "Shipping",
       },
       {
         Id: "05",
-        Name: "NG Material",
+        Name: "Stock Control",
+      },
+      {
+        Id: "06",
+        Name: "Reports",
       },
     ],
     list: [],
