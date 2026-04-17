@@ -44,15 +44,18 @@
                 v-else-if="notif.Priority == 'TOP'"
                 class="fa"
                 :class="{
-                  'fa-info-circle': notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS',
-                  'fa-warning': notif.NotifType != 'INFO' && notif.NotifType != 'SUCCESS',
-                  'text-info': notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS',
+                  'fa-info-circle':
+                    notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS',
+                  'fa-warning':
+                    notif.NotifType != 'INFO' && notif.NotifType != 'SUCCESS',
+                  'text-info':
+                    notif.NotifType == 'INFO' || notif.NotifType == 'SUCCESS',
                   'text-warning': notif.NotifType == 'WARNING',
                   'text-danger': notif.NotifType == 'ERROR',
                 }"
               ></i>
             </h6>
-            <div style="white-space: break-spaces;">{{ notif.Description }}</div>
+            <div style="white-space: break-spaces">{{ notif.Description }}</div>
             <div class="text-muted fs-10px">{{ notif.TimeAgo }}</div>
           </div>
         </a>
@@ -93,10 +96,7 @@
         @click="$bvModal.show('change-password')"
         >Change Password</a
       >
-      <a
-        class="dropdown-item"
-        href="javascript:void(0)"
-        @click="changeFactory"
+      <a class="dropdown-item" href="javascript:void(0)" @click="changeFactory"
         >Change Factory</a
       >
       <div class="dropdown-divider"></div>
@@ -159,13 +159,34 @@ export default {
       });
     });
 
+    signalr.on("FileExport", (data) => {
+      this.$http
+        .get(`/export-file/download?key=${data?.key}`, {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const url = URL.createObjectURL(res.data);
+          
+          console.log(url, data?.fileName);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${data?.fileName}.xlsx`;
+          link.click();
+
+          URL.revokeObjectURL(url);
+        })
+        .catch(async (err) => {
+          console.log(err);
+        })
+    });
+
     signalr.onreconnected(() => {
       console.log("✅ Reconnected to SignalR");
       this.notif
         .loadCountUnread(this.userData.UserId)
         .then((dt3) => {
-          let diff = dt3.Data - this.unreadCount; 
-          if(diff > 0) {
+          let diff = dt3.Data - this.unreadCount;
+          if (diff > 0) {
             toastSuccess(`You have ${diff} new notifications!`);
           }
 
@@ -219,9 +240,9 @@ export default {
       localStorage.clear();
       location.href = "/auth/sign-in";
     },
-    changeFactory: function() {
+    changeFactory: function () {
       location.href = "/auth/factory";
-    }
+    },
   },
 };
 </script>
