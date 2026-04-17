@@ -309,6 +309,17 @@ export const useReceipt = defineStore('Receipt', {
           this.isLoading = false;
         });
     },
+    printBarcodesUsingJob: function (id) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/receipt/print-barcodes-using-job?receiptId=${id}`)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {
         let filterExport = {

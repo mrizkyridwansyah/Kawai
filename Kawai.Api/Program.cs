@@ -54,7 +54,7 @@ builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
 builder.Services.AddRepositoriesAuto();
 builder.Services.AddScoped<IRobotService, RobotService>();
-builder.Services.AddScoped<IExportExcelService, ExportExcelService>();
+builder.Services.AddScoped<IExportService, ExportService>();
 
 
 //ini daftarin producer rabbitmq, buat publish message ke queueing => transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)

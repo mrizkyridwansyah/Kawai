@@ -551,6 +551,19 @@ export default {
         })
         .catch((err) => toastDanger(err.Message));
     },
+    printBarcodesUsingJob: function () {
+      if (!this.filter.ReceiptId) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+
+      this.ds
+        .printBarcodesUsingJob(this.filter.ReceiptId)
+        .then((data) => {
+          if (data.Message != "-") toastInfo(data.Message);
+        })
+        .catch((err) => toastDanger(err.Message));
+    },
     printReport: function () {},
     submit: function () {
       this.isLoading = true;

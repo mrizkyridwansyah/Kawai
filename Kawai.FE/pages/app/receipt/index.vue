@@ -437,7 +437,9 @@ export default {
         return false;
       }
 
-      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+      if (
+        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
+      ) {
         toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
         return;
       }
@@ -507,6 +509,19 @@ export default {
         .print(this.filter.ReceiptId)
         .then((data) => {
           toastSuccess(data || "Print Label berhasil!");
+        })
+        .catch((err) => toastDanger(err.Message));
+    },
+    printBarcodesUsingJob: function () {
+      if ((this.filter.ReceiptId || "") == "") {
+        toastDanger("Silahkan pilih no. receipt");
+        return;
+      }
+
+      this.dsReceipt
+        .printBarcodesUsingJob(this.filter.ReceiptId)
+        .then((data) => {
+          if (data.Message != "-") toastInfo(data.Message);
         })
         .catch((err) => toastDanger(err.Message));
     },

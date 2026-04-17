@@ -159,15 +159,18 @@ export default {
       });
     });
 
-    signalr.on("FileExport", (data) => {
+    signalr.on("FileExportExcel", (data) => {
       this.$http
-        .get(`/export-file/download?key=${data?.key}`, {
+        .get(`/export-file/download-excel?key=${data?.key}`, {
           responseType: "blob",
         })
         .then((res) => {
-          const url = URL.createObjectURL(res.data);
-          
-          console.log(url, data?.fileName);
+          const blob =
+            res.data instanceof Blob
+              ? res.data
+              : new Blob([res.data], { type: "application/pdf" });
+
+          const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
           link.download = `${data?.fileName}.xlsx`;
@@ -176,8 +179,78 @@ export default {
           URL.revokeObjectURL(url);
         })
         .catch(async (err) => {
-          console.log(err);
+          if (err.response) {
+            // server ngirim response, tapi error
+            const blob = err.response.data;
+            try {
+              const text = await blob.text();
+              const json = JSON.parse(text);
+              throw {
+                message: json.Message || "Server returned an error",
+                isServerError: true,
+              };
+            } catch (e) {
+              toastDanger(e.message);
+              throw {
+                message: e.message || "Server returned an error",
+                isServerError: true,
+              };
+            }
+          }
+
+          if (err?.code === "ERR_NETWORK") this.isNetworkError = true;
+          if (err?.code === "ERR_BAD_RESPONSE") this.isServerError = true;
+
+          throw err;
+        });
+    });
+
+    signalr.on("FileExportPDF", (data) => {
+      this.$http
+        .get(`/export-file/download-pdf?key=${data?.key}`, {
+          responseType: "blob",
         })
+        .then((res) => {
+          const blob =
+            res.data instanceof Blob
+              ? res.data
+              : new Blob([res.data], { type: "application/pdf" });
+
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${data?.fileName}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        })
+        .catch(async (err) => {
+          if (err.response) {
+            // server ngirim response, tapi error
+            const blob = err.response.data;
+            try {
+              const text = await blob.text();
+              const json = JSON.parse(text);
+              throw {
+                message: json.Message || "Server returned an error",
+                isServerError: true,
+              };
+            } catch (e) {
+              toastDanger(e.message);
+              throw {
+                message: e.message || "Server returned an error",
+                isServerError: true,
+              };
+            }
+          }
+
+          if (err?.code === "ERR_NETWORK") this.isNetworkError = true;
+          if (err?.code === "ERR_BAD_RESPONSE") this.isServerError = true;
+
+          throw err;
+        });
     });
 
     signalr.onreconnected(() => {

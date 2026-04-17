@@ -1,4 +1,6 @@
 ﻿using ClosedXML.Excel;
+using Hangfire;
+using Kawai.Api.Hub;
 using Kawai.Api.Services;
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
@@ -18,12 +20,14 @@ namespace Kawai.Api.Controllers;
 public class ReceiptController : HahaController
 {
     private readonly IReceiptRepository _receiptRepository;
+    private readonly NotificationService<NotifApprovalHub> _notification;
     private readonly DataLogger _logger;
 
-    public ReceiptController(IReceiptRepository receiptRepository, DataLogger logger)
+    public ReceiptController(IReceiptRepository receiptRepository, NotificationService<NotifApprovalHub> notification, DataLogger logger)
     {
         _receiptRepository = receiptRepository;
         _logger = logger;
+        _notification = notification;
     }
 
     [HttpPost("list")]
@@ -301,6 +305,7 @@ public class ReceiptController : HahaController
         await _receiptRepository.PrintLabel(result.Id ?? 0, Auth.User.UserID, false);
 
         var after = await _receiptRepository.Capture(result.Id ?? 0);
+
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Part Receipt Material",
@@ -346,6 +351,47 @@ public class ReceiptController : HahaController
         var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
         return File(pdfBytes, "application/pdf", result.SupplierName + "_" + result.DNNumber);
+    }
+
+    [HttpPost("print-barcodes-using-job")]
+    public async Task<IActionResult> PrintBarcodeUsingJob(long receiptId)
+    {
+        var result = await _receiptRepository.GetDataHeader(receiptId);
+
+        if (result == null) return Invalid("Data Receipt Invalid");
+
+        var before = await _receiptRepository.Capture(result.Id ?? 0);
+
+        await _receiptRepository.PrintLabel(result.Id ?? 0, Auth.User.UserID, false);
+
+        var after = await _receiptRepository.Capture(result.Id ?? 0);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Material",
+            EntityId = (result.Id ?? 0).ToString(),
+            ReferenceId = result.ReceiptNo,
+            Before = before,
+            After = after,
+            Activity = "Print Label Receipt",
+            Action = DataLogAction.Update
+        });
+
+        string key = "PrintBarcodeUsingJob_" + receiptId.ToString();
+        string message = "Data Export PDF sedang diproses!";
+        var fileExport = FileStorage.GetFromExports(key);
+        if (fileExport != null)
+        {
+            message = "-";
+            fileExport.Dispose();
+            _notification.BroadCastOnlyTo([Auth.User.UserID], "FileExportPDF", new { Key = key, FileName = result.SupplierName + "_" + result.DNNumber });
+        }
+        else
+        {
+            BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReceiptBarcode(result, Auth.User.UserID));
+        }
+
+        return Pending(message: message);
     }
 
     protected string BuildA4Html(List<string> labelHtmls)

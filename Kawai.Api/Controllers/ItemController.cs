@@ -256,7 +256,7 @@ public class ItemController : HahaController
     public async Task<IActionResult> ExportExcelUsingJob(RequestParameter param)
     {
         string key = Guid.NewGuid().ToString();
-        BackgroundJob.Enqueue<ExportExcelService>(service => service.ExportExcelItem(param, Auth.User.UserID, key));
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelItem(param, Auth.User.UserID, key));
         return Pending(message: "Data Export sedang diproses!");
     }
 }

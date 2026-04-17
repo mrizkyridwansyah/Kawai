@@ -125,7 +125,7 @@ export const useItem = defineStore('Item', {
       return new Promise((resolve, reject) => {
         let filterExport = {
           Page: 1,
-          Length: 1000000,
+          Length: 0,
           Filters: [],
           Sorts: {},
         };
@@ -142,7 +142,7 @@ export const useItem = defineStore('Item', {
       return new Promise((resolve, reject) => {
         let filterExport = {
           Page: 1,
-          Length: 1000000,
+          Length: 0,
           Filters: [],
           Sorts: {},
         };
