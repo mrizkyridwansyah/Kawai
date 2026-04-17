@@ -23,10 +23,9 @@
           </td>
           <td style="padding-left: 15px; padding-top: 5px">
             <input
-              type="text"
               class="form-control"
               v-model="searchText"
-              placeholder="Cari kata di PDF..."
+              placeholder="Cari kata..."
               style="width: 250px"
               @keyup.enter="findText"
             />
@@ -36,7 +35,7 @@
         <!-- Button -->
         <tr>
           <td colspan="2">
-            <div class="d-flex flex-fill mt-3 flex-wrap gap-1">
+            <div class="d-flex flex-wrap gap-1 mt-3">
               <v-button
                 label="Preview"
                 icon="file-pdf"
@@ -49,8 +48,38 @@
                 label="Find"
                 icon="search"
                 cClass="btn btn-primary"
-                @click="findText"
                 :disabled="totalPages === 0"
+                @click="findText"
+              />
+
+              <v-button
+                label="Prev Result"
+                icon="arrow-left"
+                cClass="btn btn-info"
+                :disabled="searchResults.length === 0"
+                @click="prevResult"
+              />
+
+              <v-button
+                label="Next Result"
+                icon="arrow-right"
+                cClass="btn btn-info"
+                :disabled="searchResults.length === 0"
+                @click="nextResult"
+              />
+
+              <v-button
+                label="-"
+                icon="minus"
+                cClass="btn btn-warning"
+                @click="zoomOut"
+              />
+
+              <v-button
+                label="+"
+                icon="plus"
+                cClass="btn btn-warning"
+                @click="zoomIn"
               />
 
               <v-button
@@ -59,36 +88,20 @@
                 cClass="btn btn-danger"
                 @click="clearPdf"
               />
-
-              <v-button
-                label="Zoom Out"
-                icon="minus"
-                cClass="btn btn-warning"
-                @click="zoomOut"
-                :disabled="totalPages === 0"
-              />
-
-              <v-button
-                label="Zoom In"
-                icon="plus"
-                cClass="btn btn-info"
-                @click="zoomIn"
-                :disabled="totalPages === 0"
-              />
             </div>
           </td>
         </tr>
       </table>
 
-      <!-- Page Navigation -->
+      <!-- Navigation -->
       <div v-if="totalPages > 0" class="mt-4 text-center">
         <div class="mb-2">
           <v-button
             label="Prev Page"
             icon="arrow-left"
             cClass="btn btn-secondary"
-            @click="prevPage"
             :disabled="pageNum <= 1"
+            @click="prevPage"
           />
 
           <span class="mx-2">
@@ -99,12 +112,18 @@
             label="Next Page"
             icon="arrow-right"
             cClass="btn btn-secondary"
-            @click="nextPage"
             :disabled="pageNum >= totalPages"
+            @click="nextPage"
           />
         </div>
 
-        <div>Zoom : {{ (scale * 100).toFixed(0) }}%</div>
+        <div>
+          Zoom {{ (scale * 100).toFixed(0) }}%
+          <span v-if="searchResults.length">
+            | Result {{ currentResultIndex + 1 }} /
+            {{ searchResults.length }}
+          </span>
+        </div>
       </div>
 
       <!-- PDF -->
@@ -129,7 +148,6 @@ export default {
   data() {
     return {
       filter: {
-        keyword: null,
         menu: null,
       },
 
@@ -142,10 +160,19 @@ export default {
       maxScale: 3,
 
       searchText: "",
+
+      searchResults: [],
+      currentResultIndex: 0,
     };
   },
 
   methods: {
+    normalizeText(text) {
+      return text
+        .toLowerCase()
+         
+    },
+
     async loadPdf() {
       try {
         if (!this.filter.menu) {
@@ -158,17 +185,16 @@ export default {
         const url = `/file/${this.filter.menu}.pdf`;
 
         const loadingTask = pdfjsLib.getDocument(url);
-        const pdf = await loadingTask.promise;
+        pdfDocInstance = await loadingTask.promise;
 
-        pdfDocInstance = pdf;
-
-        this.totalPages = pdf.numPages;
+        this.totalPages = pdfDocInstance.numPages;
         this.pageNum = 1;
         this.scale = 1.5;
 
-        this.$nextTick(() => {
-          this.renderPage();
-        });
+        this.searchResults = [];
+        this.currentResultIndex = 0;
+
+        await this.renderPage();
       } catch (err) {
         toastDanger("File PDF Not Found");
       } finally {
@@ -176,128 +202,188 @@ export default {
       }
     },
 
-    async renderPage(highlightText = "") {
-      try {
-        if (!pdfDocInstance) return;
+async renderPage() {
+  if (!pdfDocInstance) return;
 
-        const page = await pdfDocInstance.getPage(this.pageNum);
+  const page = await pdfDocInstance.getPage(this.pageNum);
 
-        const viewport = page.getViewport({
-          scale: this.scale,
-        });
+  const viewport = page.getViewport({
+    scale: this.scale,
+  });
 
-        const canvas = this.$refs.pdfCanvas;
-        if (!canvas) return;
+  const canvas = this.$refs.pdfCanvas;
+  const context = canvas.getContext("2d");
 
-        const context = canvas.getContext("2d");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
 
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+  await page.render({
+    canvasContext: context,
+    viewport,
+  }).promise;
 
-        await page.render({
-          canvasContext: context,
-          viewport,
-        }).promise;
+  if (!this.searchText) return;
 
-        // Highlight kata
-        if (highlightText) {
-          const textContent = await page.getTextContent();
+  const keyword = this.normalizeText(this.searchText);
 
-          context.fillStyle = "rgba(255,255,0,0.4)";
+  const textContent = await page.getTextContent();
 
-          textContent.items.forEach((item) => {
-            if (
-              item.str
-                .toLowerCase()
-                .includes(highlightText.toLowerCase())
-            ) {
-              const tx = pdfjsLib.Util.transform(
-                viewport.transform,
-                item.transform
-              );
+  context.save();
+  context.globalAlpha = 0.35;
+  context.fillStyle = "yellow";
+  context.globalCompositeOperation = "multiply";
 
-              const x = tx[4];
-              const y = tx[5];
-              const h = item.height * this.scale;
-              const w = item.width * this.scale;
+  textContent.items.forEach((item) => {
+    const raw = item.str;
 
-              context.fillRect(x, y - h, w, h);
-            }
-          });
-        }
-      } catch (err) {}
-    },
+    const words = raw.split(/\s+/);
+
+    if (!words.length) return;
+
+    const tx = pdfjsLib.Util.transform(
+      viewport.transform,
+      item.transform
+    );
+
+    const startX = tx[4];
+    const y = tx[5];
+
+    const totalWidth = item.width * this.scale;
+    const h = item.height * this.scale;
+
+    const avgWidth = totalWidth / raw.length;
+
+    let currentIndex = 0;
+
+    words.forEach((word) => {
+      const cleanWord = this.normalizeText(word);
+
+      const startChar = raw.indexOf(word, currentIndex);
+
+      if (startChar < 0) return;
+
+      const wordWidth = word.length * avgWidth;
+      const x = startX + (startChar * avgWidth);
+
+      if (cleanWord === keyword) {
+        context.fillRect(x, y - h, wordWidth, h);
+      }
+
+      currentIndex = startChar + word.length;
+    });
+  });
+
+  context.restore();
+},
 
     async findText() {
-      try {
-        if (!pdfDocInstance) return;
+      if (!pdfDocInstance) return;
 
-        if (!this.searchText) {
-          toastDanger("Masukkan kata pencarian");
-          return;
-        }
+      if (!this.searchText.trim()) {
+        toastDanger("Masukkan kata pencarian");
+        return;
+      }
 
-        for (let i = 1; i <= this.totalPages; i++) {
-          const page = await pdfDocInstance.getPage(i);
-          const textContent = await page.getTextContent();
+      const keyword = this.normalizeText(this.searchText);
 
-          const fullText = textContent.items
-            .map((item) => item.str)
-            .join(" ");
+      this.searchResults = [];
+      this.currentResultIndex = 0;
 
-          if (
-            fullText
-              .toLowerCase()
-              .includes(this.searchText.toLowerCase())
-          ) {
-            this.pageNum = i;
-            await this.renderPage(this.searchText);
+      for (let p = 1; p <= this.totalPages; p++) {
+        const page = await pdfDocInstance.getPage(p);
+        const textContent = await page.getTextContent();
 
-            toastSuccess("Kata ditemukan di halaman " + i);
-            return;
+        textContent.items.forEach((item) => {
+          const text = this.normalizeText(item.str);
+
+          if (text.includes(keyword)) {
+            this.searchResults.push({
+              page: p,
+              keyword,
+            });
           }
-        }
+        });
+      }
 
+      if (!this.searchResults.length) {
         toastDanger("Kata tidak ditemukan");
-      } catch (err) {}
+        return;
+      }
+
+      await this.gotoResult(0);
+
+      toastSuccess(
+        "Ditemukan " + this.searchResults.length + " hasil"
+      );
+    },
+
+    async gotoResult(index) {
+      this.currentResultIndex = index;
+
+      const result = this.searchResults[index];
+
+      this.pageNum = result.page;
+
+      await this.renderPage();
+    },
+
+    prevResult() {
+      let i = this.currentResultIndex - 1;
+
+      if (i < 0) i = this.searchResults.length - 1;
+
+      this.gotoResult(i);
+    },
+
+    nextResult() {
+      let i = this.currentResultIndex + 1;
+
+      if (i >= this.searchResults.length) i = 0;
+
+      this.gotoResult(i);
     },
 
     nextPage() {
       if (this.pageNum < this.totalPages) {
         this.pageNum++;
-        this.renderPage(this.searchText);
+        this.renderPage();
       }
     },
 
     prevPage() {
       if (this.pageNum > 1) {
         this.pageNum--;
-        this.renderPage(this.searchText);
+        this.renderPage();
       }
     },
 
     zoomIn() {
       if (this.scale < this.maxScale) {
         this.scale += 0.25;
-        this.renderPage(this.searchText);
+        this.renderPage();
       }
     },
 
     zoomOut() {
       if (this.scale > this.minScale) {
         this.scale -= 0.25;
-        this.renderPage(this.searchText);
+        this.renderPage();
       }
     },
 
     clearPdf() {
       pdfDocInstance = null;
-      this.totalPages = 0;
+
       this.pageNum = 1;
+      this.totalPages = 0;
       this.scale = 1.5;
+
       this.searchText = "";
+      this.searchResults = [];
+      this.currentResultIndex = 0;
 
       const canvas = this.$refs.pdfCanvas;
+
       if (canvas) {
         canvas.width = 0;
         canvas.height = 0;
@@ -321,9 +407,6 @@ thead {
 
 .pdf-wrapper {
   padding: 10px;
-  border: none;
-  box-shadow: none;
-  background: transparent;
 }
 
 .pdf-wrapper.active {
