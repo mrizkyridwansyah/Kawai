@@ -63,8 +63,15 @@ public class MobileMaterialStorageController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobileMaterialStorage>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobileMaterialStorage>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 
     [HttpPost("save-merge")]
@@ -88,7 +95,14 @@ public class MobileMaterialStorageController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobileMaterialMergeStorage>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobileMaterialMergeStorage>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 }

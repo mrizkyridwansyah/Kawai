@@ -12,145 +12,182 @@ using System.Diagnostics;
 
 public class TransactionConsumerAsync : BackgroundService
 {
-    private IConnection _connection;
-    private IModel _channel;
+    private IConnection? _connection;
+    private IModel? _channel;
 
     private readonly IServiceScopeFactory _scopeFactory;
-    private Dictionary<string, ITransactionHandler> _handlers;
-
     private const string ExchangeName = "stock_transaction_exchange";
     private const string QueueName = "stock_transaction_queue";
     private const string RoutingKey = "stock_transaction";
     private const string DlxExchange = "stock_transaction_dlx";
-    private const string DlxQueue = "stock_transaction_dead_letter_queue";
+    private const string DlxQueue = "stock_transaction_dead_letter_queue_v1";
     private const string DlxRoutingKey = "dead.stock_transaction";
 
-    public TransactionConsumerAsync
-    (
-        IServiceScopeFactory scopeFactory
-    )
+    public TransactionConsumerAsync(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
-        InitRabbitMq();
-    }
-
-    private void InitRabbitMq()
-    {
-        Console.WriteLine("InitRabbitMq");
-        var factory = new RabbitMQ.Client.ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-
-        // dlx ini untuk simpan message yg error / NACK tapi ga di requeue. jadi masih bisa diliat, tapi gw kasih batasan 1 bulan.
-        var dlxQueueArgs = new Dictionary<string, object>
-        {
-            { "x-message-ttl", 2592000000 }, // 1 bulan dalam ms
-        };
-        _channel.ExchangeDeclare(DlxExchange, ExchangeType.Direct, durable: true);
-        _channel.QueueDeclare(DlxQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
-        _channel.QueueBind(DlxQueue, DlxExchange, DlxRoutingKey);
-
-        // argumen dlx ini harus disertain ke queue utama biar kalo nack bakal dikirim kesitu.
-        var queueArgs = new Dictionary<string, object>
-        {
-            { "x-dead-letter-exchange", DlxExchange },
-            { "x-dead-letter-routing-key", DlxRoutingKey }
-        };
-
-        _channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, durable: true);
-        _channel.QueueDeclare(QueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArgs);
-        _channel.QueueBind(QueueName, ExchangeName, RoutingKey);
-
-        _channel.BasicQos(0, 1, false); // process 1 message at a time
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                InitRabbitMq();
+                StartConsumer(stoppingToken);
+
+                Console.WriteLine("[RABBITMQ] Consumer started successfully");
+
+                // keep alive
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RABBITMQ] disconnected: {ex.Message}");
+                await Task.Delay(5000, stoppingToken); // retry after 5 sec
+            }
+        }
+    }
+
+    private void InitRabbitMq()
+    {
+        var factory = new RabbitMQ.Client.ConnectionFactory
+        {
+            HostName = "localhost",
+            DispatchConsumersAsync = true,
+            AutomaticRecoveryEnabled = true,
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
+        };
+
+        _connection = factory.CreateConnection();
+        _channel = _connection.CreateModel();
+
+        _channel.BasicQos(0, 1, false);
+
+        DeclareTopologySafe();
+    }
+
+    private void DeclareTopologySafe()
+    {
+        var dlxQueueArgs = new Dictionary<string, object>
+    {
+        { "x-message-ttl", 2592000000 }
+    };
+
+        var queueArgs = new Dictionary<string, object>
+    {
+        { "x-dead-letter-exchange", DlxExchange },
+        { "x-dead-letter-routing-key", DlxRoutingKey }
+    };
+
+        _channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, durable: true);
+        _channel.ExchangeDeclare(DlxExchange, ExchangeType.Direct, durable: true);
+
+        _channel.QueueDeclare(
+            QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: queueArgs
+        );
+
+        _channel.QueueBind(QueueName, ExchangeName, RoutingKey);
+
+        _channel.QueueDeclare(
+            DlxQueue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: dlxQueueArgs
+        );
+
+        _channel.QueueBind(DlxQueue, DlxExchange, DlxRoutingKey);
+    }
+
+    private void StartConsumer(CancellationToken stoppingToken)
+    {
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+
+        consumer.Received += async (model, ea) =>
+        {
+            await HandleMessage(ea);
+        };
+
+        _channel.BasicConsume(
+            queue: QueueName,
+            autoAck: false,
+            consumer: consumer
+        );
+    }
+
+    private async Task HandleMessage(BasicDeliverEventArgs ea)
+    {
+        using var scope = _scopeFactory.CreateScope();
+
+        var notificationRepository =
+            scope.ServiceProvider.GetRequiredService<INotificationRepository>();
+
+        var notificationService =
+            scope.ServiceProvider.GetRequiredService<NotificationService<NotifApprovalHub>>();
+
+        var body = ea.Body.ToArray();
+        var json = Encoding.UTF8.GetString(body);
+
+        StockTransactionMessage<object>? message = null;
+
+        var notification = new Notification
+        {
+            Priority = "TOP",
+            UrlRedirect = ""
+        };
+
         try
         {
-            Console.WriteLine("ExecuteAsync");
+            var stopwatch = Stopwatch.StartNew();
 
-            var consumer = new AsyncEventingBasicConsumer(_channel);
+            message = JsonSerializer.Deserialize<StockTransactionMessage<object>>(json);
 
-            consumer.Received += async (model, ea) =>
-            {
-                Console.WriteLine("ExecuteAsync Received");
-                try
-                {
-                    using var scope = _scopeFactory.CreateScope();
-                    var _notificationRepository = scope.ServiceProvider.GetRequiredService<INotificationRepository>();
-                    var _notificationService = scope.ServiceProvider.GetRequiredService<NotificationService<NotifApprovalHub>>();
+            if (message == null)
+                throw new Exception("Invalid message payload");
 
-                    var body = ea.Body.ToArray();
-                    var json = Encoding.UTF8.GetString(body);
+            notification.Title = message.FormatMessage;
+            notification.Receiver = message.AuthUserId;
 
-                    StockTransactionMessage<object> message = null;
+            Console.WriteLine($"[RABBITMQ] HandleMessage: {message.FormatMessage}");
+            
+            await ProcessMessageAsync(message);
 
-                    Notification notification = new Notification
-                    {
-                        Priority = "TOP",
-                        UrlRedirect = ""
-                    };
+            _channel!.BasicAck(ea.DeliveryTag, false);
 
-                    try
-                    {
-                        var stopwatch = Stopwatch.StartNew();
+            stopwatch.Stop();
 
-                        message = JsonSerializer.Deserialize<StockTransactionMessage<object>>(json);
-                        if (message == null)
-                            throw new Exception("Failed to deserialize message.");
+            _ = Task.Run(() => SaveMQLogs(message, stopwatch.ElapsedMilliseconds));
 
-                        notification.Title = message.FormatMessage;
-                        notification.Description = "Transaction success!";
-                        notification.Receiver = message.AuthUserId;
-                        notification.Sender = message.AuthUserId;
-                        notification.NotifType = "SUCCESS";
-
-                        await ProcessMessageAsync(message);
-
-                        _channel.BasicAck(ea.DeliveryTag, false);
-
-                        stopwatch.Stop();
-
-                        await SaveMQLogs(message, stopwatch.ElapsedMilliseconds);
-                    }
-                    catch (Exception ex)
-                    {
-                        notification.NotifType = "ERROR";
-                        notification.Description = "Transaction failed: " + ex.Message;
-                        await SaveErrorLogs(json, message.LogContext, ex);
-                        _channel.BasicNack(ea.DeliveryTag, false, false);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(notification.Receiver))
-                    {
-                        await _notificationRepository.SaveNotification(notification);
-                        var notifications = new List<Notification> { notification };
-                        await _notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification", new
-                        {
-                            Count = 1,
-                            Notifications = notifications
-                        });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _channel.BasicNack(ea.DeliveryTag, false, false);
-                }
-            };
-
-            _channel.BasicConsume(QueueName, autoAck: false, consumer: consumer);
-            Console.WriteLine("BasicConsume started.");
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                Console.WriteLine($"[RABBITMQ] still running ...");
-                await Task.Delay(1000, stoppingToken); // sleep to avoid CPU busy loop
-            }
+            notification.Description = "Transaction success!";
+            notification.NotifType = "SUCCESS";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Failed to start TransactionConsumer: {ex.Message}");
+            _channel!.BasicNack(ea.DeliveryTag, false, false);
+
+            notification.NotifType = "ERROR";
+            notification.Description = "Transaction failed: " + ex.Message;
+
+            _ = Task.Run(() => SaveErrorLogs(json, message?.LogContext, ex));
+        }
+
+        if (!string.IsNullOrWhiteSpace(notification.Receiver))
+        {
+            await notificationRepository.SaveNotification(notification);
+            var notifications = new List<Notification> { notification };
+            await notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification",
+                new
+                {
+                    Count = 1,
+                    Notifications = notifications
+                }
+            );
         }
     }
 
@@ -216,11 +253,9 @@ public class TransactionConsumerAsync : BackgroundService
     private async Task ProcessMessageAsync(StockTransactionMessage<object> message)
     {
         using var scope = _scopeFactory.CreateScope();
-        var handlers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITransactionHandler>>();
+        var handlers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITransactionHandler>>().ToDictionary(h => h.TransactionType.ToUpper(), h => h);
 
-        _handlers = handlers.ToDictionary(h => h.TransactionType.ToUpper(), h => h);
-
-        if (_handlers.TryGetValue(message.TransactionType.ToUpper(), out var handler))
+        if (handlers.TryGetValue(message.TransactionType.ToUpper(), out var handler))
         {
             await handler.HandleAsync(message.Payload, message.LogContext, message.AuthUserId);
         }

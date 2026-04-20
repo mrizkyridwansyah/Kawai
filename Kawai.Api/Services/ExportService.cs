@@ -101,7 +101,7 @@ public class ExportService : IExportService
 
         _fileStorage.SaveToExports(key, ms);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { Key = key, FileName = "Master Item" });
+        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Master Item" });
     }
 
     public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId)
@@ -351,6 +351,8 @@ public class ExportService : IExportService
         string key = "PrintBarcodeUsingJob_" + receipt.Id.Value.ToString();
         _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { Key = key, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
+        string keyStorage = Guid.NewGuid().ToString();
+
+        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
     }
 }

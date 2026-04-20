@@ -83,7 +83,7 @@
               <v-button-search-reset :search="onSearch" :reset="reset" />
               <v-button
                 :disabled="filter.ReceiptId == 'ALL'"
-                :action="print"
+                :action="printBarcodesUsingJob"
                 label="Print Label PDF"
                 icon="file-pdf"
                 cClass="ml-1 btn-green"

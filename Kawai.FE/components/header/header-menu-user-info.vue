@@ -160,8 +160,165 @@ export default {
     });
 
     signalr.on("FileExportExcel", (data) => {
+      this.handleExport(data, "excel");
+    });
+
+    signalr.on("FileExportPDF", (data) => {
+      this.handleExport(data, "pdf");
+    });
+
+    signalr.onreconnected(() => {
+      console.log("✅ Reconnected to SignalR");
+      this.notif
+        .loadCountUnread(this.userData.UserId)
+        .then((dt3) => {
+          let diff = dt3.Data - this.unreadCount;
+          if (diff > 0) {
+            toastSuccess(`You have ${diff} new notifications!`);
+          }
+
+          this.unreadCount = dt3.Data;
+        })
+        .catch((err) => {
+          console.error("Failed to reload unread count after reconnect:", err);
+        });
+    });
+
+    const notifToggle = this.$refs.notifToggle;
+    if (notifToggle) {
+      notifToggle.addEventListener("shown.bs.dropdown", () => {
+        this.loadNotifications();
+      });
+
+      notifToggle.addEventListener("hidden.bs.dropdown", () => {
+        this.openNotif = false;
+        console.log(this.openNotif, "openNotif");
+      });
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible") return;
+
+      const queueKey = "pending_exports";
+      let queue = JSON.parse(localStorage.getItem(queueKey) || "[]");
+
+      if (queue.length === 0) return;
+
+      console.log("Processing queue:", queue.length);
+
+      queue.forEach((item, index) => {
+        const key = item.keyStorage;
+
+        if (this.isHandled(key)) return;
+
+        this.markHandled(key);
+
+        setTimeout(() => {
+          this.executeDownload(item, item.type);
+        }, index * 800);
+      });
+
+      localStorage.removeItem(queueKey);
+    });
+  },
+  methods: {
+    loadNotifications: function () {
+      if (this.openNotif) return;
+
+      this.notif
+        .load(this.userData.UserId)
+        .then((dt) => (this.notifications = dt.Data));
+      // Reset badge
+      this.unreadCount = 0;
+      this.hasNewNotification = false;
+      this.openNotif = true;
+      console.log(this.openNotif, "openNotif");
+    },
+    updateSeen: function (notif) {
+      this.notif
+        .updateSeen(notif.Id)
+        .then((datas) => {
+          this.$router.push(notif.UrlRedirect);
+        })
+        .catch((err) => {});
+    },
+    onOver: function () {
+      this.$refs["header-menu-user-info"].visible = this.showBackdrop = true;
+    },
+    onLeave: function () {
+      this.$refs["header-menu-user-info"].visible = this.showBackdrop = false;
+    },
+    signOut: function () {
+      clearCookies();
+      localStorage.clear();
+      location.href = "/auth/sign-in";
+    },
+    changeFactory: function () {
+      location.href = "/auth/factory";
+    },
+
+    //signalR Export file handling
+    getHandledKey: function (key) {
+      return `export_handled_${key}`;
+    },
+    isHandled: function (key) {
+      const raw = localStorage.getItem(this.getHandledKey(key));
+      if (!raw) {
+        localStorage
+        return false;
+      }
+
+      try {
+        const data = JSON.parse(raw);
+        return Date.now() - data.time < 10 * 60 * 1000; // TTL 10 menit
+      } catch {
+        return true;
+      }
+    },
+    markHandled: function (key) {
+      localStorage.setItem(
+        this.getHandledKey(key),
+        JSON.stringify({ time: Date.now() }),
+      );
+    },
+    handleExport: function (data, type) {
+      const key = data?.keyStorage;
+      if (!key) return;
+
+      // ❗ sudah di-handle tab lain
+      if (this.isHandled(key)) {
+        console.log("Skip: already handled", key);
+        return;
+      }
+
+      const queueKey = "pending_exports";
+
+      if (document.visibilityState !== "visible") {
+        let queue = JSON.parse(localStorage.getItem(queueKey) || "[]");
+
+        if (!queue.find((x) => x.key === key)) {
+          queue.push({ ...data, type });
+          localStorage.setItem(queueKey, JSON.stringify(queue));
+        }
+
+        return;
+      }
+
+      this.markHandled(key);
+      this.executeDownload(data, type);
+    },
+    executeDownload: function (data, type) {
+      if (type === "excel") {
+        return this.downloadExcel(data);
+      }
+
+      if (type === "pdf") {
+        return this.downloadPdf(data);
+      }
+    },
+    downloadExcel: function (data) {
       this.$http
-        .get(`/export-file/download-excel?key=${data?.key}`, {
+        .get(`/export-file/download-excel?key=${data?.keyFile}`, {
           responseType: "blob",
         })
         .then((res) => {
@@ -203,11 +360,10 @@ export default {
 
           throw err;
         });
-    });
-
-    signalr.on("FileExportPDF", (data) => {
+    },
+    downloadPdf: function (data) {
       this.$http
-        .get(`/export-file/download-pdf?key=${data?.key}`, {
+        .get(`/export-file/download-pdf?key=${data?.keyFile}`, {
           responseType: "blob",
         })
         .then((res) => {
@@ -251,70 +407,6 @@ export default {
 
           throw err;
         });
-    });
-
-    signalr.onreconnected(() => {
-      console.log("✅ Reconnected to SignalR");
-      this.notif
-        .loadCountUnread(this.userData.UserId)
-        .then((dt3) => {
-          let diff = dt3.Data - this.unreadCount;
-          if (diff > 0) {
-            toastSuccess(`You have ${diff} new notifications!`);
-          }
-
-          this.unreadCount = dt3.Data;
-        })
-        .catch((err) => {
-          console.error("Failed to reload unread count after reconnect:", err);
-        });
-    });
-    const notifToggle = this.$refs.notifToggle;
-    if (notifToggle) {
-      notifToggle.addEventListener("shown.bs.dropdown", () => {
-        this.loadNotifications();
-      });
-
-      notifToggle.addEventListener("hidden.bs.dropdown", () => {
-        this.openNotif = false;
-        console.log(this.openNotif, "openNotif");
-      });
-    }
-  },
-  methods: {
-    loadNotifications: function () {
-      if (this.openNotif) return;
-
-      this.notif
-        .load(this.userData.UserId)
-        .then((dt) => (this.notifications = dt.Data));
-      // Reset badge
-      this.unreadCount = 0;
-      this.hasNewNotification = false;
-      this.openNotif = true;
-      console.log(this.openNotif, "openNotif");
-    },
-    updateSeen: function (notif) {
-      this.notif
-        .updateSeen(notif.Id)
-        .then((datas) => {
-          this.$router.push(notif.UrlRedirect);
-        })
-        .catch((err) => {});
-    },
-    onOver: function () {
-      this.$refs["header-menu-user-info"].visible = this.showBackdrop = true;
-    },
-    onLeave: function () {
-      this.$refs["header-menu-user-info"].visible = this.showBackdrop = false;
-    },
-    signOut: function () {
-      clearCookies();
-      localStorage.clear();
-      location.href = "/auth/sign-in";
-    },
-    changeFactory: function () {
-      location.href = "/auth/factory";
     },
   },
 };

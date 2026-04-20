@@ -75,8 +75,15 @@ public class MobileLoadingTrolleyController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobileLoadingTrolley>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobileLoadingTrolley>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 
     [HttpPost("complete")]
@@ -89,7 +96,7 @@ public class MobileLoadingTrolleyController : HahaController
         var after = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
         //BackgroundJob.Enqueue<IRobotService>(service => service.SendRobotRequest(model));
-        
+
         await _logger.SaveDataLog(new DataLogDto
         {
             DocumentType = "Mobile Loading Trolley",

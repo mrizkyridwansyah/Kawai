@@ -49,7 +49,14 @@ public class MobileMaterialNGController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobileMaterialNG>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobileMaterialNG>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 }

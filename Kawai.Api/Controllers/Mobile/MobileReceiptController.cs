@@ -121,7 +121,14 @@ public class MobileReceiptController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobileReceipt>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobileReceipt>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 }

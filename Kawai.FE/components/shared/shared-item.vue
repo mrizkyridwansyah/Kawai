@@ -50,8 +50,22 @@ export default {
     filter: {
       keyword: null,
       sorts: {
-        ItemCode: "asc",
+        Item_Code: "asc",
       },
+      sortItems: [
+        {
+          label: "Item Name",
+          value: "Item_Name",
+          selected: false,
+          direction: "asc",
+        },
+        {
+          label: "Item Code",
+          value: "Item_Code",
+          selected: true,
+          direction: "asc",
+        },
+      ],
     },
   }),
   watch: {

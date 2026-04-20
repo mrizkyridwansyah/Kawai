@@ -41,7 +41,7 @@ public class MobileSupplyScanRequestController : HahaController
     }
 
     [HttpGet("warehouseline-ddlsearch")]
-    public async Task<IActionResult> WarehouseDDL(string keyword,   string ids)
+    public async Task<IActionResult> WarehouseDDL(string keyword, string ids)
     {
         var results = await _supplyscanrequestRepository.GetWarehouseDDL(keyword);
         if (!string.IsNullOrEmpty(ids))
@@ -76,7 +76,7 @@ public class MobileSupplyScanRequestController : HahaController
     }
 
     [HttpGet("list-detail")]
-    public async Task<IActionResult> GetListDetail(string warehouseCode , string requestNo , string itemCode)
+    public async Task<IActionResult> GetListDetail(string warehouseCode, string requestNo, string itemCode)
     {
         var result = await _supplyscanrequestRepository.GetListDetail(warehouseCode, requestNo, itemCode);
         result = result.ToList();
@@ -104,8 +104,15 @@ public class MobileSupplyScanRequestController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobilSupplyScanRequestSubmit>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobilSupplyScanRequestSubmit>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 
 }

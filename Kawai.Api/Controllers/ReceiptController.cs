@@ -384,7 +384,9 @@ public class ReceiptController : HahaController
         {
             message = "-";
             fileExport.Dispose();
-            _notification.BroadCastOnlyTo([Auth.User.UserID], "FileExportPDF", new { Key = key, FileName = result.SupplierName + "_" + result.DNNumber });
+
+            string keyStorage = Guid.NewGuid().ToString();
+            _notification.BroadCastOnlyTo([Auth.User.UserID], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = result.SupplierName + "_" + result.DNNumber });
         }
         else
         {

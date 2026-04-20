@@ -106,8 +106,15 @@ public class QualityCheckController : HahaController
             }
         };
 
-        _transactionProducer.Publish<QualityCheckConfirm>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<QualityCheckConfirm>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 
     [HttpPost("print/report-ng")]

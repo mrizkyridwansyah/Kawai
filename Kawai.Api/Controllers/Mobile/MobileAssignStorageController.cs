@@ -70,7 +70,14 @@ public class MobileAssignStorageController : HahaController
             }
         };
 
-        _transactionProducer.Publish<MobileAssignStorage>(message);
-        return Pending(message);
+        try
+        {
+            _transactionProducer.Publish<MobileAssignStorage>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
     }
 }
