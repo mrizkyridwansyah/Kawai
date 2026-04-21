@@ -1,50 +1,51 @@
 <template>
   <v-frame title="Address" icon="database">
     <template #frame-content>
-      <table class="ml-2">
-        <tr>
-          <td><label class="form-label">Factory</label></td>
-          <td style="padding-left: 15px">
-            <filter-factory-privileges
-              class="form-control"
-              v-model="filter.factory"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Warehouse</label>
-          </td>
-          <td style="padding-left: 15px; padding-top: 5px">
-            <filter-warehouse-privileges
+      <!-- FILTER SECTION -->
+<div class="filter-wrapper">
+
+  <!-- 1 -->
+  <div class="filter-item">
+    <label class="form-label">Factory</label>
+    <filter-factory-privileges
+      class="form-control"
+      v-model="filter.factory"
+      style-code="width:140px"
+      style-desc="width:240px"
+    />
+  </div>
+
+  <!-- 2 -->
+  <div class="filter-item">
+    <label class="form-label">Warehouse</label>
+   <filter-warehouse-privileges
               class="form-control"
               v-model="filter.warehouse"
               :factory-code="filter.factory"
               style-code="width: 140px"
               style-desc="width: 240px"
             />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Area</label>
-          </td>
-          <td style="padding-left: 15px; padding-top: 5px">
-            <filter-area-privileges
+  </div>
+
+  <!-- 3 -->
+  <div class="filter-item">
+    <label class="form-label">Area</label>
+     <filter-area-privileges
               class="form-control"
               v-model="filter.area"
               :warehouse="filter.warehouse"
               style-code="width: 140px"
               style-desc="width: 240px"
             />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <div class="d-flex flex-fill mt-1">
-              <v-button-add :add="add" cClass="mr-1" />
+  </div>
+ 
+</div>
+
+ 
+      <div class="button-section">
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+          <v-button-add :add="add" cClass="mr-1" />
               <v-button-print
                 :print="print"
                 cClass=""
@@ -67,10 +68,10 @@
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
               />
-            </div>
-          </td>
-        </tr>
-      </table>
+        </div>
+      </div>
+      </div>
+
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
@@ -504,4 +505,79 @@ export default {
 thead {
   white-space: nowrap;
 }
+/* GANTI CSS .filter-wrapper lama dengan ini */
+
+.filter-wrapper{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(320px,1fr));
+  grid-auto-flow:column;     /* isi atas ke bawah dulu */
+  gap:4px 20px;
+  width:100%;
+  align-items:center;
+}
+
+/* jumlah baris otomatis sesuai jumlah item */
+.filter-wrapper:has(.filter-item:nth-child(8)){
+  grid-template-rows:repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))){
+  grid-template-rows:repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))){
+  grid-template-rows:repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))){
+  grid-template-rows:repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))){
+  grid-template-rows:repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))){
+  grid-template-rows:repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))){
+  grid-template-rows:repeat(1, auto);
+}
+
+.filter-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:32px;
+  width:100%;
+}
+
+.filter-item label{
+  width:70px;
+  min-width:70px;
+  white-space:nowrap;
+}
+
+/* MOBILE = turun kebawah normal */
+@media(max-width:768px){
+  .filter-wrapper{
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto !important;
+    grid-auto-flow:row !important;
+    gap:6px;
+  }
+
+  .filter-item{
+    width:100%;
+  }
+}
+
+.button-section{
+  border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+  width: 100%;
+}
 </style>
+

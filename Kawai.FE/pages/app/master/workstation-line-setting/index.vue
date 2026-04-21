@@ -2,56 +2,52 @@
   <v-frame title="Workstation Line Setting Master" icon="database">
     <template #frame-content>
  
+<!-- FILTER SECTION -->
+<div class="filter-wrapper">
 
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-2"
-          >Factory</label
-        >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
-          <filter-factory-privileges
-            class="form-control"
-            v-model="filter.factory"
-            style-code="width: 110px"
-              style-desc="width: 250px"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-2"
-          >Process</label
-        >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
-          <filter-trade-2
-              class="form-control"
-              placeholder=" "
-              v-model="filter.supplier"
-              :trade-cls="['1']"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-          
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-2"
-          >Line</label
-        >
-        <div class="col-xl-6 col-lg-6 col-md-10 col-sm-10 col-xs-10">
-          <filter-line-factory
-            class="form-control"
-            :company="filter.factory"
-            :manufacture="filter.supplier"
-             placeholder=" "
-            v-model="filter.linecode"
-            style-code="width: 110px"
-              style-desc="width: 250px"
-          />
-        </div>
-      </div>
+  <!-- 1 -->
+  <div class="filter-item">
+    <label class="form-label">Factory</label>
+    <filter-factory-privileges
+      class="form-control"
+      v-model="filter.factory"
+      style-code="width:120px"
+      style-desc="width:250px"
+    />
+  </div>
 
+  <!-- 2 -->
+  <div class="filter-item">
+    <label class="form-label">Process</label>
+    <filter-trade-2
+      class="form-control"
+      placeholder=" "
+      v-model="filter.supplier"
+      :trade-cls="['1']"
+      style-code="width:120px"
+      style-desc="width:250px"
+    />
+  </div>
+
+  <!-- 3 -->
+  <div class="filter-item">
+    <label class="form-label">Line</label>
+    <filter-line-factory
+      class="form-control"
+      :company="filter.factory"
+      :manufacture="filter.supplier"
+      placeholder=" "
+      v-model="filter.linecode"
+      style-code="width:120px"
+      style-desc="width:250px"
+    />
+  </div>
+
+  
+
+</div>
+    
+<div class="button-section">
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
           <button
@@ -76,6 +72,7 @@
           />
           <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
         </div>
+      </div>
       </div>
       <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
         <template #table-content>
@@ -502,5 +499,79 @@ debugger;
 <style>
 thead {
   white-space: nowrap;
+}
+/* GANTI CSS .filter-wrapper lama dengan ini */
+
+.filter-wrapper{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(320px,1fr));
+  grid-auto-flow:column;     /* isi atas ke bawah dulu */
+  gap:4px 20px;
+  width:100%;
+  align-items:center;
+}
+
+/* jumlah baris otomatis sesuai jumlah item */
+.filter-wrapper:has(.filter-item:nth-child(8)){
+  grid-template-rows:repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))){
+  grid-template-rows:repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))){
+  grid-template-rows:repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))){
+  grid-template-rows:repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))){
+  grid-template-rows:repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))){
+  grid-template-rows:repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))){
+  grid-template-rows:repeat(1, auto);
+}
+
+.filter-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:32px;
+  width:100%;
+}
+
+.filter-item label{
+  width:70px;
+  min-width:70px;
+  white-space:nowrap;
+}
+
+/* MOBILE = turun kebawah normal */
+@media(max-width:768px){
+  .filter-wrapper{
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto !important;
+    grid-auto-flow:row !important;
+    gap:6px;
+  }
+
+  .filter-item{
+    width:100%;
+  }
+}
+
+.button-section{
+   border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+  width: 100%;
 }
 </style>

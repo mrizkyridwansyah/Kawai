@@ -1,7 +1,14 @@
 <template>
   <v-frame title="Work Station Master" icon="database">
     <template #frame-content>
-      <v-button-add :add="add" cClass="mr-1" />
+        <div class="button-section">
+      <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+        <v-button-add :add="add" cClass="mr-1" />
+        </div>
+      </div>
+      </div>
+
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
@@ -196,3 +203,11 @@ export default {
   },
 };
 </script>
+<style>
+.button-section{
+  border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+</style>
