@@ -5,6 +5,8 @@
     :ds-page="ds.setPageDetail"
     :ds-length="ds.setLengthDetail"
     :ds-load="ds.inquiryDetail"
+    :default-height="350"
+    :max-height="350"
   >
     <template #table-content>
       <table

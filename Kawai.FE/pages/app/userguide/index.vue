@@ -393,7 +393,7 @@ async renderPage() {
 };
 </script>
 
-<style>
+<style scoped>
 thead {
   white-space: nowrap;
 }

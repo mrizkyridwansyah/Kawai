@@ -13,9 +13,7 @@
               style-desc="width: 250px;"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Area</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -32,31 +30,35 @@
           <td style="padding-top: 5px">
             <label class="form-label">Period</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px; width: 200px;">
+          <td style="padding-top: 5px; padding-left: 15px; width: 200px">
             <input-month v-model="filter.period" style="width: 180px" />
           </td>
-          <td style="padding-top: 5px;" colspan="2">
-            <div style="margin-left: -30px;">
+          <td style="padding-top: 5px" colspan="2">
+            <div style="margin-left: -30px">
               <v-button-search-reset :search="search" :reset="reset" />
-
             </div>
           </td>
         </tr>
       </table>
+      <hr />
       <!-- TABLE -->
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
         :ds="ds"
+        :data-items="ds.data.Items"
         :export-excel="true"
+        :frozen-column-left="3"
         :export-excel-action="exportExcel"
+        :default-height="280"
+        :max-height="280"
+        ref="vtable"
       >
-        syncing
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
-            style="min-width: 100%; width: max-content"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="table"
           >
             <thead>
               <tr>
@@ -76,10 +78,6 @@
             </thead>
 
             <tbody>
-              <tr v-if="!ds.data.Items?.length">
-                <td colspan="12" class="text-center text-muted">No data</td>
-              </tr>
-
               <tr v-for="(item, i) in ds.data.Items" :key="i">
                 <td>{{ item.Warehouse }}</td>
                 <td>{{ item.ProductCode }}</td>
@@ -123,7 +121,7 @@ export default {
         period: new Date(
           new Date().getFullYear(),
           new Date().getMonth(),
-          1
+          1,
         ).toISOString(),
 
         keyword: null,
@@ -199,20 +197,20 @@ export default {
 
     exportExcel() {
       const filters = [
-          {
-            WarehouseCode: this.filter.warehouse || "",
-            AreaCode: this.filter.area || "",
-            Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
-            Keyword: this.filter.keyword || "",
-          },
-        ];
-        return this.ds.exportExcel(filters);
+        {
+          WarehouseCode: this.filter.warehouse || "",
+          AreaCode: this.filter.area || "",
+          Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
+          Keyword: this.filter.keyword || "",
+        },
+      ];
+      return this.ds.exportExcel(filters);
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 thead {
   white-space: nowrap;
 }

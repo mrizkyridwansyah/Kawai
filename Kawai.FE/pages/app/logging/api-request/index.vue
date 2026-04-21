@@ -1,6 +1,12 @@
 <template>
   <header-menu title="Request API Logs" />
-  <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+  <v-table
+    :filter="filter"
+    :keyword-keys="keywordKeys"
+    :ds="ds"
+    :default-height="280"
+    :max-height="280"
+  >
     <template #table-content>
       <table
         class="table table-striped mb-0 align-middle"
@@ -29,7 +35,9 @@
             <td>{{ item.Method }}</td>
             <td>{{ item.Path }}</td>
             <td>{{ item.IP }}</td>
-            <td class="text-right">{{ $func.formatNumber(item.ElapsedtimeMs) }}</td>
+            <td class="text-right">
+              {{ $func.formatNumber(item.ElapsedtimeMs) }}
+            </td>
           </tr>
         </tbody>
       </table>

@@ -9,35 +9,16 @@
               class="form-control"
               v-model="filter.warehouse"
               factory-code="ALL"
-              style-code="width: 150px"
+              style-code="width: 160px"
               style-desc="width: 300px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Area</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <filter-area-privileges
-              class="form-control"
-              
-              v-model="filter.area"
-              :warehouse="filter.warehouse"
-              :include-temp="true"
-              style-code="width: 150px"
-              style-desc="width: 300px"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-left: 15px">
             <label class="form-label">Item</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px">
+          <td style="padding-left: 15px" colspan="3">
             <filter-item
               class="form-control"
-              
               v-model="filter.item"
               style-code="width: 160px"
               style-desc="width: 300px"
@@ -46,6 +27,19 @@
         </tr>
         <tr>
           <td style="padding-top: 5px">
+            <label class="form-label">Area</label>
+          </td>
+          <td style="padding-left: 15px">
+            <filter-area-privileges
+              class="form-control"
+              v-model="filter.area"
+              :warehouse="filter.warehouse"
+              :include-temp="true"
+              style-code="width: 160px"
+              style-desc="width: 300px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Lot No</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -57,12 +51,10 @@
               address="ALL"
               :show-option-all="true"
               :item="filter.item"
-              style="width: 200px"
+              style="width: 265px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Period</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -73,6 +65,7 @@
             />
           </td>
         </tr>
+        <tr></tr>
         <tr>
           <td style="padding-top: 5px" colspan="2">
             <div class="d-flex flex-fill">
@@ -85,6 +78,7 @@
           </td>
         </tr>
       </table>
+      <hr />
       <div ref="historyContent" class="mt-4">
         <div class="elevated-tree-container shadow-sm bg-white rounded">
           <v-tree
@@ -95,6 +89,8 @@
             :is-server-error="ds.isServerError"
             :is-network-error="ds.isNetworkError"
             child-key="children"
+            :default-height="360"
+            :max-height="360"
           />
         </div>
       </div>
@@ -118,7 +114,7 @@ export default {
       period: new Date(
         new Date().getFullYear(),
         new Date().getMonth(),
-        1
+        1,
       ).toISOString(),
       warehouse: null,
       area: null,
@@ -275,25 +271,25 @@ export default {
           grouped[lotNo] = {
             LotNo: lotNo,
             PreMonth: this.$func.formatNumber(
-              data.filter((x) => x.LotNo == lotNo)[0].PreMonth
+              data.filter((x) => x.LotNo == lotNo)[0].PreMonth,
             ),
             Receipt: this.$func.formatNumber(
               data
                 .filter((x) => x.LotNo == lotNo)
-                .reduce((a, b) => a + parseFloat(b.Receipt), 0)
+                .reduce((a, b) => a + parseFloat(b.Receipt), 0),
             ),
             Supply: this.$func.formatNumber(
               data
                 .filter((x) => x.LotNo == lotNo)
-                .reduce((a, b) => a + parseFloat(b.Supply), 0)
+                .reduce((a, b) => a + parseFloat(b.Supply), 0),
             ),
             Reject: this.$func.formatNumber(
               data
                 .filter((x) => x.LotNo == lotNo)
-                .reduce((a, b) => a + parseFloat(b.Reject), 0)
+                .reduce((a, b) => a + parseFloat(b.Reject), 0),
             ),
             Current: this.$func.formatNumber(
-              data.filter((x) => x.LotNo == lotNo)[0].Current
+              data.filter((x) => x.LotNo == lotNo)[0].Current,
             ),
             children: [],
           };
@@ -308,7 +304,7 @@ export default {
         delete childItem.Current;
 
         childItem.TransactionDate = this.$func.formatDateTime(
-          childItem.TransactionDate
+          childItem.TransactionDate,
         );
         childItem.Receipt = this.$func.formatNumber(childItem.Receipt);
         childItem.Supply = this.$func.formatNumber(childItem.Supply);
@@ -321,23 +317,23 @@ export default {
       console.log(treeChildren);
       let totalPreMonth = treeChildren.reduce(
         (a, b) => a + parseFloat(String(b.PreMonth).replace(/,/g, "")),
-        0
+        0,
       );
       let totalReceipt = treeChildren.reduce(
         (a, b) => a + parseFloat(String(b.Receipt).replace(/,/g, "")),
-        0
+        0,
       );
       let totalSupply = treeChildren.reduce(
         (a, b) => a + parseFloat(String(b.Supply).replace(/,/g, "")),
-        0
+        0,
       );
       let totalReject = treeChildren.reduce(
         (a, b) => a + parseFloat(String(b.Reject).replace(/,/g, "")),
-        0
+        0,
       );
       let totalCurrent = treeChildren.reduce(
         (a, b) => a + parseFloat(String(b.Current).replace(/,/g, "")),
-        0
+        0,
       );
 
       // Tambahkan 1 parent global summary di atas semua LotNo

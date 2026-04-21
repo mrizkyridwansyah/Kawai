@@ -6,6 +6,8 @@
     :ds-page="ds.setPageDetail"
     :ds-length="ds.setLengthDetail"
     :ds-load="ds.loadDetail"
+    :default-height="380"
+    :max-height="380"
   >
     <template #table-content>
       <table

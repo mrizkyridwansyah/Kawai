@@ -4,20 +4,36 @@
       <table>
         <tr>
           <td><label class="form-label">Factory</label></td>
-          <td style="padding-left: 15px" colspan="3">
+          <td style="padding-left: 15px">
             <filter-factory-privileges
               class="form-control"
               v-model="filter.FactoryCode"
-              style-code="width: 110px;"
+              style-code="width: 140px;"
               style-desc="width: 250px;"
             />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Receipt Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-date v-model="filter.PeriodFrom" style-date="width:120px" />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label
+              class="form-label"
+              style="padding-top: 5px; padding-right: 15px"
+              >To</label
+            >
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-date v-model="filter.PeriodUntil" style-date="width:120px" />
           </td>
         </tr>
         <tr>
           <td style="padding-top: 5px">
             <label class="form-label">Supplier</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <filter-trade-2
               class="form-control"
               v-model="filter.SupplierCode"
@@ -27,24 +43,20 @@
               style-desc="width: 250px;"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Status</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-iqc-status
               class="form-control"
               v-model="filter.Status"
-              style="width: 110px"
+              style="width: 140px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Source</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-iqc-source
               class="form-control"
               v-model="filter.Source"
@@ -53,28 +65,20 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Receipt Date</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <input-date v-model="filter.PeriodFrom" style-date="width:100px" />
-          </td>
-          <td style="padding-top: 5px">
-            <label class="form-label">To</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <input-date v-model="filter.PeriodUntil" style-date="width:100px" />
-          </td>
-        </tr>
-        <tr>
           <td colspan="4" style="padding-top: 5px">
             <v-button-search-reset :search="search" :reset="resetFilter" />
           </td>
         </tr>
       </table>
-
+      <hr />
       <div style="width: 1150px">
-        <v-table-input :data-items="lists" :frozen-column-left="3" ref="vtable">
+        <v-table-input
+          :data-items="lists"
+          :frozen-column-left="3"
+          ref="vtable"
+          :default-height="350"
+          :max-height="350"
+        >
           <template #table-content>
             <div class="detail-content">
               <table
@@ -217,7 +221,7 @@ export default {
       deep: true,
       handler: function (after) {
         if (this.debounce) clearTimeout(this.debounce);
-        this.debounce = setTimeout(() => (this.lists = []), 800);
+        this.debounce = setTimeout(() => (this.lists = []), 200);
       },
     },
   },
@@ -267,7 +271,9 @@ export default {
         return;
       }
 
-      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+      if (
+        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
+      ) {
         toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
         return;
       }

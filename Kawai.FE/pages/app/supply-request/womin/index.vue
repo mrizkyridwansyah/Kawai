@@ -21,9 +21,7 @@
               style-date="width: 100px !important"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Factory</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -42,22 +40,18 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
               class="form-control"
-              
               :trade-cls="['1']"
               v-model="filter.ManufactureCode"
               style-code="width: 110px"
               style-desc="width: 250px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Line</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-line-factory
               class="form-control"
-              
               :company="filter.FactoryCode"
               :manufacture="filter.ManufactureCode"
               v-model="filter.LineCode"
@@ -65,15 +59,12 @@
               style-desc="width: 250px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Remaining Cls</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-yes-no-all
               class="form-control"
-              
               v-model="filter.RemainingCls"
               style="width: 110px"
             />
@@ -95,6 +86,7 @@
           </td>
         </tr>
       </table>
+      <hr />
 
       <v-table
         :filter="filter"
@@ -102,6 +94,8 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
+        :default-height="350"
+        :max-height="350"
       >
         <template #table-content>
           <table
@@ -142,9 +136,7 @@
                         {{ item.ItemCode }}
                       </span>
                       <span
-                        v-if="
-                          item.Details.length > 0
-                        "
+                        v-if="item.Details.length > 0"
                         :class="[
                           'toggle-button',
                           item.Expanded ? 'collapse' : 'expand',
@@ -267,10 +259,12 @@ export default {
     search: function () {
       let rangePeriodDays = this.$func.dateDiffInDays(
         this.filter.PeriodFrom,
-        this.filter.PeriodUntil
+        this.filter.PeriodUntil,
       );
 
-      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+      if (
+        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
+      ) {
         toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
         return;
       }
@@ -280,17 +274,17 @@ export default {
         return;
       }
 
-      if(!this.filter.ManufactureCode) {
+      if (!this.filter.ManufactureCode) {
         toastWarning("Silahkan pilih process.");
         return;
       }
 
-      if(!this.filter.LineCode) {
+      if (!this.filter.LineCode) {
         toastWarning("Silahkan pilih line.");
         return;
       }
 
-      if(!this.filter.RemainingCls) {
+      if (!this.filter.RemainingCls) {
         toastWarning("Silahkan pilih filter remaining.");
         return;
       }
@@ -307,10 +301,10 @@ export default {
           LineCode: this.filter.LineCode,
           RemainingCls: this.filter.RemainingCls,
           PeriodFrom: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodFrom)
+            new Date(this.filter.PeriodFrom),
           ),
           PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodUntil)
+            new Date(this.filter.PeriodUntil),
           ),
         },
       ];
@@ -330,7 +324,7 @@ export default {
 
           if (!grouped[key]) {
             let totalRequestQty = dt.Data.Items.filter(
-              (x) => x.ProductionId == item.ProductionId && x.RequestId != null
+              (x) => x.ProductionId == item.ProductionId && x.RequestId != null,
             ).reduce((a, b) => a + (b.RequestSetQty || 0), 0);
 
             grouped[key] = {
@@ -368,7 +362,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
       this.search();
@@ -430,7 +424,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
       this.filter.RemainingCls = "ALL";

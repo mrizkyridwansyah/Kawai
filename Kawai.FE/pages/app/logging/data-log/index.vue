@@ -4,6 +4,8 @@
     :filter="filter"
     :keyword-keys="keywordKeys"
     :ds="ds"
+    :default-height="280"
+    :max-height="280"
   >
     <template #table-content>
       <table

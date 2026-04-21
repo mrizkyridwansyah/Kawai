@@ -1,21 +1,16 @@
 <template>
   <v-frame title="NG Master" icon="database">
     <template #frame-content>
-      <div class="button-section">
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-        <v-button-add :add="add" cClass="mr-1" />
-        </div>
-      </div>
-      </div>
-
-     
+      <v-button-add :add="add" cClass="mr-1" />
+      <hr />
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
+        :default-height="320"
+        :max-height="320"
       >
         <template #table-content>
           <table
@@ -185,7 +180,7 @@ export default {
               });
           }),
         null,
-        item.Description
+        item.Description,
       );
     },
     close: function () {
@@ -209,10 +204,8 @@ export default {
 };
 </script>
 <style>
-.button-section{
- border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
-  padding-bottom: 12px;
-  margin-bottom: 15px;
+.button-section {
+  /* garis panjang bawah */
   width: 100%;
 }
 </style>

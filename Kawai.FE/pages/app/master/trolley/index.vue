@@ -2,22 +2,26 @@
   <v-frame title="Trolley Master" icon="database">
     <template #frame-content>
       <div class="button-section">
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-             <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print :print="print" cClass="" :is-loading="isLoadingPrint" />
+        <div class="d-flex">
+          <div class="d-flex flex-fill">
+            <v-button-add :add="add" cClass="mr-1" />
+            <v-button-print
+              :print="print"
+              cClass=""
+              :is-loading="isLoadingPrint"
+            />
+          </div>
         </div>
       </div>
-      </div>
- 
-
-      
+      <hr>
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
+        :default-height="300"
+        :max-height="300"
       >
         <template #table-content>
           <table
@@ -267,10 +271,8 @@ export default {
 };
 </script>
 <style>
-.button-section{
-   border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
-  padding-bottom: 12px;
-  margin-bottom: 15px;
+.button-section {
+  /* garis panjang bawah */
   width: 100%;
 }
 </style>

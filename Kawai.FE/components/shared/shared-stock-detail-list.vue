@@ -5,6 +5,8 @@
     :ds-page="ds.setPageDetail"
     :ds-length="ds.setLengthDetail"
     :ds-load="ds.inquiryDetail"
+    :default-height="380"
+    :max-height="380"
   >
     <template #table-content>
       <table
@@ -18,7 +20,7 @@
             <th class="text-center">Barcode No</th>
             <!-- <th class="text-center">Sublot No</th> -->
             <th class="text-center">Qty</th>
-             <th class="text-center">Status</th>
+            <th class="text-center">Status</th>
             <th class="text-center">Last Update</th>
             <th class="text-center">Last User</th>
           </tr>
@@ -31,7 +33,9 @@
             <!-- <td class="text-right">{{ item.SublotNo }}</td> -->
             <td class="text-right">{{ $func.formatMoney(item.CurrentQty) }}</td>
             <td>{{ item.Status }}</td>
-            <td class="text-left">{{ $func.formatDateTime(item.LastUpdate) }}</td>
+            <td class="text-left">
+              {{ $func.formatDateTime(item.LastUpdate) }}
+            </td>
             <td class="text-left">{{ item.LastUser }}</td>
           </tr>
         </tbody>

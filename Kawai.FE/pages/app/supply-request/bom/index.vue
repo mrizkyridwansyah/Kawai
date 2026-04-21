@@ -21,9 +21,7 @@
               style-date="width: 100px !important"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Factory</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -36,7 +34,7 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px;">
             <label class="form-label">Supplier</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -45,13 +43,11 @@
               
               :trade-cls="['3']"
               v-model="filter.SupplierCode"
-              style-code="width: 110px"
+              style-code="width: 120px"
               style-desc="width: 250px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">PO Number</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -81,12 +77,10 @@
               :factory-code="filter.FactoryCode"
               v-model="filter.Warehouse"
               style-code="width: 120px"
-              style-desc="width: 240px"
+              style-desc="width: 250px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Remaining Cls</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -113,13 +107,15 @@
           </td>
         </tr>
       </table>
-
+      <hr />
       <v-table
         :filter="filter"
         :ds="ds"
         ref="vtable"
         :use-paging="false"
         :use-header="false"
+        :default-height="320"
+        :max-height="320"
       >
         <template #table-content>
           <table

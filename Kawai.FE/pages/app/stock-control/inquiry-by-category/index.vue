@@ -13,9 +13,22 @@
               style-desc="width: 300px"
             />
           </td>
+          <td style="padding-top: 5px; padding-left: 15px;">
+            <label class="form-label">Warehouse</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-warehouse-by-stock
+              class="form-control"
+              v-model="filter.warehouse"
+              :item-code="filter.item"
+              :show-option-all="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px;">
             <label class="form-label">Item</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -31,24 +44,7 @@
               style-desc="width: 300px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Warehouse</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <filter-warehouse-by-stock
-              class="form-control"
-              v-model="filter.warehouse"
-              :item-code="filter.item"
-              :show-option-all="true"
-              style-code="width: 150px"
-              style-desc="width: 300px"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px;">
             <label class="form-label">Lot No</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -77,6 +73,7 @@
           </td>
         </tr>
       </table>
+      <hr />
       <v-tree-group
         :tree-data="treeData"
         :columns="columns"
@@ -88,6 +85,8 @@
         :is-server-error="ds.isServerError"
         :is-network-error="ds.isNetworkError"
         :refresh="onSearch"
+        :default-height="290"
+        :max-height="290"
       >
         <template #paging-tree>
           <v-table-pagination

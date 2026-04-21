@@ -4,9 +4,15 @@
       <div class="panel-body" ref="panelBody">
         <div class="scroll-x-wrapper">
           <div ref="tableContainer">
-            <div class="v-table-wrapper">
+            <div
+              class="v-table-wrapper"
+              :style="{
+                maxHeight: formatHeight(maxHeight),
+                height: formatHeight(defaultHeight),
+              }"
+            >
               <table
-                class="tree-table v-fixed-table table table-bordered table-striped mb-0 align-middle"                
+                class="tree-table v-fixed-table table table-bordered table-striped mb-0 align-middle"
                 ref="table"
               >
                 <thead>
@@ -18,7 +24,7 @@
                         width: col.width || 'auto',
                         textAlign: col.align || 'left',
                       }"
-                      style="white-space: nowrap;"
+                      style="white-space: nowrap"
                     >
                       {{ col.text }}
                     </th>
@@ -75,6 +81,8 @@ export default {
     columns: { type: Array, required: true },
     childKey: { type: String, required: true },
     frozenColumnLeft: { type: Number, default: 0 },
+    defaultHeight: { type: Number, default: 100 },
+    maxHeight: { type: Number, default: 100 },
   },
   watch: {
     treeData: function () {
@@ -150,7 +158,7 @@ export default {
           const screenWidth = window.innerWidth;
           const frozenIndexes = Array.from(
             { length: this.frozenColumnLeft },
-            (_, i) => i
+            (_, i) => i,
           );
 
           // Dapatkan total width kolom yang akan di-freeze
@@ -193,11 +201,15 @@ export default {
         setTimeout(() => {
           const frozenIndexes = Array.from(
             { length: this.frozenColumnLeft },
-            (_, i) => i
+            (_, i) => i,
           );
           this.setFrozenColumns(frozenIndexes);
         }, 500); // lebih lama supaya semua row render
       });
+    },
+    formatHeight: function (val) {
+      if (typeof val === "number") return val + "px";
+      return val; // misal '60vh', '100%', dll
     },
   },
 };

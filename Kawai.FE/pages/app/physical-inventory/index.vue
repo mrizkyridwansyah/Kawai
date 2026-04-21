@@ -14,23 +14,20 @@
             <label class="form-label">Item</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-          <filter-item
-            class="form-control"
-            
-            v-model="filter.item"
+            <filter-item
+              class="form-control"
+              v-model="filter.item"
               style-code="width: 170px;"
               style-desc="width: 250px;"
             />
           </td>
-          
+
           <td width="50px"></td>
           <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Scanned</label>
           </td>
           <td class="note-color">
-            <div class="bg-scanned note-border">
-              &nbsp;
-            </div>
+            <div class="bg-scanned note-border">&nbsp;</div>
           </td>
         </tr>
 
@@ -54,7 +51,7 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-lot-no
               class="form-control"
-              v-model="filter.lotno"
+              v-model="filter.lotNo"
               :warehouse="filter.warehouse"
               area="ALL"
               address="ALL"
@@ -69,11 +66,9 @@
             <label class="form-label">Different</label>
           </td>
           <td class="note-color">
-            <div class="bg-different note-border">
-              &nbsp;
-            </div>
+            <div class="bg-different note-border">&nbsp;</div>
           </td>
-        </tr>        
+        </tr>
 
         <tr>
           <td style="padding-top: 5px">
@@ -82,14 +77,13 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-area-privileges
               class="form-control"
-              
               v-model="filter.area"
               :warehouse="filter.warehouse"
               :include-temp="true"
               style-code="width: 170px"
               style-desc="width: 250px"
             />
-          </td>          
+          </td>
 
           <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Status Scan </label>
@@ -97,20 +91,17 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-scan-status
               class="form-control"
-              
               v-model="filter.scanStatus"
               style="width: 170px"
             />
           </td>
 
           <td width="50px"></td>
-          <td style="padding-top: 5px; padding-left: 15px">
+          <td style="padding-top: 5px; padding-left: 15px;  ">
             <label class="form-label">Not Scanned</label>
           </td>
           <td class="note-color">
-            <div class="note-border bg-notyet">
-              &nbsp;
-            </div>
+            <div class="note-border bg-notyet">&nbsp;</div>
           </td>
         </tr>
 
@@ -121,7 +112,6 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-address-privileges
               class="form-control"
-              
               v-model="filter.address"
               :warehouse="filter.warehouse"
               :area="filter.area"
@@ -141,30 +131,32 @@
               @input="changeDiffQty"
             />
           </td>
-          
-          <td style="padding-top: 5px">    
+
+          <td style="padding-top: 5px">
             <v-button-search-reset :search="search" :reset="reset" />
             <div class="d-inline-flex">
               <v-button
-              class="btn-success ms-1"
-              icon="save"
-              label="Submit"
-              @click="submit"
+                class="btn-success ms-1"
+                icon="save"
+                label="Submit"
+                @click="submit"
               ></v-button>
             </div>
           </td>
         </tr>
       </table>
-
+      <hr />
       <v-table
         :filter="filter"
         :export-excel="true"
-        :export-excel-action="exportExcel"        
+        :export-excel-action="exportExcel"
         :frozen-column-left="5"
         :data-items="ds.data.Items"
         :ds="ds"
         :use-header="true"
         :use-paging="true"
+        :default-height="260"
+        :max-height="260"
         ref="vtable"
       >
         <template #table-content>
@@ -192,14 +184,30 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in lists || []" :key="idx">
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.WarehouseCode }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.AreaCode }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.AddressCode }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.BarcodeNo }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.ItemCode }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.ItemDesc }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.Unit }}</td>
-                <td :class="scanStatusClass(item.StatusScan)">{{ item.LotNo }}</td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.WarehouseCode }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.AreaCode }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.AddressCode }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.BarcodeNo }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.ItemCode }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.ItemDesc }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.Unit }}
+                </td>
+                <td :class="scanStatusClass(item.StatusScan)">
+                  {{ item.LotNo }}
+                </td>
                 <td :class="[scanStatusClass(item.StatusScan), 'text-right']">
                   {{ $func.formatDecimal(item.CurrentQty) }}
                 </td>
@@ -211,14 +219,12 @@
                     v-model.number="item.Inventory"
                     :ref="`inv-${idx}`"
                     @focus="item.Inventory = Number(item.Inventory)"
-                    @blur="onChangeInventory(item)"  
-                    @keypress="onNextRow(idx)"              
+                    @blur="onChangeInventory(item)"
+                    @keypress="onNextRow(idx)"
                   />
                 </td>
                 <td class="text-right bg-diffrences">
-                  {{
-                    $func.formatDecimal(item.CurrentQty - item.Inventory)
-                  }}
+                  {{ $func.formatDecimal(item.CurrentQty - item.Inventory) }}
                 </td>
                 <td>{{ $func.formatDate(item.LastUpdate) }}</td>
                 <td>{{ item.LastUserName }}</td>
@@ -269,20 +275,19 @@ export default {
     },
     debounce: null,
     lists: [],
-    listUpdate:[]
+    listUpdate: [],
   }),
   computed: {
     ds: function () {
       return usePhysicalInventory();
     },
   },
-  watch: {
-  },
+  watch: {},
   mounted: function () {
     this.filter.period = new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
-      1
+      1,
     ).toISOString();
 
     this.filter.scanStatus = "ALL";
@@ -299,28 +304,27 @@ export default {
     },
     changeDiffQty: function (e) {
       this.$emit("update:modelValue", e.target.checked);
-    },    
+    },
     initInventory(item) {
       item._oldInventory = item.Inventory;
-    },  
+    },
     async search() {
-
-    if (!this.filter.warehouse) {
+      if (!this.filter.warehouse) {
         toastDanger("Silahkan pilih Warehouse!");
         return;
       }
 
-   if (!this.filter.area) {
+      if (!this.filter.area) {
         toastDanger("Silahkan pilih area!");
         return;
       }
 
-  if (!this.filter.address) {
+      if (!this.filter.address) {
         toastDanger("Silahkan pilih address!");
         return;
       }
 
-   if (!this.filter.item) {
+      if (!this.filter.item) {
         toastDanger("Silahkan pilih item!");
         return;
       }
@@ -349,10 +353,10 @@ export default {
       this.lists = dt.Data.Items;
 
       //menambahkan _oldInventory untuk tracking perubahan
-      this.lists.forEach(item => {
+      this.lists.forEach((item) => {
         this.initInventory(item);
       });
-      
+
       this.listUpdate = [];
     },
     reset: function () {
@@ -360,20 +364,20 @@ export default {
       this.filter.warehouse = null;
       this.filter.area = null;
       this.filter.address = null;
-    
+
       this.filter.item = null;
       this.filter.lotNo = null;
       this.filter.scanStatus = "ALL";
       this.filter.diffQty = null;
-      
+
       this.lists = [];
       this.listUpdate = [];
     },
     scanStatusClass(status) {
-      if (status === 'NOTYET') return 'bg-notyet'
-      if (status === 'SCANNED') return 'bg-scanned'
-      if (status === 'DIFFERENT') return 'bg-different'
-      return ''
+      if (status === "NOTYET") return "bg-notyet";
+      if (status === "SCANNED") return "bg-scanned";
+      if (status === "DIFFERENT") return "bg-different";
+      return "";
     },
     onNextRow(idx) {
       this.$nextTick(() => {
@@ -385,8 +389,8 @@ export default {
         }
       });
     },
-    onChangeInventory(item) {   
-      const keyMatch = u =>
+    onChangeInventory(item) {
+      const keyMatch = (u) =>
         u.RefNo === item.RefNo &&
         u.WarehouseCode === item.WarehouseCode &&
         u.AreaCode === item.AreaCode &&
@@ -398,10 +402,10 @@ export default {
       //console.log(item._oldInventory, item.Inventory);
       // kalau nilai BALIK ke semula → hapus dari update[]
       if (item._oldInventory === item.Inventory) {
-        this.listUpdate = this.listUpdate.filter(u => !keyMatch(u));
+        this.listUpdate = this.listUpdate.filter((u) => !keyMatch(u));
         return;
       }
-      
+
       //cari index di update[]
       const idxUpdate = this.listUpdate.findIndex(keyMatch);
       //console.log('idxUpdate', idxUpdate);
@@ -422,8 +426,8 @@ export default {
           Inventory: item.Inventory,
         });
       }
-    },    
-    async submit() {      
+    },
+    async submit() {
       try {
         if (this.listUpdate.length === 0) {
           toastInfo("No data to submit.");
@@ -433,10 +437,9 @@ export default {
         //console.log('submit', this.listUpdate);
         await this.ds.update(this.listUpdate);
         toastSuccess("Data saved successfully!");
-        
+
         this.listUpdate = [];
-        await this.search();      
-        
+        await this.search();
       } catch (e) {
         toastDanger(e.Message);
         console.error(e);
@@ -445,40 +448,45 @@ export default {
     exportExcel() {
       const filters = [
         {
-            Keyword: this.filter.keyword || "",
-            Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
-            WarehouseCode: this.filter.warehouse || "",
-            AreaCode: this.filter.area || "",
-            AddressCode: this.filter.address || "",
-            ItemCode: this.filter.item || "",
-            LotNo: this.filter.lotNo || "",
-            ScanStatus: this.filter.scanStatus || "",
-            DifferentQty: this.filter.diffQty ? "true" : "false",
+          Keyword: this.filter.keyword || "",
+          Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
+          WarehouseCode: this.filter.warehouse || "",
+          AreaCode: this.filter.area || "",
+          AddressCode: this.filter.address || "",
+          ItemCode: this.filter.item || "",
+          LotNo: this.filter.lotNo || "",
+          ScanStatus: this.filter.scanStatus || "",
+          DifferentQty: this.filter.diffQty ? "true" : "false",
         },
       ];
-      
+
       return this.ds.exportExcel(filters);
     },
   },
 };
 </script>
 
-
 <style>
+.bg-notyet {
+  background-color: lightcoral !important;
+}
+.bg-scanned {
+  background-color: lightgrey !important;
+}
+.bg-different {
+  background-color: yellow !important;
+}
+.bg-diffrences {
+  background-color: lightyellow !important;
+}
 
-.bg-notyet { background-color: lightcoral !important; }
-.bg-scanned { background-color: lightgrey !important; }
-.bg-different { background-color: yellow !important; }
-.bg-diffrences { background-color: lightyellow !important; }
-
-.note-border {  
+.note-border {
   border: 1px solid #d1d5db;
 }
 .note-color {
-  padding-top: 5px; 
-  padding-left: 15px; 
-  width: 100px; 
+  padding-top: 5px;
+  padding-left: 15px;
+  width: 100px;
   text-align: center;
 }
-
 </style>

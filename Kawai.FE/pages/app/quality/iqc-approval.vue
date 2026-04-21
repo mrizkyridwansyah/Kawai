@@ -4,20 +4,36 @@
       <table>
         <tr>
           <td><label class="form-label">Factory</label></td>
-          <td style="padding-left: 15px" colspan="3">
+          <td style="padding-left: 15px">
             <filter-factory-privileges
               class="form-control"
               v-model="filter.FactoryCode"
-              style-code="width: 110px;"
+              style-code="width: 140px;"
               style-desc="width: 250px;"
             />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Receipt Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-date v-model="filter.PeriodFrom" style-date="width:120px" />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label
+              class="form-label"
+              style="padding-top: 5px; padding-right: 15px"
+              >To</label
+            >
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-date v-model="filter.PeriodUntil" style-date="width:120px" />
           </td>
         </tr>
         <tr>
           <td style="padding-top: 5px">
             <label class="form-label">Supplier</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <filter-trade-2
               class="form-control"
               v-model="filter.SupplierCode"
@@ -27,24 +43,20 @@
               style-desc="width: 250px;"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Status</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-iqc-status
               class="form-control"
               v-model="filter.Status"
-              style="width: 110px"
+              style="width: 140px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Source</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-iqc-source
               class="form-control"
               v-model="filter.Source"
@@ -53,54 +65,20 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Receipt Date</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <input-date v-model="filter.PeriodFrom" style-date="width:100px" />
-          </td>
-          <td style="padding-top: 5px">
-            <label class="form-label">To</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <input-date v-model="filter.PeriodUntil" style-date="width:100px" />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">DN Number</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-dn-number
-              class="form-control"
-              v-model="filter.DNNumber"
-              :factory-code="filter.FactoryCode"
-              :supplier-code="filter.SupplierCode"
-              :period-from="filter.PeriodFrom"
-              :period-until="filter.PeriodUntil"
-              :show-option-all="true"
-              style="width: 140px"
-            />
-          </td>
-        </tr>
-        <tr>
           <td colspan="4" style="padding-top: 5px">
-            <div class="d-flex flex-fill">
-              <v-button-search-reset :search="search" :reset="resetFilter" />
-              <v-button
-                :disabled="(filter.DNNumber || 'ALL') == 'ALL'"
-                :action="print"
-                label="Report NG"
-                icon="file-excel"
-                cClass="ml-1 btn-green"
-                :is-loading="isLoading"
-              />
-            </div>
+            <v-button-search-reset :search="search" :reset="resetFilter" />
           </td>
         </tr>
       </table>
-      <div style="width: 1150px">
-        <v-table-input :data-items="lists" :frozen-column-left="3" ref="vtable">
+      <hr />
+      <div>
+        <v-table-input
+          :data-items="lists"
+          :frozen-column-left="3"
+          ref="vtable"
+          :default-height="350"
+          :max-height="350"
+        >
           <template #table-content>
             <div class="detail-content">
               <table
@@ -241,7 +219,7 @@ export default {
       deep: true,
       handler: function (after) {
         if (this.debounce) clearTimeout(this.debounce);
-        this.debounce = setTimeout(() => (this.lists = []), 800);
+        this.debounce = setTimeout(() => (this.lists = []), 200);
       },
     },
   },

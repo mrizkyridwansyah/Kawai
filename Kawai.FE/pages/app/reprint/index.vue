@@ -1,19 +1,19 @@
 <template>
   <v-frame title="Reprint Barcode" icon="qrcode">
     <template #frame-content>
-       <table>
+      <table>
         <tr>
-          <td >
+          <td>
             <table>
               <tr>
                 <td><label class="form-label">Factory</label></td>
                 <td style="padding-left: 15px" colspan="3">
                   <filter-factory-privileges
-              class="form-control"
-              v-model="filter.factory"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
+                    class="form-control"
+                    v-model="filter.factory"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
                 </td>
               </tr>
               <tr>
@@ -21,31 +21,30 @@
                   <label class="form-label">Warehouse</label>
                 </td>
                 <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                   <filter-warehouse-privileges
-              class="form-control"
-              v-model="filter.warehouse"
-              :factory-code="filter.factory"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
+                  <filter-warehouse-privileges
+                    class="form-control"
+                    v-model="filter.warehouse"
+                    :factory-code="filter.factory"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
                 </td>
               </tr>
-           
             </table>
           </td>
-          <td style="padding-left: 30px;">
+          <td style="padding-left: 30px">
             <table>
               <tr>
                 <td><label class="form-label">Area</label></td>
                 <td style="padding-left: 15px" colspan="3">
                   <filter-area-privileges
-              class="form-control"
-              v-model="filter.area"
-              :warehouse="filter.warehouse"
-                  :show-option-all="true"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
+                    class="form-control"
+                    v-model="filter.area"
+                    :warehouse="filter.warehouse"
+                    :show-option-all="true"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
                 </td>
               </tr>
               <tr>
@@ -53,62 +52,56 @@
                   <label class="form-label">Address</label>
                 </td>
                 <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                    <filter-address-privileges
-              class="form-control"
-              
-              v-model="filter.address"
-              :warehouse="filter.warehouse"
-                :show-option-all="true"
-              :area="filter.area"
-              :include-temp="true"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
+                  <filter-address-privileges
+                    class="form-control"
+                    v-model="filter.address"
+                    :warehouse="filter.warehouse"
+                    :show-option-all="true"
+                    :area="filter.area"
+                    :include-temp="true"
+                    style-code="width: 110px"
+                    style-desc="width: 250px"
+                  />
                 </td>
               </tr>
-           
             </table>
           </td>
         </tr>
       </table>
-  <div class="d-flex flex-fill mt-1">
-               <v-button-print
-                :print="print"
-                cClass=""
-                :is-loading="isLoadingPrint"
-              />
-              <v-button-search-reset
-                class="ms-1"
-                :search="search"
-                :reset="reset"
-              />
+      <div class="d-flex flex-fill mt-1">
+        <v-button-print :print="print" cClass="" :is-loading="isLoadingPrint" />
+        <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
       </div>
+      <hr />
       <v-table
         :filter="filter"
         :ds="ds"
+        :frozen-column-left="2"
+        :default-height="245"
+        :max-height="245"
+        ref="vtable"
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
-            style="min-width: 100%; width: max-content"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="table"
           >
             <thead>
               <tr>
                 <th class="text-center">Print</th>
                 <th class="text-center">Barcode No</th>
-                  <th class="text-center">Item Code</th>
+                <th class="text-center">Item Code</th>
                 <th class="text-center">Item Name</th>
-                 <th class="text-center">Warehouse</th>
-                  <th class="text-center">Area</th>
-                   <th class="text-center">Address</th>
+                <th class="text-center">Warehouse</th>
+                <th class="text-center">Area</th>
+                <th class="text-center">Address</th>
                 <th class="text-center">Lot No</th>
                 <th class="text-center">SubLotNo</th>
-                 <th class="text-center">Qty</th>
-                 <th class="text-center">Source</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">Source</th>
                 <th class="text-center">Print User</th>
                 <th class="text-center">Print Date</th>
-                 
               </tr>
             </thead>
             <tbody>
@@ -121,7 +114,7 @@
                     />
                   </div>
                 </td>
-           
+
                 <td>{{ item.BarcodeNo }}</td>
                 <td>{{ item.ItemCode }}</td>
                 <td>{{ item.ItemName }}</td>
@@ -134,7 +127,6 @@
                 <td>{{ item.Source }}</td>
                 <td>{{ item.PrintUser }}</td>
                 <td>{{ $func.formatDateTime(item.PrintDate) }}</td>
-               
               </tr>
             </tbody>
           </table>
@@ -142,7 +134,6 @@
       </v-table>
     </template>
   </v-frame>
-  
 </template>
 
 <script>
@@ -162,8 +153,8 @@ export default {
       keyword: null,
       factory: 0,
       warehouse: null,
-      area:null,
-      address:null,
+      area: null,
+      address: null,
       sorts: {
         ItemName: "asc",
       },
@@ -212,7 +203,7 @@ export default {
       this.selectedPrint = [];
       this.ds.data.Items = [];
     },
-     "filter.address": function () {
+    "filter.address": function () {
       this.selectedPrint = [];
       this.ds.data.Items = [];
     },
@@ -245,10 +236,10 @@ export default {
       this.filter.warehouse = null;
       this.search();
     },
- 
+
     check: function (checked, item) {
       const existingIndex = this.selectedPrint.findIndex(
-        (p) => p.Key === item.BarcodeNo
+        (p) => p.Key === item.BarcodeNo,
       );
       if (checked && existingIndex === -1) {
         this.selectedPrint.push({
@@ -273,12 +264,12 @@ export default {
       new Promise((resolve, reject) => {
         debugger;
         this.ds
-        
+
           .PrintUpdate(this.selectedPrint)
           .then((_) => {
-           toastSuccess("Print success");    
-           this.selectedPrint = [];
-           this.search(); //  
+            toastSuccess("Print success");
+            this.selectedPrint = [];
+            this.search(); //
             resolve();
           })
           .catch((err) => {
@@ -296,7 +287,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 thead {
   white-space: nowrap;
 }

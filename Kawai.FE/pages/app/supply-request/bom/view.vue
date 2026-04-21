@@ -13,13 +13,11 @@
               style="width: 200px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Request Date</label>
           </td>
           <td
-            style="padding-top: 5px; padding-left: 15px; width: 160px"
+            style="padding-top: 5px; padding-left: 15px; width: 180px"
             colspan="3"
           >
             <input-date
@@ -59,13 +57,15 @@
           </td>
         </tr>
       </table>
-
+      <hr />
       <v-table
         :ds="ds"
         :ds-data="ds.dataDetails"
         ref="vtable"
         :use-paging="false"
         :use-header="false"
+        :default-height="400"
+        :max-height="400"
       >
         <template #table-content>
           <table

@@ -176,18 +176,21 @@
           </td>
         </tr>
       </table>
-
+      <hr />
       <v-table
         :ds="ds"
         ref="vtable"
         :use-paging="false"
         :use-header="false"
         :data-items="calculation.Materials"
+        :default-height="250"
+        :max-height="250"
       >
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            style="max-height: 50px !important"
             ref="table"
           >
             <thead>

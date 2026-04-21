@@ -1,6 +1,12 @@
 <template>
   <header-menu title="Message Queueing Logs" />
-  <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+  <v-table
+    :filter="filter"
+    :keyword-keys="keywordKeys"
+    :ds="ds"
+    :default-height="280"
+    :max-height="280"
+  >
     <template #table-content>
       <table
         class="table table-striped mb-0 align-middle"

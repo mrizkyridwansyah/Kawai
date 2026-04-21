@@ -5,11 +5,15 @@
     :ds-page="ds.setPageDetail"
     :ds-length="ds.setLengthDetail"
     :ds-load="ds.inquiryDetail"
+    :default-height="380"
+    :max-height="380"
+    ref="vtable"
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle w-100"
+        class="table table-striped mb-0 align-middle w-100 v-fixed-table"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+        ref="table"
       >
         <thead>
           <tr>

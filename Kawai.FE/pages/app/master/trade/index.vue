@@ -9,6 +9,8 @@
         :frozen-column-left="4"
         :ds="ds"
         ref="vtable"
+        :default-height="360"
+        :max-height="360"
       >
         <template #table-content>
           <table

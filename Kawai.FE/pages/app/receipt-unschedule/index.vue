@@ -183,8 +183,15 @@
         </tr>
       </table>
 
+      <hr />
+
       <div style="width: 1150px">
-        <v-table-input :data-items="items" ref="vtable">
+        <v-table-input
+          :data-items="items"
+          ref="vtable"
+          :default-height="250"
+          :max-height="250"
+        >
           <template #table-content>
             <div class="detail-content">
               <table

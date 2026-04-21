@@ -262,7 +262,7 @@ export default {
 </script>
 <style>
 .button-section{
-   border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
+    /* garis panjang bawah */
   padding-bottom: 12px;
   margin-bottom: 15px;
   width: 100%;

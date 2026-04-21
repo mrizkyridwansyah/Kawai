@@ -20,6 +20,22 @@
               style="width: 150px"
             />
           </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Area</label>
+          </td>
+          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
+            <filter-area-by-stock
+              class="form-control"
+              v-model="filter.area"
+              :warehouse="filter.warehouse"
+              :item="filter.item"
+              :status-receipt="filter.statusReceipt"
+              :status-hold-ng="filter.statusHoldNg"
+              :show-option-all="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
         </tr>
         <tr>
           <td style="padding-top: 5px">
@@ -38,6 +54,24 @@
               :show-option-all="true"
               style-code="width: 150px"
               style-desc="width: 300px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Lot No</label>
+          </td>
+          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
+            <filter-lot-by-stock
+              class="form-control"
+              v-model="filter.lotno"
+              :warehouse="filter.warehouse"
+              :area="filter.area"
+              address="ALL"
+              :item="filter.item"
+              category="ALL"
+              :status-receipt="filter.statusReceipt"
+              :status-hold-ng="filter.statusHoldNg"
+              :show-option-all="true"
+              style="width: 200px"
             />
           </td>
         </tr>
@@ -59,44 +93,6 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Area</label>
-          </td>
-          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
-            <filter-area-by-stock
-              class="form-control"
-              v-model="filter.area"
-              :warehouse="filter.warehouse"
-              :item="filter.item"
-              :status-receipt="filter.statusReceipt"
-              :status-hold-ng="filter.statusHoldNg"
-              :show-option-all="true"
-              style-code="width: 150px"
-              style-desc="width: 300px"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Lot No</label>
-          </td>
-          <td colspan="2" style="padding-top: 5px; padding-left: 15px">
-            <filter-lot-by-stock
-              class="form-control"
-              v-model="filter.lotno"
-              :warehouse="filter.warehouse"
-              :area="filter.area"
-              address="ALL"
-              :item="filter.item"
-              category="ALL"
-              :status-receipt="filter.statusReceipt"
-              :status-hold-ng="filter.statusHoldNg"
-              :show-option-all="true"
-              style="width: 200px"
-            />
-          </td>
-        </tr>
-        <tr>
           <td style="padding-top: 5px" colspan="2">
             <div class="d-flex flex-fill">
               <v-button-search-reset
@@ -108,6 +104,7 @@
           </td>
         </tr>
       </table>
+      <hr />
       <v-tree-group
         :tree-data="treeData"
         :columns="columns"
@@ -119,6 +116,8 @@
         :is-server-error="ds.isServerError"
         :is-network-error="ds.isNetworkError"
         :refresh="onSearch"
+        :default-height="250"
+        :max-height="250"
       >
         <template #paging-tree>
           <v-table-pagination

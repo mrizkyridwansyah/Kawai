@@ -10,6 +10,9 @@
         :data-items="ds.data.Items"
         :frozen-column-left="3"
         :ds="ds"
+        :default-height="350"
+        :max-height="350"
+        ref="vtable"
       >
         <template #table-content>
           <table
@@ -196,7 +199,7 @@ export default {
               });
           }),
         null,
-        item.FullName
+        item.FullName,
       );
     },
     close: function () {

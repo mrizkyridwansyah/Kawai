@@ -2,7 +2,11 @@
   <div class="mt-4">
     <div class="panel panel-inverse">
       <!-- BEGIN panel-header -->
-      <div class="panel-heading ui-sortable-handle" style="background-color: #333;" v-if="useHeader">
+      <div
+        class="panel-heading ui-sortable-handle"
+        style="background-color: #333"
+        v-if="useHeader"
+      >
         <v-button-sort
           class="mr-1"
           v-model="this.filter.sorts"
@@ -40,8 +44,23 @@
       >
         <!-- BEGIN table-responsive -->
         <div ref="tableContainer">
-          <div class="v-table-wrapper">
+          <div
+            class="v-table-wrapper"
+            :style="{
+              maxHeight: formatHeight(maxHeight),
+              height: formatHeight(defaultHeight),
+            }"
+          >
             <slot name="table-content" />
+            <v-data-empty
+              class="mt-3"
+              v-if="
+                !ds.isLoading &&
+                (dsData || ds.data).Items.length == 0 &&
+                !ds.isNetworkError &&
+                !ds.isServerError
+              "
+            />
           </div>
           <div v-if="ds">
             <v-loading-2 class="m-5 p-5" v-if="ds.isLoading" />
@@ -58,15 +77,6 @@
                 :table="dsData || ds.data"
                 :page-change="dsPage || ds.setPage"
                 :length-change="dsLength || ds.setLength"
-              />
-              <v-data-empty
-                class="mt-3"
-                v-if="
-                  !ds.isLoading &&
-                  (dsData || ds.data).Items.length == 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
               />
               <v-error-server
                 class="mt-3"
@@ -99,11 +109,11 @@ export default {
     exportExcel: Boolean,
     usePaging: {
       type: Boolean,
-      default: true
+      default: true,
     },
     useHeader: {
       type: Boolean,
-      default: true
+      default: true,
     },
     exportExcelAction: Function,
     dataItems: {
@@ -111,8 +121,10 @@ export default {
       default: () => [],
     },
     frozenColumnLeft: { type: Number, default: 0 },
+    defaultHeight: { type: Number, default: 100 },
+    maxHeight: { type: Number, default: 100 },
     ds: { type: Object },
-    dsData: {type: Object},
+    dsData: { type: Object },
     dsPage: { type: Function },
     dsLength: { type: Function },
     dsLoad: { type: Function },
@@ -185,7 +197,7 @@ export default {
 
           const frozenIndexes = Array.from(
             { length: this.frozenColumnLeft },
-            (_, i) => i
+            (_, i) => i,
           );
 
           // ✅ Ambil width dari th langsung
@@ -226,6 +238,10 @@ export default {
         });
       });
     },
+    formatHeight: function (val) {
+      if (typeof val === "number") return val + "px";
+      return val; // misal '60vh', '100%', dll
+    },
   },
 };
 </script>
@@ -233,8 +249,6 @@ export default {
 <style>
 .v-table-wrapper {
   overflow: auto;
-  max-height: 500px;
-  /* border: 1px solid #ddd; */
   position: relative;
 }
 

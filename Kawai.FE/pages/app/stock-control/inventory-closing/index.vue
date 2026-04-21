@@ -127,7 +127,7 @@ export default {
 <style scoped>
 /* CENTER OF SCREEN */
 .page-center {
-  min-height: 100vh;
+  min-height: 60vh;
   display: flex;
   justify-content: center; /* horizontal */
   align-items: center; /* vertical */
@@ -136,7 +136,7 @@ export default {
 /* CONTENT */
 .content-box {
   width: 100%;
-  max-width: 600px;
+  max-width: 70%;
 }
 
 /* PROGRESS */

@@ -1,23 +1,22 @@
 <template>
   <v-frame title="Stop Point Master" icon="database">
     <template #frame-content>
-            <div class="button-section">
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-             <v-button-add :add="add" cClass="mr-1" />
-     
+      <div class="button-section">
+        <div class="d-flex">
+          <div class="d-flex flex-fill">
+            <v-button-add :add="add" cClass="mr-1" />
+          </div>
         </div>
       </div>
-      </div>
- 
-
-     
+      <hr>
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
+        :default-height="300"
+        :max-height="300"
       >
         <template #table-content>
           <table
@@ -52,7 +51,7 @@
                 </td>
                 <td>{{ item.StopPointCode }}</td>
                 <td>{{ item.Description }}</td>
-                 <td>{{ item.PickingSeq }}</td>
+                <td>{{ item.PickingSeq }}</td>
                 <td v-if="item.IsActive">Yes</td>
                 <td v-else>No</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
@@ -89,7 +88,6 @@
 <script>
 export default {
   data: () => ({
-  
     keywordKeys: [
       {
         Id: "StopPointCode",
@@ -185,7 +183,7 @@ export default {
               });
           }),
         null,
-        item.Description
+        item.Description,
       );
     },
     close: function () {
@@ -209,10 +207,8 @@ export default {
 };
 </script>
 <style>
-.button-section{
-   border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
-  padding-bottom: 12px;
-  margin-bottom: 15px;
+.button-section {
+  /* garis panjang bawah */
   width: 100%;
 }
 </style>

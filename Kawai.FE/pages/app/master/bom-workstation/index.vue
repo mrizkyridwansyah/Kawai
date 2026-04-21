@@ -2,85 +2,90 @@
   <v-frame title="BOM Per Workstation" icon="database">
     <template #frame-content>
       <div class="filter-wrapper">
+        <!-- 1 -->
+        <div class="filter-item">
+          <label class="form-label">Factory</label>
+          <filter-factory-privileges
+            class="form-control"
+            v-model="filter.factory"
+            style-code="width: 110px"
+            style-desc="width: 250px"
+          />
+        </div>
 
-  <!-- 1 -->
-  <div class="filter-item">
-    <label class="form-label">Factory</label>
-    <filter-factory-privileges
-              class="form-control"
-              v-model="filter.factory"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-  
-  </div>
+        <!-- 2 -->
+        <div class="filter-item">
+          <label class="form-label">Process</label>
+          <filter-trade-2
+            class="form-control"
+            placeholder=" "
+            v-model="filter.supplier"
+            :trade-cls="['1']"
+            style-code="width: 110px"
+            style-desc="width: 250px"
+          />
+        </div>
 
-  <!-- 2 -->
-  <div class="filter-item">
-    <label class="form-label">Process</label>
-    <filter-trade-2
-              class="form-control"
-              placeholder=" "
-              v-model="filter.supplier"
-              :trade-cls="['1']"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-  </div>
+        <div class="filter-item">
+          <label class="form-label">Line</label>
+          <filter-line-factory
+            class="form-control"
+            :company="filter.factory"
+            :manufacture="filter.supplier"
+            v-model="filter.linecode"
+            style-code="width: 110px"
+            style-desc="width: 250px"
+          />
+        </div>
 
-    <div class="filter-item">
-    <label class="form-label">Line</label>
-  <filter-line-factory
-              class="form-control"
-              :company="filter.factory"
-              :manufacture="filter.supplier"
-              v-model="filter.linecode"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-  </div>
+        <div class="filter-item">
+          <label class="form-label">Model Cls</label>
+          <filter-cls-2
+            type-data="Model_Cls"
+            class="form-control"
+            v-model="filter.modelcls"
+            style-code="width: 110px"
+            style-desc="width: 250px"
+          />
+        </div>
 
-  <div class="filter-item">
-    <label class="form-label">Model Cls</label>
-  <filter-cls-2
-              type-data="Model_Cls"
-              class="form-control"
-              v-model="filter.modelcls"
-              style-code="width: 110px"
-              style-desc="width: 250px"
-            />
-  </div>
-
-    <div class="filter-item">
-    <label class="form-label">Item</label>
-   <filter-item-by-modelcls
-              class="form-control"
-              v-model="filter.item"
-              :modelCls="filter.modelcls"
-              style-code="width: 150px"
-              style-desc="width: 210px"
-            />
-  </div>
-</div>
-
-
-     
-      
-      <div class="button-section">
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-        <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-          <v-button
-            :action="copy"
-            label="Copy Bom Workstation"
-            icon="copy"
-            cClass="ml-1 btn-green"
+        <div class="filter-item">
+          <label class="form-label">Item</label>
+          <filter-item-by-modelcls
+            class="form-control"
+            v-model="filter.item"
+            :modelCls="filter.modelcls"
+            style-code="width: 150px"
+            style-desc="width: 210px"
           />
         </div>
       </div>
+
+      <div class="button-section">
+        <div class="d-flex mt-3">
+          <div class="d-flex flex-fill">
+            <v-button-search-reset
+              class="ms-1"
+              :search="search"
+              :reset="reset"
+            />
+            <v-button
+              :action="copy"
+              label="Copy Bom Workstation"
+              icon="copy"
+              cClass="ml-1 btn-green"
+            />
+          </div>
+        </div>
       </div>
- 
-      <v-table :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+      <hr />
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :ds="ds"
+        :default-height="180"
+        :max-height="180"
+      >
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle"
@@ -221,11 +226,11 @@ export default {
   },
   watch: {
     "filter.modelcls": function (newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.filter.item = null;
-          this.ds.data.Items = [];
-        }
-      },
+      if (newVal !== oldVal) {
+        this.filter.item = null;
+        this.ds.data.Items = [];
+      }
+    },
     "filter.keyword": function () {
       this.search();
     },
@@ -327,83 +332,94 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 thead {
   white-space: nowrap;
 }
 /* GANTI CSS .filter-wrapper lama dengan ini */
 
-.filter-wrapper{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(320px,1fr));
-  grid-auto-flow:column;     /* isi atas ke bawah dulu */
-  gap:4px 20px;
-  width:100%;
-  align-items:center;
+.filter-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  grid-auto-flow: column; /* isi atas ke bawah dulu */
+  gap: 4px 20px;
+  width: 100%;
+  align-items: center;
 }
 
 /* jumlah baris otomatis sesuai jumlah item */
-.filter-wrapper:has(.filter-item:nth-child(8)){
-  grid-template-rows:repeat(4, auto);
+.filter-wrapper:has(.filter-item:nth-child(8)) {
+  grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))){
-  grid-template-rows:repeat(4, auto);
+.filter-wrapper:has(.filter-item:nth-child(7)):not(
+    :has(.filter-item:nth-child(8))
+  ) {
+  grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))){
-  grid-template-rows:repeat(3, auto);
+.filter-wrapper:has(.filter-item:nth-child(6)):not(
+    :has(.filter-item:nth-child(7))
+  ) {
+  grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))){
-  grid-template-rows:repeat(3, auto);
+.filter-wrapper:has(.filter-item:nth-child(5)):not(
+    :has(.filter-item:nth-child(6))
+  ) {
+  grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))){
-  grid-template-rows:repeat(2, auto);
+.filter-wrapper:has(.filter-item:nth-child(4)):not(
+    :has(.filter-item:nth-child(5))
+  ) {
+  grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))){
-  grid-template-rows:repeat(2, auto);
+.filter-wrapper:has(.filter-item:nth-child(3)):not(
+    :has(.filter-item:nth-child(4))
+  ) {
+  grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))){
-  grid-template-rows:repeat(1, auto);
+.filter-wrapper:has(.filter-item:nth-child(2)):not(
+    :has(.filter-item:nth-child(3))
+  ) {
+  grid-template-rows: repeat(1, auto);
 }
 
-.filter-item{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  min-height:32px;
-  width:100%;
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  width: 100%;
 }
 
-.filter-item label{
-  width:70px;
-  min-width:70px;
-  white-space:nowrap;
+.filter-item label {
+  width: 70px;
+  min-width: 70px;
+  white-space: nowrap;
 }
 
 /* MOBILE = turun kebawah normal */
-@media(max-width:768px){
-  .filter-wrapper{
-    grid-template-columns:1fr !important;
-    grid-template-rows:auto !important;
-    grid-auto-flow:row !important;
-    gap:6px;
+@media (max-width: 768px) {
+  .filter-wrapper {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    grid-auto-flow: row !important;
+    gap: 6px;
   }
 
-  .filter-item{
-    width:100%;
+  .filter-item {
+    width: 100%;
   }
 }
 
-.button-section{
- border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
+.button-section {
+  /* garis panjang bawah */
   padding-bottom: 12px;
   margin-bottom: 15px;
   width: 100%;
 }
 </style>
-

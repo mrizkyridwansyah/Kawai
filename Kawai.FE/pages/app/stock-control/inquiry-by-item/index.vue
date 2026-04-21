@@ -17,24 +17,7 @@
               style-desc="width: 300px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Warehouse</label>
-          </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <filter-warehouse-by-stock
-              class="form-control"
-              v-model="filter.warehouse"
-              :item-code="filter.item"
-              :show-option-all="true"
-              style-code="width: 150px"
-              style-desc="width: 300px"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
             <label class="form-label">Area</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -50,7 +33,20 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px;">
+            <label class="form-label">Warehouse</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <filter-warehouse-by-stock
+              class="form-control"
+              v-model="filter.warehouse"
+              :item-code="filter.item"
+              :show-option-all="true"
+              style-code="width: 150px"
+              style-desc="width: 300px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Lot No</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -79,6 +75,7 @@
           </td>
         </tr>
       </table>
+      <hr />
       <v-tree-group
         :tree-data="treeData"
         :columns="columns"
@@ -90,6 +87,8 @@
         :is-server-error="ds.isServerError"
         :is-network-error="ds.isNetworkError"
         :refresh="onSearch"
+        :default-height="290"
+        :max-height="290"
       >
         <template #paging-tree>
           <v-table-pagination
@@ -194,25 +193,25 @@ export default {
         {
           text: "Begin",
           dataField: "BeginQty",
-          width: "100px",
+          width: "max-content",
           align: "right",
         },
         {
           text: "Receipt",
           dataField: "ReceiptQty",
-          width: "100px",
+          width: "max-content",
           align: "right",
         },
         {
           text: "Supply",
           dataField: "SupplyQty",
-          width: "100px",
+          width: "max-content",
           align: "right",
         },
         {
           text: "Current",
           dataField: "CurrentQty",
-          width: "100px",
+          width: "max-content",
           align: "right",
         },
         {
@@ -235,7 +234,7 @@ export default {
         },
       ];
     },
-    validSearch: function() {
+    validSearch: function () {
       if ((this.filter.item || "") == "") {
         toastDanger("Silahkan pilih item");
         return false;
@@ -258,11 +257,11 @@ export default {
 
       return true;
     },
-    onSearch: function() {
+    onSearch: function () {
       this.search(true);
     },
     search: function (cek) {
-      if(cek && !this.validSearch()) return;
+      if (cek && !this.validSearch()) return;
 
       this.ds.setSort(this.filter.sorts);
       let filters = [

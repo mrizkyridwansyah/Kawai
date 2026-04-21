@@ -1,85 +1,94 @@
 <template>
   <v-frame title="Workstation Line Setting Master" icon="database">
     <template #frame-content>
- 
-<!-- FILTER SECTION -->
-<div class="filter-wrapper">
-
-  <!-- 1 -->
-  <div class="filter-item">
-    <label class="form-label">Factory</label>
-    <filter-factory-privileges
-      class="form-control"
-      v-model="filter.factory"
-      style-code="width:120px"
-      style-desc="width:250px"
-    />
-  </div>
-
-  <!-- 2 -->
-  <div class="filter-item">
-    <label class="form-label">Process</label>
-    <filter-trade-2
-      class="form-control"
-      placeholder=" "
-      v-model="filter.supplier"
-      :trade-cls="['1']"
-      style-code="width:120px"
-      style-desc="width:250px"
-    />
-  </div>
-
-  <!-- 3 -->
-  <div class="filter-item">
-    <label class="form-label">Line</label>
-    <filter-line-factory
-      class="form-control"
-      :company="filter.factory"
-      :manufacture="filter.supplier"
-      placeholder=" "
-      v-model="filter.linecode"
-      style-code="width:120px"
-      style-desc="width:250px"
-    />
-  </div>
-
-  
-
-</div>
-    
-<div class="button-section">
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-          <button
-            class="btn btn-sm btn-primary btn-elevate"
-            @click="submit"
-            :disabled="isLoading"
-          >
-            <div
-              class="spinner-border spinner-border-sm text-light"
-              role="status"
-              v-if="isLoading"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <font-awesome-icon icon="save" v-else />
-            <span class="ml-2">Save </span>
-          </button>
-          <v-button-print
-            :print="print"
-            cClass="ml-1"
-            :is-loading="isLoadingPrint"
+      <!-- FILTER SECTION -->
+      <div class="filter-wrapper">
+        <!-- 1 -->
+        <div class="filter-item">
+          <label class="form-label">Factory</label>
+          <filter-factory-privileges
+            class="form-control"
+            v-model="filter.factory"
+            style-code="width:120px"
+            style-desc="width:250px"
           />
-          <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+        </div>
+
+        <!-- 2 -->
+        <div class="filter-item">
+          <label class="form-label">Process</label>
+          <filter-trade-2
+            class="form-control"
+            placeholder=" "
+            v-model="filter.supplier"
+            :trade-cls="['1']"
+            style-code="width:120px"
+            style-desc="width:250px"
+          />
+        </div>
+
+        <!-- 3 -->
+        <div class="filter-item">
+          <label class="form-label">Line</label>
+          <filter-line-factory
+            class="form-control"
+            :company="filter.factory"
+            :manufacture="filter.supplier"
+            placeholder=" "
+            v-model="filter.linecode"
+            style-code="width:120px"
+            style-desc="width:250px"
+          />
         </div>
       </div>
+
+      <div class="button-section">
+        <div class="d-flex mt-3">
+          <div class="d-flex flex-fill">
+            <button
+              class="btn btn-sm btn-primary btn-elevate"
+              @click="submit"
+              :disabled="isLoading"
+            >
+              <div
+                class="spinner-border spinner-border-sm text-light"
+                role="status"
+                v-if="isLoading"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <font-awesome-icon icon="save" v-else />
+              <span class="ml-2">Save </span>
+            </button>
+            <v-button-print
+              :print="print"
+              cClass="ml-1"
+              :is-loading="isLoadingPrint"
+            />
+            <v-button-search-reset
+              class="ms-1"
+              :search="search"
+              :reset="reset"
+            />
+          </div>
+        </div>
       </div>
-      <v-table-full :filter="filter" :keyword-keys="keywordKeys" :ds="ds">
+      <hr />
+      <v-table
+        :filter="filter"
+        :keyword-keys="keywordKeys"
+        :ds="ds"
+        :default-height="280"
+        :max-height="280"
+        :use-paging="false"
+        ref="vtable"
+      >
         <template #table-content>
           <table
-           class="table table-striped table-bordered mb-0 align-middle"
+            class="table table-striped table-bordered mb-0 align-middle"
             style="width: 100%"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+            ref="table"
           >
             <thead>
               <tr>
@@ -98,7 +107,6 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items">
-                
                 <td class="text-center">
                   <div style="justify-items: center">
                     <input-checkbox
@@ -117,41 +125,50 @@
                 </td>
                 <td>{{ item.WorkStationCode }}</td>
                 <td>{{ item.WorkStationName }}</td>
-                <td style="width: 150px !important;">
+                <td style="width: 150px !important">
                   <div style="justify-items: center; display: grid">
-                  <input-stoppointbyaddress
-                    :line="filter.linecode"
-                     :workstation="item.WorkStationCode"
+                    <input-stoppointbyaddress
+                      :line="filter.linecode"
+                      :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode"
-                    :width="'100%'"
-                    :include-temp="true"
-                    :errors="item.errors?.StopPointCode"
-                    @update:modelValue="(value) => onStopPointChange(value, item)"
-                  /></div>
+                      :width="'100%'"
+                      :include-temp="true"
+                      :errors="item.errors?.StopPointCode"
+                      @update:modelValue="
+                        (value) => onStopPointChange(value, item)
+                      "
+                    />
+                  </div>
                 </td>
-                 <td style="width: 150px !important;">
+                <td style="width: 150px !important">
                   <div style="justify-items: center; display: grid">
-                  <input-stoppointbyaddress 
-                     :line="filter.linecode"
+                    <input-stoppointbyaddress
+                      :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode2"
-                    :width="'100%'" 
-                    :include-temp="true"
-                    :errors="item.errors?.StopPointCode2"
-                    @update:modelValue="(value) => onStopPointChange2(value, item)"
-                  /></div>
+                      :width="'100%'"
+                      :include-temp="true"
+                      :errors="item.errors?.StopPointCode2"
+                      @update:modelValue="
+                        (value) => onStopPointChange2(value, item)
+                      "
+                    />
+                  </div>
                 </td>
-                <td style="width: 150px !important;">
+                <td style="width: 150px !important">
                   <div style="justify-items: center; display: grid">
-                  <input-stoppointbyaddress 
-                     :line="filter.linecode"
-                     :workstation="item.WorkStationCode"
+                    <input-stoppointbyaddress
+                      :line="filter.linecode"
+                      :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode3"
-                    :width="'100%'"
-                    :include-temp="true"
-                    :errors="item.errors?.StopPointCode3"
-                    @update:modelValue="(value) => onStopPointChange3(value, item)"
-                  /></div>
+                      :width="'100%'"
+                      :include-temp="true"
+                      :errors="item.errors?.StopPointCode3"
+                      @update:modelValue="
+                        (value) => onStopPointChange3(value, item)
+                      "
+                    />
+                  </div>
                 </td>
                 <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
                 <td>{{ item.RegisterUser }}</td>
@@ -161,12 +178,12 @@
             </tbody>
           </table>
         </template>
-      </v-table-full>
+      </v-table>
     </template>
   </v-frame>
 </template>
 <script>
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 export default {
   data: () => ({
@@ -239,16 +256,16 @@ export default {
       const duplicate = this.ds.data.Items.find(
         (x) =>
           x.StopPointCode === item.StopPointCode &&
-          x.WorkStationCode !== item.WorkStationCode
+          x.WorkStationCode !== item.WorkStationCode,
       );
       if (duplicate) {
         toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode);
         //clear value
-    
+
         // item.errors = {
         //   ...item.errors,
         //   // StopPointCode: "Duplicate Stop Point Code",
-    
+
         // };
       } else if (item.errors) {
         delete item.errors.StopPointCode;
@@ -258,7 +275,7 @@ export default {
       }
     },
 
-     onStopPointChange2: function (value, item) {
+    onStopPointChange2: function (value, item) {
       //jika belum centang allowsetting maka error
       if (!item.AllowSetting) {
         toastWarning("Please allow setting before set Stop Point Code");
@@ -272,7 +289,7 @@ export default {
       const duplicate = this.ds.data.Items.find(
         (x) =>
           x.StopPointCode2 === item.StopPointCode2 &&
-          x.WorkStationCode !== item.WorkStationCode
+          x.WorkStationCode !== item.WorkStationCode,
       );
       if (duplicate) {
         toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode2);
@@ -284,7 +301,7 @@ export default {
       }
     },
 
-     onStopPointChange3: function (value, item) {
+    onStopPointChange3: function (value, item) {
       //jika belum centang allowsetting maka error
       if (!item.AllowSetting) {
         toastWarning("Please allow setting before set Stop Point Code");
@@ -298,7 +315,7 @@ export default {
       const duplicate = this.ds.data.Items.find(
         (x) =>
           x.StopPointCode3 === item.StopPointCode3 &&
-          x.WorkStationCode !== item.WorkStationCode
+          x.WorkStationCode !== item.WorkStationCode,
       );
       if (duplicate) {
         toastWarning("Duplicate Stop Point Code!  " + item.StopPointCode3);
@@ -321,58 +338,51 @@ export default {
         return;
       }
 
-  // CEK apakah ada yang dicentang
-  const hasChecked = this.ds.data.Items.some(x => x.AllowSetting);
+      // CEK apakah ada yang dicentang
+      const hasChecked = this.ds.data.Items.some((x) => x.AllowSetting);
 
-  if (!hasChecked) {
-    toastWarning("Please check at least one Setting!");
-    return;
-  }
-
-     const usedStopPoints = new Set();
-     const usedStopPoints2 = new Set();
-     const usedStopPoints3 = new Set();
-
-    for (let item of this.ds.data.Items) {
-      
-      if (item.AllowSetting && item.StopPointCode) {
-        console.log("Checking Stop Point Code: ", usedStopPoints);
-        if (usedStopPoints.has(item.StopPointCode)) {
-          toastWarning(
-            "Duplicate Stop Point Code : " + item.StopPointCode
-          );
-          return;
-        }
-
-        usedStopPoints.add(item.StopPointCode);
+      if (!hasChecked) {
+        toastWarning("Please check at least one Setting!");
+        return;
       }
 
-      if (item.AllowSetting && item.StopPointCode2) {
-        console.log("Checking Stop Point Code: ", usedStopPoints2);
-        if (usedStopPoints2.has(item.StopPointCode2)) {
-          toastWarning(
-            "Duplicate Stop Point Code : " + item.StopPointCode2
-          );
-          return;
+      const usedStopPoints = new Set();
+      const usedStopPoints2 = new Set();
+      const usedStopPoints3 = new Set();
+
+      for (let item of this.ds.data.Items) {
+        if (item.AllowSetting && item.StopPointCode) {
+          console.log("Checking Stop Point Code: ", usedStopPoints);
+          if (usedStopPoints.has(item.StopPointCode)) {
+            toastWarning("Duplicate Stop Point Code : " + item.StopPointCode);
+            return;
+          }
+
+          usedStopPoints.add(item.StopPointCode);
         }
 
-        usedStopPoints2.add(item.StopPointCode2);
-      }
+        if (item.AllowSetting && item.StopPointCode2) {
+          console.log("Checking Stop Point Code: ", usedStopPoints2);
+          if (usedStopPoints2.has(item.StopPointCode2)) {
+            toastWarning("Duplicate Stop Point Code : " + item.StopPointCode2);
+            return;
+          }
 
-       if (item.AllowSetting && item.StopPointCode3) {
-        console.log("Checking Stop Point Code: ", usedStopPoints3);
-        if (usedStopPoints3.has(item.StopPointCode3)) {
-          toastWarning(
-            "Duplicate Stop Point Code : " + item.StopPointCode3
-          );
-          return;
+          usedStopPoints2.add(item.StopPointCode2);
         }
 
-        usedStopPoints3.add(item.StopPointCode3);
+        if (item.AllowSetting && item.StopPointCode3) {
+          console.log("Checking Stop Point Code: ", usedStopPoints3);
+          if (usedStopPoints3.has(item.StopPointCode3)) {
+            toastWarning("Duplicate Stop Point Code : " + item.StopPointCode3);
+            return;
+          }
+
+          usedStopPoints3.add(item.StopPointCode3);
+        }
       }
-    }
       this.isLoading = true;
- 
+
       const payload = {
         LineCode: this.filter.linecode || "", // << kirim line code di sini
         SettingList: this.ds.data.Items.map((item) => ({
@@ -383,7 +393,7 @@ export default {
           StopPointCode3: item.StopPointCode3,
         })),
       };
-debugger;
+      debugger;
       this.ds
         .submitworkstationsetting(payload)
         .then(() => {
@@ -401,36 +411,36 @@ debugger;
       const newValue = item.AllowSetting ? 1 : 0;
     },
 
-   search: function () {
-  if (!this.filter.supplier) {
-    toastWarning("Please select process!");
-    return;
-  }
+    search: function () {
+      if (!this.filter.supplier) {
+        toastWarning("Please select process!");
+        return;
+      }
 
-  if (!this.filter.linecode) {
-    toastWarning("Please select line!");
-    return;
-  }
+      if (!this.filter.linecode) {
+        toastWarning("Please select line!");
+        return;
+      }
 
-  this.ds.setSort(this.filter.sorts);
+      this.ds.setSort(this.filter.sorts);
 
-  let filters = [
-    {
-      Keyword: this.filter.keyword || "",
-      LineCode: this.filter.linecode || "",
+      let filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          LineCode: this.filter.linecode || "",
+        },
+      ];
+
+      this.ds.setFilter(filters);
+
+      this.ds.load().then(() => {
+        this.ds.data.Items.forEach((x) => {
+          x.StopPointCode = x.StopPointCode ?? "";
+          x.StopPointCode2 = x.StopPointCode2 ?? "";
+          x.StopPointCode3 = x.StopPointCode3 ?? "";
+        });
+      });
     },
-  ];
-
-  this.ds.setFilter(filters);
-
-  this.ds.load().then(() => {
-    this.ds.data.Items.forEach(x => {
-      x.StopPointCode = x.StopPointCode ?? "";
-      x.StopPointCode2 = x.StopPointCode2 ?? "";
-      x.StopPointCode3 = x.StopPointCode3 ?? "";
-    });
-  });
-},
     reset: function () {
       this.filter.factory = null;
       this.filter.supplier = null;
@@ -441,7 +451,7 @@ debugger;
 
     check: function (checked, item) {
       const existingIndex = this.selectedPrint.findIndex(
-        (p) => p.Key === item.Barcode
+        (p) => p.Key === item.Barcode,
       );
       if (checked && existingIndex === -1) {
         this.selectedPrint.push({
@@ -496,80 +506,92 @@ debugger;
 };
 </script>
 
-<style>
+<style scoped>
 thead {
   white-space: nowrap;
 }
 /* GANTI CSS .filter-wrapper lama dengan ini */
 
-.filter-wrapper{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(320px,1fr));
-  grid-auto-flow:column;     /* isi atas ke bawah dulu */
-  gap:4px 20px;
-  width:100%;
-  align-items:center;
+.filter-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  grid-auto-flow: column; /* isi atas ke bawah dulu */
+  gap: 4px 20px;
+  width: 100%;
+  align-items: center;
 }
 
 /* jumlah baris otomatis sesuai jumlah item */
-.filter-wrapper:has(.filter-item:nth-child(8)){
-  grid-template-rows:repeat(4, auto);
+.filter-wrapper:has(.filter-item:nth-child(8)) {
+  grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))){
-  grid-template-rows:repeat(4, auto);
+.filter-wrapper:has(.filter-item:nth-child(7)):not(
+    :has(.filter-item:nth-child(8))
+  ) {
+  grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))){
-  grid-template-rows:repeat(3, auto);
+.filter-wrapper:has(.filter-item:nth-child(6)):not(
+    :has(.filter-item:nth-child(7))
+  ) {
+  grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))){
-  grid-template-rows:repeat(3, auto);
+.filter-wrapper:has(.filter-item:nth-child(5)):not(
+    :has(.filter-item:nth-child(6))
+  ) {
+  grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))){
-  grid-template-rows:repeat(2, auto);
+.filter-wrapper:has(.filter-item:nth-child(4)):not(
+    :has(.filter-item:nth-child(5))
+  ) {
+  grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))){
-  grid-template-rows:repeat(2, auto);
+.filter-wrapper:has(.filter-item:nth-child(3)):not(
+    :has(.filter-item:nth-child(4))
+  ) {
+  grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))){
-  grid-template-rows:repeat(1, auto);
+.filter-wrapper:has(.filter-item:nth-child(2)):not(
+    :has(.filter-item:nth-child(3))
+  ) {
+  grid-template-rows: repeat(1, auto);
 }
 
-.filter-item{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  min-height:32px;
-  width:100%;
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  width: 100%;
 }
 
-.filter-item label{
-  width:70px;
-  min-width:70px;
-  white-space:nowrap;
+.filter-item label {
+  width: 70px;
+  min-width: 70px;
+  white-space: nowrap;
 }
 
 /* MOBILE = turun kebawah normal */
-@media(max-width:768px){
-  .filter-wrapper{
-    grid-template-columns:1fr !important;
-    grid-template-rows:auto !important;
-    grid-auto-flow:row !important;
-    gap:6px;
+@media (max-width: 768px) {
+  .filter-wrapper {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    grid-auto-flow: row !important;
+    gap: 6px;
   }
 
-  .filter-item{
-    width:100%;
+  .filter-item {
+    width: 100%;
   }
 }
 
-.button-section{
-   border-bottom: 0.5px solid #8a7f7f; /* garis panjang bawah */
+.button-section {
+  /* garis panjang bawah */
   padding-bottom: 12px;
   margin-bottom: 15px;
   width: 100%;

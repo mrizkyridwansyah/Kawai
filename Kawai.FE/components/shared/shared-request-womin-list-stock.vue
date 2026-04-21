@@ -6,6 +6,8 @@
     :ds-page="ds.setPageListStock"
     :ds-length="ds.setLengthListStock"
     :ds-load="ds.loadListStock"
+    :default-height="380"
+    :max-height="380"
   >
     <template #table-content>
       <table

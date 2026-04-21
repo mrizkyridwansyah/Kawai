@@ -8,7 +8,10 @@
       >
         <!-- BEGIN table-responsive -->
         <div ref="tableContainer">
-          <div class="v-table-wrapper">
+          <div
+            class="v-table-wrapper"
+            :style="{ maxHeight: formatHeight(maxHeight), height: formatHeight(defaultHeight) }"
+          >
             <slot name="table-content" />
           </div>
           <div v-if="ds">
@@ -64,6 +67,8 @@ export default {
       default: () => [],
     },
     frozenColumnLeft: { type: Number, default: 0 },
+    defaultHeight: { type: Number, default: 500 },
+    maxHeight: { type: Number, default: 500 },
     ds: { type: Object },
     dsPage: { type: Function },
     dsLength: { type: Function },
@@ -166,6 +171,11 @@ export default {
           cell.style.zIndex = null;
         });
       });
+    },
+
+    formatHeight: function(val) {
+      if (typeof val === "number") return val + "px";
+      return val; // misal '60vh', '100%', dll
     },
   },
 };

@@ -12,19 +12,17 @@
               style-desc="width: 250px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-left: 15px">
             <label class="form-label">Supplier</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-left: 15px" colspan="5">
             <filter-trade-2
               class="form-control"
               :trade-cls="['2', '3']"
               v-model="filter.SupplierCode"
               :show-option-all="true"
               style-code="width: 140px"
-              style-desc="width: 300px"
+              style-desc="width: 400px"
             />
           </td>
         </tr>
@@ -47,9 +45,7 @@
               style-date="width: 100px !important"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Receipt No.</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -64,9 +60,7 @@
               style="width: 300px"
             />
           </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Complete Status</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -93,7 +87,7 @@
           </td>
         </tr>
       </table>
-
+      <hr />
       <v-table
         :filter="filter"
         :export-excel="true"
@@ -102,6 +96,8 @@
         :data-items="ds.data.Items"
         :ds="ds"
         ref="vtable"
+        :default-height="240"
+        :max-height="240"
       >
         <template #table-content>
           <table

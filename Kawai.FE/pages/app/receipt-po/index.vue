@@ -255,9 +255,16 @@
           </td>
         </tr>
       </table>
+      <hr />
 
       <div style="width: 1150px">
-        <v-table-input :data-items="listPODetail" ref="vtable">
+        <v-table-input
+          :data-items="listPODetail"
+          ref="vtable"
+          :frozen-column-left="3"
+          :default-height="250"
+          :max-height="250"
+        >
           <template #table-content>
             <div class="detail-content" style="width: 100%">
               <table
@@ -653,7 +660,7 @@ export default {
               this.update();
               resolve();
             }),
-          () => this.isLoading = false,
+          () => (this.isLoading = false),
           `You change the <strong>Register No</strong>. Are you sure to <strong>CONTINUE</strong> changes?`,
         );
       } else {

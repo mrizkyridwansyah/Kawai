@@ -39,6 +39,7 @@
                   v-for="(menu, idx) in getMenu(menuGroup, null)"
                   :key="idx"
                   class="menu-item"
+                  :class="{ active: isMenuActive(menu, menuGroup) }"
                 >
                   <v-app-link :to="menu.MenuName" class="menu-link">
                     <div class="menu-text">{{ menu.MenuDescription }}</div>
@@ -151,6 +152,7 @@ export default {
     isSmallScreen: false, // State untuk mengecek apakah ukuran layar kecil
     privileges: [],
     activeGroups: new Set(), // Menyimpan menu yang aktif
+    closedGroups: new Set(), // Menyimpan menu yang close
     activeSubMenus: {}, // Menyimpan status submenu, { menuGroup: { subGroup: boolean } }
     floatingMenu: {
       show: false,
@@ -234,19 +236,69 @@ export default {
     this.checkScreenSize();
     this.menu.privileges().then((dt) => {
       this.privileges = dt.Data;
+      this.initActiveGroups();
     });
     window.addEventListener("resize", this.checkScreenSize);
   },
   methods: {
+    initActiveGroups: function() {
+      this.menuGroups.forEach((menuGroup) => {
+        const isMatch = this.getMenu(menuGroup, null).some((menu) => {
+          const fullPath = "/app" + menu.MenuName;
+          return (
+            this.$route.path === fullPath ||
+            this.$route.path.startsWith(fullPath + "/")
+          );
+        });
+
+        if (isMatch) {
+          this.activeGroups.add(menuGroup);
+        }
+      });
+    },
     toggleActive: function (menuGroup) {
       if (this.activeGroups.has(menuGroup)) {
-        this.activeGroups.delete(menuGroup); // Nonaktifkan
+        this.activeGroups.delete(menuGroup);
+        this.closedGroups.add(menuGroup); // tandai user nutup
       } else {
-        this.activeGroups.add(menuGroup); // Aktifkan
+        this.activeGroups.add(menuGroup);
+        this.closedGroups.delete(menuGroup);
       }
     },
     isActive(menuGroup) {
-      return this.activeGroups.has(menuGroup); // Periksa apakah menuGroup aktif
+      // kalau user pernah nutup → jangan auto buka lagi
+      if (this.closedGroups.has(menuGroup)) return false;
+
+      // kalau user buka manual
+      if (this.activeGroups.has(menuGroup)) return true;
+
+      // auto dari route
+      return this.getMenu(menuGroup, null).some((menu) => {
+        const fullPath = "/app" + menu.MenuName;
+        return (
+          this.$route.path === fullPath ||
+          this.$route.path.startsWith(fullPath + "/")
+        );
+      });
+    },
+    getBestMatch(menuGroup) {
+      const current = this.$route.path;
+
+      const matches = this.getMenu(menuGroup).filter((menu) => {
+        const fullPath = "/app" + menu.MenuName;
+        return current === fullPath || current.startsWith(fullPath + "/");
+      });
+
+      if (!matches.length) return null;
+
+      // ambil yang paling panjang (paling spesifik)
+      return matches.reduce((prev, curr) =>
+        curr.MenuName.length > prev.MenuName.length ? curr : prev,
+      );
+    },
+    isMenuActive(menu, menuGroup) {
+      const best = this.getBestMatch(menuGroup);
+      return best && best.MenuName === menu.MenuName;
     },
     toggleSubMenu(menuGroup, subGroup) {
       // Toggle the status of the submenu (active or not)
@@ -293,7 +345,6 @@ export default {
       this.floatingMenu.top = top;
       this.floatingMenu.items = this.getMenu(menuGroup, subGroup);
       this.floatingMenu.show = true;
-
     },
     hideFloatingMenu() {
       this.hideTimer = setTimeout(() => (this.floatingMenu.show = false), 200);
@@ -317,8 +368,8 @@ export default {
 }
 
 .app-sidebar-float-submenu-container {
-  max-height: 90vh;     /* biar gak lebih tinggi dari layar */
-  overflow-y: auto;     /* INI yang bikin bisa scroll */
+  max-height: 90vh; /* biar gak lebih tinggi dari layar */
+  overflow-y: auto; /* INI yang bikin bisa scroll */
   overflow-x: hidden;
 }
 

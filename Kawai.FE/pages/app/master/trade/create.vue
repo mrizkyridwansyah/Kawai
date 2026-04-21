@@ -43,24 +43,25 @@
                     </td>
                     <td colspan="2">
                       <div class="d-flex">
-              <input-text
-                v-model="model.Trade_Code"
-                :disabled="isTradeCodeDisabled"
-                @keyup.enter="onTradeCodeEnter"
-                 :errors="errors?.Trade_Code"
-                maxlength="15"
-              />
-              <button
-                class="form-submit bg-primary"
-                style="margin-left: 2px; width: 3em; border-radius: 0.5em"
-                @click="loadItem"
-              >
-                <v-icon name="search" width="16px" />
-              </button>
-            </div>
-
-
-                      
+                        <input-text
+                          v-model="model.Trade_Code"
+                          :disabled="isTradeCodeDisabled"
+                          @keyup.enter="onTradeCodeEnter"
+                          :errors="errors?.Trade_Code"
+                          maxlength="15"
+                        />
+                        <button
+                          class="form-submit bg-primary"
+                          style="
+                            margin-left: 2px;
+                            width: 3em;
+                            border-radius: 0.5em;
+                          "
+                          @click="loadItem"
+                        >
+                          <v-icon name="search" width="16px" />
+                        </button>
+                      </div>
                     </td>
 
                     <td></td>
@@ -78,13 +79,11 @@
                     </td>
                     <td colspan="4">
                       <filter-cls
-                      
                         ddl-width="80px"
                         desc-width="50px"
                         type-data="Trade_Cls"
                         v-model="model.Trade_Cls"
                         :errors="errors?.Trade_Cls"
-                        
                       />
                     </td>
 
@@ -102,10 +101,7 @@
                       <label>Warehouse Code</label>
                     </td>
                     <td colspan="8">
-                      <filter-warehouse
-                      
-                        v-model="model.Subcon_WH_Code"
-                      />
+                      <filter-warehouse v-model="model.Subcon_WH_Code" />
                     </td>
                   </tr>
                   <tr>
@@ -113,7 +109,11 @@
                       <label>Trade Name</label>
                     </td>
                     <td colspan="8">
-                      <input-text v-model="model.Trade_Name" maxlength="70"     :errors="errors?.Trade_Name"/>
+                      <input-text
+                        v-model="model.Trade_Name"
+                        maxlength="70"
+                        :errors="errors?.Trade_Name"
+                      />
                     </td>
                   </tr>
                   <tr>
@@ -172,8 +172,7 @@
                   <tr>
                     <td colspan="2"><label>Country Cls</label></td>
                     <td colspan="2">
-                       <input-cls-desc
-                      
+                      <input-cls-desc
                         type-data="Country_Cls"
                         v-model="model.Country_Cls"
                       />
@@ -183,7 +182,6 @@
                     <td><label>Epte</label></td>
                     <td colspan="3">
                       <input-cls-desc
-                       
                         type-data="Epte_Cls"
                         v-model="model.Epte_Cls"
                       />
@@ -208,7 +206,6 @@
                     <td colspan="2"><label>Region Cls</label></td>
                     <td colspan="8">
                       <filter-cls
-                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Region_Cls"
@@ -248,7 +245,6 @@
                     </td>
                     <td colspan="8">
                       <filter-trade
-                       
                         :trade-cls="['2', '3']"
                         v-model="model.Invoice_To"
                         :disabled="isInvoiceToChecked"
@@ -277,7 +273,6 @@
                     <td colspan="2"><label>Insurance Covered</label></td>
                     <td colspan="8">
                       <filter-cls
-                       
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Insurance_Cls"
@@ -288,8 +283,7 @@
                   <tr>
                     <td colspan="2"><label>PO Cls</label></td>
                     <td colspan="2">
-                        <input-cls-desc
-                        
+                      <input-cls-desc
                         v-model="model.PO_Cls"
                         type-data="PO_Cls"
                         style="width: 120px"
@@ -306,7 +300,6 @@
                     <td colspan="2"><label>NG Cls</label></td>
                     <td colspan="2">
                       <input-cls-desc
-                       
                         v-model="model.NG_Cls"
                         type-data="NG_Cls"
                         style="width: 120px"
@@ -390,7 +383,6 @@
                     <td><label>Price Condition</label></td>
                     <td colspan="5">
                       <filter-cls
-                       
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="PriceCondition_Cls"
@@ -402,7 +394,6 @@
                     <td><label>Payment Term</label></td>
                     <td colspan="5">
                       <filter-cls
-                         
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="PaymentTerm_Cls"
@@ -414,7 +405,6 @@
                     <td><label>Transportation</label></td>
                     <td colspan="3">
                       <filter-cls
-                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="Transportation_Cls"
@@ -454,6 +444,8 @@
                           :data-items="items"
                           ref="vtable"
                           style="width: 100%"
+                          default-height="max-content"
+                          max-height="max-content"
                         >
                           <template #table-content>
                             <div class="detail-content">
@@ -482,7 +474,6 @@
                                     <td>
                                       <div class="col-10">
                                         <input-text
-                                          
                                           v-model="item.Location_Code"
                                           :errors="
                                             errors?.[
@@ -495,7 +486,6 @@
                                     <td>
                                       <div class="col-10">
                                         <input-text
-                                          
                                           v-model="item.Location_Name"
                                           :errors="
                                             errors?.[
@@ -650,7 +640,6 @@
                     <td><label>BC Type</label></td>
                     <td colspan="5">
                       <filter-cls
-                        
                         ddl-width="100px"
                         desc-width="180px"
                         type-data="BCType_Cls"
@@ -674,7 +663,6 @@
                     <td><label>Tanggal</label></td>
                     <td colspan="5">
                       <input-date
-                       
                         v-model="model.NoIzin_Date"
                         :errors="errors?.NoIzin_Date"
                       />
@@ -686,28 +674,27 @@
           </div>
         </div>
       </div>
-       
+
       <v-button-submit :submit="submit" cClass="mr-1" :is-loading="isLoading" />
-       <v-button
-              :action="remove"
-              label="Delete"
-              icon="trash"
-              cClass="btn-danger mr-1"
-              :is-loading="isLoading"
-              :disabled="mode === 'add'"
-            />
-       <v-button
-              :action="reset"
-              label="Clear"
-              icon="refresh"
-              cClass="btn-danger mr-1"
-              :is-loading="isLoading"
-            />
-      
+      <v-button
+        :action="remove"
+        label="Delete"
+        icon="trash"
+        cClass="btn-danger mr-1"
+        :is-loading="isLoading"
+        :disabled="mode === 'add'"
+      />
+      <v-button
+        :action="reset"
+        label="Clear"
+        icon="refresh"
+        cClass="btn-danger mr-1"
+        :is-loading="isLoading"
+      />
     </template>
   </v-frame>
-    
-   <v-modal id="shared-trade" title="List Trade" size="lg">
+
+  <v-modal id="shared-trade" title="List Trade" size="lg">
     <shared-trade
       :list="this.dsTrade"
       :refresh="refreshTradeList"
@@ -824,22 +811,22 @@ export default {
     },
   },
   methods: {
-   loadItem: function (idx) {
+    loadItem: function (idx) {
       this.refreshTradeList++;
       this.$bvModal.show("shared-trade");
     },
-     selectItem: function (dt) {
-  // set Trade Code dari modal
-  this.model.Trade_Code = dt.Trade_Code;
+    selectItem: function (dt) {
+      // set Trade Code dari modal
+      this.model.Trade_Code = dt.Trade_Code;
 
-  // tutup modal
-  this.$bvModal.hide("shared-trade");
+      // tutup modal
+      this.$bvModal.hide("shared-trade");
 
-  // trigger logic utama (sama seperti tekan Enter)
-  this.$nextTick(() => {
-    this.onTradeCodeEnter();
-  });
-},
+      // trigger logic utama (sama seperti tekan Enter)
+      this.$nextTick(() => {
+        this.onTradeCodeEnter();
+      });
+    },
     onTradeCodeEnter() {
       this.ds
         .loadDetail(this.model.Trade_Code)
@@ -871,7 +858,7 @@ export default {
     },
 
     reset: function () {
-        this.errors = {};
+      this.errors = {};
       this.model = {
         Trade_Code: "",
         Trade_Cls: "",
@@ -928,35 +915,35 @@ export default {
       this.items = [];
       this.isTradeCodeDisabled = false;
     },
-submit: async function () {
-  if (this.isLoading) return;
+    submit: async function () {
+      if (this.isLoading) return;
 
-  this.isLoading = true;
-  this.errors = {};
+      this.isLoading = true;
+      this.errors = {};
 
-  try {
-    const payload = {
-      ...this.model,
-      DeliveryList: this.items.map((x) => ({
-        Location_Code: x.Location_Code,
-        Location_Name: x.Location_Name,
-      })),
-    };
+      try {
+        const payload = {
+          ...this.model,
+          DeliveryList: this.items.map((x) => ({
+            Location_Code: x.Location_Code,
+            Location_Name: x.Location_Name,
+          })),
+        };
 
-    await this.ds.submit(payload); // ⬅️ WAJIB await
-    toastSuccess("Data berhasil disimpan");
+        await this.ds.submit(payload); // ⬅️ WAJIB await
+        toastSuccess("Data berhasil disimpan");
 
-    this.isTradeCodeDisabled = true;
-  } catch (err) {
-    // ⬇️ INI BARU MASUK
-    this.errors = err?.Errors || {};
-    toastDanger(err?.Message || "Gagal menyimpan data");
-  } finally {
-    this.isLoading = false;
-  }
-},
+        this.isTradeCodeDisabled = true;
+      } catch (err) {
+        // ⬇️ INI BARU MASUK
+        this.errors = err?.Errors || {};
+        toastDanger(err?.Message || "Gagal menyimpan data");
+      } finally {
+        this.isLoading = false;
+      }
+    },
     // submit: async function () {
-       
+
     //   if (this.isLoading) return;
 
     //   this.isLoading = true;
@@ -973,9 +960,8 @@ submit: async function () {
     //     };
     //     debugger;
     //     // CREATE / UPDATE (backend pakai InsUpd)
-        
-    //     this.ds.submit(payload).then(()=> toastSuccess("Data berhasil disimpan"));
 
+    //     this.ds.submit(payload).then(()=> toastSuccess("Data berhasil disimpan"));
 
     //     // optional: disable Trade Code setelah save
     //     this.isTradeCodeDisabled = true;
@@ -986,7 +972,7 @@ submit: async function () {
     //     this.isLoading = false;
     //   }
     // },
-     remove: function () {
+    remove: function () {
       confirmRemove(
         () =>
           new Promise((resolve, reject) => {
@@ -1003,7 +989,7 @@ submit: async function () {
               });
           }),
         null,
-        this.model.Trade_Name
+        this.model.Trade_Name,
       );
     },
     add: function () {
