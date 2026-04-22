@@ -39,7 +39,7 @@
               <v-button
                 label="Preview"
                 icon="file-pdf"
-                cClass="btn btn-success"
+                cClass="btn btn-primary"
                 :is-loading="isLoading"
                 @click="loadPdf"
               />
@@ -55,7 +55,7 @@
               <v-button
                 label="Prev Result"
                 icon="arrow-left"
-                cClass="btn btn-info"
+                cClass="btn btn-primary"
                 :disabled="searchResults.length === 0"
                 @click="prevResult"
               />
@@ -63,22 +63,22 @@
               <v-button
                 label="Next Result"
                 icon="arrow-right"
-                cClass="btn btn-info"
+                cClass="btn btn-primary"
                 :disabled="searchResults.length === 0"
                 @click="nextResult"
               />
 
               <v-button
-                label="-"
+                label="Zoom Out"
                 icon="minus"
-                cClass="btn btn-warning"
+                cClass="btn btn-primary"
                 @click="zoomOut"
               />
 
               <v-button
-                label="+"
+                label="Zoom In"
                 icon="plus"
-                cClass="btn btn-warning"
+                cClass="btn btn-primary"
                 @click="zoomIn"
               />
 
@@ -92,7 +92,7 @@
           </td>
         </tr>
       </table>
-
+ <hr>
       <!-- Navigation -->
       <div v-if="totalPages > 0" class="mt-4 text-center">
         <div class="mb-2">
