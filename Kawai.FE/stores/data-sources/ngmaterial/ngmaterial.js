@@ -20,14 +20,14 @@ export const useNGClaim = defineStore('NGClaim', {
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 10,
+      Length: 25,
     },
     dataListDetail: {
       Items: [],
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 10,
+      Length: 25,
     },
     dataInquiry: {
       Items: [],
