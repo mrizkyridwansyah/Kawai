@@ -1,74 +1,36 @@
 <template>
   <v-frame title="NG Claim Material Approval" icon="receipt">
     <template #frame-content>
-      <div class="row">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Supplier</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-       
-           <filter-trade-2
+      <div class="filter-wrapper">
+        <!-- 1 -->
+        <div class="filter-item">
+          <label class="form-label">Supplier</label>
+          <filter-trade-2
             v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
             :disabled="filter.ClaimId != null"
              style-code="width: 120px"
-                    style-desc="width: 275px"
+                    style-desc="width: 300px"
           />
+        </div>
 
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >BC Number</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-text
-            v-model="model.BCNumber"
-            :errors="errors?.BCNumber"
-            :disabled="true"
-             style="width: 400px"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Claim Date</label
-        >
-        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
+        <!-- 2 -->
+        <div class="filter-item">
+          <label class="form-label">Claim Date</label>
+           <div>
           <input-date v-model="filter.PeriodFrom" />
         </div>
         <label
           class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
           >Until Date</label
         >
-        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
+        <div>
           <input-date v-model="filter.PeriodUntil" />
         </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >BC Type</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-           
-          <filter-cls-2
-                    class="form-control"
-                    type-data="BCType_Cls"
-                    v-model="model.BCType"
-                    :errors="errors?.BCType"
-                    style-code="width: 120px"
-                    style-desc="width: 240px"
-                     :disabled="true"
-                  />
-
         </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Claim No</label
-        >
-        <div class="col-xl-4 col-lg-4 col-md-9 col-sm-9 col-xs-11">
+
+        <div class="filter-item">
+          <label class="form-label">Claim No</label>
           <input-claim
             class="form-control"
             status="ALL"
@@ -77,82 +39,87 @@
             :period-until="filter.PeriodUntil"
             v-model="filter.ClaimId"
             :errors="errors?.ClaimId"
+             style="width: 420px"
           />
+           
+         
         </div>
-        <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2"></div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >BC Date</label
-        >
-        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
-          <input-date
-            v-model="model.BCDate"
-            :errors="errors?.BCDate"
-            :disabled="true"
-          />
+
+         <div class="filter-item">
+          <label class="form-label">Police No</label>
+            <input-text
+              v-model="model.VehicleNo"
+              :errors="errors?.VehicleNo"
+              style="width: 420px"
+              maxlength="15"
+               :disabled="true"
+            />
         </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >DN Date</label
-        >
-        <div class="col-xl-2 col-lg-2 col-md-10 col-sm-10 col-xs-10">
-          <input-date
-            v-model="model.DNDate"
-            :errors="errors?.DNDate"
-            :disabled="true"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Police No</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-text
-            v-model="model.VehicleNo"
-            :errors="errors?.VehicleNo"
-               style="width: 120px"
-            :disabled="true"
-          />
-        </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Transport By</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
+        <div class="filter-item">
+          <label class="form-label">Transport By</label>
            <filter-cls-2
                     class="form-control"
                     type-data="Transport_Cls"
                     v-model="model.Transport"
                     :errors="errors?.Transport"
                     style-code="width: 120px"
-                    style-desc="width: 120px"
+                    style-desc="width: 300px"
                      :disabled="true"
                   />
-
-          
-          
         </div>
-      </div>
-      <div class="row mt-1">
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >DN Number</label
-        >
-        <div class="col-xl-5 col-lg-5 col-md-10 col-sm-10 col-xs-12">
-          <input-text
+
+        <div class="filter-item">
+          <label class="form-label">DN Number</label>
+            <input-text
             v-model="model.DNNumber"
+            maxlength="50"
             :errors="errors?.DNNumber"
-            :disabled="true"
-            style="width: 325px"
+             style="width: 420px"
+              :disabled="true"
           />
         </div>
-        <div class="col-xl-2 col-lg-2 col-md-8 col-sm-8 col-xs-10"></div>
+
+
+        <div class="filter-item">
+          <label class="form-label">BC Number</label>
+         <input-text
+            v-model="model.BCNumber"
+            maxlength="50"
+            :errors="errors?.BCNumber"
+             style="width: 420px"
+              :disabled="true"
+          />
+        </div>
+
+        <div class="filter-item">
+          <label class="form-label">BC Type</label>
+           <filter-cls-2
+                    class="form-control"
+                    type-data="BCType_Cls"
+                    v-model="model.BCType"
+                    :errors="errors?.BCType"
+                    style-code="width: 120px"
+                    style-desc="width: 300px"
+                     :disabled="true"
+                  />
+        </div>
+
+        <div class="filter-item">
+          <label class="form-label">BC Date</label>
+           <div>
+            <input-date v-model="model.BCDate" :errors="errors?.BCDate"  :disabled="true" />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >DN Date</label
+        >
+        <div>
+           <input-date v-model="model.DNDate" :errors="errors?.DNDate"  :disabled="true"/>
+        </div>
+        </div>
       </div>
-      <hr />
+     
+      
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
           <button
@@ -196,8 +163,16 @@
           </button>
         </div>
       </div>
+<hr />
+<v-table-input
+          :data-items="listNGClaimDetail"
+          :frozen-column-left="3"
+          ref="vtable"
+          :default-height="250"
+          :max-height="250"
+        >
 
-      <v-table-input :data-items="listNGClaimDetail" ref="vtable">
+     
         <template #table-content>
           <div class="detail-content">
             <table
@@ -465,4 +440,101 @@ export default {
   max-height: 70%;
   overflow-y: scroll;
 }
+thead {
+  white-space: nowrap;
+}
+/* GANTI CSS .filter-wrapper lama dengan ini */
+
+.filter-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  grid-auto-flow: column; /* isi atas ke bawah dulu */
+  gap: 4px 20px;
+  width: 100%;
+  align-items: center;
+}
+
+/* jumlah baris otomatis sesuai jumlah item */
+
+.filter-wrapper:has(.filter-item:nth-child(10)) {
+  grid-template-rows: repeat(5, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(9)):not(:has(.filter-item:nth-child(10))) {
+  grid-template-rows: repeat(5, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(8)):not(:has(.filter-item:nth-child(9))) {
+  grid-template-rows: repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(7)):not(
+    :has(.filter-item:nth-child(8))
+  ) {
+  grid-template-rows: repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(6)):not(
+    :has(.filter-item:nth-child(7))
+  ) {
+  grid-template-rows: repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(5)):not(
+    :has(.filter-item:nth-child(6))
+  ) {
+  grid-template-rows: repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(4)):not(
+    :has(.filter-item:nth-child(5))
+  ) {
+  grid-template-rows: repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(3)):not(
+    :has(.filter-item:nth-child(4))
+  ) {
+  grid-template-rows: repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(2)):not(
+    :has(.filter-item:nth-child(3))
+  ) {
+  grid-template-rows: repeat(1, auto);
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  width: 100%;
+}
+
+.filter-item label {
+  width: 70px;
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+/* MOBILE = turun kebawah normal */
+@media (max-width: 768px) {
+  .filter-wrapper {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    grid-auto-flow: row !important;
+    gap: 6px;
+  }
+
+  .filter-item {
+    width: 100%;
+  }
+}
+
+.button-section {
+  /* garis panjang bawah */
+  width: 100%;
+}
 </style>
+

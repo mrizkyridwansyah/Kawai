@@ -1,87 +1,65 @@
 <template>
   <v-frame title="Claim Receipt Input" icon="receipt">
     <template #frame-content>
-      <table>
-        <tr>
-          <td style="padding-top: 5px; vertical-align: top">
-            <table>
-              <tr>
-                <td><label class="form-label">Factory</label></td>
-                <td style="padding-left: 15px" colspan="3">
-                  <filter-factory-privileges
+
+       <div class="filter-wrapper">
+        <!-- 1 -->
+        <div class="filter-item">
+          <label class="form-label">Factory</label>
+         <filter-factory-privileges
                     class="form-control"
                     v-model="filter.FactoryCode"
                     :disabled="filter.ReceiptId != null"
-                    style-code="width: 110px"
-                    style-desc="width: 250px"
+                    style-code="width: 120px"
+                    style-desc="width: 300px"
                   />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Supplier</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                  <filter-trade-2
+        </div>
+
+         <div class="filter-item">
+          <label class="form-label">Supplier</label>
+        <filter-trade-2
                     class="form-control"
                     v-model="filter.SupplierCode"
                     :trade-cls="['2', '3']"
                     :disabled="filter.ReceiptId != null"
                     style-code="width: 120px"
-                    style-desc="width: 240px"
+                    style-desc="width: 300px"
                   />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Delivery Date</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px">
-                  <input-date
-                    v-model="filter.PeriodFrom"
-                    style-date="width: 115px"
-                  />
-                </td>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Until Date</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px">
-                  <input-date
-                    v-model="filter.PeriodUntil"
-                    style-date="width: 115px"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Claim Number</label>
-                </td>
-                <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-                  <input-claim
+        </div>
+
+        <!-- 2 -->
+        <div class="filter-item">
+          <label class="form-label">Delivery Date</label>
+           <div>
+          <input-date v-model="filter.PeriodFrom" />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >Until Date</label
+        >
+        <div>
+          <input-date v-model="filter.PeriodUntil" />
+        </div>
+        </div>
+
+        <div class="filter-item">
+          <label class="form-label">Claim No</label>
+           <input-claim
             class="form-control"
-            status="APPROVED"
-													  
-            :supplier-code="filter.SupplierCode"
-												
+            status="APPROVED"					  
+            :supplier-code="filter.SupplierCode"			
             :period-from="filter.PeriodFrom"
             :period-until="filter.PeriodUntil"
             v-model="filter.PONumber"
             :errors="errors?.PONumber"
+             style="width: 420px"
           />
+       
+        </div>
 
-                   
-                  
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Receipt No</label>
-                </td>
-                <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-                  <table>
-                    <tr>
-                      <td>
-                        <input-receipt
+         <div class="filter-item">
+          <label class="form-label">Receipt No</label>
+          <input-receipt
                           class="form-control"
                           :disabled="isNew"
                           status="NEW"
@@ -90,125 +68,102 @@
                           :supplier-code="filter.SupplierCode"
                           v-model="filter.ReceiptId"
                           :errors="errors?.ReceiptId"
-                          style="width: 300px"
+                          style="width: 375px"
                         />
-                      </td>
-                      <td style="padding-left: 15px">
-                        <input-checkbox
-                          label="New"
-                          v-model="isNew"
-                          @click="(e) => changeNew(e)"
-                        />
-                      </td>
-                    </tr>
-                  </table>
-                  <div class="d-flex-fill"></div>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">DN Number</label>
-                </td>
-                <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-                  <input-text
-                    v-model="model.DNNumber"
-                    :errors="errors?.DNNumber"
-                    style="width: 360px"
-                  />
-                </td>
-              </tr>
-            </table>
-          </td>
-          <td style="padding-left: 15px; padding-top: 5px; vertical-align: top">
-            <table>
-              <tr>
-                <td><label class="form-label">BC Number</label></td>
-                <td style="padding-left: 15px" colspan="3">
-                  <input-text
-                    v-model="model.BCNumber"
-                    :errors="errors?.BCNumber"
-                    style="width: 360px"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">BC Type</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                  <filter-cls-2
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
+          <input-checkbox
+            label="New"
+            v-model="isNew"
+            @click="(e) => changeNew(e)"
+          />
+        </div>
+        </div>
+       
+
+        <div class="filter-item">
+          <label class="form-label">DN Number</label>
+            <input-text
+            v-model="model.DNNumber"
+            maxlength="50"
+            :errors="errors?.DNNumber"
+             style="width: 420px"
+          />
+        </div>
+
+
+        <div class="filter-item">
+          <label class="form-label">BC Number</label>
+         <input-text
+            v-model="model.BCNumber"
+            maxlength="50"
+            :errors="errors?.BCNumber"
+             style="width: 420px"
+          />
+        </div>
+
+        <div class="filter-item">
+          <label class="form-label">BC Type</label>
+           <filter-cls-2
                     class="form-control"
                     type-data="BCType_Cls"
                     v-model="model.BCType"
                     :errors="errors?.BCType"
                     style-code="width: 120px"
-                    style-desc="width: 240px"
+                    style-desc="width: 300px"
                   />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">BC Date</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px">
-                  <input-date
-                    v-model="model.BCDate"
-                    style-date="width: 115px"
-                    :errors="errors?.BCDate"
-                  />
-                </td>
-                <td style="padding-top: 5px">
-                  <label class="form-label">DN Date</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px">
-                  <input-date
-                    v-model="model.DNDate"
-                    style-date="width: 115px"
-                    :errors="errors?.DNDate"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Police No</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                  <input-text
-                    v-model="model.VehicleNo"
-                    :errors="errors?.VehicleNo"
-                    style="width: 360px"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Transport By</label>
-                </td>
-                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                  <filter-cls-2
+        </div>
+
+         <div class="filter-item">
+          <label class="form-label">BC Date</label>
+           <div>
+            <input-date v-model="model.BCDate" :errors="errors?.BCDate" />
+        </div>
+        <label
+          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+          >DN Date</label
+        >
+        <div>
+           <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
+        </div>
+        </div>
+        <div class="filter-item">
+          <label class="form-label">Police No</label>
+            <input-text
+              v-model="model.VehicleNo"
+              :errors="errors?.VehicleNo"
+              style="width: 420px"
+              maxlength="15"
+            />
+        </div>
+         <div class="filter-item">
+          <label class="form-label">Transport By</label>
+           <filter-cls-2
                     class="form-control"
                     type-data="Transport_Cls"
                     v-model="model.Transport"
                     :errors="errors?.Transport"
                     style-code="width: 120px"
-                    style-desc="width: 240px"
+                    style-desc="width: 300px"
                   />
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-top: 5px">
-                  <label class="form-label">Register No</label>
-                </td>
-                <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-                  <input-text
-                    v-model="model.RegisterNo"
+        </div>
+          <div class="filter-item">
+          <label class="form-label">Register No</label>
+            <input-text
+             v-model="model.RegisterNo"
                     :errors="errors?.RegisterNo"
-					:disabled="isNew"				 
-                    style="width: 360px"
-                  />
-                </td>
-                <td style="padding-top: 5px; padding-left: 15px">
-                  <button
+					:disabled="isNew"		
+              style="width: 420px"
+              
+            />
+        </div>
+     
+      </div>
+
+ 
+
+       <div class="d-flex mt-3">
+        <div class="d-flex flex-fill">
+           <button
                     class="btn btn-sm btn-blue btn-elevate mr-1"
                     @click="searchPoDetail"
                     :disabled="isLoading"
@@ -223,15 +178,7 @@
                     <font-awesome-icon v-else icon="search" />
                     <span class="ml-2">Search</span>
                   </button>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" style="padding-top: 5px">
-            <div class="d-flex flex-fill">
-              <v-button-submit
+             <v-button-submit
                 :submit="submit"
                 cClass="mr-1"
                 :is-loading="isLoading"
@@ -254,14 +201,18 @@
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
               />
-            </div>
-          </td>
-        </tr>
-      </table>
+        </div>
+      </div>
+       <hr />
 
-      <div style="width: 1150px">
-        <v-table-input :data-items="listClaimDetail" ref="vtable">
-          <template #table-content>
+       <v-table-input
+          :data-items="listClaimDetail"
+           ref="vtable"
+          :default-height="120"
+          :max-height="120"
+        >
+  
+           <template #table-content>
             <div class="detail-content" style="width: 100%">
               <table
                 class="table table-striped table-bordered mb-0 align-middle v-fixed-table w-100"
@@ -333,16 +284,16 @@
             </div>
           </template>
         </v-table-input>
-      </div>
+       
 
-      <div style="width: 1150px">
+      
         <label class="form-label">Remarks</label>
         <input-text
           multiline
           v-model="model.Remarks"
           :errors="errors?.Remarks"
         />
-      </div>
+     
     </template>
   </v-frame>
 </template>
@@ -682,4 +633,95 @@ export default {
   max-height: 70%;
   overflow-y: scroll;
 }
+thead {
+  white-space: nowrap;
+}
+/* GANTI CSS .filter-wrapper lama dengan ini */
+
+.filter-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  grid-auto-flow: column; /* isi atas ke bawah dulu */
+  gap: 4px 20px;
+  width: 100%;
+  align-items: center;
+}
+
+.filter-wrapper:has(.filter-item:nth-child(12)) {
+  grid-template-rows: repeat(6, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(11)):not(:has(.filter-item:nth-child(12))) {
+  grid-template-rows: repeat(6, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(10)):not(:has(.filter-item:nth-child(11))) {
+  grid-template-rows: repeat(5, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(9)):not(:has(.filter-item:nth-child(10))) {
+  grid-template-rows: repeat(5, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(8)):not(:has(.filter-item:nth-child(9))) {
+  grid-template-rows: repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))) {
+  grid-template-rows: repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))) {
+  grid-template-rows: repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))) {
+  grid-template-rows: repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))) {
+  grid-template-rows: repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))) {
+  grid-template-rows: repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))) {
+  grid-template-rows: repeat(1, auto);
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  width: 100%;
+}
+
+.filter-item label {
+  width: 70px;
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+/* MOBILE = turun kebawah normal */
+@media (max-width: 768px) {
+  .filter-wrapper {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    grid-auto-flow: row !important;
+    gap: 6px;
+  }
+
+  .filter-item {
+    width: 100%;
+  }
+}
+
+.button-section {
+  /* garis panjang bawah */
+  width: 100%;
+}
 </style>
+
