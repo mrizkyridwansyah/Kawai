@@ -129,6 +129,8 @@ export default {
           if (!table) return;
 
           const container = this.$refs.tableContainer;
+          const prevWidth = table.style.width;
+          const prevMinWidth = table.style.minWidth;
 
           // 🔥 1. paksa reflow width dulu
           table.style.width = "max-content";
@@ -139,8 +141,8 @@ export default {
 
           // 🔥 cek apakah lebih kecil dari container
           if (tableWidth < containerWidth) {
-            table.style.width = "100%";
-            table.style.minWidth = "100%";
+            table.style.width = prevWidth || "100%";
+            table.style.minWidth = prevMinWidth || "100%";
           }
 
           const headerRow = table.querySelector("thead tr");
