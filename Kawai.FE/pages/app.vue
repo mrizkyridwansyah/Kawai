@@ -24,6 +24,16 @@ definePageMeta({
   animation-name: slideLeft;
 }
 
+table.table td {
+  padding-top: 0.2rem !important;
+  padding-bottom: 0.2rem !important;
+}
+
+hr {
+  margin-top: 0.5em;
+  margin-bottom: 0.3em;
+}
+
 @-webkit-keyframes slideLeft {
   from {
     opacity: 0;
@@ -83,5 +93,10 @@ definePageMeta({
     box-shadow: 
     0 6px 12px rgba(0, 0, 0, 0.15),
     0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.v-fixed-table thead th {
+  background: #8ec5fc;
+  text-align: center !important;
 }
 </style>

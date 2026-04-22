@@ -60,7 +60,6 @@
       <v-table
         :ds="ds"
         :ds-data="ds.dataDetails"
-        ref="vtable"
         :use-paging="false"
         :use-header="false"
         :default-height="400"
@@ -70,7 +69,6 @@
           <table
             class="table table-striped table-bordered mb-0 align-middle"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-            ref="table"
           >
             <thead>
               <tr>

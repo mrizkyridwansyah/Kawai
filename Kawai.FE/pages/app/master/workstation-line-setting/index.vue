@@ -591,9 +591,6 @@ thead {
 }
 
 .button-section {
-  /* garis panjang bawah */
-  padding-bottom: 12px;
-  margin-bottom: 15px;
   width: 100%;
 }
 </style>

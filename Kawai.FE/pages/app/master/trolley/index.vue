@@ -270,7 +270,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .button-section {
   /* garis panjang bawah */
   width: 100%;

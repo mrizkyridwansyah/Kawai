@@ -417,8 +417,6 @@ thead {
 }
 
 .button-section {
-  padding-bottom: 12px;
-  margin-bottom: 15px;
   width: 100%;
 }
 </style>

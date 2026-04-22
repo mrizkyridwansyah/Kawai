@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div class="mt-2">
     <div class="panel panel-inverse">
       <!-- BEGIN panel-header -->
       <div
@@ -187,10 +187,77 @@ export default {
     waitForDOMThenFreeze: function () {
       this.$nextTick(() => {
         setTimeout(() => {
+          const table = this.$refs.tableContainer?.querySelector("table");
+          if (!table) return;
+
+          const container = this.$refs.tableContainer;
+
+          // 🔥 1. paksa reflow width dulu
+          table.style.width = "max-content";
+          table.style.minWidth = "max-content";
+
+          // 🔥 2. tunggu browser update layout
+          requestAnimationFrame(() => {
+            const tableWidth = table.offsetWidth;
+            const containerWidth = container.offsetWidth;
+
+            // 🔥 cek apakah lebih kecil dari container
+            if (tableWidth < containerWidth) {
+              table.style.width = "100%";
+              table.style.minWidth = "100%";
+            }
+
+            const headerRow = table.querySelector("thead tr");
+            if (!headerRow) return;
+
+            const frozenIndexes = Array.from(
+              { length: this.frozenColumnLeft },
+              (_, i) => i,
+            );
+
+            // 🔥 3. baru hitung width (sudah stabil)
+            let frozenWidth = 0;
+            const colPositions = [];
+            let totalLeft = 0;
+
+            for (let i = 0; i < this.frozenColumnLeft; i++) {
+              const th = headerRow.cells[i];
+              const width = th?.offsetWidth || 150;
+
+              colPositions[i] = totalLeft;
+              totalLeft += width;
+              frozenWidth += width;
+            }
+
+            const panel = this.$el.querySelector(".panel-body");
+            const panelWidth = panel ? panel.clientWidth : window.innerWidth;
+
+            const threshold = 0.7;
+
+            const frozenIndexesFinal = frozenIndexes;
+
+            if (
+              window.innerWidth > 768 &&
+              frozenWidth < panelWidth * threshold
+            ) {
+              this.setFrozenColumns(frozenIndexesFinal);
+            } else {
+              this.clearFrozenColumns();
+            }
+          });
+        }, 200);
+      });
+    },
+    waitForDOMThenFreeze2: function () {
+      this.$nextTick(() => {
+        setTimeout(() => {
           const screenWidth = window.innerWidth;
 
           const table = this.$refs.tableContainer?.querySelector("table");
           if (!table) return;
+
+          table.style.width = "max-content";
+          table.style.minWidth = "max-content";
 
           const headerRow = table.querySelector("thead tr");
           if (!headerRow) return;
@@ -222,7 +289,7 @@ export default {
           } else {
             this.clearFrozenColumns();
           }
-        }, 500);
+        }, 200);
       });
     },
     clearFrozenColumns: function () {

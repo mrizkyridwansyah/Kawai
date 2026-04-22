@@ -223,7 +223,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .v-fixed-table thead th {
   position: sticky;
   top: 0;

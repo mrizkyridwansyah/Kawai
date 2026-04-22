@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div class="mt-2">
     <div class="panel panel-inverse">
       <!-- BEGIN panel-body -->
       <div
@@ -10,7 +10,10 @@
         <div ref="tableContainer">
           <div
             class="v-table-wrapper"
-            :style="{ maxHeight: formatHeight(maxHeight), height: formatHeight(defaultHeight) }"
+            :style="{
+              maxHeight: formatHeight(maxHeight),
+              height: formatHeight(defaultHeight),
+            }"
           >
             <slot name="table-content" />
           </div>
@@ -125,6 +128,21 @@ export default {
           const table = this.$refs.tableContainer?.querySelector("table");
           if (!table) return;
 
+          const container = this.$refs.tableContainer;
+
+          // 🔥 1. paksa reflow width dulu
+          table.style.width = "max-content";
+          table.style.minWidth = "max-content";
+
+          const tableWidth = table.offsetWidth;
+          const containerWidth = container.offsetWidth;
+
+          // 🔥 cek apakah lebih kecil dari container
+          if (tableWidth < containerWidth) {
+            table.style.width = "100%";
+            table.style.minWidth = "100%";
+          }
+
           const headerRow = table.querySelector("thead tr");
           if (!headerRow) return;
 
@@ -173,61 +191,10 @@ export default {
       });
     },
 
-    formatHeight: function(val) {
+    formatHeight: function (val) {
       if (typeof val === "number") return val + "px";
       return val; // misal '60vh', '100%', dll
     },
   },
 };
 </script>
-
-<style>
-.v-table-wrapper {
-  overflow: auto;
-  max-height: 500px;
-  /* border: 1px solid #ddd; */
-  position: relative;
-}
-
-.v-table-wrapper thead th {
-  background-color: #8ec5fc;
-}
-
-/* Bikin table bisa scroll horizontal juga */
-.v-fixed-table {
-  width: max-content; /* agar scroll horizontal muncul */
-  min-width: 100%;
-  /* border-collapse: separate; */
-  /* border-spacing: 0; */
-}
-
-.v-fixed-table th,
-.v-fixed-table td {
-  white-space: nowrap;
-  padding: 8px 16px;
-  /* border: 1px solid #dee2e6; */
-  background: #fff;
-}
-
-/* Sticky Header (atas) */
-.v-fixed-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 20; /* harus lebih tinggi dari sticky kiri */
-  background: #8ec5fc;
-}
-
-/* Sticky Columns (kiri) */
-.sticky-left {
-  position: sticky;
-  /* background: #8ec5fc !important;
-  background-color: #8ec5fc; */
-  z-index: 10;
-  /* left akan diset via JS */
-}
-
-/* Kalau sticky kiri di header, beri z-index lebih tinggi */
-thead .sticky-left {
-  z-index: 30;
-}
-</style>

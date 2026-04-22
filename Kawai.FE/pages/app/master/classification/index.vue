@@ -28,7 +28,7 @@
           <div v-else>
             <v-button-add :add="add" cClass="mb-1" />
             <div class="table-wrapper">
-              <table class="table-grid">
+              <table class="table table-grid">
                 <thead>
                   <tr>
                     <th class="text-center">Action</th>

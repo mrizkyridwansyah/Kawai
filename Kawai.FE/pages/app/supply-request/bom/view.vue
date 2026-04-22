@@ -61,7 +61,6 @@
       <v-table
         :ds="ds"
         :ds-data="ds.dataDetails"
-        ref="vtable"
         :use-paging="false"
         :use-header="false"
         :default-height="400"
@@ -71,7 +70,6 @@
           <table
             class="table table-striped table-bordered mb-0 align-middle"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-            ref="table"
           >
             <thead>
               <tr>
@@ -81,7 +79,7 @@
                 <th class="text-center">Parent Item Name</th>
                 <th class="text-center">Qty Set</th>
                 <th class="text-center">Child Item Code</th>
-                <th class="text-center">Child Item Name</th>
+                <th class="text-center" style="width: 100px">Child Item Name</th>
                 <th class="text-center">Req. Qty</th>
                 <th class="text-center">Scan Qty</th>
                 <th class="text-center">Crt Qty</th>
@@ -119,7 +117,7 @@
                 >
                   <td colspan="5"></td>
                   <td>{{ dtl.ChildItemCode }}</td>
-                  <td>{{ dtl.ChildItemName }}</td>
+                  <td style="white-space: wrap;">{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
