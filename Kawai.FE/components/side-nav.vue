@@ -8,11 +8,12 @@
             v-for="(menuGroup, idx) in menuGroups"
             :key="idx"
             class="menu-item has-sub"
+             
             :class="{ active: isActive(menuGroup) }"
             @click="toggleActive(menuGroup)"
           >
             <template v-if="getLevel(menuGroup) === 1">
-              <v-app-link :to="getMenuName(menuGroup)" class="menu-link">
+              <v-app-link :to="getMenuName(menuGroup)" class="menu-link ">
                 <div class="menu-icon">
                   <font-awesome-icon :icon="getImageName(menuGroup)" />
                 </div>
@@ -39,7 +40,10 @@
                   v-for="(menu, idx) in getMenu(menuGroup, null)"
                   :key="idx"
                   class="menu-item"
-                  :class="{ active: isMenuActive(menu, menuGroup) }"
+                 :class="{ 
+  active: isMenuActive(menu, menuGroup),
+  'bg-lime-600': isMenuActive(menu, menuGroup)
+}"
                 >
                   <v-app-link :to="menu.MenuName" class="menu-link">
                     <div class="menu-text">{{ menu.MenuDescription }}</div>
