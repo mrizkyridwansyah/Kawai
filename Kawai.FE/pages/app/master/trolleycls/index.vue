@@ -12,14 +12,18 @@
       </div>
 
 
- 
       <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
+        :default-height="300"
+        :max-height="300"
       >
+
+ 
+      
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle"

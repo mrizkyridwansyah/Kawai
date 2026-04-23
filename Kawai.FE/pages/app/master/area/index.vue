@@ -31,15 +31,16 @@
         <div class="d-flex mt-3">
           <div class="d-flex flex-fill">
             <v-button-add :add="add" cClass="mr-1" />
-            <v-button-print
-              :print="print"
-              cClass=""
-              :is-loading="isLoadingPrint"
-            />
+            
             <v-button-search-reset
-              class="ms-1"
+              class="ml-1"
               :search="search"
               :reset="reset"
+            />
+            <v-button-print
+              :print="print"
+              cClass="ml-1"
+              :is-loading="isLoadingPrint"
             />
           </div>
         </div>

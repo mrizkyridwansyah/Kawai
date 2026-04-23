@@ -146,13 +146,7 @@
             cClass="mr-1"
             :is-loading="isLoading"
           />
-          <v-button-print
-            label="Print Surat Jalan"
-            class="mr-1"
-            icon="print"
-            :print="printSuratJalan"
-            :is-loading="isLoading"
-          />
+          
           <button
             class="btn btn-sm btn-red btn-elevate mr-1"
             @click="reset"
@@ -168,6 +162,13 @@
             <font-awesome-icon v-else icon="rotate-left" />
             <span class="ml-2">Clear</span>
           </button>
+          <v-button-print
+            label="Print Surat Jalan"
+            class="mr-1"
+            icon="print"
+            :print="printSuratJalan"
+            :is-loading="isLoading"
+          />
         </div>
       </div>
        <hr />

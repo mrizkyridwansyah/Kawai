@@ -43,9 +43,14 @@
         <div class="d-flex mt-3">
           <div class="d-flex flex-fill">
             <v-button-add :add="add" cClass="mr-1" />
+            <v-button-search-reset
+              class="ml-1"
+              :search="search"
+              :reset="reset"
+            />
             <v-button-print
               :print="print"
-              cClass=""
+              cClass="ml-1"
               :is-loading="isLoadingPrint"
             />
             <v-button-print
@@ -54,11 +59,7 @@
               cClass="ml-1"
               :is-loading="isLoadingPrintAll"
             />
-            <v-button-search-reset
-              class="ms-1"
-              :search="search"
-              :reset="reset"
-            />
+            
             <v-button
               :action="setting"
               label="Setting Stop Point"
