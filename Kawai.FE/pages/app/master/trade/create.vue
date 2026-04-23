@@ -1004,7 +1004,11 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
+body {
+  overflow: hidden;
+}
+
 .form-table {
   border-collapse: separate;
 }
@@ -1022,17 +1026,7 @@ export default {
   max-height: 180px; /* ± 3 baris */
   overflow-y: auto;
 }
-.v-fixed-table {
-  table-layout: fixed;
-  width: 100%;
-}
 
-/* Header tetap */
-.v-fixed-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
 .fieldset-title {
   position: absolute;
   top: -0.8em;

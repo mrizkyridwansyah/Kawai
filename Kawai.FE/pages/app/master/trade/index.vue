@@ -9,8 +9,7 @@
         :frozen-column-left="4"
         :ds="ds"
         ref="vtable"
-        :default-height="360"
-        :max-height="360"
+        :top-content-height="170"
       >
         <template #table-content>
           <table
@@ -46,7 +45,6 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items">
-               
                 <td>{{ item.Trade_Code }}</td>
                 <td>{{ item.Trade_Cls_Descs }}</td>
                 <td>{{ item.Trade_Name }}</td>
@@ -191,7 +189,7 @@ export default {
               });
           }),
         null,
-        item.Trade_Name
+        item.Trade_Name,
       );
     },
     close: function () {

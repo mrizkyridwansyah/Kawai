@@ -89,8 +89,7 @@
             :is-server-error="ds.isServerError"
             :is-network-error="ds.isNetworkError"
             child-key="children"
-            :default-height="360"
-            :max-height="360"
+            :top-content-height="290"
           />
         </div>
       </div>

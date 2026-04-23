@@ -5,8 +5,6 @@
     :ds-page="ds.setPageDetail"
     :ds-length="ds.setLengthDetail"
     :ds-load="ds.inquiryDetail"
-    :default-height="380"
-    :max-height="380"
     ref="vtable"
   >
     <template #table-content>

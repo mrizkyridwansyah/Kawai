@@ -9,24 +9,24 @@
             v-model="filter.SupplierCode"
             :trade-cls="['2', '3']"
             :disabled="filter.ClaimId != null"
-             style-code="width: 120px"
-                    style-desc="width: 300px"
+            style-code="width: 120px"
+            style-desc="width: 300px"
           />
         </div>
 
         <!-- 2 -->
         <div class="filter-item">
           <label class="form-label">Claim Date</label>
-           <div>
-          <input-date v-model="filter.PeriodFrom" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Until Date</label
-        >
-        <div>
-          <input-date v-model="filter.PeriodUntil" />
-        </div>
+          <div>
+            <input-date v-model="filter.PeriodFrom" />
+          </div>
+          <label
+            class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+            >Until Date</label
+          >
+          <div>
+            <input-date v-model="filter.PeriodUntil" />
+          </div>
         </div>
 
         <div class="filter-item">
@@ -39,87 +39,91 @@
             :period-until="filter.PeriodUntil"
             v-model="filter.ClaimId"
             :errors="errors?.ClaimId"
-             style="width: 420px"
+            style="width: 420px"
           />
-           
-         
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Police No</label>
-            <input-text
-              v-model="model.VehicleNo"
-              :errors="errors?.VehicleNo"
-              style="width: 420px"
-              maxlength="15"
-               :disabled="true"
-            />
+          <input-text
+            v-model="model.VehicleNo"
+            :errors="errors?.VehicleNo"
+            style="width: 420px"
+            maxlength="15"
+            :disabled="true"
+          />
         </div>
         <div class="filter-item">
           <label class="form-label">Transport By</label>
-           <filter-cls-2
-                    class="form-control"
-                    type-data="Transport_Cls"
-                    v-model="model.Transport"
-                    :errors="errors?.Transport"
-                    style-code="width: 120px"
-                    style-desc="width: 300px"
-                     :disabled="true"
-                  />
+          <filter-cls-2
+            class="form-control"
+            type-data="Transport_Cls"
+            v-model="model.Transport"
+            :errors="errors?.Transport"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+            :disabled="true"
+          />
         </div>
 
         <div class="filter-item">
           <label class="form-label">DN Number</label>
-            <input-text
+          <input-text
             v-model="model.DNNumber"
             maxlength="50"
             :errors="errors?.DNNumber"
-             style="width: 420px"
-              :disabled="true"
+            style="width: 420px"
+            :disabled="true"
           />
         </div>
 
-
         <div class="filter-item">
           <label class="form-label">BC Number</label>
-         <input-text
+          <input-text
             v-model="model.BCNumber"
             maxlength="50"
             :errors="errors?.BCNumber"
-             style="width: 420px"
-              :disabled="true"
+            style="width: 420px"
+            :disabled="true"
           />
         </div>
 
         <div class="filter-item">
           <label class="form-label">BC Type</label>
-           <filter-cls-2
-                    class="form-control"
-                    type-data="BCType_Cls"
-                    v-model="model.BCType"
-                    :errors="errors?.BCType"
-                    style-code="width: 120px"
-                    style-desc="width: 300px"
-                     :disabled="true"
-                  />
+          <filter-cls-2
+            class="form-control"
+            type-data="BCType_Cls"
+            v-model="model.BCType"
+            :errors="errors?.BCType"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+            :disabled="true"
+          />
         </div>
 
         <div class="filter-item">
           <label class="form-label">BC Date</label>
-           <div>
-            <input-date v-model="model.BCDate" :errors="errors?.BCDate"  :disabled="true" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >DN Date</label
-        >
-        <div>
-           <input-date v-model="model.DNDate" :errors="errors?.DNDate"  :disabled="true"/>
-        </div>
+          <div>
+            <input-date
+              v-model="model.BCDate"
+              :errors="errors?.BCDate"
+              :disabled="true"
+            />
+          </div>
+          <label
+            class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+            >DN Date</label
+          >
+          <div>
+            <input-date
+              v-model="model.DNDate"
+              :errors="errors?.DNDate"
+              :disabled="true"
+            />
+          </div>
         </div>
       </div>
-     
-      
+
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
           <button
@@ -163,16 +167,13 @@
           </button>
         </div>
       </div>
-<hr />
-<v-table-input
-          :data-items="listNGClaimDetail"
-          :frozen-column-left="3"
-          ref="vtable"
-          :default-height="250"
-          :max-height="250"
-        >
-
-     
+      <hr />
+      <v-table-input
+        :data-items="listNGClaimDetail"
+        :frozen-column-left="3"
+        ref="vtable"
+        :top-content-height="400"
+      >
         <template #table-content>
           <div class="detail-content">
             <table
@@ -224,15 +225,15 @@
                 </tr>
               </tbody>
             </table>
-                 <v-data-empty
-  class="mt-3"
-  v-if="
-    !ds.isLoading &&
-    !ds.isNetworkError &&
-    !ds.isServerError &&
-    (!listNGClaimDetail || listNGClaimDetail.length === 0)
-  "
-/>
+            <v-data-empty
+              class="mt-3"
+              v-if="
+                !ds.isLoading &&
+                !ds.isNetworkError &&
+                !ds.isServerError &&
+                (!listNGClaimDetail || listNGClaimDetail.length === 0)
+              "
+            />
           </div>
         </template>
       </v-table-input>
@@ -296,7 +297,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
 
@@ -340,7 +341,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
     },
@@ -460,11 +461,15 @@ thead {
   grid-template-rows: repeat(5, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(9)):not(:has(.filter-item:nth-child(10))) {
+.filter-wrapper:has(.filter-item:nth-child(9)):not(
+    :has(.filter-item:nth-child(10))
+  ) {
   grid-template-rows: repeat(5, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(8)):not(:has(.filter-item:nth-child(9))) {
+.filter-wrapper:has(.filter-item:nth-child(8)):not(
+    :has(.filter-item:nth-child(9))
+  ) {
   grid-template-rows: repeat(4, auto);
 }
 
@@ -537,4 +542,3 @@ thead {
   width: 100%;
 }
 </style>
-

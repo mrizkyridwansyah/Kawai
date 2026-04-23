@@ -1,20 +1,19 @@
 <template>
   <v-frame title="Expired List" icon="receipt">
     <template #frame-content>
-  
-      <div class="row mt-3">
+      <div class="row">
         <label class="col-md-1 col-form-label">Expired Until</label>
         <div class="col-md-3">
           <input-date v-model="filter.ExpiredUntil" />
         </div>
       </div>
-  
+
       <div class="row mt-2">
         <div class="col-md-12">
           <v-button-search-reset :search="search" :reset="reset" />
         </div>
       </div>
-  
+      <hr />
       <v-table
         :filter="filter"
         :export-excel="true"
@@ -22,6 +21,7 @@
         :frozen-column-left="3"
         :data-items="ds.data.Items"
         :ds="ds"
+        :top-content-height="250"
         ref="vtable"
       >
         <template #table-content>
@@ -47,7 +47,7 @@
                 <th class="text-center">Status</th>
               </tr>
             </thead>
-  
+
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items || []" :key="idx">
                 <td>{{ item.WHCode }}</td>
@@ -59,7 +59,9 @@
                 <td>{{ item.LotNo }}</td>
                 <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                 <td>{{ $func.formatDate(item.ManufactureDate) }}</td>
-                <td class="text-end">{{ $func.formatMoney(item.ExpiredDay) }}</td>
+                <td class="text-end">
+                  {{ $func.formatMoney(item.ExpiredDay) }}
+                </td>
                 <td class="text-end">{{ $func.formatMoney(item.Qty) }}</td>
                 <td>{{ $func.formatDate(item.ExpiredDate) }}</td>
                 <td>{{ item.Status }}</td>
@@ -90,13 +92,43 @@ export default {
         ItemCode: "asc",
       },
       sortItems: [
-        { label: "Warehouse Code", value: "WHCode", selected: true, direction: "asc" },
-        { label: "Item Code", value: "ItemCode", selected: false, direction: "asc" },
+        {
+          label: "Warehouse Code",
+          value: "WHCode",
+          selected: true,
+          direction: "asc",
+        },
+        {
+          label: "Item Code",
+          value: "ItemCode",
+          selected: false,
+          direction: "asc",
+        },
         { label: "Lot No", value: "LotNo", selected: false, direction: "asc" },
-        { label: "Receipt Date", value: "ReceiptDate", selected: false, direction: "asc" },
-        { label: "Manufacture Date", value: "ManufactureDate", selected: false, direction: "asc" },
-        { label: "Expired Day", value: "ExpiredDay", selected: false, direction: "asc" },
-        { label: "Expired Date", value: "ExpiredDate", selected: false, direction: "asc" },
+        {
+          label: "Receipt Date",
+          value: "ReceiptDate",
+          selected: false,
+          direction: "asc",
+        },
+        {
+          label: "Manufacture Date",
+          value: "ManufactureDate",
+          selected: false,
+          direction: "asc",
+        },
+        {
+          label: "Expired Day",
+          value: "ExpiredDay",
+          selected: false,
+          direction: "asc",
+        },
+        {
+          label: "Expired Date",
+          value: "ExpiredDate",
+          selected: false,
+          direction: "asc",
+        },
         { label: "Status", value: "Status", selected: false, direction: "asc" },
       ],
     },
@@ -112,7 +144,7 @@ export default {
     ds() {
       return useExpiredList();
     },
-  },  
+  },
 
   watch: {
     "filter.ExpiredUntil": function () {
@@ -124,7 +156,7 @@ export default {
     "filter.sorts": function () {
       this.search();
     },
-  }, 
+  },
 
   mounted: function () {
     let today = new Date();
@@ -145,7 +177,7 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           ExpiredUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.ExpiredUntil)
+            new Date(this.filter.ExpiredUntil),
           ),
         },
       ];
@@ -158,7 +190,7 @@ export default {
       this.filter.ExpiredUntil = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.ExpiredUntil = today;
       this.search();
@@ -168,7 +200,7 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           ExpiredUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.ExpiredUntil)
+            new Date(this.filter.ExpiredUntil),
           ),
         },
       ];

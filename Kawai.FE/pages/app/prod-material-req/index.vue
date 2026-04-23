@@ -183,8 +183,7 @@
         :use-paging="false"
         :use-header="false"
         :data-items="calculation.Materials"
-        :default-height="250"
-        :max-height="250"
+        :top-content-height="405"
       >
         <template #table-content>
           <table

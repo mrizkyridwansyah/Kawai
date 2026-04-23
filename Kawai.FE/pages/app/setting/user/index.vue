@@ -10,8 +10,7 @@
         :data-items="ds.data.Items"
         :frozen-column-left="3"
         :ds="ds"
-        :default-height="350"
-        :max-height="350"
+        :top-content-height="200"
         ref="vtable"
       >
         <template #table-content>

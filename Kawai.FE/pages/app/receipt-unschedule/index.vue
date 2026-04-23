@@ -189,8 +189,7 @@
         <v-table-input
           :data-items="items"
           ref="vtable"
-          :default-height="250"
-          :max-height="250"
+          :top-content-height="400"
         >
           <template #table-content>
             <div class="detail-content">

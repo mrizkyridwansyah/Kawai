@@ -68,12 +68,11 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :default-height="400"
-        :max-height="400"
+        :top-content-height="250"
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
           >

@@ -76,8 +76,7 @@
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
-        :default-height="225"
-        :max-height="225"
+        :top-content-height="290"
       >
         <template #table-content>
           <table

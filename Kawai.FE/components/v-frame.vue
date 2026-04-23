@@ -13,7 +13,7 @@
       <span style="font-size: larger">{{ title }}</span>
     </div>
     <div class="panel-body">
-        <slot name="frame-content" />
+      <slot name="frame-content" />
     </div>
   </div>
 </template>
@@ -34,15 +34,19 @@ export default {
 .panel.panel-inverse {
   display: flex;
   flex-direction: column;
-  height: max-content; /* full height of viewport */
-  min-height: 85vh; /* full height of viewport */
-  /* max-height: 85vh; */
-  overflow: hidden; /* prevent full panel overflow */
+  flex: 1;
+  min-height: 0; /* penting banget biar scroll bener */
+  height: 100%;
 }
 
 .panel-body {
-  flex: 1 1 auto;
+  flex: 1;
   overflow-y: auto;
-  padding: 16px;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 </style>

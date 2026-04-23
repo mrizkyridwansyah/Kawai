@@ -82,9 +82,10 @@
 8. 🚀 Deployment
     📍 Backend & Frontend
         Semua modul dideploy di IIS dengan port berikut:
-        - Web: Port 9200
-        - Andon: Port 9300
-        - API (Backend): Port 9100
+        - API (Backend) : Port 9100
+        - Web           : Port 9200
+        - Andon         : Port 9300
+        - APK (Mobile)  : Port 9400
     
     🔧 Langkah Deployment
         1.  Frontend (Web & Andon)

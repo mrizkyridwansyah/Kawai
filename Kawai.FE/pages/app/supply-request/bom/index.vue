@@ -114,8 +114,7 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :default-height="320"
-        :max-height="320"
+        :top-content-height="325"
       >
         <template #table-content>
           <table

@@ -1,77 +1,76 @@
 <template>
-  <div class="mt-4">
-    <div class="panel panel-inverse">
-      <div class="panel-body" ref="panelBody">
-        <div class="scroll-x-wrapper">
-          <div ref="tableContainer">
-            <div
-              class="v-table-wrapper"
-              :style="{
-                maxHeight: formatHeight(maxHeight),
-                height: formatHeight(defaultHeight),
-              }"
+  <div
+    class="mt-2 d-flex flex-column"
+    :style="{
+      height: formatHeight(topContentHeight),
+    }"
+  >
+    <div class="tree-content-input">
+      <div class="tree-scroll" ref="panelBody">
+        <div ref="tableContainer" class="tree2-scroll">
+          <div class="tree-inner">
+            <table
+              class="tree-table v-fixed-table table table-bordered table-striped mb-0 align-middle"
+              v-if="!isLoading && !isNetworkError && !isServerError"
+              ref="table"
             >
-              <table
-                class="tree-table v-fixed-table table table-bordered table-striped mb-0 align-middle"
-                v-if="!isLoading && !isNetworkError && !isServerError"
-                ref="table"
-              >
-                <thead>
-                  <tr>
-                    <th
-                      v-for="(col, index) in columns"
-                      :key="col.dataField"
-                      :style="{
-                        width: col.width || 'auto',
-                        textAlign: col.align || 'left',
-                      }"
-                      style="white-space: nowrap"
-                    >
-                      {{ col.text }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <v-tree-row-group
-                    v-for="row in treeData"
-                    :panel-body-ref="$refs.panelBody"
-                    :key="row[childKey]"
-                    :node="row"
-                    :level="0"
-                    :start-collapse-level="startCollapseLevel"
-                    :columns="columns"
-                    :child-key="childKey"
-                    :group-by-fields="groupByFields"
-                    :frozen-column-left="frozenColumnLeft"
-                  />
-                </tbody>
-              </table>
-              <v-loading-2 class="m-5 p-5" v-if="isLoading" />
-              <div>
-                <v-data-empty
-                  class="mt-3"
-                  v-if="
-                    !isLoading &&
-                    treeData.length === 0 &&
-                    !isNetworkError &&
-                    !isServerError
-                  "
+              <thead>
+                <tr>
+                  <th
+                    v-for="(col, index) in columns"
+                    :key="col.dataField"
+                    :style="{
+                      width: col.width || 'auto',
+                      textAlign: col.align || 'left',
+                    }"
+                    style="white-space: nowrap"
+                  >
+                    {{ col.text }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <v-tree-row-group
+                  v-for="row in treeData"
+                  :panel-body-ref="$refs.panelBody"
+                  :key="row[childKey]"
+                  :node="row"
+                  :level="0"
+                  :start-collapse-level="startCollapseLevel"
+                  :columns="columns"
+                  :child-key="childKey"
+                  :group-by-fields="groupByFields"
+                  :frozen-column-left="frozenColumnLeft"
                 />
-                <v-error-server
-                  class="mt-3"
-                  v-if="!isLoading && isServerError"
-                  :refresh="refresh"
-                />
-                <v-error-network
-                  class="mt-3"
-                  v-if="!isLoading && isNetworkError"
-                  :refresh="refresh"
-                />
-              </div>
+              </tbody>
+            </table>
+            <v-loading-2 class="m-5 p-5" v-if="isLoading" />
+            <div>
+              <v-data-empty
+                class="mt-3"
+                v-if="
+                  !isLoading &&
+                  treeData.length === 0 &&
+                  !isNetworkError &&
+                  !isServerError
+                "
+              />
+              <v-error-server
+                class="mt-3"
+                v-if="!isLoading && isServerError"
+                :refresh="refresh"
+              />
+              <v-error-network
+                class="mt-3"
+                v-if="!isLoading && isNetworkError"
+                :refresh="refresh"
+              />
             </div>
           </div>
         </div>
-        <slot name="paging-tree" />
+        <div class="mt-auto">
+          <slot name="paging-tree" />
+        </div>
       </div>
     </div>
   </div>
@@ -90,8 +89,7 @@ export default {
     frozenColumnLeft: { type: Number, default: 0 },
     startCollapseLevel: { type: Number },
     refresh: { type: Function },
-    defaultHeight: { type: Number, default: 100 },
-    maxHeight: { type: Number, default: 100 },
+    topContentHeight: { type: Number, default: 170 },
   },
   watch: {
     treeData: function () {
@@ -217,8 +215,7 @@ export default {
       });
     },
     formatHeight: function (val) {
-      if (typeof val === "number") return val + "px";
-      return val; // misal '60vh', '100%', dll
+      return `calc(100vh - ${val}px)`;
     },
   },
 };
@@ -236,10 +233,10 @@ export default {
   position: relative;
 }
 
-.scroll-x-wrapper {
+/* .scroll-x-wrapper {
   overflow-x: auto;
   width: 100%;
-}
+} */
 
 .v-fixed-table {
   width: max-content;
@@ -273,5 +270,35 @@ export default {
 /* Sticky Columns in thead */
 thead .sticky-left {
   z-index: 30;
+}
+
+.tree-content-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  border-radius: 0.5em;
+  border: 1px solid #d1d5db;
+  padding: 1em;
+}
+
+.tree-scroll {
+  flex: 1;
+  display: flex;          /* 🔥 penting */
+  flex-direction: column; /* 🔥 penting */
+  min-height: 0;          /* 🔥 WAJIB buat scroll */
+  overflow: hidden;       /* scroll pindah ke dalam */
+}
+
+.tree2-scroll {
+  flex: 1;                /* 🔥 bikin dia stretch */
+  min-height: 0;          /* 🔥 biar bisa scroll */
+  overflow: auto;         /* 🔥 scroll di sini */
+}
+
+.tree-inner {
+  min-width: 100%;
+  width: max-content; /* kalau mau horizontal scroll langsung muncul */
 }
 </style>

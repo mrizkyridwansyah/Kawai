@@ -43,15 +43,17 @@
           </td>
         </tr>
       </table>
+      <hr>
       <div class="mt-2">
         <v-table
         :filter="filter"
         :keyword-keys="keywordKeys"
         :ds="ds"
+        :data-items="ds.data.Items"
         :export-excel="true"
         :export-excel-action="exportExcel"
+        :top-content-height="300"
       >
-        syncing
         <template #table-content>
           <table
             class="table table-bordered mb-0 align-middle report-table"

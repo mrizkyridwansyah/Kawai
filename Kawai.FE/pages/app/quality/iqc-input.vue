@@ -76,8 +76,7 @@
           :data-items="lists"
           :frozen-column-left="3"
           ref="vtable"
-          :default-height="350"
-          :max-height="350"
+          :top-content-height="290"
         >
           <template #table-content>
             <div class="detail-content">

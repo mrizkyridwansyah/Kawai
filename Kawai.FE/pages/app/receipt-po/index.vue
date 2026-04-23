@@ -262,8 +262,7 @@
           :data-items="listPODetail"
           ref="vtable"
           :frozen-column-left="3"
-          :default-height="250"
-          :max-height="250"
+          :top-content-height="525"
         >
           <template #table-content>
             <div class="detail-content" style="width: 100%">

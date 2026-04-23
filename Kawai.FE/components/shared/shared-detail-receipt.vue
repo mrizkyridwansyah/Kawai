@@ -6,13 +6,13 @@
     :ds-page="ds.setPageDetail"
     :ds-length="ds.setLengthDetail"
     :ds-load="ds.loadDetail"
-    :default-height="380"
-    :max-height="380"
+    ref="vtable"
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle w-100"
+        class="table table-striped mb-0 align-middle v-fixed-table w-100"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+        ref="table"
       >
         <thead>
           <tr>

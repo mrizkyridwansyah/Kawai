@@ -1,63 +1,59 @@
 <template>
-  <div class="mt-2">
-    <div class="panel panel-inverse">
-      <!-- BEGIN panel-body -->
-      <div
-        class="panel-body"
-        style="border: 1px solid #d1d5db; border-radius: 0 0 0.375rem 0.375rem"
-      >
-        <!-- BEGIN table-responsive -->
-        <div ref="tableContainer">
-          <div
-            class="v-table-wrapper"
-            :style="{
-              maxHeight: formatHeight(maxHeight),
-              height: formatHeight(defaultHeight),
-            }"
-          >
-            <slot name="table-content" />
-          </div>
-          <div v-if="ds">
-            <v-loading-2 class="m-5 p-5" v-if="ds.isLoading" />
-            <div>
-              <v-table-pagination
-                v-if="
-                  !ds.isLoading &&
-                  ds.data.Items.length > 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
-                class="mt-3"
-                :table="ds.data"
-                :page-change="dsPage || ds.setPage"
-                :length-change="dsLength || ds.setLength"
-              />
-              <v-data-empty
-                class="mt-3"
-                v-if="
-                  !ds.isLoading &&
-                  ds.data.Items.length == 0 &&
-                  !ds.isNetworkError &&
-                  !ds.isServerError
-                "
-              />
-              <v-error-server
-                class="mt-3"
-                v-if="!ds.isLoading && ds.isServerError"
-                :refresh="dsLoad || ds.load"
-              />
-              <v-error-network
-                class="mt-3"
-                v-if="!ds.isLoading && ds.isNetworkError"
-                :refresh="dsLoad || ds.load"
-              />
-            </div>
-          </div>
+  <div
+    class="mt-2 d-flex flex-column"
+    :style="{
+      height: formatHeight(topContentHeight),
+    }"
+  >
+    <div class="table-content-input">
+      <div ref="tableContainer" class="table-scroll">
+        <div class="table-inner">
+          <slot name="table-content" />
+
+          <v-data-empty
+            class="mt-3"
+            v-if="
+              ds &&
+              !ds.isLoading &&
+              (dsData || ds.data).Items.length == 0 &&
+              !ds.isNetworkError &&
+              !ds.isServerError
+            "
+          />
         </div>
-        <!-- END table-responsive -->
       </div>
-      <!-- END panel-body -->
     </div>
+
+    <!-- BEGIN pagination (NOW STICKS TO BOTTOM) -->
+    <div class="mt-auto paging-wrapper" v-if="ds">
+      <v-loading-2 class="m-5 p-5" v-if="ds.isLoading" />
+      <div>
+        <v-table-pagination
+          v-if="
+            !ds.isLoading &&
+            ds.data.Items.length > 0 &&
+            !ds.isNetworkError &&
+            !ds.isServerError
+          "
+          class="mt-3"
+          :table="ds.data"
+          :page-change="dsPage || ds.setPage"
+          :length-change="dsLength || ds.setLength"
+        />
+
+        <v-error-server
+          class="mt-3"
+          v-if="!ds.isLoading && ds.isServerError"
+          :refresh="dsLoad || ds.load"
+        />
+        <v-error-network
+          class="mt-3"
+          v-if="!ds.isLoading && ds.isNetworkError"
+          :refresh="dsLoad || ds.load"
+        />
+      </div>
+    </div>
+    <!-- END pagination -->
   </div>
 </template>
 
@@ -70,8 +66,7 @@ export default {
       default: () => [],
     },
     frozenColumnLeft: { type: Number, default: 0 },
-    defaultHeight: { type: Number, default: 500 },
-    maxHeight: { type: Number, default: 500 },
+    topContentHeight: { type: Number, default: 170 },
     ds: { type: Object },
     dsPage: { type: Function },
     dsLength: { type: Function },
@@ -194,9 +189,83 @@ export default {
     },
 
     formatHeight: function (val) {
-      if (typeof val === "number") return val + "px";
-      return val; // misal '60vh', '100%', dll
+      return `calc(100vh - ${val}px)`;
     },
   },
 };
 </script>
+
+<style>
+/* 🔥 ONLY ONE SCROLL */
+.table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+}
+
+/* TABLE WRAPPER (NO OVERFLOW!!) */
+.table-inner {
+  /* width: max-content; */
+  min-width: 100%;
+}
+
+/* TABLE */
+.v-fixed-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* HEADER STICKY (FIXED) */
+.v-fixed-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* IMPORTANT */
+  background: #8ec5fc;
+
+  /* optional but helps stability */
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* CELL STYLE */
+.v-fixed-table th,
+.v-fixed-table td {
+  white-space: nowrap;
+  padding: 8px 16px;
+  background: #fff;
+}
+
+/* FROZEN COLUMN */
+.sticky-left {
+  position: sticky;
+  z-index: 50;
+}
+
+thead .sticky-left {
+  z-index: 1000;
+}
+
+/* PANEL BODY */
+.table-content-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  border-radius: 0.5em;
+  border: 1px solid #d1d5db;
+  padding: 1em;
+}
+
+/* PAGINATION */
+.paging-wrapper {
+  border-left: 1px solid #d1d5db;
+  border-right: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  border-radius: 0 0 0.375rem 0.375rem;
+
+  padding: 0 1em;
+}
+</style>

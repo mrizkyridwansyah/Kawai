@@ -50,8 +50,7 @@
         :export-excel="true"
         :frozen-column-left="3"
         :export-excel-action="exportExcel"
-        :default-height="280"
-        :max-height="280"
+        :top-content-height="255"
         ref="vtable"
       >
         <template #table-content>

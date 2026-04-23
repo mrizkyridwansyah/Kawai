@@ -24,7 +24,8 @@
         <font-awesome-icon icon="arrow-left" />
         <span class="ml-2">Back</span>
       </button>
-      <div class="row mt-4">
+      <hr>
+      <div class="row mt-2" style="min-height: calc(100vh - 210px)">
         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
           <!-- BEGIN nav-tabs -->
           <ul class="nav nav-tabs" role="tablist">
@@ -512,7 +513,7 @@ thead {
 
 .v-table-wrapper {
   overflow: auto;
-  max-height: 60vh;
+  max-height: calc(100vh - 270px);
   /* border: 1px solid #ddd; */
   position: relative;
 }

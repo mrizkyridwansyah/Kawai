@@ -20,12 +20,11 @@
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
-        :default-height="300"
-        :max-height="300"
+        :top-content-height="210"
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >

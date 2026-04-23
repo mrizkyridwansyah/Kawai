@@ -96,8 +96,7 @@
         :data-items="ds.data.Items"
         :ds="ds"
         ref="vtable"
-        :default-height="240"
-        :max-height="240"
+        :top-content-height="285"
       >
         <template #table-content>
           <table

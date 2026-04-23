@@ -1,299 +1,282 @@
 <template>
   <v-frame title="Claim Receipt Input" icon="receipt">
     <template #frame-content>
-
-       <div class="filter-wrapper">
+      <div class="filter-wrapper">
         <!-- 1 -->
         <div class="filter-item">
           <label class="form-label">Factory</label>
-         <filter-factory-privileges
-                    class="form-control"
-                    v-model="filter.FactoryCode"
-                    :disabled="filter.ReceiptId != null"
-                    style-code="width: 120px"
-                    style-desc="width: 300px"
-                  />
+          <filter-factory-privileges
+            class="form-control"
+            v-model="filter.FactoryCode"
+            :disabled="filter.ReceiptId != null"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Supplier</label>
-        <filter-trade-2
-                    class="form-control"
-                    v-model="filter.SupplierCode"
-                    :trade-cls="['2', '3']"
-                    :disabled="filter.ReceiptId != null"
-                    style-code="width: 120px"
-                    style-desc="width: 300px"
-                  />
+          <filter-trade-2
+            class="form-control"
+            v-model="filter.SupplierCode"
+            :trade-cls="['2', '3']"
+            :disabled="filter.ReceiptId != null"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
 
         <!-- 2 -->
         <div class="filter-item">
           <label class="form-label">Delivery Date</label>
-           <div>
-          <input-date v-model="filter.PeriodFrom" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >Until Date</label
-        >
-        <div>
-          <input-date v-model="filter.PeriodUntil" />
-        </div>
+          <div>
+            <input-date v-model="filter.PeriodFrom" />
+          </div>
+          <label
+            class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+            >Until Date</label
+          >
+          <div>
+            <input-date v-model="filter.PeriodUntil" />
+          </div>
         </div>
 
         <div class="filter-item">
           <label class="form-label">Claim No</label>
-           <input-claim
+          <input-claim
             class="form-control"
-            status="APPROVED"					  
-            :supplier-code="filter.SupplierCode"			
+            status="APPROVED"
+            :supplier-code="filter.SupplierCode"
             :period-from="filter.PeriodFrom"
             :period-until="filter.PeriodUntil"
             v-model="filter.PONumber"
             :errors="errors?.PONumber"
-             style="width: 420px"
+            style="width: 420px"
           />
-       
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Receipt No</label>
           <input-receipt
-                          class="form-control"
-                          :disabled="isNew"
-                          status="NEW"
-                          source-menu="RECEIPT CLAIM"
-                          :factory-code="filter.FactoryCode"
-                          :supplier-code="filter.SupplierCode"
-                          v-model="filter.ReceiptId"
-                          :errors="errors?.ReceiptId"
-                          style="width: 375px"
-                        />
-          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
-          <input-checkbox
-            label="New"
-            v-model="isNew"
-            @click="(e) => changeNew(e)"
+            class="form-control"
+            :disabled="isNew"
+            status="NEW"
+            source-menu="RECEIPT CLAIM"
+            :factory-code="filter.FactoryCode"
+            :supplier-code="filter.SupplierCode"
+            v-model="filter.ReceiptId"
+            :errors="errors?.ReceiptId"
+            style="width: 375px"
           />
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
+            <input-checkbox
+              label="New"
+              v-model="isNew"
+              @click="(e) => changeNew(e)"
+            />
+          </div>
         </div>
-        </div>
-       
 
         <div class="filter-item">
           <label class="form-label">DN Number</label>
-            <input-text
+          <input-text
             v-model="model.DNNumber"
             maxlength="50"
             :errors="errors?.DNNumber"
-             style="width: 420px"
+            style="width: 420px"
           />
         </div>
 
-
         <div class="filter-item">
           <label class="form-label">BC Number</label>
-         <input-text
+          <input-text
             v-model="model.BCNumber"
             maxlength="50"
             :errors="errors?.BCNumber"
-             style="width: 420px"
+            style="width: 420px"
           />
         </div>
 
         <div class="filter-item">
           <label class="form-label">BC Type</label>
-           <filter-cls-2
-                    class="form-control"
-                    type-data="BCType_Cls"
-                    v-model="model.BCType"
-                    :errors="errors?.BCType"
-                    style-code="width: 120px"
-                    style-desc="width: 300px"
-                  />
+          <filter-cls-2
+            class="form-control"
+            type-data="BCType_Cls"
+            v-model="model.BCType"
+            :errors="errors?.BCType"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">BC Date</label>
-           <div>
+          <div>
             <input-date v-model="model.BCDate" :errors="errors?.BCDate" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >DN Date</label
-        >
-        <div>
-           <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
-        </div>
+          </div>
+          <label
+            class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+            >DN Date</label
+          >
+          <div>
+            <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
+          </div>
         </div>
         <div class="filter-item">
           <label class="form-label">Police No</label>
-            <input-text
-              v-model="model.VehicleNo"
-              :errors="errors?.VehicleNo"
-              style="width: 420px"
-              maxlength="15"
-            />
+          <input-text
+            v-model="model.VehicleNo"
+            :errors="errors?.VehicleNo"
+            style="width: 420px"
+            maxlength="15"
+          />
         </div>
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Transport By</label>
-           <filter-cls-2
-                    class="form-control"
-                    type-data="Transport_Cls"
-                    v-model="model.Transport"
-                    :errors="errors?.Transport"
-                    style-code="width: 120px"
-                    style-desc="width: 300px"
-                  />
+          <filter-cls-2
+            class="form-control"
+            type-data="Transport_Cls"
+            v-model="model.Transport"
+            :errors="errors?.Transport"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
-          <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Register No</label>
-            <input-text
-             v-model="model.RegisterNo"
-                    :errors="errors?.RegisterNo"
-					:disabled="isNew"		
-              style="width: 420px"
-              
-            />
+          <input-text
+            v-model="model.RegisterNo"
+            :errors="errors?.RegisterNo"
+            :disabled="isNew"
+            style="width: 420px"
+          />
         </div>
-     
       </div>
 
- 
-
-       <div class="d-flex mt-3">
+      <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
-           <button
-                    class="btn btn-sm btn-blue btn-elevate mr-1"
-                    @click="searchPoDetail"
-                    :disabled="isLoading"
-                  >
-                    <div
-                      class="spinner-border spinner-border-sm text-light"
-                      role="status"
-                      v-if="isLoading"
-                    >
-                      <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <font-awesome-icon v-else icon="search" />
-                    <span class="ml-2">Search</span>
-                  </button>
-             <v-button-submit
-                :submit="submit"
-                cClass="mr-1"
-                :is-loading="isLoading"
-              />
-              <v-button-print
-                label="Print Label"
-                class="mr-1"
-                :print="printLabel"
-                :is-loading="isLoading"
-              />
-              <v-button-print
-                label="Print Receipt Report"
-                :print="printReport"
-                :is-loading="isLoading"
-              />
-              <v-button
-                :action="print"
-                label="Print Label PDF"
-                icon="file-pdf"
-                cClass="ml-1 btn-green"
-                :is-loading="isLoading"
-              />
+          <button
+            class="btn btn-sm btn-blue btn-elevate mr-1"
+            @click="searchPoDetail"
+            :disabled="isLoading"
+          >
+            <div
+              class="spinner-border spinner-border-sm text-light"
+              role="status"
+              v-if="isLoading"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <font-awesome-icon v-else icon="search" />
+            <span class="ml-2">Search</span>
+          </button>
+          <v-button-submit
+            :submit="submit"
+            cClass="mr-1"
+            :is-loading="isLoading"
+          />
+          <v-button-print
+            label="Print Label"
+            class="mr-1"
+            :print="printLabel"
+            :is-loading="isLoading"
+          />
+          <v-button-print
+            label="Print Receipt Report"
+            :print="printReport"
+            :is-loading="isLoading"
+          />
+          <v-button
+            :action="print"
+            label="Print Label PDF"
+            icon="file-pdf"
+            cClass="ml-1 btn-green"
+            :is-loading="isLoading"
+          />
         </div>
       </div>
-       <hr />
+      <hr />
 
-       <v-table-input
-          :data-items="listClaimDetail"
-           ref="vtable"
-          :default-height="120"
-          :max-height="120"
-        >
-  
-           <template #table-content>
-            <div class="detail-content" style="width: 100%">
-              <table
-                class="table table-striped table-bordered mb-0 align-middle v-fixed-table w-100"
-                v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-                ref="table"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center">
-                      <input-checkbox @click="(e) => checkAll(e)" />
-                    </th>
-                    <th class="text-center">Claim Number</th>
-                    <th class="text-center">Item Code</th>
-                    <th class="text-center">Item Name</th>
-                    <th class="text-center">Unit</th>
-                    <th class="text-center">Claim Qty</th>
-                    <th class="text-center">Receipt Qty</th>
-                    <th class="text-center">Remaining Qty</th>
-                    <th class="text-center">Qty DN</th>
-                    <th class="text-center">Total Packing</th>
-                    <th class="text-center">Qty Packing</th>
-                    <th class="text-center">No. Seri</th>
-                    <th class="text-center">Production Date</th>
-                    <th class="text-center">Last Update</th>
-                    <th class="text-center">Last User</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, idx) in listClaimDetail || []" :key="idx">
-                    <td class="text-center">
-                      <input-checkbox
-                        v-model="item.Selected"
-                        @click="(e) => check(e, item)"
-                      />
-                    </td>
-                    <td>{{ item.PONumber }}</td>
-                    <td>{{ item.ItemCode }}</td>
-                    <td>{{ item.ItemName }}</td>
-                    <td>{{ item.UnitClsName }}</td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.Qty) }}
-                    </td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.TotalReceiptQty) }}
-                    </td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.RemainingQty) }}
-                    </td>
-                    <td>
-                      <input-money-small
-                        v-model="item.ReceiptQty"
-                        :errors="errors?.[`Details[${idx}].ReceiptQty`]"
-                        style="width: 100px"
-                      />
-                    </td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.TotalPacking) }}
-                    </td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.QtyPacking) }}
-                    </td>
-                    <td>{{ item.NoSeri }}</td>
-                    <td>{{ $func.formatDate(item.ProductionDate) }}</td>
-                    <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-                    <td>{{ item.LastUser }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </template>
-        </v-table-input>
-       
+      <v-table-input
+        :data-items="listClaimDetail"
+        ref="vtable"
+        :top-content-height="525"
+      >
+        <template #table-content>
+          <div class="detail-content" style="width: 100%">
+            <table
+              class="table table-striped table-bordered mb-0 align-middle v-fixed-table w-100"
+              v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
+              ref="table"
+            >
+              <thead>
+                <tr>
+                  <th class="text-center">
+                    <input-checkbox @click="(e) => checkAll(e)" />
+                  </th>
+                  <th class="text-center">Claim Number</th>
+                  <th class="text-center">Item Code</th>
+                  <th class="text-center">Item Name</th>
+                  <th class="text-center">Unit</th>
+                  <th class="text-center">Claim Qty</th>
+                  <th class="text-center">Receipt Qty</th>
+                  <th class="text-center">Remaining Qty</th>
+                  <th class="text-center">Qty DN</th>
+                  <th class="text-center">Total Packing</th>
+                  <th class="text-center">Qty Packing</th>
+                  <th class="text-center">No. Seri</th>
+                  <th class="text-center">Production Date</th>
+                  <th class="text-center">Last Update</th>
+                  <th class="text-center">Last User</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, idx) in listClaimDetail || []" :key="idx">
+                  <td class="text-center">
+                    <input-checkbox
+                      v-model="item.Selected"
+                      @click="(e) => check(e, item)"
+                    />
+                  </td>
+                  <td>{{ item.PONumber }}</td>
+                  <td>{{ item.ItemCode }}</td>
+                  <td>{{ item.ItemName }}</td>
+                  <td>{{ item.UnitClsName }}</td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.Qty) }}
+                  </td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.TotalReceiptQty) }}
+                  </td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.RemainingQty) }}
+                  </td>
+                  <td>
+                    <input-money-small
+                      v-model="item.ReceiptQty"
+                      :errors="errors?.[`Details[${idx}].ReceiptQty`]"
+                      style="width: 100px"
+                    />
+                  </td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.TotalPacking) }}
+                  </td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.QtyPacking) }}
+                  </td>
+                  <td>{{ item.NoSeri }}</td>
+                  <td>{{ $func.formatDate(item.ProductionDate) }}</td>
+                  <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                  <td>{{ item.LastUser }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+      </v-table-input>
 
-      
-        <label class="form-label">Remarks</label>
-        <input-text
-          multiline
-          v-model="model.Remarks"
-          :errors="errors?.Remarks"
-        />
-     
+      <label class="form-label">Remarks</label>
+      <input-text multiline v-model="model.Remarks" :errors="errors?.Remarks" />
     </template>
   </v-frame>
 </template>
@@ -331,20 +314,15 @@ export default {
     listClaimDetail: [],
     debounce: null,
     isLoading: false,
-	prevRegisterNo: "",				   
+    prevRegisterNo: "",
     errors: {},
   }),
   computed: {
     ds: function () {
       return useReceipt();
     },
-     
-					 
   },
-						
-							   
-	  
-	
+
   watch: {
     "filter.PONumber": function () {
       this.listClaimDetail = [];
@@ -545,7 +523,7 @@ export default {
         this.filter.PeriodFrom = this.model.DeliveryDatePOFrom;
         this.filter.PeriodUntil = this.model.DeliveryDatePOUntil;
         this.filter.PONumber = this.model.PONumber;
-		this.prevRegisterNo = this.model.RegisterNo;											
+        this.prevRegisterNo = this.model.RegisterNo;
         this.$nextTick(() => setTimeout(() => this.searchPoDetail(), 500));
       });
     },
@@ -587,28 +565,28 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     updateReceipt: function () {
-	     if (this.prevRegisterNo != this.model.RegisterNo) {
+      if (this.prevRegisterNo != this.model.RegisterNo) {
         confirmSubmit(
           () =>
             new Promise((resolve) => {
               this.update();
               resolve();
             }),
-          () => this.isLoading = false,
+          () => (this.isLoading = false),
           `You change the <strong>Register No</strong>. Are you sure to <strong>CONTINUE</strong> changes?`,
         );
       } else {
         this.update();
       }
     },
-    update: function () {													 				 
+    update: function () {
       this.ds
         .updateclaim(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
-		  this.prevRegisterNo = this.model.RegisterNo;											  
+          this.prevRegisterNo = this.model.RegisterNo;
           // this.reset();
         })
         .catch((err) => {
@@ -651,43 +629,63 @@ thead {
   grid-template-rows: repeat(6, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(11)):not(:has(.filter-item:nth-child(12))) {
+.filter-wrapper:has(.filter-item:nth-child(11)):not(
+    :has(.filter-item:nth-child(12))
+  ) {
   grid-template-rows: repeat(6, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(10)):not(:has(.filter-item:nth-child(11))) {
+.filter-wrapper:has(.filter-item:nth-child(10)):not(
+    :has(.filter-item:nth-child(11))
+  ) {
   grid-template-rows: repeat(5, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(9)):not(:has(.filter-item:nth-child(10))) {
+.filter-wrapper:has(.filter-item:nth-child(9)):not(
+    :has(.filter-item:nth-child(10))
+  ) {
   grid-template-rows: repeat(5, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(8)):not(:has(.filter-item:nth-child(9))) {
+.filter-wrapper:has(.filter-item:nth-child(8)):not(
+    :has(.filter-item:nth-child(9))
+  ) {
   grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))) {
+.filter-wrapper:has(.filter-item:nth-child(7)):not(
+    :has(.filter-item:nth-child(8))
+  ) {
   grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))) {
+.filter-wrapper:has(.filter-item:nth-child(6)):not(
+    :has(.filter-item:nth-child(7))
+  ) {
   grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))) {
+.filter-wrapper:has(.filter-item:nth-child(5)):not(
+    :has(.filter-item:nth-child(6))
+  ) {
   grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))) {
+.filter-wrapper:has(.filter-item:nth-child(4)):not(
+    :has(.filter-item:nth-child(5))
+  ) {
   grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))) {
+.filter-wrapper:has(.filter-item:nth-child(3)):not(
+    :has(.filter-item:nth-child(4))
+  ) {
   grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))) {
+.filter-wrapper:has(.filter-item:nth-child(2)):not(
+    :has(.filter-item:nth-child(3))
+  ) {
   grid-template-rows: repeat(1, auto);
 }
 
@@ -724,4 +722,3 @@ thead {
   width: 100%;
 }
 </style>
-

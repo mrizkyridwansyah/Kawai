@@ -97,7 +97,7 @@
           </td>
 
           <td width="50px"></td>
-          <td style="padding-top: 5px; padding-left: 15px;  ">
+          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Not Scanned</label>
           </td>
           <td class="note-color">
@@ -155,8 +155,7 @@
         :ds="ds"
         :use-header="true"
         :use-paging="true"
-        :default-height="260"
-        :max-height="260"
+        :top-content-height="340"
         ref="vtable"
       >
         <template #table-content>

@@ -79,14 +79,13 @@
         :filter="filter"
         :keyword-keys="keywordKeys"
         :ds="ds"
-        :default-height="280"
-        :max-height="280"
+        :top-content-height="290"
         :use-paging="false"
         ref="vtable"
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             style="width: 100%"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"

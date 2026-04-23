@@ -1,16 +1,18 @@
 <template>
   <v-frame title="Trolley Classification" icon="database">
     <template #frame-content>
-           <div class="button-section">
-      <div class="d-flex mt-3">
-        <div class="d-flex flex-fill">
-               <v-button-add :add="add" cClass="mr-1" />
-      <v-button-print :print="print" cClass="" :is-loading="isLoadingPrint" />
-     
+      <div class="button-section">
+        <div class="d-flex">
+          <div class="d-flex flex-fill">
+            <v-button-add :add="add" cClass="mr-1" />
+            <v-button-print
+              :print="print"
+              cClass=""
+              :is-loading="isLoadingPrint"
+            />
+          </div>
         </div>
       </div>
-      </div>
-
 
       <v-table
         :filter="filter"
@@ -18,15 +20,11 @@
         :export-excel="true"
         :export-excel-action="exportExcel"
         :ds="ds"
-        :default-height="300"
-        :max-height="300"
+        :top-content-height="200"
       >
-
- 
-      
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             style="min-width: 100%; width: max-content"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >
@@ -100,7 +98,6 @@
 <script>
 export default {
   data: () => ({
-     
     keywordKeys: [
       {
         Id: "Trolley_Cls",
@@ -265,8 +262,8 @@ export default {
 };
 </script>
 <style scoped>
-.button-section{
-    /* garis panjang bawah */
+.button-section {
+  /* garis panjang bawah */
   width: 100%;
 }
 </style>

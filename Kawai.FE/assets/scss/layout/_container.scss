@@ -29,15 +29,15 @@ html {
 .cursor-pointer {
     cursor: pointer;
 }
-.page-wrapper {
-    min-height: calc(100vh - 100px);
-    padding: 24px;
-    padding-bottom: 30px;
+// .page-wrapper {
+//     min-height: calc(100vh - 100px);
+//     padding: 24px;
+//     padding-bottom: 30px;
 
-    @media screen and (max-width:600px){
-        padding: 10px;
-    }
-}
+//     @media screen and (max-width:600px){
+//         padding: 10px;
+//     }
+// }
 .maxWidth {
     max-width: 1200px;
     margin: 0 auto;

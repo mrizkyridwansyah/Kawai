@@ -35,14 +35,12 @@
         :data-items="ds.data.Items"
         :ds="ds"
         ref="vtable"
-        :default-height="265"
-        :max-height="265"
+        :top-content-height="250"
       >
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-            ref="table"
           >
             <thead>
               <tr>

@@ -596,7 +596,6 @@
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-trade
                             :trade-cls="['2', '3']"
-                            
                             v-model="model.SupplierCode"
                             :errors="errors?.SupplierCode"
                             style-code="width: 125px"
@@ -614,7 +613,6 @@
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-delivery-place
                             v-model="model.DeliveryPlaceCode"
-                            
                             :errors="errors?.DeliveryPlaceCode"
                             :trade="model.SupplierCode"
                             style-code="width: 125px"
@@ -631,7 +629,6 @@
                         </td>
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-hs
-                            
                             v-model="model.HSCode"
                             :errors="errors?.HSCode"
                             style="width: 125px"
@@ -1299,6 +1296,9 @@ export default {
       return useItem();
     },
   },
+  mounted: function () {
+    // document.body.style.overflow = "auto";
+  },
   methods: {
     loadItem: function (idx) {
       this.refreshItemList++;
@@ -1427,7 +1427,7 @@ export default {
               });
           }),
         null,
-        this.model.ItemName
+        this.model.ItemName,
       );
     },
     clear: function () {
@@ -1504,7 +1504,7 @@ export default {
         SupplyCls: "",
         ProvisionCls: "",
         ProductionCls: "",
-      StockControlCls: "",
+        StockControlCls: "",
       };
     },
   },

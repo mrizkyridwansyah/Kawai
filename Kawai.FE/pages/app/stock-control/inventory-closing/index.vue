@@ -127,7 +127,7 @@ export default {
 <style scoped>
 /* CENTER OF SCREEN */
 .page-center {
-  min-height: 60vh;
+  min-height: calc(100vh - 165px);
   display: flex;
   justify-content: center; /* horizontal */
   align-items: center; /* vertical */

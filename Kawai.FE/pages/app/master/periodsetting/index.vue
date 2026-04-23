@@ -65,8 +65,7 @@
       <v-table-input
         :data-items="listPeriodSettingDetail"
         ref="vtable"
-        :default-height="390"
-        :max-height="390"
+        :top-content-height="250"
       >
         <template #table-content>
           <div class="detail-content">

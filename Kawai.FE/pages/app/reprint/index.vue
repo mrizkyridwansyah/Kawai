@@ -76,9 +76,9 @@
       <v-table
         :filter="filter"
         :ds="ds"
+        :data-items="ds.data.Items"
         :frozen-column-left="2"
-        :default-height="245"
-        :max-height="245"
+        :top-content-height="280"
         ref="vtable"
       >
         <template #table-content>

@@ -10,7 +10,7 @@
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle"
+        class="table table-striped mb-0 align-middle v-fixed-table"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>

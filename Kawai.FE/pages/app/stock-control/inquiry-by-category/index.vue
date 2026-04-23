@@ -85,8 +85,7 @@
         :is-server-error="ds.isServerError"
         :is-network-error="ds.isNetworkError"
         :refresh="onSearch"
-        :default-height="290"
-        :max-height="290"
+        :top-content-height="290"
       >
         <template #paging-tree>
           <v-table-pagination

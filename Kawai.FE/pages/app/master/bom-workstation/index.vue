@@ -83,12 +83,11 @@
         :filter="filter"
         :keyword-keys="keywordKeys"
         :ds="ds"
-        :default-height="180"
-        :max-height="180"
+        :top-content-height="325"
       >
         <template #table-content>
           <table
-            class="table table-striped table-bordered mb-0 align-middle"
+            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
             style="width: 100%"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
           >

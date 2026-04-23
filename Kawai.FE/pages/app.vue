@@ -13,6 +13,28 @@ definePageMeta({
 </script>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
+/* body {
+  overflow: hidden;
+} */
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+  margin: 0;
+}
+
+#content.app-content {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 120px);
+  padding-bottom: 0 !important;
+}
+
 .nav-tabs > .nav-item {
   margin-left: 10px;
 }
@@ -64,7 +86,9 @@ hr {
   border: none;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* efek bayangan */
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
   display: inline-flex;
   align-items: center;
   cursor: pointer;
@@ -85,12 +109,15 @@ hr {
   cursor: pointer;
 }
 
-.form-control, .multiselect, .btn, .multiselect-single-label-text {
+.form-control,
+.multiselect,
+.btn,
+.multiselect-single-label-text {
   font-size: 0.6rem !important;
 }
 
 .panel-body {
-    box-shadow: 
+  box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.15),
     0 6px 12px rgba(0, 0, 0, 0.15) !important;
 }
@@ -98,5 +125,9 @@ hr {
 .v-fixed-table thead th {
   background: #8ec5fc;
   text-align: center !important;
+}
+
+.table-bordered {
+  border-bottom: 1px solid #ced4da
 }
 </style>

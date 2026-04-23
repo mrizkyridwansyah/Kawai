@@ -11,8 +11,7 @@
         :frozen-column-left="2"
         :ds="ds"
         ref="vtable"
-        :default-height="350"
-        :max-height="350"
+        :top-content-height="170"
       >
         <template #table-content>
           <table

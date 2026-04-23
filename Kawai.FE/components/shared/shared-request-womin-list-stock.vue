@@ -6,12 +6,10 @@
     :ds-page="ds.setPageListStock"
     :ds-length="ds.setLengthListStock"
     :ds-load="ds.loadListStock"
-    :default-height="380"
-    :max-height="380"
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle w-100"
+        class="table table-striped mb-0 align-middle v-fixed-table w-100"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>

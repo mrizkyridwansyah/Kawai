@@ -7,10 +7,11 @@
     :export-excel="true"
     :export-excel-action="exportExcel"
     :ds="ds"
+    :top-content-height="200"
   >
     <template #table-content>
       <table
-        class="table table-striped mb-0 align-middle"
+        class="table table-striped mb-0 align-middle v-fixed-table"
         v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
       >
         <thead>
@@ -73,7 +74,11 @@ export default {
     breadcrumbs: [
       { title: "Master", active: false, to: "" },
       { title: "Group 2", active: false, to: "" },
-      { title: "Unit Classification", active: true, to: "/app/master/unitclassification" },
+      {
+        title: "Unit Classification",
+        active: true,
+        to: "/app/master/unitclassification",
+      },
     ],
     keywordKeys: [
       {
@@ -170,7 +175,7 @@ export default {
               });
           }),
         null,
-        item.UnitClassificationName
+        item.UnitClassificationName,
       );
     },
     close: function () {
