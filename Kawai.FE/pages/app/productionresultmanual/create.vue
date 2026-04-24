@@ -1,42 +1,36 @@
 <template>
   <v-frame title="Production Result Manual Input" icon="dumpster-fire">
     <template #frame-content>
-      <table>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Line</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-text v-model="lineName" disabled style="width: 200px" />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Item.</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-text
+       <div class="filter-wrapper">
+         
+ 
+        <div class="filter-item">
+          <label class="form-label">Line</label>
+             <input-text v-model="lineName" disabled style="width: 200px" />
+       
+        </div>
+           <div class="filter-item">
+          <label class="form-label">Item</label>
+             <input-text
               v-model="ItemName"
               disabled
               style="width: 200px"
             />
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">Production ID</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+       
+        </div>
+             <div class="filter-item">
+          <label class="form-label">Production ID</label>
             <input-text
               v-model="ProdID"
               disabled
               style="width: 200px"
             />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="4" style="padding-top: 5px">
-            <div class="d-flex flex-fill">
+       
+        </div>
+      </div>
+       
+        
+            <div class="d-flex flex-fill mt-1">
               <v-button
                 :action="back"
                 label="Back"
@@ -50,9 +44,7 @@
                 :is-loading="isLoading"
               />
             </div>
-          </td>
-        </tr>
-      </table>
+      
 <hr>
       <v-table
         :ds="ds"
@@ -60,20 +52,19 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :default-height="350"
-          :max-height="350"
+        :top-content-height="230"
       >
         <template #table-content>
-          <table
+           <table
             class="table table-bordered mb-0 align-middle"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
              
           >
-            <thead>
+            <thead class="sticky-header">
               <tr>
                 <th class="text-center" style="vertical-align: middle">
-                  Schedule Date
+                  Schedule Date 
                 </th>
                 <th class="text-center" style="vertical-align: middle">
                   Parent Item
@@ -167,7 +158,7 @@
                 </template>
               </template>
             </tbody>
-          </table>
+          </table>  
         </template>
       </v-table>
     </template>
@@ -353,7 +344,86 @@ debugger;
 </script>
 
 <style scoped>
+.filter-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  grid-auto-flow: column; /* isi atas ke bawah dulu */
+  gap: 4px 20px;
+  width: 100%;
+  align-items: center;
+}
 
+.filter-wrapper:has(.filter-item:nth-child(12)) {
+  grid-template-rows: repeat(6, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(11)):not(:has(.filter-item:nth-child(12))) {
+  grid-template-rows: repeat(6, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(10)):not(:has(.filter-item:nth-child(11))) {
+  grid-template-rows: repeat(5, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(9)):not(:has(.filter-item:nth-child(10))) {
+  grid-template-rows: repeat(5, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(8)):not(:has(.filter-item:nth-child(9))) {
+  grid-template-rows: repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))) {
+  grid-template-rows: repeat(4, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))) {
+  grid-template-rows: repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))) {
+  grid-template-rows: repeat(3, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))) {
+  grid-template-rows: repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))) {
+  grid-template-rows: repeat(2, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))) {
+  grid-template-rows: repeat(1, auto);
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  width: 100%;
+}
+
+.filter-item label {
+  width: 70px;
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+/* MOBILE = turun kebawah normal */
+@media (max-width: 768px) {
+  .filter-wrapper {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    grid-auto-flow: row !important;
+    gap: 6px;
+  }
+
+  .filter-item {
+    width: 100%;
+  }
+}
 .vdatetime {
   max-width: 60% !important;
 }
@@ -398,5 +468,30 @@ debugger;
 
 .toggle-button:hover {
   opacity: 0.85;
+}
+.table-wrapper {
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+}
+
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #8ec5fc !important;
+  border-bottom: 2px solid #dee2e6;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* optional biar lebih rapi */
+.table td,
+.table th {
+  padding: 8px;
 }
 </style>
