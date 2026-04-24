@@ -90,7 +90,8 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :top-content-height="100"
+        :default-height="320"
+          :max-height="320"
       >
      
         <template #table-content>

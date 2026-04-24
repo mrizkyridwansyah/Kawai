@@ -17,11 +17,11 @@ export const useUser = defineStore('User', {
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 25,
+      Length: 10,
     },
     filter: {
       Page: 1,
-      Length: 25,
+      Length: 10,
       Filters: [
 
       ],
