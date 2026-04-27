@@ -1,4 +1,5 @@
-﻿using Kawai.Api.Shared;
+﻿using Hangfire;
+using Kawai.Api.Shared;
 using Kawai.Data.SqlConnections;
 using System.Data;
 
@@ -9,6 +10,7 @@ namespace Kawai.Api.CronJobs;
 /// Biar ga menuhin storage server
 /// </summary>
 [CronJob("* * * * *")]
+[DisableConcurrentExecution(600)]
 public class DeleteExportFileExpired: BaseCronJob
 {
     private readonly DbExecutor _dbExecutor;
