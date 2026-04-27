@@ -1,17 +1,10 @@
-﻿using Kawai.Api.Services;
-using Kawai.Data.Repositories;
-using Kawai.Domain;
-using Kawai.Domain.DTOs;
+﻿using Kawai.Domain;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Kawai.Api.Controllers;
 

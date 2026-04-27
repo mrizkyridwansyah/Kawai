@@ -1,99 +1,84 @@
 <template>
   <v-frame title="Production Result Manual Input" icon="dumpster-fire">
     <template #frame-content>
-       <div class="filter-wrapper">
-         
-
+      <div class="filter-wrapper">
         <!-- 2 -->
         <div class="filter-item">
           <label class="form-label">Schedule Date</label>
-           <div>
-          <input-date v-model="filter.PeriodFrom" />
-        </div>
-        <label
-          class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
-          >To</label
-        >
-        <div>
-          <input-date v-model="filter.PeriodUntil" />
-        </div>
+          <div>
+            <input-date v-model="filter.PeriodFrom" />
+          </div>
+          <label
+            class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
+            >To</label
+          >
+          <div>
+            <input-date v-model="filter.PeriodUntil" />
+          </div>
         </div>
 
         <div class="filter-item">
           <label class="form-label">Factory</label>
           <filter-factory-privileges
-              class="form-control"
-              v-model="filter.FactoryCode"
-              style-code="width: 120px"
-                    style-desc="width: 300px"
-            />
-       
+            class="form-control"
+            v-model="filter.FactoryCode"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Process</label>
-         <filter-trade-2
-              class="form-control"
-              
-              :trade-cls="['1']"
-              v-model="filter.ManufactureCode"
-              style-code="width: 120px"
-                    style-desc="width: 300px"
-            />
-       
+          <filter-trade-2
+            class="form-control"
+            :trade-cls="['1']"
+            v-model="filter.ManufactureCode"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Line</label>
           <filter-line-factory
-              class="form-control"
-              
-              :company="filter.FactoryCode"
-              :manufacture="filter.ManufactureCode"
-              v-model="filter.LineCode"
-              style-code="width: 120px"
-                    style-desc="width: 300px"
-            />
-       
+            class="form-control"
+            :company="filter.FactoryCode"
+            :manufacture="filter.ManufactureCode"
+            v-model="filter.LineCode"
+            style-code="width: 120px"
+            style-desc="width: 300px"
+          />
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Complete Cls</label>
-           <filter-yes-no-all
-              class="form-control"
-              
-              v-model="filter.CompleteCls"
-              style="width: 120px"
-            />
-       
+          <filter-yes-no-all
+            class="form-control"
+            v-model="filter.CompleteCls"
+            style="width: 120px"
+          />
         </div>
-
-
-         
-     
       </div>
-   <div class="d-flex mt-3">
+      <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
-              <v-button-search-reset :search="search" :reset="reset" />
-              <button
-                class="btn btn-primary btn-elevate btn-search"
-                style="margin-left: 5px"
-                @click="newRequest"
-              >
-                <font-awesome-icon icon="arrow-right" />
-                <span class="ml-2">To Material Consump</span>
-              </button>
-            </div>
-            </div>
-            <hr>
+          <v-button-search-reset :search="search" :reset="reset" />
+          <button
+            class="btn btn-primary btn-elevate btn-search"
+            style="margin-left: 5px"
+            @click="newRequest"
+          >
+            <font-awesome-icon icon="arrow-right" />
+            <span class="ml-2">To Material Consump</span>
+          </button>
+        </div>
+      </div>
+      <hr />
       <v-table
         :filter="filter"
         :ds="ds"
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :default-height="320"
-          :max-height="320"
+        :top-content-height="330"
       >
-     
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
@@ -109,7 +94,7 @@
                 <th class="text-center">Unit</th>
                 <th class="text-center">Plan Qty</th>
                 <th class="text-center">Result Qty</th>
-                 <th class="text-center">Remaining Qty</th>
+                <th class="text-center">Remaining Qty</th>
                 <th class="text-center">Lot No</th>
                 <th class="text-center">Barcode No</th>
                 <th class="text-center">Barcode Qty</th>
@@ -130,8 +115,7 @@
                   <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
                   <td>
                     <div style="display: flex; justify-content: space-between">
-                      
-                        {{ item.ItemCode }}
+                      {{ item.ItemCode }}
                     </div>
                   </td>
                   <td>{{ item.ItemName }}</td>
@@ -141,46 +125,36 @@
                   </td>
                   <td><input-money v-model="item.ResultQty" /></td>
                   <td class="text-right">
-                  
                     {{ $func.formatMoney(item.RemainingQty) }}
-                   
-                 
                   </td>
-                   <td>
+                  <td>
                     <span>
-                     {{ item.LotNo }}
+                      {{ item.LotNo }}
                     </span>
                     <span
-                        v-if="
-                          item.Details.length > 0
-                        "
-                        :class="[
-                          'toggle-button',
-                          item.Expanded ? 'collapse' : 'expand',
-                        ]"
-                        @click="() => (item.Expanded = !item.Expanded)"
-                      >
-                        {{ item.Expanded ? "-" : "+" }}
-                      </span>
-                      </td>
-                   <td> </td>
-                   <td> </td>
+                      v-if="item.Details.length > 0"
+                      :class="[
+                        'toggle-button',
+                        item.Expanded ? 'collapse' : 'expand',
+                      ]"
+                      @click="() => (item.Expanded = !item.Expanded)"
+                    >
+                      {{ item.Expanded ? "-" : "+" }}
+                    </span>
+                  </td>
+                  <td></td>
+                  <td></td>
                 </tr>
                 <tr
                   v-if="item.Expanded"
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.ProdResultID"
                 >
-                  <td colspan="9"></td>                 
-                  <td>{{ dtl.BarcodeNo }} </td>
-                   <td class="text-right">
-                  
+                  <td colspan="9"></td>
+                  <td>{{ dtl.BarcodeNo }}</td>
+                  <td class="text-right">
                     {{ $func.formatMoney(dtl.BarcodeQty) }}
-                   
-                 
                   </td>
-                   
-                  
                 </tr>
               </template>
             </tbody>
@@ -260,10 +234,12 @@ export default {
     search: function () {
       let rangePeriodDays = this.$func.dateDiffInDays(
         this.filter.PeriodFrom,
-        this.filter.PeriodUntil
+        this.filter.PeriodUntil,
       );
 
-      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+      if (
+        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
+      ) {
         toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
         return;
       }
@@ -273,17 +249,17 @@ export default {
         return;
       }
 
-      if(!this.filter.ManufactureCode) {
+      if (!this.filter.ManufactureCode) {
         toastWarning("Silahkan pilih process.");
         return;
       }
 
-      if(!this.filter.LineCode) {
+      if (!this.filter.LineCode) {
         toastWarning("Silahkan pilih line.");
         return;
       }
 
-      if(!this.filter.CompleteCls) {
+      if (!this.filter.CompleteCls) {
         toastWarning("Silahkan pilih filter Complete.");
         return;
       }
@@ -300,10 +276,10 @@ export default {
           LineCode: this.filter.LineCode,
           CompleteCls: this.filter.CompleteCls,
           PeriodFrom: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodFrom)
+            new Date(this.filter.PeriodFrom),
           ),
           PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodUntil)
+            new Date(this.filter.PeriodUntil),
           ),
         },
       ];
@@ -323,7 +299,8 @@ export default {
 
           if (!grouped[key]) {
             let totalResultQty = dt.Data.Items.filter(
-              (x) => x.ProductionId == item.ProductionId && x.ProdResultId != null
+              (x) =>
+                x.ProductionId == item.ProductionId && x.ProdResultId != null,
             ).reduce((a, b) => a + (b.ResultQty || 0), 0);
 
             grouped[key] = {
@@ -341,7 +318,7 @@ export default {
               ProdResultId: item.ProdResultId,
               LotNo: item.LotNo,
               BarcodeNo: item.BarcodeNo,
-              BarcodeQty: item.BarcodeQty, 
+              BarcodeQty: item.BarcodeQty,
             });
           }
         });
@@ -359,24 +336,24 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
       this.search();
     },
     check: function (e, item) {
-        if (e.target.checked) {
-          // uncheck semua dulu
-          this.groupLists.forEach((x) => {
-            x.Selected = false;
-          });
+      if (e.target.checked) {
+        // uncheck semua dulu
+        this.groupLists.forEach((x) => {
+          x.Selected = false;
+        });
 
-          // pilih hanya yg ini
-          item.Selected = true;
-        } else {
-          item.Selected = false;
-        }
-      },
+        // pilih hanya yg ini
+        item.Selected = true;
+      } else {
+        item.Selected = false;
+      }
+    },
     newRequest: function () {
       let selected = this.groupLists.filter((x) => x.Selected);
 
@@ -438,7 +415,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
       this.filter.CompleteCls = "ALL";
@@ -501,43 +478,63 @@ thead {
   grid-template-rows: repeat(6, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(11)):not(:has(.filter-item:nth-child(12))) {
+.filter-wrapper:has(.filter-item:nth-child(11)):not(
+    :has(.filter-item:nth-child(12))
+  ) {
   grid-template-rows: repeat(6, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(10)):not(:has(.filter-item:nth-child(11))) {
+.filter-wrapper:has(.filter-item:nth-child(10)):not(
+    :has(.filter-item:nth-child(11))
+  ) {
   grid-template-rows: repeat(5, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(9)):not(:has(.filter-item:nth-child(10))) {
+.filter-wrapper:has(.filter-item:nth-child(9)):not(
+    :has(.filter-item:nth-child(10))
+  ) {
   grid-template-rows: repeat(5, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(8)):not(:has(.filter-item:nth-child(9))) {
+.filter-wrapper:has(.filter-item:nth-child(8)):not(
+    :has(.filter-item:nth-child(9))
+  ) {
   grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(7)):not(:has(.filter-item:nth-child(8))) {
+.filter-wrapper:has(.filter-item:nth-child(7)):not(
+    :has(.filter-item:nth-child(8))
+  ) {
   grid-template-rows: repeat(4, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(6)):not(:has(.filter-item:nth-child(7))) {
+.filter-wrapper:has(.filter-item:nth-child(6)):not(
+    :has(.filter-item:nth-child(7))
+  ) {
   grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(5)):not(:has(.filter-item:nth-child(6))) {
+.filter-wrapper:has(.filter-item:nth-child(5)):not(
+    :has(.filter-item:nth-child(6))
+  ) {
   grid-template-rows: repeat(3, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(4)):not(:has(.filter-item:nth-child(5))) {
+.filter-wrapper:has(.filter-item:nth-child(4)):not(
+    :has(.filter-item:nth-child(5))
+  ) {
   grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(3)):not(:has(.filter-item:nth-child(4))) {
+.filter-wrapper:has(.filter-item:nth-child(3)):not(
+    :has(.filter-item:nth-child(4))
+  ) {
   grid-template-rows: repeat(2, auto);
 }
 
-.filter-wrapper:has(.filter-item:nth-child(2)):not(:has(.filter-item:nth-child(3))) {
+.filter-wrapper:has(.filter-item:nth-child(2)):not(
+    :has(.filter-item:nth-child(3))
+  ) {
   grid-template-rows: repeat(1, auto);
 }
 
@@ -574,4 +571,3 @@ thead {
   width: 100%;
 }
 </style>
-

@@ -15,11 +15,7 @@
             <label class="form-label">Item.</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-text
-              v-model="ItemName"
-              disabled
-              style="width: 200px"
-            />
+            <input-text v-model="ItemName" disabled style="width: 200px" />
           </td>
         </tr>
         <tr>
@@ -27,11 +23,7 @@
             <label class="form-label">Production ID</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-text
-              v-model="ProdID"
-              disabled
-              style="width: 200px"
-            />
+            <input-text v-model="ProdID" disabled style="width: 200px" />
           </td>
         </tr>
         <tr>
@@ -44,7 +36,7 @@
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
               />
-               <v-button-submit
+              <v-button-submit
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
@@ -53,22 +45,20 @@
           </td>
         </tr>
       </table>
-<hr>
+      <hr />
       <v-table
         :ds="ds"
         :ds-data="ds.dataDetails"
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :default-height="350"
-          :max-height="350"
+        :top-content-height="320"
       >
         <template #table-content>
           <table
-            class="table table-bordered mb-0 align-middle"
+            class="table table-bordered mb-0 align-middle v-fixed-table"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
-             
           >
             <thead>
               <tr>
@@ -90,7 +80,7 @@
                 <th class="text-center" style="vertical-align: middle">
                   Child Item Name
                 </th>
-                 <th class="text-center" style="vertical-align: middle">
+                <th class="text-center" style="vertical-align: middle">
                   BOM Qty
                 </th>
                 <th class="text-center" style="vertical-align: middle">
@@ -99,7 +89,7 @@
                 <th class="text-center" style="vertical-align: middle">
                   Scan Qty
                 </th>
-                
+
                 <th class="text-center" style="vertical-align: middle">
                   Barcode Detail
                 </th>
@@ -108,11 +98,7 @@
             <tbody>
               <template
                 v-for="(item, idx) in groupLists"
-                :key="
-                  item.ProdResultId +
-                  '-' +
-                  item.ProductionId  
-                "
+                :key="item.ProdResultId + '-' + item.ProductionId"
               >
                 <!-- Parent Row -->
                 <tr>
@@ -138,23 +124,28 @@
                 <!-- Child Classification + Details (hanya tampil saat expanded) -->
                 <template v-if="item.Expanded">
                   <template
-                    v-for="dtl in item.details" :key="dtl.MaterialItemCode"
+                    v-for="dtl in item.details"
+                    :key="dtl.MaterialItemCode"
                   >
-                    <!-- Classification Row --> 
+                    <!-- Classification Row -->
                     <tr>
-                       <td colspan="4"></td>
-                      <td :class="getRowColor(dtl.Status)">{{ dtl.MaterialItemCode }}</td>
-                      <td :class="getRowColor(dtl.Status)">{{ dtl.MaterialItemName }}</td>
-                       <td class="text-right" :class="getRowColor(dtl.Status)">
+                      <td colspan="4"></td>
+                      <td :class="getRowColor(dtl.Status)">
+                        {{ dtl.MaterialItemCode }}
+                      </td>
+                      <td :class="getRowColor(dtl.Status)">
+                        {{ dtl.MaterialItemName }}
+                      </td>
+                      <td class="text-right" :class="getRowColor(dtl.Status)">
                         {{ $func.formatMoney(dtl.BOMQty) }}
                       </td>
                       <td class="text-right" :class="getRowColor(dtl.Status)">
                         {{ $func.formatMoney(dtl.RequirementQty) }}
                       </td>
-                       <td class="text-right" :class="getRowColor(dtl.Status)">
+                      <td class="text-right" :class="getRowColor(dtl.Status)">
                         {{ $func.formatMoney(dtl.ScanQty) }}
                       </td>
-                     
+
                       <td class="text-center">
                         <a
                           href="javascript:void(0)"
@@ -173,7 +164,11 @@
     </template>
   </v-frame>
 
-  <v-modal title="Detail Supply Scan" class="modal-lg" id="modal-list-supply-scan">
+  <v-modal
+    title="Detail Supply Scan"
+    class="modal-lg"
+    id="modal-list-supply-scan"
+  >
     <shared-supply-scan
       :item="this.selectedItem"
       :productionid="this.ProdID"
@@ -185,9 +180,7 @@
 <script>
 export default {
   data: () => ({
-    model: {
-      
-    },
+    model: {},
     debounce: null,
     lists: [],
     groupLists: [],
@@ -211,120 +204,116 @@ export default {
     resetGrid: function () {
       this.lists = [];
     },
-search: function () {
-  this.ds.loadDetail().then((dt) => {
-    let grouped = {};
-debugger;
-    if (dt.Data.length > 0) {
-      debugger;
-      this.lineName = dt.Data[0].LineName;
-      this.ItemName = dt.Data[0].ParentItemName;
-      this.ProdID = dt.Data[0].ProductionId;
-    }
+    search: function () {
+      this.ds.loadDetail().then((dt) => {
+        let grouped = {};
+        debugger;
+        if (dt.Data.length > 0) {
+          debugger;
+          this.lineName = dt.Data[0].LineName;
+          this.ItemName = dt.Data[0].ParentItemName;
+          this.ProdID = dt.Data[0].ProductionId;
+        }
 
-    dt.Data.forEach((item) => {
-      let parentKey = [
-        item.ProdResultId,
-        item.ProductionId,
-        item.ScheduleDate,
-        item.LineCode,
-        item.ParentItemCode,
-        item.ResultQty ,
-      ].join("|");
+        dt.Data.forEach((item) => {
+          let parentKey = [
+            item.ProdResultId,
+            item.ProductionId,
+            item.ScheduleDate,
+            item.LineCode,
+            item.ParentItemCode,
+            item.ResultQty,
+          ].join("|");
 
-      if (!grouped[parentKey]) {
-        grouped[parentKey] = {
-          ...item,
-          Expanded: true,
-          details: [],
-        };
-      }
+          if (!grouped[parentKey]) {
+            grouped[parentKey] = {
+              ...item,
+              Expanded: true,
+              details: [],
+            };
+          }
 
-      grouped[parentKey].details.push({
-        MaterialItemCode: item.MaterialItemCode,
-        MaterialItemName: item.MaterialItemName,
-        BOMQty: item.BOMQty,
-        RequirementQty: item.RequirementQty,
-        ScanQty: item.ScanQty,
-        RemainingQty: item.RemainingQty,
-        Status: item.Status,
+          grouped[parentKey].details.push({
+            MaterialItemCode: item.MaterialItemCode,
+            MaterialItemName: item.MaterialItemName,
+            BOMQty: item.BOMQty,
+            RequirementQty: item.RequirementQty,
+            ScanQty: item.ScanQty,
+            RemainingQty: item.RemainingQty,
+            Status: item.Status,
+          });
+        });
+
+        // WAJIB ADA
+        this.groupLists = Object.values(grouped);
       });
-    });
-
-    // WAJIB ADA
-    this.groupLists = Object.values(grouped);
-  });
-},
-     submit: function () {
-  /* ===============================
+    },
+    submit: function () {
+      /* ===============================
      VALIDASI MATERIAL MERAH
   =============================== */
-  let hasRed = this.groupLists.some((parent) =>
-    (parent.details || []).some((dtl) => dtl.Status == 0)
-  );
+      let hasRed = this.groupLists.some((parent) =>
+        (parent.details || []).some((dtl) => dtl.Status == 0),
+      );
 
-  if (hasRed) {
-    toastWarning(
-      "Material Supply Request tidak mencukupi berdasarkan Result Qty yang di input. Silahkan Scan Material atau ubah Result Qty lebih kecil"
-    );
-    return;
-  }
+      if (hasRed) {
+        toastWarning(
+          "Material Supply Request tidak mencukupi berdasarkan Result Qty yang di input. Silahkan Scan Material atau ubah Result Qty lebih kecil",
+        );
+        return;
+      }
 
-  /* ===============================
+      /* ===============================
      LOADING
   =============================== */
-  this.isLoading = true;
+      this.isLoading = true;
 
-  /* ===============================
+      /* ===============================
      AMBIL GROUP VALID
   =============================== */
-  let avaiableGroupList = [
-    ...new Set(
-      this.groupLists
-        .filter((group) =>
-          (group.details || []).some(
-            (detail) => detail.MaterialItemCode
-          )
-        )
-        .map((group) => group.ProductionId)
-    ),
-  ];
+      let avaiableGroupList = [
+        ...new Set(
+          this.groupLists
+            .filter((group) =>
+              (group.details || []).some((detail) => detail.MaterialItemCode),
+            )
+            .map((group) => group.ProductionId),
+        ),
+      ];
 
-  /* ===============================
+      /* ===============================
      PAYLOAD
   =============================== */
-  let payload = this.ds.newRequest
-    .filter((x) =>
-      avaiableGroupList.includes(x.ProductionId)
-    )
-    .map((x) => {
-      return {
-        LineCode: x.LineCode,
-        ProdResultId: x.ProdResultId,
-        ProductionId: x.ProductionId,
-        ScheduleDate: x.ScheduleDate,
-        ItemCode: x.ItemCode,
-        ResultQty: x.ResultQty,
-      };
-    });
+      let payload = this.ds.newRequest
+        .filter((x) => avaiableGroupList.includes(x.ProductionId))
+        .map((x) => {
+          return {
+            LineCode: x.LineCode,
+            ProdResultId: x.ProdResultId,
+            ProductionId: x.ProductionId,
+            ScheduleDate: x.ScheduleDate,
+            ItemCode: x.ItemCode,
+            ResultQty: x.ResultQty,
+          };
+        });
 
-  /* ===============================
+      /* ===============================
      SAVE
   =============================== */
-  this.ds
-    .save(payload)
-    .then(() => {
-      toastSuccess("Data saved successfully!");
-      this.back();
-    })
-    .catch((err) => {
-      this.errors = err?.Errors;
-      toastDanger(err?.Message || "Failed save data");
-    })
-    .finally(() => {
-      this.isLoading = false;
-    });
-},
+      this.ds
+        .save(payload)
+        .then(() => {
+          toastSuccess("Data saved successfully!");
+          this.back();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message || "Failed save data");
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
     back: function () {
       this.$router.push({
         path: "/app/productionresultmanual",
@@ -343,17 +332,16 @@ debugger;
       item.Expanded = !item.Expanded;
     },
     getRowColor(status) {
-  if (status == 1) return "cell-warning";
-  if (status == 0) return "cell-danger";
-  if (status == 2) return "cell-success";
-  return "";
-},
+      if (status == 1) return "cell-warning";
+      if (status == 0) return "cell-danger";
+      if (status == 2) return "cell-success";
+      return "";
+    },
   },
 };
 </script>
 
 <style scoped>
-
 .vdatetime {
   max-width: 60% !important;
 }
