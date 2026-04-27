@@ -1,8 +1,10 @@
 ﻿using ClosedXML.Excel;
 using Kawai.Api.Hub;
+using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Shared;
+using System.Data;
 using System.Text;
 
 namespace Kawai.Api.Services;
@@ -23,6 +25,7 @@ public class ExportService : IExportService
     private readonly IItemRepository _itemRepository;
     private readonly IReceiptRepository _receiptRepository;
     private readonly NotificationService<NotifApprovalHub> _notificationService;
+    private readonly DbExecutor _dbExecutor;
 
     public ExportService
     (
@@ -30,7 +33,8 @@ public class ExportService : IExportService
         IItemRepository itemRepository,
         IReceiptRepository receiptRepository,
         NotificationService<NotifApprovalHub> notificationService,
-        RazorViewRenderer renderer
+        RazorViewRenderer renderer,
+        DbExecutor dbExecutor
     )
     {
         _fileStorage = fileStorage;
@@ -38,6 +42,7 @@ public class ExportService : IExportService
         _receiptRepository = receiptRepository;
         _notificationService = notificationService;
         _renderer = renderer;
+        _dbExecutor = dbExecutor;
     }
 
     /* 
@@ -100,6 +105,13 @@ public class ExportService : IExportService
         ms.Position = 0;
 
         _fileStorage.SaveToExports(key, ms);
+
+        int defaultTTLMinute = 5;// simpen file fisik nya selama 5 menit
+
+        // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
         await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Master Item" });
     }
@@ -352,6 +364,13 @@ public class ExportService : IExportService
         _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
 
         string keyStorage = Guid.NewGuid().ToString();
+
+        int defaultTTLMinute = 43200;// simpen file fisik nya selama 1 bulan. 
+
+        // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
         await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
     }
