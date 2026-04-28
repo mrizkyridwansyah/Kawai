@@ -40,6 +40,7 @@
             <span class="title-summary">Passed QC</span>
             <br />
             <span class="qty-summary">{{
+              
               $func.formatMoney(this.summary.passed)
             }}</span>
           </div>

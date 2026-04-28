@@ -91,6 +91,7 @@
                 icon="hourglass-start"
                 class="text-warning icon-title"
               />
+              
               <span id="header-panel" style="font-size: 1.05em" class="ml-3">Remaining Item - Material Type (Group)</span>
             </div>
             <div class="panel-body">
@@ -103,7 +104,8 @@
                     <th class="text-center">Request No</th>
                     <th class="text-center">Production Date</th>
                     <th class="text-center">Line</th>
-                    <th class="text-center">Item</th>
+                    <th class="text-center">Item</th> 
+                     <th class="text-center">Model</th> 
                     <th class="text-center">Work Station</th>
                     <th class="text-center">Preparation Status</th>
                     <th class="text-center">Trolly Number</th>
@@ -116,8 +118,9 @@
                   <tr v-for="(item, i) in ds.data" >
                     <td>{{ item.RequestNo }}</td>
                     <td>{{ $func.formatDate(item.ProductionDate)}}</td>
-                     <td>{{ item.Line }}</td>
+                    <td>{{ item.Line }}</td>
                     <td>{{ item.PickingArea }}</td>
+                    <td>{{ item.Model }}</td>
                     <td>{{ item.WorkStation }}</td>
                     <td>{{ item.PreparationStatus }}</td>
                     <td>{{ item.TrollyNumber }}</td>
@@ -211,6 +214,7 @@ export default {
           //     t.WorkStation === item.WorkStation
           //   ))
           // ).length;
+
 
 
 
