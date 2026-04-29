@@ -113,9 +113,6 @@
                 <th class="text-center">Description</th>
                 <th class="text-center">DN Number</th>
                 <th class="text-center">PO Number</th>
-                <th class="text-center">BC Type</th>
-                <th class="text-center">BC No</th>
-                <th class="text-center">BC Date</th>
                 <th class="text-center">Qty DN</th>
                 <th class="text-center">Qty Scan</th>
                 <th class="text-center">Unit</th>
@@ -123,6 +120,9 @@
                 <th class="text-center">Price</th>
                 <th class="text-center">Amount</th>
                 <th class="text-center">Status IQC</th>
+                 <th class="text-center">BC Type</th>
+                <th class="text-center">BC No</th>
+                <th class="text-center">BC Date</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
@@ -195,33 +195,7 @@
                 >
                   {{ item.PONumber }}
                 </td>
-                <td
-                  :class="{
-                    'bg-danger': item.Qty > item.QtyScan,
-                    'table-striped-row':
-                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
-                  }"
-                >
-                  {{ item.BCType }}
-                </td>
-                <td
-                  :class="{
-                    'bg-danger': item.Qty > item.QtyScan,
-                    'table-striped-row':
-                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
-                  }"
-                >
-                  {{ item.BCNumber }}
-                </td>
-                <td
-                  :class="{
-                    'bg-danger': item.Qty > item.QtyScan,
-                    'table-striped-row':
-                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
-                  }"
-                >
-                  {{ $func.formatDate(item.BCDate) }}
-                </td>
+                
                 <td
                   :class="{
                     'bg-danger': item.Qty > item.QtyScan,
@@ -288,6 +262,33 @@
                   }"
                 >
                   {{ item.StatusIQC }}
+                </td>
+                <td
+                  :class="{
+                    'bg-danger': item.Qty > item.QtyScan,
+                    'table-striped-row':
+                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
+                  }"
+                >
+                  {{ item.BCType }}
+                </td>
+                <td
+                  :class="{
+                    'bg-danger': item.Qty > item.QtyScan,
+                    'table-striped-row':
+                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
+                  }"
+                >
+                  {{ item.BCNumber }}
+                </td>
+                <td
+                  :class="{
+                    'bg-danger': item.Qty > item.QtyScan,
+                    'table-striped-row':
+                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
+                  }"
+                >
+                  {{ $func.formatDate(item.BCDate) }}
                 </td>
                 <td
                   class="text-center"

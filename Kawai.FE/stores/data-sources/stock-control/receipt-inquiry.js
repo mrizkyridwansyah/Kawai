@@ -15,11 +15,11 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 10,
+      Length: 25,
     }, 
     filter: {
       Page: 1,
-      Length: 10,
+      Length: 25,
       Filters: [
 
       ],
@@ -30,11 +30,11 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 10,
+      Length: 25,
     }, 
     filterDetail: {
       Page: 1,
-      Length: 10,
+      Length: 25,
       Filters: [
 
       ],
