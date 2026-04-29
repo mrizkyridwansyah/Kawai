@@ -14,7 +14,8 @@ CREATE TABLE [MS_Area](
 	[UpdateBy] [varchar](50) NULL,
 	[UpdateDate] [datetime] NULL,
 	[ItemType] [varchar](25) NULL,
-	[PickingSequence] [int] NULL
+	[PickingSequence] [int] NULL,
+	[IPAddress] [varchar](20) NULL,
  CONSTRAINT [PK_MS_Location] PRIMARY KEY CLUSTERED 
 (
 	[WarehouseCode] ASC,
