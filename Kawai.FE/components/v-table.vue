@@ -196,7 +196,6 @@ export default {
     waitForDOMThenFreeze: function () {
       this.$nextTick(() => {
         setTimeout(() => {
-          console.log(window.innerWidth, "asd")
           const table = this.$refs.tableContainer?.querySelector("table");
           if (!table) return;
 
@@ -253,7 +252,6 @@ export default {
             ) {
               this.setFrozenColumns(frozenIndexesFinal);
             } else {
-              console.log(window.innerWidth);
               this.clearFrozenColumns();
             }
           });
@@ -296,13 +294,9 @@ export default {
 
           const threshold = 0.7;
 
-          console.log(
-            screenWidth > 768 && frozenWidth < panelWidth * threshold,
-          );
           if (screenWidth > 768 && frozenWidth < panelWidth * threshold) {
             this.setFrozenColumns(frozenIndexes);
           } else {
-            console.log(screenWidth);
             this.clearFrozenColumns();
           }
         }, 200);

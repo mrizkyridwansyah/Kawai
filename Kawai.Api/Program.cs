@@ -70,6 +70,7 @@ builder.Services.AddScoped<ITransactionHandler, MobileAssignStorageTransactionHa
 builder.Services.AddScoped<ITransactionHandler, MobileLoadingTrolleyTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileSupplyScanRequestTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, QualityCheckConfirmTransactionHandler>();
+builder.Services.AddScoped<ITransactionHandler, QualityCheckConfirmSATransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, RobotMovingTrolleyTransactionHandler>();
 builder.Services.AddScoped<ITransactionHandler, MobileSupplySubconTransactionHandler>();
 

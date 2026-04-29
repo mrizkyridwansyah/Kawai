@@ -81,7 +81,7 @@
                         <input-receipt
                           class="form-control"
                           :disabled="isNew"
-                          status="NEW"
+                          :status="$route.query.id ? null : 'NEW'"
                           source-menu="RECEIPT PO"
                           :factory-code="filter.FactoryCode"
                           :supplier-code="filter.SupplierCode"
@@ -257,7 +257,7 @@
       </table>
       <hr />
 
-      <div style="width: 1150px">
+      <div>
         <v-table-input
           :data-items="listPODetail"
           ref="vtable"
@@ -338,7 +338,7 @@
         </v-table-input>
       </div>
 
-      <div style="width: 1150px">
+      <div>
         <label class="form-label">Remarks</label>
         <input-text
           multiline
@@ -448,6 +448,11 @@ export default {
     this.filter.PeriodUntil = today;
     this.model.BCDate = today;
     this.model.DNDate = today;
+
+    if(this.$route.query.id) {
+      this.filter.ReceiptId = this.$route.query.id;
+      this.getReceipt();
+    }
   },
   methods: {
     deepClone: function (obj) {

@@ -68,6 +68,10 @@ export default {
         Id: "Rejected",
         Name: "NG",
       },
+      {
+        Id: "SA",
+        Name: "SA",
+      },
     ],
     list: [],
     tempValue: null,

@@ -71,7 +71,7 @@
         </tr>
       </table>
       <hr />
-      <div style="width: 1150px">
+      <div>
         <v-table-input
           :data-items="lists"
           :frozen-column-left="3"
@@ -81,7 +81,7 @@
           <template #table-content>
             <div class="detail-content">
               <table
-                class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                class="table table-bordered mb-0 align-middle v-fixed-table"
                 v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
                 ref="table"
               >
@@ -94,6 +94,7 @@
                     <th class="text-center">Item Code</th>
                     <th class="text-center">Item Name</th>
                     <th class="text-center">Unit</th>
+                    <th class="text-center">Receipt Qty</th>
                     <th class="text-center">Sample Qty</th>
                     <th class="text-center">NG Qty</th>
                     <th class="text-center">Result Input & View</th>
@@ -105,29 +106,126 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, idx) in lists || []" :key="idx">
-                    <td class="text-center">
+                    <td
+                      class="text-center"
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
                       {{
                         item.Source == "Incoming Material"
                           ? "IQC Sample"
                           : item.Source
                       }}
                     </td>
-                    <td>{{ item.SupplierName }}</td>
-                    <td>{{ item.DNNumber }}</td>
-                    <td>{{ $func.formatDate(item.DNDate) }}</td>
-                    <td>{{ item.ItemCode }}</td>
-                    <td>{{ item.ItemName }}</td>
-                    <td>{{ item.UnitClsDescription }}</td>
-                    <td class="text-right">
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.SupplierName }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.DNNumber }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ $func.formatDate(item.DNDate) }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.ItemCode }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.ItemName }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.UnitClsDescription }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                      class="text-right"
+                    >
+                      {{ $func.formatMoney(item.QtyReceipt) }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                      class="text-right"
+                    >
                       {{ $func.formatMoney(item.Qty) }}
                     </td>
-                    <td class="text-right">
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                      class="text-right"
+                    >
                       {{ $func.formatMoney(item.QtyNG) }}
                     </td>
-                    <td class="text-center">
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                      class="text-center"
+                    >
                       <a
                         href="javascript:void(0);"
-                        v-if="item.StatusQC == 'CONFIRMED'"
+                        v-if="item.StatusQC == 'CONFIRMED' || item.StatusQC == 'PENDING-SA'"
                         @click="() => showModal(item, 'VIEW')"
                       >
                         View
@@ -143,10 +241,46 @@
                       </a>
                       <a href="javascript:void(0);" v-else></a>
                     </td>
-                    <td>{{ item.RegisterUserName }}</td>
-                    <td>{{ $func.formatDateTime(item.RegisterDate) }}</td>
-                    <td>{{ item.InspectorName }}</td>
-                    <td>{{ $func.formatDateTime(item.InspectionDate) }}</td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.RegisterUserName }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ $func.formatDateTime(item.RegisterDate) }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ item.InspectorName }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                      }"
+                    >
+                      {{ $func.formatDateTime(item.InspectionDate) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -304,5 +438,32 @@ export default {
   height: 70%;
   max-height: 70%;
   overflow-y: scroll;
+}
+
+.bg-danger {
+  background-color: salmon !important;
+}
+.bg-danger a {
+  color: #333;
+}
+
+.bg-success {
+  background-color: rgb(19, 222, 185) !important;
+  color: #333 !important;
+}
+.bg-success a {
+  color: #333;
+}
+
+.table-striped-row {
+  background-color: #e9ecef;
+}
+
+.bg-danger a {
+  background-color: rgba(250, 128, 114, 0.5) !important;
+}
+
+.table tbody td {
+  border-bottom: 1px solid #ced4da;
 }
 </style>

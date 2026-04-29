@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="Claim Receipt Input" icon="receipt">
+  <v-frame title="Part Material Receipt Input" icon="receipt">
     <template #frame-content>
       <table>
         <tr>
@@ -54,19 +54,20 @@
               </tr>
               <tr>
                 <td style="padding-top: 5px">
-                  <label class="form-label">Claim Number</label>
+                  <label class="form-label">PO Number</label>
                 </td>
                 <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-                  <input-claimno
-                      class="form-control"
-                      :supplier-code="filter.SupplierCode"
-                      :period-from="filter.PeriodFrom"
-                      :period-until="filter.PeriodUntil"
-                      v-model="filter.ClaimNo"
-                      :errors="errors?.ClaimNo"
-                      style="width: 360px"
-                    />
-                   
+                  <input-po
+                    class="form-control"
+                    v-model="filter.PONumber"
+                    :factory-code="filter.FactoryCode"
+                    :supplier-code="filter.SupplierCode"
+                    :type-date="filter.TypeDate"
+                    :period-from="filter.PeriodFrom"
+                    :period-until="filter.PeriodUntil"
+                    :show-option-all="true"
+                    style="width: 360px"
+                  />
                 </td>
               </tr>
               <tr>
@@ -80,20 +81,12 @@
                         <input-receipt
                           class="form-control"
                           :disabled="isNew"
-                          status="NEW"
-                          source-menu="RECEIPT CLAIM"
+                          source-menu="RECEIPT PO"
                           :factory-code="filter.FactoryCode"
                           :supplier-code="filter.SupplierCode"
                           v-model="filter.ReceiptId"
                           :errors="errors?.ReceiptId"
-                          style="width: 300px"
-                        />
-                      </td>
-                      <td style="padding-left: 15px">
-                        <input-checkbox
-                          label="New"
-                          v-model="isNew"
-                          @click="(e) => changeNew(e)"
+                          style="width: 360px"
                         />
                       </td>
                     </tr>
@@ -199,6 +192,7 @@
                   <input-text
                     v-model="model.RegisterNo"
                     :errors="errors?.RegisterNo"
+                    :disabled="isNew"
                     style="width: 360px"
                   />
                 </td>
@@ -249,13 +243,26 @@
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
               />
+              <v-button
+                :action="back"
+                label="Back"
+                icon="arrow-left"
+                cClass="ml-1 btn-danger"
+                :is-loading="isLoading"
+              />
             </div>
           </td>
         </tr>
       </table>
+      <hr />
 
       <div>
-        <v-table-input :data-items="listClaimDetail" ref="vtable">
+        <v-table-input
+          :data-items="listPODetail"
+          ref="vtable"
+          :frozen-column-left="3"
+          :top-content-height="525"
+        >
           <template #table-content>
             <div class="detail-content" style="width: 100%">
               <table
@@ -268,11 +275,11 @@
                     <th class="text-center">
                       <input-checkbox @click="(e) => checkAll(e)" />
                     </th>
-                    <th class="text-center">Claim Number</th>
+                    <th class="text-center">PO Number</th>
                     <th class="text-center">Item Code</th>
                     <th class="text-center">Item Name</th>
                     <th class="text-center">Unit</th>
-                    <th class="text-center">Claim Qty</th>
+                    <th class="text-center">PO Qty</th>
                     <th class="text-center">Receipt Qty</th>
                     <th class="text-center">Remaining Qty</th>
                     <th class="text-center">Qty DN</th>
@@ -285,14 +292,14 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(item, idx) in listClaimDetail || []" :key="idx">
+                  <tr v-for="(item, idx) in listPODetail || []" :key="idx">
                     <td class="text-center">
                       <input-checkbox
                         v-model="item.Selected"
                         @click="(e) => check(e, item)"
                       />
                     </td>
-                    <td>{{ item.ClaimNo }}</td>
+                    <td>{{ item.PONumber }}</td>
                     <td>{{ item.ItemCode }}</td>
                     <td>{{ item.ItemName }}</td>
                     <td>{{ item.UnitClsName }}</td>
@@ -352,7 +359,7 @@ export default {
       TypeDate: "DELIVERY",
       PeriodFrom: null,
       PeriodUntil: null,
-      ClaimNo: null,
+      PONumber: null,
       ReceiptId: null,
     },
     model: {
@@ -372,25 +379,32 @@ export default {
       Details: [],
       IsManual: true,
     },
-    listClaimDetail: [],
+    listPODetail: [],
     debounce: null,
     isLoading: false,
+    prevRegisterNo: "",
     errors: {},
   }),
   computed: {
     ds: function () {
       return useReceipt();
     },
+    dsPO: function () {
+      return usePO();
+    },
+    notif: function () {
+      return useNotification();
+    },
   },
   watch: {
-    "filter.ClaimNo": function () {
-      this.listClaimDetail = [];
+    "filter.PONumber": function () {
+      this.listPODetail = [];
     },
     "filter.FactoryCode": function () {
-      this.listClaimDetail = [];
+      this.listPODetail = [];
     },
     "filter.SupplierCode": function () {
-      this.listClaimDetail = [];
+      this.listPODetail = [];
     },
     "filter.ReceiptId": function () {
       if (this.filter.ReceiptId) this.getReceipt();
@@ -403,8 +417,8 @@ export default {
           1,
         );
         this.filter.PeriodUntil = today;
-        this.filter.ClaimNo = null;
-        this.listClaimDetail = [];
+        this.filter.PONumber = null;
+        this.listPODetail = [];
         this.filter.ReceiptId = null;
         this.model = {
           Id: null,
@@ -412,17 +426,17 @@ export default {
           DNNumber: "",
           FactoryCode: null,
           SupplierCode: null,
-          DNDate: null,
+          DNDate: today,
           BCNumber: "",
           BCType: "",
-          BCDate: null,
+          BCDate: today,
           VehicleNo: "",
           Transport: null,
           RegisterNo: null,
           Remarks: null,
           Details: [],
           IsManual: true,
-          SourceMenu: "RECEIPT CLAIM",
+          SourceMenu: "RECEIPT PO",
         };
       }
     },
@@ -433,6 +447,11 @@ export default {
     this.filter.PeriodUntil = today;
     this.model.BCDate = today;
     this.model.DNDate = today;
+
+    if(this.$route.query.id) {
+      this.filter.ReceiptId = this.$route.query.id;
+      this.getReceipt();
+    }
   },
   methods: {
     deepClone: function (obj) {
@@ -448,7 +467,7 @@ export default {
         TypeDate: "DELIVERY",
         PeriodFrom: null,
         PeriodUntil: null,
-        ClaimNo: null,
+        PONumber: null,
         ReceiptId: null,
       };
       this.model = {
@@ -467,9 +486,9 @@ export default {
         Remarks: null,
         Details: [],
         IsManual: true,
-        SourceMenu: "RECEIPT CLAIM",
+        SourceMenu: "RECEIPT PO",
       };
-      this.listClaimDetail = [];
+      this.listPODetail = [];
       let today = new Date();
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
@@ -481,7 +500,7 @@ export default {
     changeNew: function (e) {
       if (e.target.checked) {
         this.isNew = true;
-        this.listClaimDetail = [];
+        this.listPODetail = [];
         this.filter.ReceiptId = null;
         this.model = {
           Id: null,
@@ -499,13 +518,13 @@ export default {
           Remarks: null,
           Details: [],
           IsManual: true,
-          SourceMenu: "RECEIPT CLAIM",
+          SourceMenu: "RECEIPT PO",
         };
         // this.reset();
       }
     },
     checkAll: function (e) {
-      this.listClaimDetail.map((x) => {
+      this.listPODetail.map((x) => {
         x.Selected = e.target.checked;
         x.ReceiptQty = e.target.checked ? x.RemainingQty : 0;
       });
@@ -542,15 +561,28 @@ export default {
         })
         .catch((err) => toastDanger(err.Message));
     },
+    printBarcodesUsingJob: function () {
+      if (!this.filter.ReceiptId) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+
+      this.ds
+        .printBarcodesUsingJob(this.filter.ReceiptId)
+        .then((data) => {
+          if (data.Message != "-") toastInfo(data.Message);
+        })
+        .catch((err) => toastDanger(err.Message));
+    },
     printReport: function () {},
     submit: function () {
       this.isLoading = true;
       this.errors = {};
 
-      let details = this.listClaimDetail.filter((x) => x.Selected);
+      let details = this.listPODetail.filter((x) => x.Selected);
       if (details.length == 0) {
         this.isLoading = false;
-        toastDanger("Silahkan pilih Claim!");
+        toastDanger("Silahkan pilih PO!");
         return;
       }
 
@@ -559,7 +591,7 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = details.map((p) => {
         return {
-          ClaimNo: p.ClaimNo,
+          PONumber: p.PONumber,
           ItemCode: p.ItemCode,
           UnitClsCode: p.UnitClsCode,
           ExpectedQty: p.RemainingQty,
@@ -581,7 +613,8 @@ export default {
         this.filter.SupplierCode = this.model.SupplierCode;
         this.filter.PeriodFrom = this.model.DeliveryDatePOFrom;
         this.filter.PeriodUntil = this.model.DeliveryDatePOUntil;
-        this.filter.ClaimNo = this.model.ClaimNo;
+        this.filter.PONumber = this.model.PONumber;
+        this.prevRegisterNo = this.model.RegisterNo;
         this.$nextTick(() => setTimeout(() => this.searchPoDetail(), 500));
       });
     },
@@ -596,15 +629,15 @@ export default {
         {
           FactoryCode: this.filter.FactoryCode,
           ReceiptId: this.filter.ReceiptId?.toString() || "0",
-          ClaimNo: this.filter.ClaimNo,
+          PONumber: this.filter.PONumber,
           SupplierCode: this.filter.SupplierCode,
           DateFrom: this.filter.PeriodFrom,
           DateUntil: this.filter.PeriodUntil,
         },
       ];
-      this.ds.listClaimDetail(filters).then((dt) => {
-        this.listClaimDetail = dt.Data.Items;
-        this.listClaimDetail.map((x) => (x.Selected = x.ReceiptDetailId > 0));
+      this.ds.listPODetail(filters).then((dt) => {
+        this.listPODetail = dt.Data.Items;
+        this.listPODetail.map((x) => (x.Selected = x.ReceiptDetailId > 0));
       });
     },
     createReceipt: function () {
@@ -623,12 +656,28 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     updateReceipt: function () {
+      if (this.prevRegisterNo != this.model.RegisterNo) {
+        confirmSubmit(
+          () =>
+            new Promise((resolve) => {
+              this.update();
+              resolve();
+            }),
+          () => (this.isLoading = false),
+          `You change the <strong>Register No</strong>. Are you sure to <strong>CONTINUE</strong> changes?`,
+        );
+      } else {
+        this.update();
+      }
+    },
+    update: function () {
       this.ds
         .update(this.model)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+          this.prevRegisterNo = this.model.RegisterNo;
           // this.reset();
         })
         .catch((err) => {
@@ -636,6 +685,14 @@ export default {
           toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
+    },
+    back: function () {
+      this.$router.push({
+        path: "/app/receipt",
+        query: {
+          back: 1,
+        },
+      });
     },
   },
 };

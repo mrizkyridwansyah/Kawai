@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row" style="max-height: 80vh;">
     <div class="col-lg-12">
       <div class="mb-3">
         <label class="form-label">DN Number</label>
@@ -11,11 +11,15 @@
       </div>
       <div class="mb-3">
         <div class="row">
-          <div class="col-6">
+          <div class="col-4">
+            <label class="form-label">Qty Receipt</label>
+            <input-money v-model="model.QtyReceipt" :disabled="true" />
+          </div>
+          <div class="col-4">
             <label class="form-label">Qty Sample</label>
             <input-money v-model="model.Qty" :disabled="true" />
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <label class="form-label">Qty NG</label>
             <input-money
               class="text-right"
@@ -33,6 +37,15 @@
           :errors="errors?.Remarks"
           multiline
           :disabled="mode != 'INPUT'"
+        />
+      </div>
+      <div class="mb-3" v-if="mode == 'CONFIRM-SA' || (mode == 'VIEW' && this.model.InspectionResult == 'SA')">
+        <label class="form-label">Remarks SA</label>
+        <input-text
+          v-model="model.RemarksSA"
+          :errors="errors?.RemarksSA"
+          multiline
+          :disabled="mode != 'CONFIRM-SA'"
         />
       </div>
     </div>
@@ -75,10 +88,71 @@
         HOLD
       </button>
       <button
+        class="btn btn-green rounded-pill"
+        type="button"
+        style="color: white; width: 10em"
+        @click="() => confirm('SA')"
+        :disabled="
+          (btnDisabled !== undefined && btnDisabled !== false) ||
+          isLoading !== false
+        "
+      >
+        <div
+          class="spinner-border spinner-border-sm text-light"
+          role="status"
+          v-if="isLoading"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        SA
+      </button>
+      <button
         class="btn btn-primary rounded-pill"
         type="button"
         style="color: white; width: 10em"
         @click="() => confirm('Accepted')"
+        :disabled="
+          (btnDisabled !== undefined && btnDisabled !== false) ||
+          isLoading !== false
+        "
+      >
+        <div
+          class="spinner-border spinner-border-sm text-light"
+          role="status"
+          v-if="isLoading"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        GOOD
+      </button>
+    </div>
+  </div>
+  <div class="mt-4 mb-3" v-else-if="mode == 'CONFIRM-SA'">
+    <div style="display: flex; justify-content: space-between">
+      <button
+        class="btn btn-danger rounded-pill"
+        type="button"
+        style="color: white; width: 10em"
+        @click="() => approvalSA('Rejected')"
+        :disabled="
+          (btnDisabled !== undefined && btnDisabled !== false) ||
+          isLoading !== false
+        "
+      >
+        <div
+          class="spinner-border spinner-border-sm text-light"
+          role="status"
+          v-if="isLoading"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        HOLD
+      </button>
+      <button
+        class="btn btn-primary rounded-pill"
+        type="button"
+        style="color: white; width: 10em"
+        @click="() => approvalSA('Accepted')"
         :disabled="
           (btnDisabled !== undefined && btnDisabled !== false) ||
           isLoading !== false
@@ -106,8 +180,11 @@ export default {
       DNNumber: "",
       ItemName: "",
       Qty: null,
+      QtyReceipt: null,
       QtyNG: null,
+      InspectionResult: "",
       Remarks: "",
+      RemarksSA: "",
       AttachmentID: null,
       Attachment: null,
       AttachmentName: "",
@@ -139,8 +216,11 @@ export default {
           DNNumber: dt.Data.DNNumber,
           ItemName: dt.Data.ItemName,
           Qty: dt.Data.Qty,
+          QtyReceipt: dt.Data.QtyReceipt,
           QtyNG: dt.Data.QtyNG,
+          InspectionResult: dt.Data.InspectionResult,
           Remarks: dt.Data.Remarks,
+          RemarksSA: dt.Data.RemarksSA,
           AttachmentID: dt.Data.AttachmentID,
           Attachment: null,
           AttachmentName: dt.Data.AttachmentFileName,
@@ -154,8 +234,11 @@ export default {
         DNNumber: "",
         ItemName: "",
         Qty: null,
+        QtyReceipt: null,
         QtyNG: null,
+        InspectionResult: "",
         Remarks: "",
+        RemarksSA: "",
         AttachmentID: null,
         Attachment: null,
         AttachmentName: "",
@@ -206,7 +289,42 @@ export default {
             this.ds
               .confirm(payload)
               .then((datas) => {
-                toastSuccess("Transaction on process!");
+                let msg =
+                  datas.Code == 200
+                    ? "Data saved successfully!"
+                    : "Transaction on process!";
+                toastSuccess(msg);
+                this.$emit("submitted");
+                resolve();
+              })
+              .catch((err) => {
+                this.errors = err?.Errors;
+                toastDanger(err?.Message);
+                resolve();
+              });
+          }),
+        null,
+        `If you submit <strong>${inspectionResult.toUpperCase()}</strong>, you CAN'T recover it. Are you sure to <strong>SUBMIT</strong> the data?`,
+      );
+    },
+    approvalSA: function (inspectionResult) {
+      confirmSubmit(
+        () =>
+          new Promise((resolve) => {
+            let payload = {
+              InspectionId: this.id,
+              InspectionResult: inspectionResult,
+              RemarksSA: this.model.RemarksSA,
+            };
+
+            this.ds
+              .approvalSA(payload)
+              .then((datas) => {
+                let msg =
+                  datas.Code == 200
+                    ? "Data saved successfully!"
+                    : "Transaction on process!";
+                toastSuccess(msg);
                 this.$emit("submitted");
                 resolve();
               })

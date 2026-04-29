@@ -13,6 +13,7 @@ public class QualityCheckDto: DataTableDto
     public string UnitCls { get; set; }
     public string UnitClsDescription { get; set; }
     public decimal Qty { get; set; }
+    public decimal QtyReceipt { get; set; }
     public decimal QtyNG { get; set; }
     public string InspectionResult { get; set; }
     public DateTime RegisterDate { get; set; }
@@ -24,6 +25,11 @@ public class QualityCheckDto: DataTableDto
     public DateTime? ApprovalDate { get; set; }
     public string ApprovalUser { get; set; }
     public string ApprovalUserName { get; set; }
+
+    public string InspectionResultSA { get; set; }
+    public DateTime? SAApprovalDate { get; set; }
+    public string SAApprovalUser { get; set; }
+    public string SAApprovalUserName { get; set; }
     public string StatusQC { get; set; }
 
 }
@@ -36,9 +42,11 @@ public class QualityCheckResultDto: DataTableDto
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
     public decimal Qty { get; set; }
+    public decimal QtyReceipt { get; set; }
     public decimal QtyNG { get; set; }
     public string InspectionResult { get; set; }
     public string Remarks { get; set; }
+    public string RemarksSA { get; set; }
     public long? AttachmentID { get; set; }
     public string AttachmentFileName { get; set; }
     public byte[] AttachmentFileBase64 { get; set; }

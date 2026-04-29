@@ -144,6 +144,20 @@ export default {
               this.tempValue = p.data.Data[0]?.Id;
             }
 
+            if (d === "ALL" || d == "0") {
+              this.tempValue = "ALL";
+
+              this.list = [
+                {
+                  Id: "ALL",
+                  ReceiptNo: "ALL"
+                },
+                ...p.data.Data || [],
+              ];
+
+              return;
+            }
+
             this.list =
               this.showOptionAll && !q && p.data.Data.length > 0
                 ? [

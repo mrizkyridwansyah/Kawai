@@ -68,6 +68,11 @@ public class QualityCheckController : HahaController
             model.AttachmentName = String.IsNullOrEmpty(model.AttachmentName) ? "IQC_" + Guid.NewGuid().UniqueId(30) : model.AttachmentName;
             FileStorage.SaveToAttachments(model.AttachmentName, model.Attachment);
         }
+        else
+        {
+            FileStorage.RemoveFromAttachments(model.AttachmentName);
+            model.AttachmentName = "";
+        }
 
         await _qualitycheckRepository.Save(model, Auth.User.UserID);
 
@@ -88,12 +93,68 @@ public class QualityCheckController : HahaController
     [HttpPatch("confirm")]
     public async Task<IActionResult> Confirm(QualityCheckConfirm model)
     {
-        var message = new StockTransactionMessage<QualityCheckConfirm>
+        if (model.InspectionResult == "SA")
+        {
+            var before = await _qualitycheckRepository.Capture(model.InspectionId);
+
+            await _qualitycheckRepository.ConfirmSA(model, Auth.User.UserID);
+
+            var after = await _qualitycheckRepository.Capture(model.InspectionId);
+
+            await _logger.SaveDataLog(new DataLogDto
+            {
+                DocumentType = "Quality Check IQC",
+                EntityId = model.InspectionId.ToString(),
+                ReferenceId = model.InspectionId.ToString(),
+                Action = DataLogAction.Update,
+                Activity = "Confirm Quality Check",
+                Before = before,
+                After = after
+            });
+
+            return Success(after);
+        }
+        else
+        {
+            var message = new StockTransactionMessage<QualityCheckConfirm>
+            {
+                AuthUserId = Auth.User.UserID,
+                TimeStamp = EpochDateTime.Now,
+                TransactionType = "IQC-RESULT-CONFIRM",
+                FormatMessage = "Confirm Quality Check",
+                Payload = model,
+                LogContext = new LogContext
+                {
+                    Method = HttpContext.Request.Method,
+                    RequestPath = HttpContext.Request.Path,
+                    RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                    UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                    UserID = Auth.User.UserID,
+                    FullName = Auth.User.FullName
+                }
+            };
+
+            try
+            {
+                _transactionProducer.Publish<QualityCheckConfirm>(message);
+                return Pending(message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("RabbitMQ unavailable: " + ex.Message);
+            }
+        }
+    }
+
+    [HttpPatch("approval-sa")]
+    public async Task<IActionResult> ApprovalSA(QualityCheckConfirmSA model)
+    {
+        var message = new StockTransactionMessage<QualityCheckConfirmSA>
         {
             AuthUserId = Auth.User.UserID,
             TimeStamp = EpochDateTime.Now,
-            TransactionType = "IQC-RESULT-CONFIRM",
-            FormatMessage = "Confirm Quality Check",
+            TransactionType = "IQC-RESULT-APPROVAL-SA",
+            FormatMessage = "Approval Quality Check SA",
             Payload = model,
             LogContext = new LogContext
             {
@@ -108,7 +169,7 @@ public class QualityCheckController : HahaController
 
         try
         {
-            _transactionProducer.Publish<QualityCheckConfirm>(message);
+            _transactionProducer.Publish<QualityCheckConfirmSA>(message);
             return Pending(message);
         }
         catch (Exception ex)

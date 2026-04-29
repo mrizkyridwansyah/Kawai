@@ -67,6 +67,29 @@ public class QualityCheckRepository : IQualityCheckRepository
         });
     }
 
+    public async Task ConfirmSA(QualityCheckConfirm payload, string userId)
+    {
+        string sql = @"sp_Wms_IQCResult_ConfirmSA";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            payload.InspectionId,
+            payload.InspectionResult,
+            UserId = userId
+        });
+    }
+
+    public async Task ApprovalSA(QualityCheckConfirmSA payload, string userId)
+    {
+        string sql = @"sp_Wms_IQCResult_ApprovalSA";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            payload.InspectionId,
+            payload.InspectionResult,
+            payload.RemarksSA,
+            UserId = userId
+        });
+    }
+
     public async Task<Dictionary<string, object>> Capture(long id)
     {
         var result = await _dbExecutor.QueryMultipleAsync(

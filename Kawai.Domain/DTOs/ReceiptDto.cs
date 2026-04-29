@@ -23,6 +23,7 @@ public class ReceiptDto: DataTableDto
     public DateTime? DeliveryDatePOFrom { get; set; }
     public DateTime? DeliveryDatePOUntil { get; set; }
     public string PONumber { get; set; }
+    public string StatusReceipt { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
 }

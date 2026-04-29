@@ -128,6 +128,17 @@ hr {
 }
 
 .table-bordered {
-  border-bottom: 1px solid #ced4da
+  border-bottom: 1px solid #ced4da;
 }
+/* 
+@media (min-width: 1024px) {
+  .form-control {
+    height: 3em !important
+  }
+
+  .btn {
+    white-space: nowrap;
+    height: 3em !important;
+  }
+} */
 </style>

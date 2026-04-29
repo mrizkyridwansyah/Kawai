@@ -63,22 +63,14 @@
                 <td>
                   <input-receipt
                     class="form-control"
-                    :disabled="isNew"
-                    :status="$route.query.id ? '' : 'NEW'"
+                    :disabled="true"
+                    status="ALL"
                     source-menu="RECEIPT UNSCHEDULE"
                     :factory-code="filter.FactoryCode"
                     :supplier-code="filter.SupplierCode"
                     v-model="filter.ReceiptId"
                     :errors="errors?.ReceiptId"
-                    style="width: 300px"
-                  />
-                </td>
-                <td style="padding-left: 15px">
-                  <input-checkbox
-                    label="New"
-                    v-model="isNew"
-                    :disabled="$route.query.id"
-                    @click="(e) => changeNew(e)"
+                    style="width: 360px"
                   />
                 </td>
               </tr>
@@ -171,12 +163,19 @@
                 :print="printLabel"
                 :is-loading="isLoading"
               />
-
               <v-button
                 :action="print"
                 label="Print Label PDF"
                 icon="file-pdf"
-                cClass="ml-1 btn-green"
+                class="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
+
+              <v-button
+                :action="back"
+                label="Back"
+                icon="arrow-left"
+                cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
               />
             </div>
@@ -625,6 +624,14 @@ export default {
           toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
+    },
+    back: function () {
+      this.$router.push({
+        path: "/app/receipt",
+        query: {
+          back: 1,
+        },
+      });
     },
   },
 };

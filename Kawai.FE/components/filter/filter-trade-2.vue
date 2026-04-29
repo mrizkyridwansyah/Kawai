@@ -71,7 +71,7 @@ export default {
     "showOptionAll",
     "styleCode",
     "styleDesc",
-    "defaultOptionAll"
+    "defaultOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -139,7 +139,7 @@ export default {
 
       if (this.debounce != null) clearTimeout(this.debounce);
 
-      if((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
+      if ((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
         d = "";
       }
 
@@ -159,7 +159,25 @@ export default {
               this.tempValue = p.data.Data[0]?.Trade_Code;
             }
 
-            if((this.defaultOptionAll || "") == "ALL" && ((this.tempValue || "") == "")) {
+            if (d === "ALL") {
+              this.tempValue = "ALL";
+
+              this.list = [
+                {
+                  Trade_Code: "ALL",
+                  Trade_Name: "ALL",
+                  DDLDescription: "ALL",
+                },
+                ...p.data.Data || [],
+              ];
+
+              return;
+            }
+
+            if (
+              (this.defaultOptionAll || "") == "ALL" &&
+              (this.tempValue || "") == ""
+            ) {
               this.tempValue = "ALL";
               this.$emit("update:modelValue", "ALL");
             }

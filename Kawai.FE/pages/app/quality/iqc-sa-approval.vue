@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="IQC Result Approval" icon="list-check">
+  <v-frame title="IQC Result SA Approval" icon="list-check">
     <template #frame-content>
       <table>
         <tr>
@@ -44,16 +44,6 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Status</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <input-iqc-status
-              class="form-control"
-              v-model="filter.Status"
-              style="width: 140px"
-            />
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Source</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -65,35 +55,8 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px">
-            <label class="form-label">DN Number</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="4">
-            <filter-dn-number
-              class="form-control"
-              v-model="filter.DNNumber"
-              :factory-code="filter.FactoryCode"
-              :supplier-code="filter.SupplierCode"
-              :period-from="filter.PeriodFrom"
-              :period-until="filter.PeriodUntil"
-              :show-option-all="true"
-              style="width: 140px"
-            />
-          </td>
-        </tr>
-        <tr>
           <td colspan="4" style="padding-top: 5px">
-            <div class="d-flex flex-fill">
-              <v-button-search-reset :search="search" :reset="resetFilter" />
-              <v-button
-                :disabled="(filter.DNNumber || 'ALL') == 'ALL'"
-                :action="print"
-                label="Report NG"
-                icon="file-excel"
-                cClass="ml-1 btn-green"
-                :is-loading="isLoading"
-              />
-            </div>
+            <v-button-search-reset :search="search" :reset="resetFilter" />
           </td>
         </tr>
       </table>
@@ -103,7 +66,7 @@
           :data-items="lists"
           :frozen-column-left="3"
           ref="vtable"
-          :top-content-height="330"
+          :top-content-height="290"
         >
           <template #table-content>
             <div class="detail-content">
@@ -128,6 +91,9 @@
                     <th class="text-center">Approve</th>
                     <th class="text-center">Approval User</th>
                     <th class="text-center">Approval Date</th>
+                    <th class="text-center">SA Status</th>
+                    <th class="text-center">SA Approval User</th>
+                    <th class="text-center">SA Approval Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -158,15 +124,15 @@
                     <td class="text-center">
                       <a
                         href="javascript:void(0);"
-                        v-if="item.StatusQC == 'CONFIRMED' || item.StatusQC == 'PENDING-SA'"
+                        v-if="item.StatusQC == 'CONFIRMED'"
                         @click="() => showModal(item, 'VIEW')"
                       >
                         View
                       </a>
                       <a
                         href="javascript:void(0);"
-                        v-else-if="item.StatusQC == 'INPUT'"
-                        @click="() => showModal(item, 'CONFIRM')"
+                        v-else-if="item.StatusQC == 'PENDING-SA'"
+                        @click="() => showModal(item, 'CONFIRM-SA')"
                       >
                         Confirm
                       </a>
@@ -174,6 +140,9 @@
                     </td>
                     <td>{{ item.ApprovalUserName }}</td>
                     <td>{{ $func.formatDateTime(item.ApprovalDate) }}</td>
+                    <td>{{ item.InspectionResultSA }}</td>
+                    <td>{{ item.SAApprovalUserName }}</td>
+                    <td>{{ $func.formatDateTime(item.SAApprovalDate) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -258,7 +227,7 @@ export default {
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
     this.filter.Source = "ALL";
-    this.filter.Status = "ALL";
+    this.filter.Status = "SA";
     this.filter.DNNumber = "ALL";
   },
   methods: {
@@ -268,7 +237,7 @@ export default {
           Keyword: this.filter.keyword || "",
           SupplierCode: this.filter.SupplierCode || "",
           Source: this.filter.Source || "",
-          StatusInspection: this.filter.Status || "",
+          StatusInspection: this.filter.Status || "SA",
           ReceiptId:
             this.filter.DNNumber == "ALL"
               ? ""
@@ -321,24 +290,8 @@ export default {
       this.filter.SupplierCode = null;
       this.filter.PeriodUntil = today;
       this.filter.Source = "ALL";
-      this.filter.Status = "ALL";
+      this.filter.Status = "SA";
       this.filter.DNNumber = "ALL";
-    },
-    print: function () {
-      if ((this.filter.DNNumber || "") == "") {
-        toastDanger("Silahkan pilih DN Number");
-        return;
-      }
-
-      this.ds
-        .printReportNG(this.filter.DNNumber)
-        .then((_) => {
-          toastSuccess("Print Report NG berhasil!");
-        })
-        .catch((err) => {
-          console.log(err, "asdf");
-          toastDanger(err.message);
-        });
     },
   },
 };

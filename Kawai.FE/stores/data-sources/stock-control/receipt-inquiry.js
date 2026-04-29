@@ -1,6 +1,9 @@
 var app = useNuxtApp();
 
 export const useReceiptInquiry = defineStore('ReceiptInquiry', {
+  persist: {
+    paths: ['filter.Filters']
+  },
   state: () => ({
     isLoading: false,
     isCreating: false,

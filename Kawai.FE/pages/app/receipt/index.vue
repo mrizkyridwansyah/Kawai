@@ -120,7 +120,7 @@
                 <th class="text-center">Price</th>
                 <th class="text-center">Amount</th>
                 <th class="text-center">Status IQC</th>
-                 <th class="text-center">BC Type</th>
+                <th class="text-center">BC Type</th>
                 <th class="text-center">BC No</th>
                 <th class="text-center">BC Date</th>
                 <th class="text-center">Action</th>
@@ -139,7 +139,18 @@
                       !(item.Qty > item.QtyScan) && idx % 2 === 0,
                   }"
                 >
-                  {{ item.ReceiptNo }}
+                  <v-app-link
+                    v-if="item.PONumber"
+                    :to="`/receipt-po/view?id=${item.Id}`"
+                  >
+                    {{ item.ReceiptNo }}
+                  </v-app-link>
+                  <v-app-link
+                    v-else
+                    :to="`/receipt-unschedule/view?id=${item.Id}`"
+                  >
+                    {{ item.ReceiptNo }}
+                  </v-app-link>
                 </td>
                 <td
                   :class="{
@@ -195,7 +206,6 @@
                 >
                   {{ item.PONumber }}
                 </td>
-                
                 <td
                   :class="{
                     'bg-danger': item.Qty > item.QtyScan,
@@ -405,11 +415,33 @@ export default {
     },
   },
   mounted: function () {
-    let today = new Date();
-    this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
-    this.filter.PeriodUntil = today;
-    this.filter.CompleteStatus = "ALL";
+    const f = this.ds.filter.Filters?.[0];
+    if (this.$route.query.back && f) {
+      this.filter.FactoryCode = f.FactoryCode;
+      this.filter.SupplierCode = f.SupplierCode;
+      this.filter.ReceiptId = f.ReceiptId;
+      this.filter.CompleteStatus = f.CompleteStatus;
+      this.filter.PeriodFrom = f.PeriodFrom ? new Date(f.PeriodFrom) : null;
+      this.filter.PeriodUntil = f.PeriodUntil ? new Date(f.PeriodUntil) : null;
+
+      // OPTIONAL: auto load
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.search();
+        }, 1000);
+      });
+    } else {
+      let today = new Date();
+      this.filter.PeriodFrom = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1,
+      );
+      this.filter.PeriodUntil = today;
+      this.filter.CompleteStatus = "ALL";
+    }
   },
+  beforeUnmount: function () {},
   methods: {
     resetGrid: function () {
       this.ds.setFilter([]);

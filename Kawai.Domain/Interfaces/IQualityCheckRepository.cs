@@ -11,6 +11,8 @@ public interface IQualityCheckRepository
     Task<QualityCheckResultDto> GetData(long inspectionid);
     Task Save(QualityCheckResult result, string userid);
     Task Confirm(QualityCheckConfirm payload, string userid);
+    Task ConfirmSA(QualityCheckConfirm payload, string userid);
+    Task ApprovalSA(QualityCheckConfirmSA payload, string userid);
     Task<Dictionary<string, object>> Capture(long id);
    
     Task<List<QualityCheckReportDto>> PrintReportNG(long receiptId);

@@ -17,7 +17,7 @@ public class QualityCheckResult
     public long? AttachmentID{ get; set; }
     public string AttachmentName { get; set; }
 
-    [RequiredIfNull(nameof(AttachmentID), ErrorMessage = "Attachment tidak boleh kosong")]
+    [RequiredIfNotNullOrZero(nameof(QtyNG), ErrorMessage = "Attachment tidak boleh kosong")]
     public IFormFile Attachment { get; set; }
 
 }
@@ -29,7 +29,21 @@ public class QualityCheckConfirm
     public long InspectionId { get; set; }
 
     [Required]
-    [AllowedValues(["Accepted", "Rejected"])]
+    [AllowedValues(["Accepted", "Rejected", "SA"])]
     public string InspectionResult { get; set; }
+
+}
+
+public class QualityCheckConfirmSA
+{
+    [Required]
+    public long InspectionId { get; set; }
+
+    [Required]
+    [AllowedValues(["Accepted", "Rejected", "SA"])]
+    public string InspectionResult { get; set; }
+
+    [Required]
+    public string RemarksSA { get; set; }
 
 }
