@@ -49,7 +49,7 @@ public class ProductionResultManualInputController : HahaController
         var logs = new List<DataLogDto>();
 
         if (models == null || !models.Any())
-            return Invalid("Invalid Request Data");
+            return Invalid("Invalid Request Data");                                                        
 
         foreach (var item in models)
         {

@@ -10,11 +10,11 @@ export const useStockByItem = defineStore('StockByItem', {
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 10,
+      Length: 25,
     },
     filter: {
       Page: 1,
-      Length: 10,
+      Length: 25,
       Filters: [
 
       ],

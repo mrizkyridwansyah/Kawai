@@ -356,7 +356,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><label>NNPPKP No</label></td>
+                    <td><label>NPPKP No</label></td>
                     <td colspan="5">
                       <input-text v-model="model.NNPPKP" maxlength="20" />
                     </td>
