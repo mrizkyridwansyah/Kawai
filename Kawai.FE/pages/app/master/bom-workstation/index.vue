@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="BOM Per Workstation" icon="database">
+  <v-frame title="BOM Per WorkStation" icon="database">
     <template #frame-content>
       <div class="filter-wrapper">
         <!-- 1 -->
@@ -71,7 +71,7 @@
             />
             <v-button
               :action="copy"
-              label="Copy Bom Workstation"
+              label="Copy Bom WorkStation"
               icon="copy"
               cClass="ml-1 btn-green"
             />
@@ -176,7 +176,7 @@ export default {
       { title: "Master", active: false, to: "" },
       { title: "Group 2", active: false, to: "" },
       {
-        title: "BOM Per Workstation",
+        title: "BOM Per WorkStation",
         active: true,
         to: "/app/master/bom-workstation",
       },
@@ -217,6 +217,8 @@ export default {
     title: "",
     modalMode: "",
     isLoading: false,
+     // penting: supaya watch tidak jalan saat restore query
+    isRestoringRoute: false,
   }),
   computed: {
     ds: function () {
@@ -225,43 +227,44 @@ export default {
   },
   watch: {
     "filter.modelcls": function (newVal, oldVal) {
+       if (this.isRestoringRoute) return;
+
       if (newVal !== oldVal) {
         this.filter.item = null;
         this.ds.data.Items = [];
       }
     },
     "filter.keyword": function () {
+       if (this.isRestoringRoute) return;
+
       this.search();
     },
     "filter.sorts": function () {
+       if (this.isRestoringRoute) return;
+
       this.search();
     },
   },
   mounted() {
     const q = this.$route.query;
 
-    if (q && Object.keys(q).length > 0 && q.itemcode) {
-      this.filter.factory = q.factory;
-      this.filter.supplier = q.process;
-      this.filter.linecode = q.line;
-      this.filter.modelcls = q.modelcls;
-      this.filter.item = q.itemcode;
+    if (q && Object.keys(q).length > 0) {
+      this.isRestoringRoute = true;
 
-      this.ds.setSort(this.filter.sorts);
+      this.filter.factory = q.factory || null;
+      this.filter.supplier = q.process || null;
+      this.filter.linecode = q.line || null;
+      this.filter.modelcls = q.modelcls || null;
+      this.filter.item = q.itemcode || null;
 
-      const filters = [
-        {
-          Keyword: this.filter.keyword || "",
-          Line: this.filter.linecode || "",
-          ModelCls: this.filter.modelcls || "",
-          ItemCode: this.filter.item || "",
-        },
-      ];
+      this.$nextTick(() => {
+        this.isRestoringRoute = false;
 
-      this.ds.setFilter(filters);
-      this.ds.load();
-
-      return;
+        // auto load hanya jika itemcode ada
+        if (q.itemcode) {
+          this.search();
+        }
+      });
     }
   },
   methods: {
@@ -319,7 +322,7 @@ export default {
         return;
       }
 
-      this.title = "Copy Bom Workstation";
+      this.title = "Copy Bom WorkStation";
       this.modalMode = "add";
       this.$bvModal.show("modal-form-copybom");
     },
