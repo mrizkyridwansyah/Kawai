@@ -84,6 +84,7 @@ public class ReceiptAndonDto : DataTableDto
     public string DNNumber { get; set; }
     public string ItemName { get; set; }
     public decimal ReceiptQtyUnit { get; set; }
+    public string FlagGrid { get; set; }
     public decimal ReceiptQtyPack { get; set; }
     public string StatusReceipt { get; set; }
     public string StatusReceiptName { get; set; }

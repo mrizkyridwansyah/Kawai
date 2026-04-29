@@ -148,14 +148,45 @@
                 <tbody>
                   <tr v-for="(item, i) in listPending">
                      <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
-                    <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
-                    <td>{{ item.SupplierName }}</td>
-                    <td>{{ item.DNNumber }}</td>
-                    <td>{{ item.ItemName }}</td>
-                    <td class="text-right">
+                   <td
+                        :class="{
+                          'bg-danger': item.FlagGrid === 'C',
+                          'bg-warning': item.FlagGrid === 'B'  
+                        }"
+                      >
+                      {{ $func.formatDate(item.ReceiptDate) }}</td>
+                    <td
+                        :class="{
+                          'bg-danger': item.FlagGrid === 'C',
+                          'bg-warning': item.FlagGrid === 'B'  
+                        }"
+                      >{{ item.SupplierName }}</td>
+                    <td
+                        :class="{
+                          'bg-danger': item.FlagGrid === 'C',
+                          'bg-warning': item.FlagGrid === 'B'  
+                        }"
+                      >{{ item.DNNumber }}</td>
+                    <td
+                        :class="{
+                          'bg-danger': item.FlagGrid === 'C',
+                          'bg-warning': item.FlagGrid === 'B'  
+                        }"
+                      >{{ item.ItemName }}</td>
+                    <td
+                        :class="{
+                          'bg-danger': item.FlagGrid === 'C',
+                          'bg-warning': item.FlagGrid === 'B'  
+                        }"
+                       class="text-right">
                       {{ $func.formatMoney(item.ReceiptQtyUnit) }}
                     </td>
-                    <td class="text-right">
+                    <td
+                        :class="{
+                          'bg-danger': item.FlagGrid === 'C',
+                          'bg-warning': item.FlagGrid === 'B'  
+                        }"
+                      class="text-right">
                       {{ $func.formatMoney(item.ReceiptQtyPack) }}
                     </td>
                   </tr>
