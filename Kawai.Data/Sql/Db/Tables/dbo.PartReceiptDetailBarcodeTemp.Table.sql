@@ -20,6 +20,7 @@ CREATE TABLE [PartReceiptDetailBarcodeTemp](
 	[PrintStatus] [bit] NULL,
 	[PrintDate] [datetime] NULL,
 	[PrintUser] [varchar](50) NULL,
-	[WarehouseCode] [varchar](25) NULL
+	[WarehouseCode] [varchar](25) NULL,
+	[ShippingLabelNo] [varchar](8) NULL,
 ) ON [PRIMARY]
 GO

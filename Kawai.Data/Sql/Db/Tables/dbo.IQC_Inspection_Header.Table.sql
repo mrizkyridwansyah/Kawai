@@ -21,6 +21,10 @@ CREATE TABLE [IQC_Inspection_Header](
 	[TotalQtyNG] [numeric](18, 2) NULL,
 	[Soruce] [varchar](20) NULL,
 	[StatusQC] [varchar](10) NULL,
+	[InspectionResultSADate] [datetime] NULL,
+	[InspectionResultSA] [varchar](20) NULL,
+	[InspectionResultSAApproval] [varchar](25) NULL,
+	[RemarksSA] [varchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[InspectionID] ASC
@@ -35,7 +39,7 @@ ALTER TABLE [IQC_Inspection_Header] ADD  DEFAULT (getdate()) FOR [LastUpdate]
 GO
 ALTER TABLE [IQC_Inspection_Header] ADD  DEFAULT ((0)) FOR [TotalQtySample]
 GO
-ALTER TABLE [IQC_Inspection_Header]  WITH CHECK ADD CHECK  (([InspectionResult]='Hold' OR [InspectionResult]='Rejected' OR [InspectionResult]='Accepted'))
+ALTER TABLE [IQC_Inspection_Header]  WITH CHECK ADD CHECK  (([InspectionResult]='Hold' OR [InspectionResult]='Rejected' OR [InspectionResult]='Accepted' OR [InspectionResult]='SA'))
 GO
 ALTER TABLE [IQC_Inspection_Header]  WITH CHECK ADD CHECK  (([Soruce]='Material NG' OR [Soruce]='Incoming Material'))
 GO
