@@ -42,6 +42,7 @@
                     v-model="filter.area"
                     :warehouse="filter.warehouse"
                     :show-option-all="true"
+                    :include-temp="true"
                     style-code="width: 110px"
                     style-desc="width: 250px"
                   />
