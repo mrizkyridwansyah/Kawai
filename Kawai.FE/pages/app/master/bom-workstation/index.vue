@@ -322,7 +322,7 @@ export default {
         return;
       }
 
-      this.title = "Copy Bom WorkStation";
+      this.title = "Copy BOM WorkStation";
       this.modalMode = "add";
       this.$bvModal.show("modal-form-copybom");
     },
