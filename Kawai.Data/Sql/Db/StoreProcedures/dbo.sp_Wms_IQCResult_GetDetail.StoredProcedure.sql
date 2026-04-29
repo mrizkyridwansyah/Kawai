@@ -1,26 +1,25 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_IQCResult_GetDetail]
+CREATE   procedure [dbo].[sp_Wms_IQCResult_GetDetail]
 	@InspectionId bigint
 as
 begin
+
 	select 
 		iqch.InspectionID InspectionId, 
 		prh.DNNumber,
 		iqch.ItemCode, 
 		iqch.ItemName,
 		Qty = iqch.TotalQtySample, 
+		QtyReceipt = pdtl.ReceiptQty,
 		QtyNG = isnull(iqch.TotalQtyNG, 0), 
 		iqch.InspectionResult, 
 		iqch.Remarks,
+		iqch.RemarksSA,
 		att.AttachmentID,
 		att.[FileName] AttachmentFileName
 	from IQC_Inspection_Header iqch
 	inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
+	inner join PartReceiptDetail pdtl on pdtl.ReceiptId = prh.Id and isnull(pdtl.PONumber, '') = iqch.PO_Number and pdtl.ItemCode = iqch.ItemCode
 	left join IQC_Attachment att on iqch.InspectionID = att.InspectionID
 	where iqch.InspectionID = @InspectionId
 
 end
-GO

@@ -1,9 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-create   procedure [sp_Wms_QualityCheck_PrintReportNG]
+CREATE procedure [dbo].[sp_Wms_QualityCheck_PrintReportNG]
 	@ReceiptId bigint
 as
 begin
@@ -23,7 +18,16 @@ begin
 	declare @docNo varchar(25) = (select ReportNGDocNo from PartReceiptHeader where Id = @ReceiptId)
 
 	declare @msgError varchar(max)
-	if isnull(@docNo, '') = ''
+	if isnull(@docNo, '') = '' 
+	and 
+	exists 
+	(
+		select 1 From IQC_Inspection_Header iqch
+		inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
+		where prh.Id = @ReceiptId
+		and iqch.Soruce = 'Incoming Material'
+		and iqch.TotalQtyNG > 0
+	)
 	begin
 		begin try
 			begin tran
@@ -51,4 +55,3 @@ begin
 	and iqch.TotalQtyNG > 0
 	order by iqch.ItemCode
 end
-GO

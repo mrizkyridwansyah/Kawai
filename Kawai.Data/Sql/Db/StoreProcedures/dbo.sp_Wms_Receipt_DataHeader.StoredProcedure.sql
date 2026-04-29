@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Receipt_DataHeader]
+
+CREATE   procedure [dbo].[sp_Wms_Receipt_DataHeader]
 	@ReceiptId bigint
 as
 begin
@@ -28,10 +25,10 @@ begin
 		a.Transport,
 		a.ReferenceNo,
 		a.Remarks,
-		a.RegisterNo,
 		@minDeliveryDate [DeliveryDatePOFrom],
 		@maxDeliveryDate [DeliveryDatePOUntil],
 		case when @countPO > 1 then 'ALL' else @firstPO end [PONumber],
+		StatusReceipt,
 		a.LastUpdate,
 		c.FullName LastUser
 	FROM PartReceiptHeader a
@@ -40,4 +37,3 @@ begin
 	left join Company_Profile fak on a.CompanyCode = fak.Company_Code
 	WHERE a.Id = @ReceiptId
 end
-GO

@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_IQCResult_SaveResult]
+CREATE   procedure [dbo].[sp_Wms_IQCResult_SaveResult]
 	@InspectionId bigint,
 	@QtyNG numeric(18,2),
 	@Remarks varchar(max),
@@ -29,17 +25,24 @@ begin
 		TotalQtyNG = @QtyNG, LastUpdate = getdate(), Remarks = @Remarks, StatusQC = 'INPUT'
 	where InspectionID = @InspectionId
 
-	if not exists (select 1 from IQC_Attachment where InspectionID = @InspectionId)
+	if isnull(@AttachmentName, '') = ''
 	begin
-		insert into IQC_Attachment (InspectionID, [FileName], RegisterUser, RegisterDate)
-		values (@InspectionId, @AttachmentName, @UserId, getdate())
+		DELETE FROM IQC_Attachment WHERE InspectionID = @InspectionId
 	end
-	else 
+	else
 	begin
-		update IQC_Attachment 
-		set 
-			[FileName] = @AttachmentName, RegisterDate = getdate(), RegisterUser = @UserId
-		where InspectionID = @InspectionId
+		if not exists (select 1 from IQC_Attachment where InspectionID = @InspectionId)
+		begin
+			insert into IQC_Attachment (InspectionID, [FileName], RegisterUser, RegisterDate)
+			values (@InspectionId, @AttachmentName, @UserId, getdate())
+		end
+		else 
+		begin
+			update IQC_Attachment 
+			set 
+				[FileName] = @AttachmentName, RegisterDate = getdate(), RegisterUser = @UserId
+			where InspectionID = @InspectionId
+		end
 	end
+
 end
-GO

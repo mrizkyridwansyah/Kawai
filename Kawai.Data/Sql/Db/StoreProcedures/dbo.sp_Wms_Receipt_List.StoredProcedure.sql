@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Receipt_List]
+
+CREATE   procedure [dbo].[sp_Wms_Receipt_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -76,7 +73,7 @@ begin
 			a.ReceiptDate,
 			a.DNNumber,
 			a.SupplierCode,
-			b.Trade_Name AS SupplierName,
+			b.Trade_Abbr AS SupplierName,
 			a.DNDate,
 			a.BCNumber,
 			a.BCType,
@@ -122,4 +119,3 @@ begin
 		@TotalRow = @TotalRow;
 	
 end
-GO
