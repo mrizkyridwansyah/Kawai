@@ -173,7 +173,7 @@
               />
 
               <v-button
-                :action="print"
+                :action="printBarcodesUsingJob"
                 label="Print Label PDF"
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
@@ -528,7 +528,7 @@ export default {
         toastDanger("Silahkan pilih Receipt No!");
         return;
       }
-
+      this.isLoading = true;
       this.model.Remarks = "-";
       this.dsReceipt
         .printLabel(this.filter.ReceiptId)
@@ -550,12 +550,14 @@ export default {
         toastDanger("Silahkan pilih Receipt No!");
         return;
       }
+      this.isLoading = true;
       this.dsReceipt
         .print(this.model.Id)
         .then((data) => {
           toastSuccess(data || "Print Label berhasil!");
         })
-        .catch((err) => toastDanger(err.Message));
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => this.isLoading = false);
     },
     printBarcodesUsingJob: function () {
       if (!this.filter.ReceiptId) {
@@ -563,12 +565,15 @@ export default {
         return;
       }
 
+      this.isLoading = true;
+
       this.dsReceipt
         .printBarcodesUsingJob(this.filter.ReceiptId)
         .then((data) => {
           if (data.Message != "-") toastInfo(data.Message);
         })
-        .catch((err) => toastDanger(err.Message));
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => this.isLoading = false);
     },
     submit: function () {
       this.isLoading = true;

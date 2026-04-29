@@ -174,6 +174,17 @@ export const useQualityCheck = defineStore('QualityCheck', {
           this.isLoading = false;
         });
     },
+    printReportNGUsingJob: function (id) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/qualitycheck/print/report-ng-by-job?receiptId=${id}`)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
   },
 });
 

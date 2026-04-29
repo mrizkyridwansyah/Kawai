@@ -1,4 +1,5 @@
-﻿using Kawai.Api.Services;
+﻿using Hangfire;
+using Kawai.Api.Services;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -191,5 +192,17 @@ public class QualityCheckController : HahaController
         var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
         return File(pdfBytes, "application/pdf", "QC_Report_" + results[0].DNNumber);
+    }
+
+    [HttpPost("print/report-ng-by-job")]
+    public async Task<IActionResult> PrintReportNGByJob(long receiptId)
+    {
+        var results = await _qualitycheckRepository.PrintReportNG(receiptId);
+        if (results == null || !results.Any()) return Invalid("No Data NG");
+
+        string key = Guid.NewGuid().ToString();
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfIQCReportNG(results, Auth.User.UserID, key));
+
+        return Pending(message: "Data Report NG sedang diproses");
     }
 }

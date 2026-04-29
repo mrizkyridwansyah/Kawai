@@ -3,6 +3,7 @@ using Kawai.Api.Hub;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
+using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using System.Data;
 using System.Text;
@@ -16,6 +17,7 @@ public interface IExportService
 {
     Task ExportExcelItem(RequestParameter param, string userId, string key);
     Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId);
+    Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key);
 }
 
 public class ExportService : IExportService
@@ -374,4 +376,27 @@ public class ExportService : IExportService
 
         await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
     }
+
+    public async Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key)
+    {
+        var fullHtml = await _renderer.RenderAsync(
+            "Templates/QCReport.cshtml",
+            list);
+
+        var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
+
+        _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
+
+        string keyStorage = Guid.NewGuid().ToString();
+
+        int defaultTTLMinute = 5;// simpen file fisik nya selama 5 menit aja. 
+
+        // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
+
+        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = "Report_NG_" + list[0].DNNumber });
+    }
+
 }

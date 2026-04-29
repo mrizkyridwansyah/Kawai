@@ -87,7 +87,7 @@
               <v-button-search-reset :search="search" :reset="resetFilter" />
               <v-button
                 :disabled="(filter.DNNumber || 'ALL') == 'ALL'"
-                :action="print"
+                :action="printUsingJob"
                 label="Report NG"
                 icon="file-excel"
                 cClass="ml-1 btn-green"
@@ -158,7 +158,10 @@
                     <td class="text-center">
                       <a
                         href="javascript:void(0);"
-                        v-if="item.StatusQC == 'CONFIRMED' || item.StatusQC == 'PENDING-SA'"
+                        v-if="
+                          item.StatusQC == 'CONFIRMED' ||
+                          item.StatusQC == 'PENDING-SA'
+                        "
                         @click="() => showModal(item, 'VIEW')"
                       >
                         View
@@ -330,6 +333,8 @@ export default {
         return;
       }
 
+      this.isLoading = true;
+
       this.ds
         .printReportNG(this.filter.DNNumber)
         .then((_) => {
@@ -338,7 +343,24 @@ export default {
         .catch((err) => {
           console.log(err, "asdf");
           toastDanger(err.message);
-        });
+        })
+        .finally(() => (this.isLoading = false));
+    },
+    printUsingJob: function () {
+      if ((this.filter.DNNumber || "") == "") {
+        toastDanger("Silahkan pilih DN Number");
+        return;
+      }
+
+      this.isLoading = true;
+
+      this.ds
+        .printReportNGUsingJob(this.filter.DNNumber)
+        .then((data) => {
+          if (data.Message != "-") toastInfo(data.Message);
+        })
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => (this.isLoading = false));
     },
   },
 };

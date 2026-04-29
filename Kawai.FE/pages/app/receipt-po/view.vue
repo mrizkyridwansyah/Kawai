@@ -237,7 +237,7 @@
                 :is-loading="isLoading"
               />
               <v-button
-                :action="print"
+                :action="printBarcodesUsingJob"
                 label="Print Label PDF"
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
@@ -534,6 +534,7 @@ export default {
       item.ReceiptQty = e.target.checked ? item.RemainingQty : 0;
     },
     printLabel: function () {
+      this.isLoading = true;
       this.ds
         .printLabel(this.filter.ReceiptId)
         .then((dt) => {
@@ -554,12 +555,15 @@ export default {
         toastDanger("Silahkan pilih Receipt No!");
         return;
       }
+
+      this.isLoading = true;
       this.ds
         .print(this.filter.ReceiptId)
         .then((data) => {
           toastSuccess(data || "Print Label berhasil!");
         })
-        .catch((err) => toastDanger(err.Message));
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => (this.isLoading = false));
     },
     printBarcodesUsingJob: function () {
       if (!this.filter.ReceiptId) {
@@ -567,12 +571,14 @@ export default {
         return;
       }
 
+      this.isLoading = true;
       this.ds
         .printBarcodesUsingJob(this.filter.ReceiptId)
         .then((data) => {
           if (data.Message != "-") toastInfo(data.Message);
         })
-        .catch((err) => toastDanger(err.Message));
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => (this.isLoading = false));
     },
     printReport: function () {},
     submit: function () {
