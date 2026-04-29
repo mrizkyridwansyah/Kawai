@@ -1,9 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-create   procedure [sp_Wms_Mobile_SupplySubcon_Capture]
+create   procedure [dbo].[sp_Wms_Mobile_SupplySubcon_Capture]
 	@RequestNo varchar(100),
 	@ItemCode varchar(25)
 as
@@ -32,4 +28,3 @@ begin
 	inner join PartMaterialRequestItemDetail_PO idtl on scan.IDSeq = idtl.IDSeq
 	where idtl.RequestDetailID = @RequestDetailID and idtl.ItemCode = @ItemCode
 end
-GO

@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_PartMaterialRequestWomin_GetListDetail]
+CREATE   procedure [dbo].[sp_Wms_PartMaterialRequestWomin_GetListDetail]
 	@LineCode varchar(25),
 	@NewRequest tvp_PartMaterialRequestWomin READONLY
 as
@@ -69,7 +65,7 @@ begin
 		inner join MS_BOMPerworkstation_Detail dt on hd.Bomws_ID = dt.Bomws_ID
 	) bomws
 	INNER JOIN @NewRequest req
-		ON bomws.ParentItemCode = req.ItemCode
+		ON bomws.ParentItemCode = req.ItemCode and bomws.Line_Code = @LineCode
 	INNER JOIN MS_WorkStation ws
 		ON bomws.WorkStationCode = ws.WorkStationCode
 	LEFT JOIN Item_Master mi
@@ -96,4 +92,3 @@ begin
 	order by n.n, bomws.WorkStationCode
 
 end
-GO

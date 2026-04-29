@@ -1,9 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-create   procedure [sp_Wms_Mobile_SupplySubcon_DDLRequestNo]
+create   procedure [dbo].[sp_Wms_Mobile_SupplySubcon_DDLRequestNo]
 --declare
 	@Keyword varchar(max)='',
 	@ClassificationCode varchar(25)  ,
@@ -26,4 +22,3 @@ begin
 	) res
 	--where SetNumber = 1
 end 
-GO

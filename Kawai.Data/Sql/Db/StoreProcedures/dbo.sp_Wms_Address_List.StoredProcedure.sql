@@ -1,12 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-
-
-
-CREATE   procedure [sp_Wms_Address_List]
+CREATE   PROCEDURE [dbo].[sp_Wms_Address_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -51,7 +44,7 @@ begin
 	DECLARE @sql NVARCHAR(MAX) = N'
 	  SELECT 
 		ma.WarehouseCode, mw.WH_Name WarehouseName, ma.AreaCode, ml.AreaName, ma.AddressCode, ma.AddressName, ma.StopPointCode StopPointDescs,
-		ma.RegisterDate, us.FullName RegisterUser, ma.UpdateDate LastUpdate, us2.FullName LastUser, TotalRow = @TotalRow
+		ma.RegisterDate, us.FullName RegisterUser, ma.UpdateDate LastUpdate, us2.FullName LastUser, TotalRows = @TotalRow
 	  FROM MS_Address ma
 	  LEFT JOIN WareHouse_Master mw ON mw.WH_Code = ma.WarehouseCode
 	  LEFT JOIN MS_Area ml ON ml.AreaCode = ma.AreaCode
@@ -76,4 +69,3 @@ begin
 	  @TotalRow = @TotalRow;
 
 end
-GO

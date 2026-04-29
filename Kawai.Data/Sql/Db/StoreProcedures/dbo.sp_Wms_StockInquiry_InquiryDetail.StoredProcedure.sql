@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_StockInquiry_InquiryDetail]
+
+create   procedure [dbo].[sp_Wms_StockInquiry_InquiryDetail]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -58,4 +55,3 @@ begin
 
 	execute (@sql)
 end
-GO

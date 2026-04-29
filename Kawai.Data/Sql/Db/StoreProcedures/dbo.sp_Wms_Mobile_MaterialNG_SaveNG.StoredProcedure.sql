@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Mobile_MaterialNG_SaveNG]
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_MaterialNG_SaveNG]
 	@BarcodeNo varchar(100),
 	@QtyNG numeric(18,9),
 	@UserId varchar(25)
@@ -126,8 +122,7 @@ begin
 
 		if not exists (select 1 from IQC_SamplingBarcodeDetail where InspectionID = @InspectionId and BarcodeNo = @BarcodeNo)
 		begin
-			-- PARTIAL NG
-			if @QtyNG < @Qty
+			-- PARTIAL NG			if @QtyNG < @Qty
 			begin
 				EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcodePartialNG OUTPUT;
 				EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
@@ -307,4 +302,3 @@ begin
 	end catch
 
 end
-GO

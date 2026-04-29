@@ -1,10 +1,8 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
-CREATE   procedure [sp_Wms_StockInquiry_DDLLotNoByStock]
+
+
+create   procedure [dbo].[sp_Wms_StockInquiry_DDLLotNoByStock]
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
@@ -30,4 +28,3 @@ begin
 	and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
 	and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 end
-GO

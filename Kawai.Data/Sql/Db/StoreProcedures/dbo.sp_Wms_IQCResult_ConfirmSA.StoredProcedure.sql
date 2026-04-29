@@ -1,4 +1,5 @@
-CREATE   procedure [dbo].[sp_Wms_IQCResult_ConfirmSA]
+
+create   procedure [dbo].[sp_Wms_IQCResult_ConfirmSA]
 	@InspectionId bigint,
 	@InspectionResult varchar(100),
 	@UserId varchar(25)

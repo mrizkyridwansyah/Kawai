@@ -1,7 +1,3 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE   procedure [sp_Wms_ReceiptUnschedule_Update]
 	@Id				bigint,
@@ -101,4 +97,3 @@ begin
 	where hd.Id = @Id
 
 end
-GO

@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create   procedure [sp_Wms_Item_Delete]
+CREATE   PROCEDURE [dbo].[sp_Wms_Item_Delete]
 	@ItemCode varchar(25)
 as
 begin
@@ -12,6 +8,11 @@ begin
 		return;
 	end
 
+	IF (select [dbo].fn_CheckItemUsage(@ItemCode)) = 0
+	BEGIN
+		raiserror('Data Item already used as reference!',16,1)
+		return;
+	END
+
 	delete from Item_Master where Item_Code = @ItemCode
 end
-GO

@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_IQCResult_Confirm]
+
+CREATE   procedure [dbo].[sp_Wms_IQCResult_Confirm]
 	@InspectionId bigint,
 	@InspectionResult varchar(100),
 	@UserId varchar(25)
@@ -109,9 +106,9 @@ begin
 		From StockDetail sd
 		inner join 
 		(
-			select BarcodeNo From IQC_SamplingBarcodeDetail 
+			select BarcodeNG From IQC_SamplingBarcodeDetail 
 			where InspectionID = @InspectionId
-		) qc on sd.BarcodeNo = qc.BarcodeNo
+		) qc on sd.BarcodeNo = qc.BarcodeNG
 
 	end
 
@@ -142,18 +139,6 @@ begin
 			FROM cteIQCNG
 		) res where QtyNG > 0
 
-		insert into ReceiptSupplyHistory 
-		(
-			[Status], ProcessMenu, RefNo, 
-			WarehouseCode, AreaCode, AddressCode, ItemCode, BarcodeNo, LotNo,
-			QtyTrans, Remarks, ReferenceNo, LogDate, UserID
-		)
-		select 
-			'OUT', 'IQC Approval', c.RefNo, 
-			c.WarehouseCode, c.AreaCode, c.AddressCode, c.ItemCode, c.BarcodeNo, c.LotNo, 
-			c.QtyNG, @remarks + ' (Approval QC Accepted - NG ' + @typeNG +')', cast(@InspectionID as varchar), getdate(), @UserId
-		FROM @calcPartialNG c
-		where c.QtyNG > 0
 
 		EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcodePartialNG OUTPUT;
 
@@ -163,7 +148,6 @@ begin
 
 		-- INSERT STOCK NG BARU
 		EXEC sp_Wms_Stock_UpSertStockDetail @NewRefNo, @warehouseCalcPartialNG, 'TMP', 'TMP', @ItemCode, @NewBarcodePartialNG, @lotNoCalcPartialNG, @totalNGQty, NULL, NULL, @UserId, 'NG', @typeNG
-		EXEC sp_Wms_Stock_UpSertStockHeader @transDate, @NewRefNo, @warehouseCalcPartialNG, 'TMP', @ItemCode, @lotNoCalcPartialNG, @totalNGQty, NULL, 'R', @UserId
 
 		-- KURANGIN STOCK LAMA
 		set @i = 1
@@ -175,30 +159,47 @@ begin
 			from @calcPartialNG where Urutan = @i
 
 			exec sp_Wms_Stock_UpSertStockDetail @loopRef, @loopFromWH, @loopFromArea, @loopFromAdddress, @loopItem, @loopBarcode, @loopLot, @loopQty, @loopIVTQty, @loopSublot, @UserId, 'OK', ''
-			exec sp_Wms_Stock_UpSertStockHeader @transDate, @loopRef, @loopFromWH, @loopFromArea, @loopItem, @loopLot, @loopQtyNG, @loopIVTQty, 'S', @UserId
+
+			if @loopFromWH <> @warehouseCalcPartialNG or @loopFromArea <> 'TMP'
+			begin
+				insert into ReceiptSupplyHistory 
+				(
+					[Status], ProcessMenu, RefNo, 
+					WarehouseCode, AreaCode, AddressCode, ItemCode, BarcodeNo, LotNo,
+					QtyTrans, Remarks, ReferenceNo, LogDate, UserID
+				)
+				select 
+					'OUT', 'IQC Approval', @loopRef, 
+					@loopFromWH, @loopFromArea, @loopFromAdddress, @loopItem, @loopBarcode, @loopLot, 
+					@loopQtyNG, @remarks + ' (Approval QC Accepted - NG ' + @typeNG +')', cast(@InspectionID as varchar), getdate(), @UserId
+
+				exec sp_Wms_Stock_UpSertStockHeader @transDate, @loopRef, @loopFromWH, @loopFromArea, @loopItem, @loopLot, @loopQtyNG, @loopIVTQty, 'S', @UserId
+				EXEC sp_Wms_Stock_UpSertStockHeader @transDate, @NewRefNo, @warehouseCalcPartialNG, 'TMP', @ItemCode, @lotNoCalcPartialNG, @loopQtyNG, NULL, 'R', @UserId
+
+				insert into ReceiptSupplyHistory 
+				(
+					[Status], ProcessMenu, RefNo, 
+					WarehouseCode, AreaCode, AddressCode, ItemCode, BarcodeNo, LotNo,
+					QtyTrans, Remarks, ReferenceNo, LogDate, UserID
+				)
+				select 'IN', 'IQC Approval', RefNo, 
+					sd.WarehouseCode, sd.AreaCode, sd.AddressCode, sd.ItemCode, sd.BarcodeNo, sd.LotNo, 
+					sd.Qty, @remarks + ' (Approval QC Accepted - NG ' + @typeNG +')', cast(@InspectionID as varchar), getdate(), @UserId
+				from StockDetail sd where BarcodeNo = @NewBarcodePartialNG and Qty > 0
+			end
 
 			set @i += 1
 		end
 
 		-- INSERT STOCK NG KE BARCODE SPLIT BIAR KE PRINT
-		insert into Barcode_Split(Warehouse_Code, Area_Code, Address_Code, BarcodeNo, Item_Code, Lot_No, Qty, Print_Cls, Supplier, RegisterDate, RegisterUser)
-		values (@warehouseCalcPartialNG, 'TMP', 'TMP', @NewBarcodePartialNG, @ItemCode, @lotNoCalcPartialNG, @totalNGQty, 0, @SupplierCode, getdate(), @UserId)
+		insert into Barcode_Split(Warehouse_Code, Area_Code, Address_Code, BarcodeNo, Item_Code, Lot_No, Qty, Print_Cls, Supplier, RegisterDate, RegisterUser, SourceNG, FromWarehouse)
+		values (@warehouseCalcPartialNG, 'TMP', 'TMP', @NewBarcodePartialNG, @ItemCode, @lotNoCalcPartialNG, @totalNGQty, 0, @SupplierCode, getdate(), @UserId, @Source, @loopFromWH)
 
 		-- BarcodeNGDetail UNTUK TAU ASAL DARI BARCODE NG INI DARI MANA
 		insert into BarcodeNGDetail (ReceiptId, DNNumber, SupplierCode, ItemCode, PONumber, BarcodeOriginal, BarcodeNew, QtyNG)
 		select @ReceiptId, @DNNumber, @SupplierCode, @ItemCode, @PONumber, BarcodeNo, @NewBarcodePartialNG, QtyNG
 		from @calcPartialNG
 
-		insert into ReceiptSupplyHistory 
-		(
-			[Status], ProcessMenu, RefNo, 
-			WarehouseCode, AreaCode, AddressCode, ItemCode, BarcodeNo, LotNo,
-			QtyTrans, Remarks, ReferenceNo, LogDate, UserID
-		)
-		select 'IN', 'IQC Approval', RefNo, 
-			sd.WarehouseCode, sd.AreaCode, sd.AddressCode, sd.ItemCode, sd.BarcodeNo, sd.LotNo, 
-			sd.Qty, @remarks + ' (Approval QC Accepted - NG ' + @typeNG +')', cast(@InspectionID as varchar), getdate(), @UserId
-		from StockDetail sd where BarcodeNo = @NewBarcodePartialNG and Qty > 0
 	end
 	else if @InspectionResult = 'Rejected'
 	begin
@@ -230,9 +231,9 @@ begin
 			FROM StockDetail sd
 			inner join 
 			(
-				select BarcodeNo From IQC_SamplingBarcodeDetail 
+				select BarcodeNG From IQC_SamplingBarcodeDetail 
 				where InspectionID = @InspectionId
-			) qc on sd.BarcodeNo = qc.BarcodeNo
+			) qc on sd.BarcodeNo = qc.BarcodeNG
 			where sd.Qty > 0			
 		end
 
@@ -281,4 +282,3 @@ begin
 
 
 end
-GO

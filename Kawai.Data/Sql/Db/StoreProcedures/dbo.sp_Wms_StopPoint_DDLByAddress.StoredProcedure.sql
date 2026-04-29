@@ -1,12 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
---select * from WorkStationLineSetting
-
-CREATE procedure [sp_Wms_StopPoint_DDLByAddress]
---declare
+create procedure [dbo].[sp_Wms_StopPoint_DDLByAddress]
 	@Keyword varchar(max) = '',
 	@Line Varchar(100) =' ',
 	@Workstation Varchar(100) = ' '
@@ -31,4 +23,3 @@ begin
 	and (StopPointCode like '%'+ @Keyword +'%' or Description like '%'+ @Keyword +'%')
 end
  
-GO

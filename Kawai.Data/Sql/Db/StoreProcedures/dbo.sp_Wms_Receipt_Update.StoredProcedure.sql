@@ -1,10 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
-CREATE   procedure [sp_Wms_Receipt_Update]
+CREATE procedure [sp_Wms_Receipt_Update]
 	@Id				bigint,
 	@DNNumber		varchar(50),
 	@FactoryCode	varchar(25),
@@ -189,4 +185,3 @@ begin
 	left join PurchaseOrder_Detail pod on dtl.ItemCode = pod.Item_Code and dtl.PONumber = pod.PO_No
 	where hd.Id = @Id
 end
-GO

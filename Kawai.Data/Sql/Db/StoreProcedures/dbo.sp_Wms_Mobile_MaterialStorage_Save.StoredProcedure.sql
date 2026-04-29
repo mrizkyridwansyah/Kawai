@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Mobile_MaterialStorage_Save]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_MaterialStorage_Save]
 	@RefNo varchar(50),
 	@AddressCode varchar(25),
 	@BarcodeNo varchar(100),
@@ -170,4 +167,3 @@ begin
 	) dtl on prh.Id = dtl.ReceiptId
 	where StatusReceipt IN ('OK', 'NG')
 end
-GO

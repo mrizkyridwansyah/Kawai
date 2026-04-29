@@ -1,14 +1,12 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-create   procedure [sp_Wms_Area_Create]
+
+CREATE   procedure [dbo].[sp_Wms_Area_Create]
 	@WarehouseCode varchar(25),
-	@AreaCode varchar(25),
+	@AreaCode varchar(25),--input freetext bukan lagi autogenerate
 	@AreaName varchar(200),
 	@ItemType varchar(25),
 	@PickingSequence int,
+	@IPAddress varchar(200),
 	@RegisterBy varchar(25)
 as
 begin
@@ -30,7 +28,6 @@ begin
 		return;
 	end
 
-	insert into MS_Area (warehousecode, Areacode, Areaname, ItemType, PickingSequence, registerby, registerdate)
-	values (@WarehouseCode, @AreaCode, @AreaName, @ItemType, @PickingSequence, @RegisterBy, getdate())
+	insert into MS_Area (warehousecode, Areacode, Areaname, ItemType, PickingSequence, registerby, registerdate, IPAddress)
+	values (@WarehouseCode, @AreaCode, @AreaName, @ItemType, @PickingSequence, @RegisterBy, getdate() , @IPAddress)
 end
-GO

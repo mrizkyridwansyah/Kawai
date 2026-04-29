@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE Proc [sp_Wms_BOMWorkStation_CopyData]
+CREATE Proc [dbo].[sp_Wms_BOMWorkStation_CopyData]
 --Declare
 @FromLine   Varchar(100)='011',
 @ToLine Varchar(100)='004',
@@ -36,83 +32,82 @@ as
 
 
 	
-      --DECLARE @Map TABLE
-      --  (
-      --      OldId BIGINT,
-      --      NewId BIGINT
-      --  )
+      DECLARE @Map TABLE
+        (
+            OldId BIGINT,
+            NewId BIGINT
+        )
 
-      --  -------------------------------------------------
-      --  -- COPY HEADER (MERGE METHOD)
-      --  -------------------------------------------------
-      --  MERGE MS_BOMPerworkstation_Header AS target
-      --  USING (
-      --      SELECT *
-      --      FROM MS_BOMPerworkstation_Header
-      --      WHERE Line_Code = @FromLine
-      --      AND ParentItemCode = @ItemCode
-      --  ) AS src
-      --  ON 1 = 0  -- force insert only
+        -------------------------------------------------
+        -- COPY HEADER (MERGE METHOD)
+        -------------------------------------------------
+        MERGE MS_BOMPerworkstation_Header AS target
+        USING (
+            SELECT *
+            FROM MS_BOMPerworkstation_Header
+            WHERE Line_Code = @FromLine
+            AND ParentItemCode = @ItemCode
+        ) AS src
+        ON 1 = 0  -- force insert only
 
-      --  WHEN NOT MATCHED THEN
-      --  INSERT
-      --  (
-      --      Line_Code,
-      --      ParentItemCode,
-      --      WorkStationCode,
-      --      MAX_Qty_Set,
-      --      Troly_Cls,
-      --      RegisterDate,
-      --      RegisterUser
-      --  )
-      --  VALUES
-      --  (
-      --      @ToLine,
-      --      src.ParentItemCode,
-      --      src.WorkStationCode,
-      --      src.MAX_Qty_Set,
-      --      src.Troly_Cls,
-      --      GETDATE(),
-      --      @UserID
-      --  )
+        WHEN NOT MATCHED THEN
+        INSERT
+        (
+            Line_Code,
+            ParentItemCode,
+            WorkStationCode,
+            MAX_Qty_Set,
+            Troly_Cls,
+            RegisterDate,
+            RegisterUser
+        )
+        VALUES
+        (
+            @ToLine,
+            src.ParentItemCode,
+            src.WorkStationCode,
+            src.MAX_Qty_Set,
+            src.Troly_Cls,
+            GETDATE(),
+            @UserID
+        )
 
-      --  OUTPUT
-      --      src.Bomws_ID,
-      --      inserted.Bomws_ID
-      --  INTO @Map(OldId, NewId);
+        OUTPUT
+            src.Bomws_ID,
+            inserted.Bomws_ID
+        INTO @Map(OldId, NewId);
 
 
-      --  -------------------------------------------------
-      --  -- VALIDASI
-      --  -------------------------------------------------
-      --  IF NOT EXISTS (SELECT 1 FROM @Map)
-      --  BEGIN
-      --      RAISERROR('Header tidak ditemukan',16,1)
-      --      ROLLBACK
-      --      RETURN
-      --  END
+        -------------------------------------------------
+        -- VALIDASI
+        -------------------------------------------------
+        IF NOT EXISTS (SELECT 1 FROM @Map)
+        BEGIN
+            RAISERROR('Header tidak ditemukan',16,1)
+            ROLLBACK
+            RETURN
+        END
 
-      --  -------------------------------------------------
-      --  -- COPY DETAIL
-      --  -------------------------------------------------
-      --  INSERT INTO MS_BOMPerworkstation_Detail
-      --  (
-      --      Bomws_ID,
-      --      ChildItem_Code,
-      --      Unit_Cls,
-      --      Qty,
-      --      RegisterDate,
-      --      RegisterUser,
-      --      LastUpdate
-      --  )
-      --  SELECT
-      --      m.NewId,
-      --      d.ChildItem_Code,
-      --      d.Unit_Cls,
-      --      d.Qty,
-      --      GETDATE(),
-      --      @UserID,
-      --      GETDATE()
-      --  FROM MS_BOMPerworkstation_Detail d
-      --  JOIN @Map m ON d.Bomws_ID = m.OldId
-GO
+        -------------------------------------------------
+        -- COPY DETAIL
+        -------------------------------------------------
+        INSERT INTO MS_BOMPerworkstation_Detail
+        (
+            Bomws_ID,
+            ChildItem_Code,
+            Unit_Cls,
+            Qty,
+            RegisterDate,
+            RegisterUser,
+            LastUpdate
+        )
+        SELECT
+            m.NewId,
+            d.ChildItem_Code,
+            d.Unit_Cls,
+            d.Qty,
+            GETDATE(),
+            @UserID,
+            GETDATE()
+        FROM MS_BOMPerworkstation_Detail d
+        JOIN @Map m ON d.Bomws_ID = m.OldId

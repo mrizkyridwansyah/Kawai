@@ -1,11 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
 
-CREATE  procedure [sp_Wms_NGClaimMaterial_Approve]
+CREATE  procedure [dbo].[sp_Wms_NGClaimMaterial_Approve]
 	@ClaimId				bigint,
 	@DNNumber		varchar(50),
 	@SupplierCode	varchar(25),
@@ -27,7 +23,7 @@ begin
 		return
 	end
 
-	if exists (select 1 from MaterialNGClaimHeader where ClaimID = @ClaimId and [status] <>'DRAFT')
+	if exists (select 1 from MaterialNGClaimHeader where ClaimID = @ClaimId and [status] <>'NEW')
 	begin
 		raiserror('Data Material NG Claim sudah tidak bisa diubah!', 16, 1)
 		return
@@ -80,4 +76,3 @@ begin
  
 
 end
-GO

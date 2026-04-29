@@ -1,11 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
  
-create   procedure [sp_Wms_Mobile_SupplySubcon_GetListMaterial]
+create   procedure [dbo].[sp_Wms_Mobile_SupplySubcon_GetListMaterial]
 	@RequestNo varchar(50),
 	@ClassificationCode varchar(25)
 as
@@ -22,4 +18,3 @@ where a.RefNumber = @RequestNo and a.AreaCode = @ClassificationCode
  
  
  
-GO

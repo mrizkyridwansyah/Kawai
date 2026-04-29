@@ -1,10 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-
-CREATE   PROCEDURE [sp_Wms_MaterialConsumption_Insert]
+CREATE   PROCEDURE [dbo].[sp_Wms_MaterialConsumption_Insert]
 	@LineCode		NVARCHAR(50),
 	@ParentItem		VARCHAR(50),
 	@ProductionID	BIGINT,
@@ -138,4 +133,5 @@ BEGIN
 	DEALLOCATE ConsumptCursor 	
 
 END
-GO
+
+

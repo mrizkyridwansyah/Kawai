@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create   procedure [sp_Wms_Item_GetDetail]
+CREATE   PROCEDURE [dbo].[sp_Wms_Item_GetDetail]
 	@ItemCode varchar(25)
 as
 begin
@@ -110,7 +106,7 @@ begin
 		LastUpdate				= mi.Last_Update,	
 		LastUser				= mi.Last_User,	
 		RegisterDate			= mi.Register_Date,	
-		UseEndDay				= dbo.ConvertToDateTimeFromFuckingString(mi.Use_EndDay),
+		UseEndDay				= dbo.ConvertToDateTimeFromString(mi.Use_EndDay),
 		mi.Thickness, mi.Width, mi.Length, mi.Weight, mi.GrossWeight, mi.Pitch, mi.Sample
 	From Item_Master mi 
 	left join 
@@ -152,4 +148,3 @@ begin
 	left join vw_ExplosionCls i on mi.Explosion_Cls = i.Code
 	where mi.Item_Code = @ItemCode
 end
-GO

@@ -1,9 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   procedure [sp_Wms_Receipt_PrintLabel]
+CREATE   procedure [dbo].[sp_Wms_Receipt_PrintLabel]
 	@ReceiptId		varchar(50),
 	@MustPrint	bit = null,
 	@UserId			varchar(25)
@@ -228,4 +224,3 @@ begin
 	end
 	
 end
-GO

@@ -1,9 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_StockInquiry_InquiryByCategory]
---declare
+
+create   procedure [dbo].[sp_Wms_StockInquiry_InquiryByCategory]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -13,7 +9,7 @@ CREATE procedure [sp_Wms_StockInquiry_InquiryByCategory]
 	@Keyword varchar(max) = '',
 
 	-- PARAMETER FILTER
-	@Category varchar(25) = 'ALL',
+	@Category varchar(25) = '02',
 	@WarehouseCode varchar(25) = 'ALL',
 	@AreaCode varchar(25) = 'ALL',
 	@ItemCode varchar(25) = 'ALL',
@@ -32,7 +28,7 @@ begin
 	end 
 	else 
 	begin
-		set @sqlSort = 'order by mw.WarehouseName'
+		set @sqlSort = 'order by mi.Item_Name'
 	end 
 
 	declare @TotalRows int = 
@@ -145,10 +141,10 @@ begin
 			and sm2.ItemCode = sd.ItemCode and sm2.LotNo = sd.LotNo
 		) sm
 		order by sd.ItemName, sd.WarehouseName, sd.AreaName, sd.AddressName, sd.LotNo
+
 	'
 
 	print @sql
 
 	execute (@sql)
 end
-GO

@@ -1,8 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Receipt_DataBarcode]
+
+
+create   procedure [dbo].[sp_Wms_Receipt_DataBarcode]
 	@BarcodeNo varchar(100),
 	@UserId varchar(25)
 as
@@ -51,4 +49,3 @@ begin
 	WHERE a.ReceiptId = @ReceiptId
 	AND a.BarcodeNo = @BarcodeNo
 end
-GO

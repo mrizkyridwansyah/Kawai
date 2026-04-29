@@ -1,10 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-create   procedure [sp_Wms_Receipt_GenerateCode]
-	@FactoryCode varchar(5)
+CREATE   procedure [dbo].[sp_Wms_Receipt_GenerateCode]
+	@FactoryCode varchar(5) = null
 as
 begin
 	declare @prefixFactory varchar(5) = (select fak.PrefixGlobalBarcode From Company_Profile fak where fak.Company_Code = @FactoryCode)
@@ -14,4 +10,3 @@ begin
 
 	SELECT @ReceiptNo
 end
-GO

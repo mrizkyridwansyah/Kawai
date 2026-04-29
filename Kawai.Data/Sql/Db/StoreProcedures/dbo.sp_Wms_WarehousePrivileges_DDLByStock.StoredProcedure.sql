@@ -1,9 +1,8 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-create   procedure [sp_Wms_WarehousePrivileges_DDLByStock]
+
+
+
+create   procedure [dbo].[sp_Wms_WarehousePrivileges_DDLByStock]
 	@FactoryCode varchar(25),
 	@UserId varchar(25) = '',
 	@Keyword		varchar(max) = '',
@@ -31,4 +30,3 @@ begin
 	and (@StatusReceipt = 'ALL' or a.StatusReceipt = @StatusReceipt)
 	and (@StatusHoldNG = 'ALL' or isnull(a.StatusHoldNG, '') = @StatusHoldNG)
 end
-GO

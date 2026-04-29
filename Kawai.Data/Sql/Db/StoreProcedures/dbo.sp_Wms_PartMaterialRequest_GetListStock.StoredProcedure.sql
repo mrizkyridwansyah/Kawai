@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create procedure [sp_Wms_PartMaterialRequest_GetListStock]
+
+create   procedure [dbo].[sp_Wms_PartMaterialRequest_GetListStock]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -65,4 +62,3 @@ begin
 
 	execute (@sql)
 end
-GO

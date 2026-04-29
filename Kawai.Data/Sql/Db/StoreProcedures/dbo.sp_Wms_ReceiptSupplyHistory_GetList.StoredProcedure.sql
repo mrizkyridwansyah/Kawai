@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_ReceiptSupplyHistory_GetList]
+
+create   procedure [dbo].[sp_Wms_ReceiptSupplyHistory_GetList]
 --DECLARE
 	@WarehouseCode varchar(25) = 'WH-001',
 	@AreaCode varchar(25) = 'TMP',
@@ -95,4 +92,3 @@ begin
 	and res.ItemCode = @ItemCode
 	ORDER BY TransactionDate
 end
-GO

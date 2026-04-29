@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_Mobile_MaterialStorage_SaveMerge]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_MaterialStorage_SaveMerge]
 	@RefNo varchar(50),
 	@AddressCode varchar(25),
 	@ListBarcodes tvp_MaterialMergeStorage READONLY,
@@ -190,4 +187,3 @@ begin
 	from @tbl
 
 end
-GO

@@ -1,4 +1,5 @@
-CREATE   procedure [dbo].[sp_Wms_IQCResult_SaveResult]
+
+create   procedure [dbo].[sp_Wms_IQCResult_SaveResult]
 	@InspectionId bigint,
 	@QtyNG numeric(18,2),
 	@Remarks varchar(max),

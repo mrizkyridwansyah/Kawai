@@ -1,10 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
-create   procedure [sp_Wms_Mobile_SupplySubcon_GetListStock]
+create   procedure [dbo].[sp_Wms_Mobile_SupplySubcon_GetListStock]
 	@ItemCode	  VARCHAR(25)
 as
 begin
@@ -37,4 +33,3 @@ begin
 end
  
 
-GO

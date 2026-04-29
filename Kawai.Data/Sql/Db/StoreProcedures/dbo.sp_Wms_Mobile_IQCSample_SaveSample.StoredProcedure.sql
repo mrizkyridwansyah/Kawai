@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Mobile_IQCSample_SaveSample]
+
+create   procedure [dbo].[sp_Wms_Mobile_IQCSample_SaveSample]
 	@ReceiptId bigint,
 	@BarcodeNo varchar(100),
 	@QtySample numeric(18,9),
@@ -129,4 +126,3 @@ begin
 	end catch
 
 end
-GO

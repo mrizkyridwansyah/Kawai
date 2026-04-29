@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Mobile_MaterialNG_GetDataNG]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_MaterialNG_GetDataNG]
 	@BarcodeNo varchar(100) 
 as
 begin
@@ -73,4 +70,3 @@ begin
 	LEFT JOIN Item_Master b ON a.ItemCode = b.Item_Code
 	WHERE a.BarcodeNo = @BarcodeNo
 end
-GO

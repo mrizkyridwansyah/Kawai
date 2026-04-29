@@ -1,5 +1,6 @@
 
-CREATE   procedure [dbo].[sp_Wms_Receipt_Inquiry]
+
+create   procedure [dbo].[sp_Wms_Receipt_Inquiry]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -131,4 +132,54 @@ begin
 				ReceiptId,
 				SUM(case when isnull(IsVerified, 0) = 1 then 1 else 0 end) TotalScan, 
 				SUM(case when isnull(IsVerified, 0) = 0 then 1 else 0 end) OutstandingScan 
-				from
+				from PartReceiptDetailBarcode 
+			group by ReceiptId
+		) dtlb  on a.Id = dtlb.ReceiptId
+		left join PurchaseOrder_Detail pod on dtl.PONumber = pod.PO_No and dtl.ItemCode = pod.Item_Code
+		left join Unit_Cls uc on dtl.UnitCls = uc.Unit_Cls
+		LEFT JOIN trade_master b ON a.SupplierCode = b.Trade_Code
+		left join Price_Master pm on dtl.ItemCode = pm.Item_Code and a.SupplierCode = pm.Trade_Code and Price_Cls = ''01'' AND a.ReceiptDate BETWEEN 
+			(select dbo.ConvertToDateTimeFromFuckingString(Start_Date)) and 
+			(select dbo.ConvertToDateTimeFromFuckingString(End_Date))
+		left join Curr_Cls cc on cc.Curr_Cls = isnull(pod.Currency_Code, pm.Currency_Code)
+		LEFT JOIN IQC_Inspection_Header iqch on a.ReceiptNo = iqch.ReceiptNo and dtl.ItemCode = iqch.ItemCode and iqch.Soruce = ''Incoming Material''
+		WHERE
+			(@Keyword IS NULL OR
+				a.DNNumber LIKE ''%'' + @Keyword + ''%'' OR
+				dtl.PONumber LIKE ''%'' + @Keyword + ''%'' OR
+				dtl.ItemCode LIKE ''%'' + @Keyword + ''%'' OR
+				mi.Item_Name LIKE ''%'' + @Keyword + ''%'')
+			and 1 = case when isnull(@ReceiptId, 0) = 0 THEN 1 WHEN isnull(@ReceiptId, 0) = a.Id THEN 1 ELSE 0 END
+			AND a.ReceiptDate BETWEEN @PeriodFrom AND @PeriodUntil
+			and 1 = case when @SupplierCode = ''ALL'' THEN 1 WHEN @SupplierCode = a.SupplierCode THEN 1 ELSE 0 END
+			and 1 = case when @FactoryCode = ''ALL'' THEN 1 WHEN @FactoryCode = CompanyCode THEN 1 ELSE 0 END
+			and 1 = case when isnull(@CompleteStatus, ''ALL'') = ''ALL'' then 1 
+				   when @CompleteStatus = ''YES'' and isnull(OutstandingScan, 1) = 0 then 1
+				   when @CompleteStatus = ''NO'' and isnull(OutstandingScan, 1) > 0 then 1
+				   else 0 end
+			
+		' +
+		CASE 
+			WHEN ISNULL(@Sort, '') <> '' THEN N' ORDER BY ' + @Sort
+			ELSE N' ORDER BY a.ReceiptNo'
+		END + N'
+		OFFSET @Offset ROWS
+		FETCH NEXT @Length ROWS ONLY;
+	';
+	print @sql
+
+	EXEC sp_executesql
+		@sql,
+		N'@Keyword VARCHAR(MAX), @FactoryCode VARCHAR(25), @SupplierCode VARCHAR(25), @ReceiptId BIGINT, @PeriodFrom DATE, @PeriodUntil DATE, @CompleteStatus VARCHAR(10), @Offset INT, @Length INT, @TotalRow INT',
+		@Keyword = @Keyword,
+		@FactoryCode = @FactoryCode,
+		@SupplierCode = @SupplierCode,
+		@ReceiptId = @ReceiptId,
+		@PeriodFrom = @PeriodFrom,
+		@PeriodUntil = @PeriodUntil,
+		@CompleteStatus = @CompleteStatus,
+		@Offset = @offset,
+		@Length = @Length,
+		@TotalRow = @TotalRow;
+	
+end

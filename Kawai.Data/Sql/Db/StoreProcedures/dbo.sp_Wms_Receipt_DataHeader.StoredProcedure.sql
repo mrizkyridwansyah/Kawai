@@ -1,5 +1,6 @@
 
-CREATE   procedure [dbo].[sp_Wms_Receipt_DataHeader]
+
+create   procedure [dbo].[sp_Wms_Receipt_DataHeader]
 	@ReceiptId bigint
 as
 begin

@@ -1,4 +1,5 @@
-CREATE procedure [dbo].[sp_Wms_QualityCheck_PrintReportNG]
+
+create   procedure [dbo].[sp_Wms_QualityCheck_PrintReportNG]
 	@ReceiptId bigint
 as
 begin

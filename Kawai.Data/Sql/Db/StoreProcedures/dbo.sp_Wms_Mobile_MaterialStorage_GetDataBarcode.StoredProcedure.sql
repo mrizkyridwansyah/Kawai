@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   PROCEDURE [sp_Wms_Mobile_MaterialStorage_GetDataBarcode]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_MaterialStorage_GetDataBarcode]
 	@BarcodeNo varchar(100)
 as
 begin
@@ -62,4 +59,3 @@ begin
 	left join Item_Master mi on sd.ItemCode = mi.Item_Code
 	WHERE sd.BarcodeNo = @BarcodeNo and sd.Qty > 0
 end
-GO

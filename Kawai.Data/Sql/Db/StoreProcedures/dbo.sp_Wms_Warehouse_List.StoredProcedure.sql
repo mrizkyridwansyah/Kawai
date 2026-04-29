@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_Warehouse_List]
+
+CREATE   procedure [dbo].[sp_Wms_Warehouse_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -44,7 +41,7 @@ begin
 			wh.Company_Code FactoryCode, cp.Company_Name FactoryName, 
 			wh.WH_Code WarehouseCode, wh.WH_Name WarehouseName, wh.Adm_Group AdmGroup, tm.Trade_Name AdmGroupName,
 			wh.StockControl_Cls StockControlCls, wh.NG_Cls NGCls, 
-			dbo.ConvertToDateTimeFromFuckingString(wh.Use_EndDay) UseEndDate, isnull(wh.Last_Update, wh.Register_Date) LastUpdate, us.FullName Lastuser, 
+			dbo.ConvertToDateTimeFromString(wh.Use_EndDay) UseEndDate, isnull(wh.Last_Update, wh.Register_Date) LastUpdate, us.FullName Lastuser, 
 			'''+cast(@TotalRows as varchar)+''' as TotalRows
 		From WareHouse_Master wh
 		left join vw_User us on wh.Last_User = us.UserID
@@ -63,4 +60,3 @@ begin
 	execute (@sql)
 
 end
-GO

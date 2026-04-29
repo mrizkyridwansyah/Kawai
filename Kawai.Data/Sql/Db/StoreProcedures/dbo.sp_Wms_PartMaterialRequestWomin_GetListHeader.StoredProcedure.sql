@@ -1,13 +1,9 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_PartMaterialRequestWomin_GetListHeader]
-	@PeriodFrom date			,--= '2025-01-22',
-	@PeriodUntil date			,--= '2025-01-22',
-	@FactoryCode varchar(25)	,--= '00000',
-	@ProcessCode varchar(25)	,--= '999',
-	@LineCode varchar(25)		,--= '009',
+CREATE   procedure [dbo].[sp_Wms_PartMaterialRequestWomin_GetListHeader]
+	@PeriodFrom date			= '2025-01-22',
+	@PeriodUntil date			= '2025-01-22',
+	@FactoryCode varchar(25)	= '00000',
+	@ProcessCode varchar(25)	= '999',
+	@LineCode varchar(25)		= '009',
 	@RemainingCls bit			= null
 as
 begin
@@ -42,4 +38,3 @@ begin
 				   else 0 end
 
 end
-GO

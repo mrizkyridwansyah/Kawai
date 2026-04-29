@@ -1,10 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
-CREATE   procedure [sp_Wms_PartMaterialRequestBom_GetListDetail]
+
+create   procedure [dbo].[sp_Wms_PartMaterialRequestBom_GetListDetail]
 	@WarehouseCode varchar(25),
 	@NewRequest tvp_PartMaterialRequestBom READONLY
 as
@@ -46,4 +43,3 @@ begin
 	LEFT JOIN RequestStatusCls reqCls on pmrd.RequestStatusID = reqCls.RequestStatusID
 	LEFT JOIN @tblScan scan on pmrd.RequestDetailID = scan.RequestDetailId and bom.Item_Code = scan.ItemCode
 end
-GO

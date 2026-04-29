@@ -1,8 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_PartMaterialRequestWomin_Save]
+
+
+create   procedure [dbo].[sp_Wms_PartMaterialRequestWomin_Save]
 	@LineCode varchar(25), 
 	@NewRequest tvp_PartMaterialRequestWomin READONLY,
 	@UserId varchar(25)
@@ -209,4 +207,3 @@ begin
 	and pmrd.AreaCode = bomws.ChildClassification
 
 end
-GO

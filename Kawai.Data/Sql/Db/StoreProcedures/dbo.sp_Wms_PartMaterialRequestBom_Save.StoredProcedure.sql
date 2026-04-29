@@ -1,10 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
-CREATE   procedure [sp_Wms_PartMaterialRequestBom_Save]
+
+create   procedure [dbo].[sp_Wms_PartMaterialRequestBom_Save]
 	@WarehouseCode varchar(25), 
 	@NewRequest tvp_PartMaterialRequestBom READONLY,
 	@UserId varchar(25)
@@ -150,4 +147,3 @@ begin
 	inner join PartMaterialRequestDetail_PO pmrd on pmrd.RequestID = r.RequestId and pmrd.AreaCode = isnull(mi.ClasificationPart_Cls, '20')
 
 end
-GO

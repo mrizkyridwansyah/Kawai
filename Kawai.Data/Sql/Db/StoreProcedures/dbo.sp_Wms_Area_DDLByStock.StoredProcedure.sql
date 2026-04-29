@@ -1,9 +1,8 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   procedure [sp_Wms_Area_DDLByStock]
+
+
+
+create   procedure [dbo].[sp_Wms_Area_DDLByStock]
 	@Keyword		varchar(max) = '',
 	@WarehouseCode	varchar(25),
 	@ItemCode		varchar(25),
@@ -29,4 +28,3 @@ begin
 	where 1=1
 	and (AreaCode like '%' + @Keyword + '%' or AreaName like '%' + @Keyword + '%')
 end
-GO

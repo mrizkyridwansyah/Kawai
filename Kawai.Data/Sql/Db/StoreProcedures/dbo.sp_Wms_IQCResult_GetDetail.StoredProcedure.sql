@@ -1,4 +1,5 @@
-CREATE   procedure [dbo].[sp_Wms_IQCResult_GetDetail]
+
+create   procedure [dbo].[sp_Wms_IQCResult_GetDetail]
 	@InspectionId bigint
 as
 begin

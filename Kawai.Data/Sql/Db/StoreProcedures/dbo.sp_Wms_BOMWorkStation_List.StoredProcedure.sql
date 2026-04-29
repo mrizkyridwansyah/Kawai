@@ -1,8 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE Proc [sp_Wms_BOMWorkStation_List]
+CREATE Proc [dbo].[sp_Wms_BOMWorkStation_List]
+--{Keyword: "", Line: "DP-01", ModelCls: "WMS", ItemCode: "WMSTR01"}
+
 --declare
 -- PARAMETER WAJIB
 	@Page int = 1,
@@ -11,9 +9,9 @@ CREATE Proc [sp_Wms_BOMWorkStation_List]
 
 	-- PARAMETER OPSIONAL
 	@Keyword varchar(max) = '',
-	@Line Varchar(100) ,
-    @ModelCls Varchar(100),
-	@ItemCode Varchar(100) 
+	@Line Varchar(100) ='DP-01',
+    @ModelCls Varchar(100)='WMS',
+	@ItemCode Varchar(100) ='WMSTR01'
   as
 
   declare @sqlSort varchar(max) = ''
@@ -50,12 +48,12 @@ CREATE Proc [sp_Wms_BOMWorkStation_List]
 		select 
 			 wh.WorkStationCode
             ,ws.WorkStationName
-			,(select ff.Description from MS_BOMPerworkstation_Header zz left join Trolley_Cls ff ON zz.Troly_Cls = ff.Trolley_Cls  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) TrolleyCls
-			,(select zz.MAX_Qty_Set from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) MaxQtySet
+			,(select top 1 ff.Description from MS_BOMPerworkstation_Header zz left join Trolley_Cls ff ON zz.Troly_Cls = ff.Trolley_Cls  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) TrolleyCls
+			,(select  top 1 zz.MAX_Qty_Set from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) MaxQtySet
             ,wh.RegisterDate
 			,wh.RegisterUser
-		    ,(select zz.LastUpdate from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) LastUpdate
-			,(select zz.LastUser from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) LastUser, 
+		    ,(select top 1 zz.LastUpdate from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) LastUpdate
+			,(select top 1 zz.LastUser from MS_BOMPerworkstation_Header zz  where zz.ParentItemCode = '''+ @ItemCode +''' and  zz.Line_Code = wh.LineCode and zz.WorkStationCode = wh.WorkStationCode) LastUser, 
 			'''+cast(@TotalRows as varchar)+''' as TotalRows
 		From WorkStationLineSetting wh
 		left join MS_WorkStation ws on wh.WorkStationCode = ws.WorkStationCode
@@ -75,4 +73,3 @@ CREATE Proc [sp_Wms_BOMWorkStation_List]
 
  
 
-GO

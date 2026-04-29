@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_Mobile_AssignStorage_Save]
+
+create   procedure [dbo].[sp_Wms_Mobile_AssignStorage_Save]
 	@RefNo varchar(50),
 	@AddressCode varchar(25),
 	@UserId varchar(25)
@@ -140,4 +137,3 @@ begin
 		getdate(), @UserId
 	from @tbl
 end
-GO

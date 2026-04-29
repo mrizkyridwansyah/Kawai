@@ -1,9 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   procedure [sp_Wms_Stock_UpSertStockDetail]
+
+create   procedure [dbo].[sp_Wms_Stock_UpSertStockDetail]
 	@RefNo			varchar(50),
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
@@ -51,4 +48,3 @@ begin
 			LastUser = @UserId
 	where BarcodeNo = @BarcodeNo and LotNo = @LotNo and ItemCode = @ItemCode
 end
-GO

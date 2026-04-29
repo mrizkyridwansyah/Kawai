@@ -1,15 +1,12 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   PROCEDURE [sp_Wms_Andon_WominRequest_GetList]
+ 
+CREATE   PROCEDURE [dbo].[sp_Wms_Andon_WominRequest_GetList]
 --declare
 @Area VARCHAR(50)='02'
 AS
 BEGIN
 
 
- 
+ --select Model_Cls, * from Item_Master
  
 	Declare @CountProdID int
 	Declare @CountData int
@@ -71,9 +68,9 @@ BEGIN
 	 ,CurrentPosition	
 	  	, (Select Top 1 AreaName from MS_Address ss Left JOIN MS_Area cc ON ss.AreaCode = cc.AreaCode where StopPointCode =(select Top 1 Stop_Point from PartMaterialRequestSendRobotDetail ddd where  ddd.RequestSendID =A.RefNumber and ddd.Pickup_Seq > a.Picking_Seq )) NextLocation	
 	 ,TotalItem	
-	 ,@CountData - @CountDataScan  Remaining	 ,
-	 @CountProdID Womin,
-	 Cast(@CountDataScan as varchar) + '/' + Cast( @CountData as varchar) PickingProgress
+	 ,ISNULL(@CountData,0) - ISNULL(@CountDataScan,0)  Remaining	 ,
+	 ISNULL(@CountProdID,0) Womin,
+	 Cast(ISNULL(@CountDataScan,0) as varchar) + '/' + Cast( ISNULL(@CountData,0) as varchar) PickingProgress
 
 	  
  from #Tblmain A
@@ -84,4 +81,3 @@ END
 
 
  
-GO

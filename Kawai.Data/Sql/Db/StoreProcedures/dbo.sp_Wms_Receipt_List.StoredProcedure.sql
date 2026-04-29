@@ -1,5 +1,6 @@
 
-CREATE   procedure [dbo].[sp_Wms_Receipt_List]
+
+create   procedure [dbo].[sp_Wms_Receipt_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,

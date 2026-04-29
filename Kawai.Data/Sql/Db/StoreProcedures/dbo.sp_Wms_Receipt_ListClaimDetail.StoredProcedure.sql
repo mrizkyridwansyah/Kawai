@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_Receipt_ListClaimDetail]
+CREATE procedure [dbo].[sp_Wms_Receipt_ListClaimDetail]
 	@FactoryCode varchar(25),
 	@ReceiptId bigint,
 	@ClaimNumber varchar(25),
@@ -12,6 +8,7 @@ CREATE procedure [sp_Wms_Receipt_ListClaimDetail]
 as
 begin
 		
+     Select @ClaimNumber = ClaimNo from MaterialNGClaimHeader where ClaimID = @ClaimNumber
 	IF ISNULL(@ClaimNumber, '') <> 'ALL'
 	BEGIN
 		SELECT 
@@ -63,4 +60,3 @@ begin
 	END
 	 
 end
-GO

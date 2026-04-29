@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Item_List]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Item_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -24,21 +21,61 @@ begin
 	end 
 	else 
 	begin
-		set @sqlSort = 'order by mi.Item_Code'
+		set @sqlSort = 'order by Item_Code'
 	end 
 
-	
-	declare @TotalRow int = 
-	(
-		SELECT COUNT(1) AS TotalRow
-		FROM Item_Master mi
-		WHERE 1=1
-		AND (@Keyword IS NULL OR mi.Item_Code LIKE '%' + @Keyword + '%' OR mi.Item_Name LIKE '%' + @Keyword + '%')
-	)
+	if @Length > 0
+	begin
+		declare @TotalRow int = 
+		(
+			SELECT COUNT(1) AS TotalRow
+			FROM Item_Master mi
+			WHERE 1=1
+			AND (@Keyword IS NULL OR mi.Item_Code LIKE '%' + @Keyword + '%' OR mi.Item_Name LIKE '%' + @Keyword + '%')
+		)
 
-	declare @sql VARCHAR(MAX) =
-		'select
-			TotalRows				= '''+ cast(@TotalRow as varchar) + ''',
+		declare @sql VARCHAR(MAX) =
+			'select
+				TotalRows				= '''+ cast(@TotalRow as varchar) + ''',
+				ItemCode				= mi.Item_Code,
+				ItemName				= mi.Item_Name,
+				FinishGoodPartCls		= mi.FinishGoodPart_Cls,
+				FinishGoodPartClsDesc	= a.[Description],
+				DrawingNumber			= mi.Drawing_Number,
+				WarehouseCode			= mi.WH_Code,
+				WarehouseName			= wh.WarehouseName,
+				LastUpdate				= mi.Last_Update,	
+				LastUser				= mi.Last_User,	
+				RegisterDate			= mi.Register_Date,	
+				UseEndDay				= dbo.ConvertToDateTimeFromString(mi.Use_EndDay)
+			From 
+			(
+				select * from Item_Master 
+				WHERE 1=1
+				and (Item_Code like ''%'+@Keyword+'%'' or Item_Name like ''%'+@Keyword+'%'')
+				'+ @sqlSort +'
+				OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
+				FETCH NEXT ' + cast(@Length as varchar(10)) + ' ROWS ONLY
+			) mi 
+			left join 
+			(
+				SELECT WH_Code WarehouseCode, WH_Name WarehouseName from warehouse_master
+				UNION ALL
+				SELECT DISTINCT(ml.Manufacture_Code) WarehouseCode,tm.Trade_Name WarehouseName
+				FROM Manufacture_Line ml INNER JOIN Trade_Master tm on ml.Manufacture_Code = tm.Trade_Code
+			) wh on mi.WH_Code = wh.WarehouseCode
+			left join Trade_Master tm on mi.Supplier_Code = tm.Trade_Code
+			left join Trade_Master tm2 on mi.Manufacture_Code = tm2.Trade_Code
+			left join vw_FinishGoodCls a on mi.FinishGoodPart_Cls = a.Code
+		'
+
+		print @sql
+
+		execute (@sql)
+	end
+	else
+	begin
+		select
 			ItemCode				= mi.Item_Code,
 			ItemName				= mi.Item_Name,
 			FinishGoodPartCls		= mi.FinishGoodPart_Cls,
@@ -100,7 +137,7 @@ begin
 			StockControlCls			= mi.StockControl_Cls,
 			StockControlClsDesc		= g.Description,
 			SupplyIssueCls			= mi.SupplyIssue_Cls,
-			SupplyIssueClsDesc		= '''',
+			SupplyIssueClsDesc		= '',
 			ModelCls				= mi.Model_Cls,	
 			ModelClsDesc			= mdc.Description,	
 			POTypeCls				= mi.POType_Cls,	
@@ -142,7 +179,7 @@ begin
 			LastUpdate				= mi.Last_Update,	
 			LastUser				= mi.Last_User,	
 			RegisterDate			= mi.Register_Date,	
-			UseEndDay				= dbo.ConvertToDateTimeFromFuckingString(mi.Use_EndDay),
+			UseEndDay				= dbo.ConvertToDateTimeFromString(mi.Use_EndDay),
 			mi.Thickness, mi.Width, mi.Length, mi.Weight, mi.GrossWeight, mi.Pitch, mi.Sample
 		From Item_Master mi 
 		left join 
@@ -181,16 +218,6 @@ begin
 		left join vw_ProductionCls f on mi.Production_Cls = f.Code
 		left join vw_StockControlCls g on mi.StockControl_Cls = g.Code
 		left join vw_MakeOrBuyCls h on mi.MakeBuy_Cls = h.Code
-		left join vw_ExplosionCls i on mi.Explosion_Cls = i.Code
-		WHERE 1=1
-		and (mi.Item_Code like ''%'+@Keyword+'%'' or mi.Item_Name like ''%'+@Keyword+'%'')
-		'+ @sqlSort +'
-		OFFSET ' + cast(@offset as varchar(10)) + ' ROWS 
-		FETCH NEXT ' + cast(@Length as varchar(10)) + ' ROWS ONLY
-	'
-
-	print @sql
-
-	execute (@sql)
+		left join vw_ExplosionCls i on mi.Explosion_Cls = i.Code			
+	end
 end
-GO

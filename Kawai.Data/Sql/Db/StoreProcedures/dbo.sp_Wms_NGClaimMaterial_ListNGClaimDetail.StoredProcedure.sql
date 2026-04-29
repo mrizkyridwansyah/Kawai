@@ -1,13 +1,9 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_NGClaimMaterial_ListNGClaimDetail]
+CREATE procedure [dbo].[sp_Wms_NGClaimMaterial_ListNGClaimDetail]
 --Declare
- 	@ClaimId bigint = 4,
-	@SupplierCode varchar(25)='S0059',
-	@DateFrom datetime ='' ,
-	@DateUntil datetime=''  
+ 	@ClaimId bigint = N'20004',
+	@SupplierCode varchar(25)='CSS005',
+	@DateFrom datetime ='2026-04-01' ,
+	@DateUntil datetime='2026-04-01'  
 as
 begin
 		
@@ -46,4 +42,3 @@ begin
 end
 
  
-GO

@@ -1,9 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-create   procedure [sp_Wms_Mobile_LoadingTrolley_GetDataBarcode]
+
+create   procedure [dbo].[sp_Wms_Mobile_LoadingTrolley_GetDataBarcode]
 	@TrolleyNo varchar(50),
 	@BarcodeNo varchar(50)
 as
@@ -57,4 +54,3 @@ begin
 	inner join Item_Master mi on scan.ItemCode = mi.Item_Code
 	where scan.IDSeq = @idSeq
 end
-GO

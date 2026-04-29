@@ -1,9 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE procedure [sp_Wms_Receipt_Verify]
+
+
+create   procedure [dbo].[sp_Wms_Receipt_Verify]
 	@RefNo varchar(50),
 	@Details tvp_ReceiptDetailVerify READONLY,
 	@VerifiedBy varchar(25)
@@ -117,4 +115,3 @@ as
 
 
 
-GO

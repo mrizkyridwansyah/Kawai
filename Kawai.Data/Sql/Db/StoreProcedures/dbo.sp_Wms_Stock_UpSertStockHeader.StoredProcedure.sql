@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Stock_UpSertStockHeader]
+
+create   procedure [dbo].[sp_Wms_Stock_UpSertStockHeader]
 	@TransDate		date,
 	@RefNo			varchar(50),
 	@WarehouseCode	varchar(25),
@@ -78,4 +75,3 @@ begin
 	end
 
 end
-GO

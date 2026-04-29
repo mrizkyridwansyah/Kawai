@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   PROCEDURE [sp_Wms_Mobile_ProductionResultScan_Capture]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_ProductionResultScan_Capture]
 	@BarcodeNo varchar(50)
 AS
 BEGIN
@@ -15,4 +12,3 @@ BEGIN
 	left join vw_Cls vc on TypeData = 'Unit_Cls' and mi.Unit_Cls =  vc.ClsCode
 	WHERE rd.BarcodeNo = @BarcodeNo 
 END
-GO

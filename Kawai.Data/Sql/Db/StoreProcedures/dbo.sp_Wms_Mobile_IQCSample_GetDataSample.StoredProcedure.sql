@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Mobile_IQCSample_GetDataSample]
+
+CREATE   procedure [dbo].[sp_Wms_Mobile_IQCSample_GetDataSample]
 	@ReceiptId bigint,
 	@BarcodeNo varchar(100)
 as
@@ -10,6 +7,12 @@ begin
 	if not exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @ReceiptId and BarcodeNo = @BarcodeNo)
 	begin
 		raiserror('Data barcode tidak ditemukan', 16, 1)
+		return
+	end
+
+	if not exists (select 1 from StockDetail where BarcodeNo = @BarcodeNo and Qty > 0)
+	begin
+		raiserror('Data barcode belum diterima!', 16, 1)
 		return
 	end
 
@@ -61,4 +64,3 @@ begin
 	WHERE a.ReceiptId = @ReceiptId
 	AND a.BarcodeNo = @BarcodeNo
 end
-GO

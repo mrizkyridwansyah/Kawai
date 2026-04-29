@@ -1,11 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
 
-CREATE  procedure [sp_Wms_NGClaimMaterial_Update]
+CREATE  procedure [dbo].[sp_Wms_NGClaimMaterial_Update]
 	@ClaimId				bigint,
 	@DNNumber		varchar(50),
 	@SupplierCode	varchar(25),
@@ -80,7 +76,7 @@ begin
 			a.NGCode, 
 			'' ,Getdate(), 
 			@UpdateBy
-		from @Details a left join Price_Master b on a.ItemCode  = b.Item_Code and b.Trade_Code = @SupplierCode and @ClaimDate between[dbo].[ConvertToDateTimeFromFuckingString](b.Start_Date) and [dbo].[ConvertToDateTimeFromFuckingString](b.End_Date)
+		from @Details a left join Price_Master b on a.ItemCode  = b.Item_Code and b.Trade_Code = @SupplierCode and @ClaimDate between[dbo].[ConvertToDateTimeFromString](b.Start_Date) and [dbo].[ConvertToDateTimeFromString](b.End_Date)
 
 
  

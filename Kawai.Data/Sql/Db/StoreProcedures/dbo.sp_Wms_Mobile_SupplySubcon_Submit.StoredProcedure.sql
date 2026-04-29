@@ -1,9 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   PROCEDURE [sp_Wms_Mobile_SupplySubcon_Submit]
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_SupplySubcon_Submit]
     @BarcodeNo VARCHAR(100),
     @LotNo VARCHAR(100),
     @ItemCode VARCHAR(100),
@@ -296,4 +292,3 @@ BEGIN
 		Update PartMaterialRequestDetail_PO Set RequestStatusID = 5 where RefNumber = @RequestNoCode
 	END
 END
-GO

@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   PROCEDURE [sp_Wms_Mobile_ProductionResultScan_GetDataBarcode]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_ProductionResultScan_GetDataBarcode]
 	@BarcodeNo nvarchar(50)
 AS
 BEGIN
@@ -46,4 +43,3 @@ BEGIN
 	and @SerialNo>=SerialNoFrom and @SerialNo<=SerialNoTo
 	
 end
-GO

@@ -1,5 +1,6 @@
 
-CREATE   procedure [dbo].[sp_Wms_IQCResult_List]
+
+create   procedure [dbo].[sp_Wms_IQCResult_List]
 	@SupplierCode varchar(25) = null,
 	@Source varchar(25) = null,
 	@StatusInspection varchar(20) = null,-- ALL, OK, NG

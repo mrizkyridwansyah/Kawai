@@ -1,10 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
---exec sp_Wms_Mobile_ProductionResultScan_Submit @BarcodeNo=N'101J0170J10000-G099657',@LotNo=N'23',@ItemCode=N'101J0170',@LineCode=N'001',@Qty=1.0,@UserId=N'admin'
-CREATE   PROCEDURE [sp_Wms_Mobile_ProductionResultScan_Submit]
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_ProductionResultScan_Submit]
 	@BarcodeNo	NVARCHAR(50),
 	@LotNo		NVARCHAR(50),
 	@ItemCode	NVARCHAR(50),
@@ -13,20 +8,11 @@ CREATE   PROCEDURE [sp_Wms_Mobile_ProductionResultScan_Submit]
 	@UserID		NVARCHAR(35)
 AS
 BEGIN
-
-	--DECLARE @BarcodeNo	NVARCHAR(50)='101J0170J10000-G099657',
-	--		@LotNo			NVARCHAR(50)='23',
-	--		@ItemCode		NVARCHAR(50)='101J0170',
-	--		@LineCode		NVARCHAR(50)='001',
-	--		@Qty			NUMERIC(18,9)=1,
-	--		@UserID			NVARCHAR(35)='admin'
-	
 	IF EXISTS(SELECT TOP 1 1 FROM ProductionResultDetail WHERE BarcodeNo=@BarcodeNo)
 	BEGIN
 		RAISERROR('Barcode No has been scanned',16,1)
 		RETURN
 	END
-
 
 	DECLARE @SerialNo NVARCHAR(25)
 	
@@ -117,4 +103,3 @@ BEGIN
 	END CATCH
 
 end
-GO

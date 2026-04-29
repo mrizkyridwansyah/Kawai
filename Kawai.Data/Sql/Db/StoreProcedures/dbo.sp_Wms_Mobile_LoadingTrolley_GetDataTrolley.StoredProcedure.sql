@@ -1,22 +1,52 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE   procedure [sp_Wms_Mobile_LoadingTrolley_GetDataTrolley]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_LoadingTrolley_GetDataTrolley]
 	@TrolleyNo varchar(50)
 as
 begin
-	if not exists (select 1 From PartMaterialRequestDetail where Trolley_No = @TrolleyNo)
+	declare @trolleyCls varchar(15), @trolleyDesc varchar(100)
+	select @trolleyCls = Trolley_Cls, @trolleyDesc = Description From MS_Trolley where TrolleyCode = @TrolleyNo
+
+	if @trolleyDesc is null
 	begin
 		raiserror('Data Trolley tidak ditemukan!', 16,1)
 		return
 	end
 
-	declare @pickingNo varchar(100) = (select top 1 RefNumber From PartMaterialRequestDetail where Trolley_No = @TrolleyNo order by RegisterDate desc)
+	if not exists (select 1 From PartMaterialRequestDetail where Trolley_No = @TrolleyNo)
+	begin
+		raiserror('Data Request untuk trolley ini tidak ditemukan!', 16,1)
+		return
+	end
+
+	declare @pickingNo varchar(100), @requestDetailID bigint
+	select top 1 @pickingNo = RefNumber, @requestDetailID = @requestDetailID 
+	From PartMaterialRequestDetail where Trolley_No = @TrolleyNo order by RegisterDate desc
 
 	if @pickingNo is null
 	begin
 		raiserror('Data picking tidak ditemukan!', 16,1)
+		return
+	end
+
+	declare @trolleyClsWS varchar(15) = 
+	(
+		select bomh.Troly_Cls From 
+		(
+			select RequestID, WorkStationCode from PartMaterialRequestDetail where RequestDetailID = @requestDetailID
+		) dtl
+		inner join PartMaterialRequestHeader hd on dtl.RequestID = hd.RequestID
+		inner join MS_BOMPerworkstation_Header bomh on hd.ParentItem_Code = bomh.ParentItemCode and hd.LineCode = bomh.Line_Code and dtl.WorkStationCode = bomh.WorkStationCode	
+	)
+
+	if isnull(@trolleyClsWS, '') = ''
+	begin
+		raiserror('Trolley Cls di BOM Per Workstation belum disetting!', 16,1)
+		return
+	end
+
+	if isnull(@trolleyClsWS, '') <> isnull(@trolleyCls, '')
+	begin
+		raiserror('Trolley Cls tidak sesuai!', 16,1)
 		return
 	end
 
@@ -88,4 +118,3 @@ begin
 	inner join MS_WorkStation mw on pmrd.WorkStationCode = mw.WorkStationCode
 	left join @tmpStock sd on sd.PickingNo = pmrd.RefNumber
 end
-GO

@@ -1,11 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
 
-CREATE procedure [sp_Wms_NGClaimMaterial_Create]
+CREATE procedure [dbo].[sp_Wms_NGClaimMaterial_Create]
 	@ClaimNo		varchar(50),
 	@DNNumber		varchar(50),
 	@SupplierCode	varchar(25),
@@ -56,10 +52,10 @@ begin
 			a.Qty, 
 			  ISNULL(b.Price, 0), 
 			a.Qty *    ISNULL(b.Price, 0) , 
-			a.NGCode, 
+			'NG001' NGCode, 
 			'' ,Getdate(), 
 			@RegisterBy
-		from @Details a left join Price_Master b on a.ItemCode  = b.Item_Code and b.Trade_Code = @SupplierCode and @ClaimDate between[dbo].[ConvertToDateTimeFromFuckingString](b.Start_Date) and [dbo].[ConvertToDateTimeFromFuckingString](b.End_Date)
+		from @Details a left join Price_Master b on a.ItemCode  = b.Item_Code and b.Trade_Code = @SupplierCode and @ClaimDate between[dbo].[ConvertToDateTimeFromString](b.Start_Date) and [dbo].[ConvertToDateTimeFromString](b.End_Date)
 
 		select @newid
 
@@ -73,4 +69,6 @@ begin
 	end catch
 
 end
-GO
+
+
+ 

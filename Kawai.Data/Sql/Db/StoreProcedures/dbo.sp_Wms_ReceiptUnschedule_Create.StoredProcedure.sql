@@ -1,11 +1,7 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
 
-CREATE   procedure [sp_Wms_ReceiptUnschedule_Create]
+CREATE procedure [sp_Wms_ReceiptUnschedule_Create]
 	@ReceiptNo		varchar(50),
 	@DNNumber		varchar(50),
 	@FactoryCode	varchar(25),
@@ -99,4 +95,3 @@ begin
 	end catch
 
 end
-GO

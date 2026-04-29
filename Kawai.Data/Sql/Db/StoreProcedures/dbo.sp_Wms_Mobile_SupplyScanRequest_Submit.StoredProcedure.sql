@@ -1,9 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE PROCEDURE [sp_Wms_Mobile_SupplyScanRequest_Submit]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_SupplyScanRequest_Submit]
     @WarehouseCode VARCHAR(100),
     @BarcodeNo VARCHAR(100),
     @LineCode VARCHAR(100),
@@ -331,4 +328,3 @@ BEGIN
 
     DROP TABLE #zTempData
 END
-GO
