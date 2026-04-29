@@ -66,6 +66,18 @@
       </td>
       <td colspan="2" style="width: 150px">&nbsp;</td>
     </tr>
+    <tr>
+        <td style="padding-top: 5px">
+        <label class="form-label">IP Printer</label></td>
+      <td style="padding-left: 15px;padding-top: 4px" colspan="7">
+        <input-ip
+          class="form-control"
+          v-model="model.IPAddress"
+           style-code="width: 140px"
+          style-desc="width: 270px"
+        />
+      </td>
+    </tr>
   </table>
   <div style="float: right" class="mt-4 mb-3">
     <v-button-submit
@@ -85,6 +97,7 @@ export default {
       AreaCode: "",
       AreaName: "",
       ItemType: "",
+      IPAddress: "",
       PickingSequence: null,
     },
     errorResponse: {},
@@ -128,6 +141,7 @@ export default {
           AreaCode: "", // Kosongkan AreaCode
           AreaName: "",
           ItemType: "",
+          IPAddress: "",
           PickingSequence: null,
         };
       }

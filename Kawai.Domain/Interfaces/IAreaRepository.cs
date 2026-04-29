@@ -8,6 +8,7 @@ public interface IAreaRepository
 {
     Task<List<AreaDto>> GetAll(RequestParameter param);
     Task<List<AreaDto>> GetDDL(string keyword, string warehouseCode);
+    Task<List<AreaDto>> GetDDLPrinter(string keyword);
     Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouseCode, string item, string statusReceipt, string statusHoldNG);
     Task<List<AreaDto>> GetDDLPrivileges(string keyword, string warehouseCode, string userId);
     Task<List<AreaDto>> DDLPrivilegesSearchByStock(string keyword, string warehouseCode, string item, string statusReceipt, string statusHoldNG, string userId);

@@ -33,6 +33,12 @@ public class AreaRepository : IAreaRepository
         return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode })).ToList();
     }
 
+    public async Task<List<AreaDto>> GetDDLPrinter(string keyword)
+    {
+        string sp = "sp_Wms_AreaPrinter_DDL";
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+    }
+
     public async Task<List<AreaDto>> DDLSearchByStock(string keyword, string warehouseCode, string item, string statusReceipt, string statusHoldNG)
     {
         string sp = "sp_Wms_Area_DDLByStock";
@@ -77,6 +83,7 @@ public class AreaRepository : IAreaRepository
             area.AreaName,
             area.ItemType,
             area.PickingSequence,
+            area.IPAddress,
             RegisterBy = userId
         });
     }
@@ -91,6 +98,7 @@ public class AreaRepository : IAreaRepository
             area.AreaName,
             area.ItemType,
             area.PickingSequence,
+            area.IPAddress,
             UpdateBy = userId
         });
     }

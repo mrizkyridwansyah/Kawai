@@ -14,4 +14,6 @@ public class AreaDto: DataTableDto
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
     public string DDLDescription { get; set; }
+    public string IPAddress { get; set; }
+    public string Description { get; set; }
 }

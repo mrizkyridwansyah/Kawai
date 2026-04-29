@@ -17,6 +17,7 @@ public class Area
     public string AreaName { get; set; }
 
     public string ItemType { get; set; }
+    public string IPAddress { get; set; }
 
     public int? PickingSequence { get; set; }
 }

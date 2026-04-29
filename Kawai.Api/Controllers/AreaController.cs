@@ -53,6 +53,21 @@ public class AreaController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddlsearchprinter")]
+    public async Task<IActionResult> DDLSearchPrinter(string keyword, string ids)
+    {
+        var results = await _areaRepository.GetDDLPrinter(keyword);
+     
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.IPAddress)).ToList();
+        }
+
+        return Success(results);
+    }
+
     [HttpGet("ddl-area-search-by-stock")]
     public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string item, string statusReceipt, string statusHoldNG, string ids)
     {
