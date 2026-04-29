@@ -45,7 +45,10 @@ definePageMeta({
     transform: translate(0, 0);
   }
 }
-
+table.table td {
+  padding-top: 0.2rem !important;
+  padding-bottom: 0.2rem !important;
+}
 .btn-elevate {
   color: white;
   padding: 6px 14px;
