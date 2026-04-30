@@ -308,6 +308,9 @@ export default {
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
+    
+   
+   
   },
   methods: {
     deepClone: function (obj) {
@@ -523,8 +526,9 @@ thead {
   white-space: nowrap;
 }
 
+ 
 /* MOBILE = turun kebawah normal */
-@media (max-width: 768px) {
+@media (max-width: 1035px) {
   .filter-wrapper {
     grid-template-columns: 1fr !important;
     grid-template-rows: auto !important;

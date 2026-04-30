@@ -547,7 +547,7 @@ thead {
 }
 
 /* MOBILE = turun kebawah normal */
-@media (max-width: 768px) {
+@media (max-width: 1035px) {
   .filter-wrapper {
     grid-template-columns: 1fr !important;
     grid-template-rows: auto !important;
