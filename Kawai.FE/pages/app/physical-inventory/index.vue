@@ -14,12 +14,18 @@
             <label class="form-label">Item</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-item
+             <filter-item-by-stock
               class="form-control"
               v-model="filter.item"
-              style-code="width: 170px;"
-              style-desc="width: 250px;"
+              :warehouse= "filter.warehouse"
+              :area="filter.area"
+              :address="filter.address"
+              category="ALL"
+              :show-option-all="true"
+              style-code="width: 170px"
+              style-desc="width: 250px"
             />
+             
           </td>
 
           <td width="50px"></td>
@@ -53,8 +59,8 @@
               class="form-control"
               v-model="filter.lotNo"
               :warehouse="filter.warehouse"
-              area="ALL"
-              address="ALL"
+              :area="filter.area"
+              :address="filter.address"
               :show-option-all="true"
               :item="filter.item"
               style="width: 170px"
