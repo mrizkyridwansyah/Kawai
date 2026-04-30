@@ -1,4 +1,6 @@
-﻿using Kawai.Domain.DTOs.Log;
+﻿using Hangfire;
+using Kawai.Api.Services;
+using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
@@ -26,6 +28,12 @@ public class MobileSupplyScanRequestTransactionHandler : ITransactionHandler
 
         var before = await _supplyRepo.Capture(model.BarcodeNo, model.RequestNoCode, model.ItemClass);
         await _supplyRepo.Save(model, userId);
+
+        /*
+         * DISINI NIH TEMPAT BUAT CODE REQUEST API EKTERNAL AMR
+        //BackgroundJob.Enqueue<IRobotService>(service => service.SendRobotRequest(model));
+        */
+
         var after = await _supplyRepo.Capture(model.BarcodeNo, model.RequestNoCode, model.ItemClass);
 
         await _logger.SaveDataLog(new DataLogDto

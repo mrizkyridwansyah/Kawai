@@ -95,7 +95,10 @@ public class MobileLoadingTrolleyController : HahaController
 
         var after = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
+        /*
+         * DISINI NIH TEMPAT BUAT CODE REQUEST API EKTERNAL AMR
         //BackgroundJob.Enqueue<IRobotService>(service => service.SendRobotRequest(model));
+        */
 
         await _logger.SaveDataLog(new DataLogDto
         {

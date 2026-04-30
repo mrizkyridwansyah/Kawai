@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
+using Kawai.Domain.DTOs.Mobile;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;

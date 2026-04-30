@@ -77,10 +77,125 @@ public interface IFileStorage
 
 public class LocalFileStorage : IFileStorage
 {
+    private readonly string _baseDirectory;
+
+    public LocalFileStorage(IConfiguration configuration)
+    {
+        _baseDirectory = configuration["FileStorage:LocalStoragePath"]
+            ?? throw new ArgumentNullException("FileStorage path not configured");
+    }
+
+    // =========================
+    // CORE HELPERS
+    // =========================
+
+    private string GetDirectory(string category)
+    {
+        var path = Path.Combine(_baseDirectory, category);
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        return path;
+    }
+
+    private string GetFilePath(string category, string key)
+    {
+        var fileName = Cryptography.SHA256Hash(key).ToLower() + ".bin";
+        return Path.Combine(GetDirectory(category), fileName);
+    }
+
+    private void Save(string category, string key, Stream input)
+    {
+        var path = GetFilePath(category, key);
+        using var output = new FileStream(path, FileMode.Create, FileAccess.Write);
+        input.CopyTo(output);
+    }
+
+    private void Save(string category, string key, IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        Save(category, key, stream);
+    }
+
+    private Stream? Get(string category, string key)
+    {
+        var path = GetFilePath(category, key);
+        if (!File.Exists(path)) return null;
+
+        return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+    }
+
+    private bool Exists(string category, string key)
+    {
+        var path = GetFilePath(category, key);
+        return File.Exists(path);
+    }
+
+    private void Remove(string category, string key)
+    {
+        var path = GetFilePath(category, key);
+        if (File.Exists(path))
+            File.Delete(path);
+    }
+
+    // =========================
+    // IMPORTS
+    // =========================
+
+    public void SaveToImports(string key, IFormFile file) => Save("imports", key, file);
+    public void SaveToImports(string key, Stream stream) => Save("imports", key, stream);
+    public Stream? GetFromImports(string key) => Get("imports", key);
+    public void RemoveFromImports(string key) => Remove("imports", key);
+    public bool ImportsExists(string key) => Exists("imports", key);
+
+    // =========================
+    // EXPORTS
+    // =========================
+
+    public void SaveToExports(string key, IFormFile file) => Save("exports", key, file);
+    public void SaveToExports(string key, Stream stream) => Save("exports", key, stream);
+    public Stream? GetFromExports(string key) => Get("exports", key);
+    public void RemoveFromExports(string key) => Remove("exports", key);
+    public bool ExportsExists(string key) => Exists("exports", key);
+
+    // =========================
+    // ATTACHMENTS
+    // =========================
+
+    public void SaveToAttachments(string key, IFormFile file) => Save("attachments", key, file);
+    public void SaveToAttachments(string key, Stream stream) => Save("attachments", key, stream);
+    public Stream? GetFromAttachments(string key) => Get("attachments", key);
+    public void RemoveFromAttachments(string key) => Remove("attachments", key);
+    public bool AttachmentsExists(string key) => Exists("attachments", key);
+
+    // =========================
+    // IMAGES
+    // =========================
+
+    public void SaveToImages(string key, IFormFile file) => Save("images", key, file);
+    public void SaveToImages(string key, Stream stream) => Save("images", key, stream);
+    public Stream? GetFromImages(string key) => Get("images", key);
+
+    public Stream? GetFromImagesThumbnail(string key)
+    {
+        return Get(Path.Combine("images", "thumbnail"), key);
+    }
+
+    public void RemoveFromImages(string key) => Remove("images", key);
+    public bool ImagesExists(string key) => Exists("images", key);
+
+    public string GetImagePublicUrl(string key)
+    {
+        return $"/attachment/images?key={key}";
+    }
+}
+
+public class LocalFileStorageOld : IFileStorage
+{
     protected IConfiguration Configuration;
     protected string BaseDirectory;
 
-    public LocalFileStorage(IConfiguration configuration)
+    public LocalFileStorageOld(IConfiguration configuration)
     {
         Configuration = configuration;
         BaseDirectory = Configuration["FileStorage:LocalStoragePath"];

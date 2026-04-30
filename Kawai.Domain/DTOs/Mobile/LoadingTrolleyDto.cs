@@ -1,4 +1,4 @@
-﻿namespace Kawai.Domain.DTOs;
+﻿namespace Kawai.Domain.DTOs.Mobile;
 
 public class LoadingTrolleyDto
 {

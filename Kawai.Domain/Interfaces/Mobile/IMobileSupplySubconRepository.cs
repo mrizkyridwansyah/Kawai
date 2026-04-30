@@ -1,4 +1,5 @@
 ﻿using Kawai.Domain.DTOs;
+using Kawai.Domain.DTOs.Mobile;
 using Kawai.Domain.Models.Mobile;
 
 namespace Kawai.Domain.Interfaces.Mobile;

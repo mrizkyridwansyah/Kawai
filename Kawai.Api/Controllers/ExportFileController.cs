@@ -14,15 +14,13 @@ public class ExportFileController : HahaController
         if (file == null)
             return Invalid("File Export tidak ditemukan");
 
-        using var ms = new MemoryStream();
-        file.CopyTo(ms);
-        ms.Position = 0;
+        Response.OnCompleted(() =>
+        {
+            file.Dispose();
+            return Task.CompletedTask;
+        });
 
-        file.Dispose(); // dispose source stream
-
-        FileStorage.RemoveFromExports(key);
-
-        return File(ms.ToArray(),
+        return File(file,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "export.xlsx");
     }
@@ -40,5 +38,5 @@ public class ExportFileController : HahaController
 
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
         return File(file, "application/pdf", "export");
-    }
+    }   
 }

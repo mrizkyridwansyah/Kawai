@@ -14,6 +14,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Prometheus;
+using System.Reflection;
 using System.Threading.RateLimiting;
 
 
@@ -61,18 +62,16 @@ builder.Services.AddScoped<IExportService, ExportService>();
 builder.Services.AddSingleton<ITransactionProducer, TransactionProducer>();
 
 //builder.Services.AddSingleton<StockCalculation>();
-builder.Services.AddScoped<ITransactionHandler, ReceiptTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileReceiptVerifyTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileMaterialNGTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileMaterialStorageTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileMaterialMergeStorageTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileAssignStorageTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileLoadingTrolleyTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileSupplyScanRequestTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, QualityCheckConfirmTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, QualityCheckConfirmSATransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, RobotMovingTrolleyTransactionHandler>();
-builder.Services.AddScoped<ITransactionHandler, MobileSupplySubconTransactionHandler>();
+var handlers = Assembly.GetExecutingAssembly()
+    .GetTypes()
+    .Where(t => typeof(ITransactionHandler).IsAssignableFrom(t)
+                && !t.IsInterface
+                && !t.IsAbstract);
+
+foreach (var handler in handlers)
+{
+    builder.Services.AddScoped(typeof(ITransactionHandler), handler);
+}
 
 //ini daftarin consumer rabbitmq, buat consume message di queueing =>  transaksi yg manipulasi stock (receipt, consume, transfer, production, split, dll)
 builder.Services.AddHostedService<TransactionConsumerAsync>();

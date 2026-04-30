@@ -101,6 +101,7 @@ public class ExportService : IExportService
 
         var range = ws.Range(1, 1, rowIdx, headers.Count);
         ExcelHelper.SetBorders(range);
+        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
 
         using var ms = new MemoryStream();
         workbook.SaveAs(ms, false);
