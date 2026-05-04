@@ -111,7 +111,7 @@ begin
 			Price = isnull(pod.Price, pm.Price),
 			Amount = isnull(pod.Price, pm.Price) * dtl.ReceiptQty,
 			[StatusIQC] = 
-			case when iqch.InspectionResult is null then ''Not Yet''
+			case when iqch.StatusQC NOT IN (''INPUT'', ''CONFIRMED'') then ''Not Yet''
 				 when iqch.InspectionResult = ''Accepted'' then ''OK''
 				 when iqch.InspectionResult = ''Rejected'' then ''NG''
 				 else ''HOLD'' end
