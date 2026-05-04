@@ -11,7 +11,7 @@ definePageMeta({
 </script>
 
 <style>
-.nav-tabs>.nav-item {
+.nav-tabs > .nav-item {
   margin-left: 10px;
 }
 
@@ -55,7 +55,9 @@ table.table td {
   border: none;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* efek bayangan */
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
   display: inline-flex;
   align-items: center;
   cursor: pointer;
