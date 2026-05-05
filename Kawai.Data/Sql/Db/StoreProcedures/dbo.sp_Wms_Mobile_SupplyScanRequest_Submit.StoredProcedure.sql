@@ -1,6 +1,4 @@
-
-
-CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_SupplyScanRequest_Submit]
+CREATE PROCEDURE [dbo].[sp_Wms_Mobile_SupplyScanRequest_Submit]
     @WarehouseCode VARCHAR(100),
     @BarcodeNo VARCHAR(100),
     @LineCode VARCHAR(100),
@@ -28,6 +26,8 @@ BEGIN
         @ParentItemCode VARCHAR(30),
         @InstructionNo VARCHAR(100),
         @ProductionID NUMERIC(18,0),
+		@PickingNo varchar(100),
+		@StatusReceipt varchar(100),
         @Date DATE = GETDATE()
 
     DECLARE @ReqID BIGINT
@@ -123,9 +123,29 @@ BEGIN
         @FromWarehouseCode = WarehouseCode, 
         @FromAreaCode = AreaCode, 
         @FromAddressCode = AddressCode,
+		@PickingNo = Picking_No,
+		@StatusReceipt = StatusReceipt,
         @LastQty = ISNULL(Qty,0)
     FROM dbo.StockDetail 
     WHERE BarcodeNo = @BarcodeNo AND ISNULL(Qty,0) > 0
+
+	if @FromWarehouseCode in (select Subcon_WH_Code from Trade_Master where Trade_Cls = '3') 
+	begin
+		raiserror('Lokasi stock berada di warehouse subcon!', 16,1)
+		return
+	end
+
+	if @StatusReceipt <> 'OK'
+	begin
+        RAISERROR('Status Barcode belum OK',16,1)
+        RETURN
+	end
+
+	if isnull(@PickingNo, '') <> ''
+	begin
+        RAISERROR('Barcode sudah disupply',16,1)
+        RETURN
+	end
 
     IF @Qty > @LastQty
     BEGIN
@@ -143,6 +163,8 @@ BEGIN
     END
 
     BEGIN TRY  
+		BEGIN TRANSACTION SupplyTransaction
+
         SELECT @ToPalletNo = RefNo 
         FROM PartMaterialRequestDetailPallet 
         WHERE RequestDetailID = @ReqID AND Stop_Point = @StopPoint
@@ -305,6 +327,8 @@ BEGIN
 				getdate(), @UserId
 		END
 
+		DECLARE @hasComplete bit = 0
+
 		IF NOT EXISTS 
 		(
 			Select * from 
@@ -318,9 +342,16 @@ BEGIN
 		)
 		BEGIN
 			Update PartMaterialRequestDetail Set RequestStatusID = '5' where RefNumber = @RequestNoCode
+			SET @hasComplete = 1
 		END
+
+		SELECT @hasComplete HasComplete
+
+		COMMIT TRANSACTION SupplyTransaction
     END TRY  
     BEGIN CATCH  
+		ROLLBACK TRANSACTION SupplyTransaction
+
         SET @Msg = ERROR_MESSAGE()
         RAISERROR(@Msg,16,1)
         RETURN

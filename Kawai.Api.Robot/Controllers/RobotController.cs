@@ -1,105 +1,94 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using Kawai.Data.Repositories;
-using Kawai.Domain.DTOs.Log;
-using Kawai.Domain.Interfaces;
+﻿using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Robot;
 using Kawai.Domain.Models.Robot;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace Kawai.Api.Robot.Controllers
+namespace Kawai.Api.Robot.Controllers;
+
+[Authorize(AuthenticationSchemes = "Basic")]
+[ApiController]
+[Route("api/robot")]
+public class RobotController : HahaController
 {
+    private readonly IRobotRepository _robotRepository;
+    private readonly DataLogger _logger;
 
-    [ApiController]
-    [Route("api/robot")]
-    public class RobotController : HahaController
+    public RobotController(IRobotRepository robotRepository, DataLogger logger)
     {
-        private readonly IRobotRepository _robotRepository;
-        private readonly DataLogger _logger;
+        _robotRepository = robotRepository;
+        _logger = logger;
+    }
 
-        public RobotController(IRobotRepository robotRepository, DataLogger logger)
+    [HttpPost("set-trolley")]
+    public async Task<IActionResult> SetTrolley([FromBody] SetTrolleyRequest payload)
+    {
+        await _robotRepository.SetTrolleyAsync(payload);
+        var after = await _robotRepository.CaptureSetTrolley(payload);
+        await _logger.SaveDataLog(new DataLogDto
         {
-            _robotRepository = robotRepository;
-            _logger = logger;
-        }
+            DocumentType = "Robot - Set Trolley",
+            EntityId = payload.RequestID,
+            ReferenceId = payload.TrolleyNo,
+            Before = null,
+            After = after,
+            Action = DataLogAction.Update
+        });
 
-        //jika mau pake HMAC
-        //[Authorize(AuthenticationSchemes = "HmacScheme")]
-        //[HttpPost("set-trolley")]
-        //public IActionResult SetTrolley([FromBody] SetTrolley request)
-        //{
-        //    return Ok(new
-        //    {
-        //        Message = "Trolley Set Successfully",
-        //        request.RequestID,
-        //        request.TrolleyNo
-        //    });
-        //}
+        return Success(after, "Set Trolley success");
+    }
 
-        //sekarang pake auth basic aja
-        [Authorize(AuthenticationSchemes = "Basic")]
-        [HttpPost("set-trolley")]
-        public async Task<IActionResult> SetTrolley([FromBody] SetTrolleyRequest payload)
+    [HttpPost("move-trolley")]
+    public async Task<IActionResult> MoveTrolley([FromBody] MovingTrolleyRequest payload)
+    {
+        var before = await _robotRepository.CaptureStockTrolley(payload.TrolleyNo);
+
+        await _robotRepository.MoveTrolley(payload);
+
+        var after = await _robotRepository.CaptureStockTrolley(payload.TrolleyNo);
+
+        await _logger.SaveDataLog(new DataLogDto
         {
-            if (string.IsNullOrWhiteSpace(payload.RequestID) || string.IsNullOrWhiteSpace(payload.TrolleyNo))
-            {
-                return BadRequest("RequestID dan TrolleyNo wajib diisi");
-            }
+            DocumentType = "Robot - Move Trolley",
+            EntityId = payload.TrolleyNo,
+            ReferenceId = payload.TrolleyNo,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update
+        });
 
-            await _robotRepository.SetTrolleyAsync(payload);
-            var after = await _robotRepository.CaptureSetTrolley(payload);
-            await _logger.SaveDataLog(new DataLogDto
-            {
-                DocumentType = "Robot - Set Trolley",
-                EntityId = payload.RequestID,
-                ReferenceId = payload.TrolleyNo,
-                Before = null,
-                After = after,
-                Action = DataLogAction.Update
-            });
+        return Success(message: "Move Trolley Success");
+    }
 
-            return Success(after,"Set Trolley success");
-            
-        }
-
-        [Authorize(AuthenticationSchemes = "Basic")]
-        [HttpPost("complete-status")]
-        public async Task<IActionResult> CompleteStatus([FromBody] CompleteStatusRequest payload)
+    [HttpPost("empty-trolley")]
+    public async Task<IActionResult> EmptyTrolley([FromBody] EmptyTrolleyRequest payload)
+    {
+        var data = new EmptyTrolley
         {
-            await _robotRepository.CompleteStatusAsync(payload);
-            var after = await _robotRepository.CaptureCompleteStatus(payload);
-            await _logger.SaveDataLog(new DataLogDto
-            {
-                DocumentType = "Robot - Complete Status",
-                EntityId = payload.RequestID,
-                ReferenceId = payload.StopPoint,
-                Before = null,
-                After = after,
-                Action = DataLogAction.Update
-            });
-            return Success(after, "complete status success");
-            
-        }
+            TrolleyNo = payload.TrolleyNo,
+            NewRefNo = "",
+            PickingNo = "",
+        };
 
+        var before = await _robotRepository.CaptureStockTrolley(payload.TrolleyNo);
+        await _robotRepository.EmptyTrolleyAsync(data);
 
-        [Authorize(AuthenticationSchemes = "Basic")]
-        [HttpPost("moving-stoppoint")]
-        public async Task<IActionResult> MovingStoppoint([FromBody] MovingTrolleyRequest payload)
+        await _logger.SaveDataLog(new DataLogDto
         {
-            return Ok(new
-            {
-                Message = "Moving Trolley Success"
-              
-            });
-        }
+            DocumentType = "Robot - Empty Trolley",
+            EntityId = payload.TrolleyNo,
+            ReferenceId = payload.TrolleyNo,
+            Before = before,
+            After = null,
+            Action = DataLogAction.Delete,
+            Activity = "Empty Trolley By Robot"
+        });
 
-        [Authorize(AuthenticationSchemes = "Basic")]
-        [HttpPost("empty-trolley")]
-        public async Task<IActionResult> EmptyTrolley([FromBody] EmptyTrolleyRequest payload)
+        if (string.IsNullOrEmpty(data.NewRefNo))
         {
-            await _robotRepository.EmptyTrolleyAsync(payload);
-            var after = await _robotRepository.CaptureEmptyTrolley(payload);
+            var after = await _robotRepository.CaptureStockTrolley(data.NewRefNo);
+
             await _logger.SaveDataLog(new DataLogDto
             {
                 DocumentType = "Robot - Empty Trolley",
@@ -107,18 +96,20 @@ namespace Kawai.Api.Robot.Controllers
                 ReferenceId = payload.TrolleyNo,
                 Before = null,
                 After = after,
-                Action = DataLogAction.Update
+                Action = DataLogAction.Update,
+                Activity = "Empty Trolley By Robot"
             });
-            return Success(after, "Empty Trolley (" + payload.TrolleyNo + ") Success");
         }
 
-        [HttpGet("list-data")]
-        public async Task<IActionResult> GetListDetail()
-        {
-            var json = await _robotRepository.GetListData();
-            return Content(json, "application/json");
-        }
-
-
+        return Success(message: "Empty Trolley (" + payload.TrolleyNo + ") Success");
     }
+
+    [HttpGet("list-data")]
+    public async Task<IActionResult> GetListDetail()
+    {
+        var json = await _robotRepository.GetListData();
+        return Content(json, "application/json");
+    }
+
+
 }

@@ -1,9 +1,7 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces.Robot;
-using Kawai.Domain.Models;
 using Kawai.Domain.Models.Robot;
-using System.Data.Common;
 using System.Data;
 
 namespace Kawai.Data.Repositories.Robot;
@@ -21,21 +19,45 @@ public class RobotRepository : IRobotRepository
     public async Task<string> GetListData()
     {
         string sp = "sp_Wms_SendRobot";
-
-        return await _dbExecutor.QueryFirstOrDefaultAsync<string>(
-            sp,
-            commandType: CommandType.StoredProcedure
-        );
+        return await _dbExecutor.QueryFirstOrDefaultAsync<string>(sp);
     }
 
     public async Task SetTrolleyAsync(SetTrolleyRequest payload)
     {
-        string sql = "sp_Wms_Robot_SetTrolley_Update";
+        string sql = "sp_Wms_Robot_SetTrolley";
         await _dbExecutor.ExecuteAsync(sql, new
         {
             payload.RequestID,
-            payload.TrolleyNo
+            payload.TrolleyNo,
+            payload.Status,
         });
+    }
+
+    public async Task MoveTrolley(MovingTrolleyRequest payload)
+    {
+        string sqlHeader = "sp_Wms_Robot_MoveTrolley";
+        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        {
+            RefNo = payload.TrolleyNo,
+            payload.AddressCode,
+            payload.StopPointCode,
+            payload.RobotCode,
+        });
+    }
+
+    public async Task EmptyTrolleyAsync(EmptyTrolley payload)
+    {
+        string sql = "sp_Wms_Robot_EmptyTrolley";
+        var result = await _dbExecutor.QuerySingleOrDefaultAsync<EmptyTrolley>(sql, new
+        {
+            RefNo = payload.TrolleyNo
+        });
+
+        if (result != null)
+        {
+            payload.NewRefNo = result.NewRefNo;
+            payload.PickingNo = result.PickingNo;
+        }
     }
 
     public async Task CompleteStatusAsync(CompleteStatusRequest payload)
@@ -50,24 +72,10 @@ public class RobotRepository : IRobotRepository
         });
     }
 
-    public async Task EmptyTrolleyAsync(EmptyTrolleyRequest payload)
-    {
-        string sql = "sp_Wms_Robot_EmptyTrolley";
-        await _dbExecutor.ExecuteAsync(sql, new
-        {
-            payload.TrolleyNo
-        });
-    }
     public async Task<Dictionary<string, object>> CaptureSetTrolley(SetTrolleyRequest payload)
     {
         string sp = "sp_Wms_Robot_SetTrolley_Capture";
-        var param = new
-        {
-            TrolleyNo = payload.TrolleyNo,
-            RequestID = payload.RequestID
-        };
-
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, param);
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { payload.RequestID });
 
         if (result == null)
             return new Dictionary<string, object>();
@@ -80,9 +88,9 @@ public class RobotRepository : IRobotRepository
         string sp = "sp_Wms_Robot_CompleteStatus_Capture";
         var param = new
         {
-            RequestID = payload.RequestID,
-            TrolleyNo = payload.TrolleyNo,
-            StopPoint = payload.StopPoint
+            payload.RequestID,
+            payload.TrolleyNo,
+            payload.StopPoint
         };
 
         var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, param);
@@ -92,16 +100,34 @@ public class RobotRepository : IRobotRepository
         return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 
-    public async Task<Dictionary<string, object>> CaptureEmptyTrolley(EmptyTrolleyRequest payload)
+    public async Task<Dictionary<string, object>> CaptureStockTrolley(string trolleyNo)
     {
-        string sp = "sp_Wms_Robot_EmptyTrolley_Capture";
-        var param = new
+        var result = await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_Robot_CaptureStockTrolley",
+            param: new { RefNo = trolleyNo },
+            async multi =>
+            {
+                var stocks = (await multi.ReadAsync<StockMasterDto>()).ToList();
+                var stockDetail = (await multi.ReadAsync<StockDetailDto>()).ToList();
+                foreach (var master in stocks)
+                {
+                    master.StockDetails = stockDetail
+                    .Where(detail =>
+                        detail.RefNo == master.RefNo &&
+                        detail.WarehouseCode == master.WarehouseCode &&
+                        detail.AreaCode == master.AreaCode &&
+                        detail.ItemCode == master.ItemCode &&
+                        detail.LotNo == master.LotNo
+                    ).ToList();
+                }
+                return stocks;
+            }
+        );
+
+        return new Dictionary<string, object>
         {
-            TrolleyNo = payload.TrolleyNo
+            { "Trolley No: ", trolleyNo },
+            { "Stock", result }
         };
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, param);
-        if (result == null)
-            return new Dictionary<string, object>();
-        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 }

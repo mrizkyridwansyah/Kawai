@@ -150,9 +150,9 @@ export default {
               this.list = [
                 {
                   Id: "ALL",
-                  ReceiptNo: "ALL"
+                  ReceiptNo: "ALL",
                 },
-                ...p.data.Data || [],
+                ...(p.data.Data || []),
               ];
 
               return;
@@ -168,7 +168,6 @@ export default {
                     ...p.data.Data,
                   ]
                 : p.data.Data;
-
           })
           .finally(() => (this.isLoading = false));
 

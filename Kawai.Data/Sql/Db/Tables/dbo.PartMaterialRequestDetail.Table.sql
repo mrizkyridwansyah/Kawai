@@ -17,6 +17,7 @@ CREATE TABLE [PartMaterialRequestDetail](
 	[RegisterUser] [varchar](25) NULL,
 	[LastUpdate] [datetime] NULL,
 	[LastUser] [varchar](25) NULL,
+	[StatusAMR] [varchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[RequestDetailID] ASC

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Kawai.Domain.Models.Robot
 {
@@ -18,5 +13,6 @@ namespace Kawai.Domain.Models.Robot
         [Required(ErrorMessage = "Stop Point Code harus diisi")]
         public string StopPointCode { get; set; }
 
+        public string RobotCode { get; set; }   
     }
 }

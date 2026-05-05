@@ -138,6 +138,16 @@ builder.Services.AddOpenTelemetry()
             });
     });
 
+var robotUriString = builder.Configuration["AMR:URI"];
+if (string.IsNullOrEmpty(robotUriString))
+    throw new InvalidOperationException("The 'AMR:URI' configuration value is missing or empty.");
+
+builder.Services.AddHttpClient("robot", c =>
+{
+    c.BaseAddress = new Uri(robotUriString);
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
+
 // init buat trim leading & trailing spasi dan tab di STRING, karna di DB BANYAK pake tipe data CHAR.
 SqlMapper.AddTypeHandler(typeof(string), new TrimString());
 

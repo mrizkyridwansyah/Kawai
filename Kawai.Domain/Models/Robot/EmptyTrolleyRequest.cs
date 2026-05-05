@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Kawai.Domain.Models.Robot
 {
@@ -11,5 +6,12 @@ namespace Kawai.Domain.Models.Robot
     {
         [Required(ErrorMessage = "Trolley No harus diisi")]
         public string TrolleyNo { get; set; }
+    }
+
+    public class EmptyTrolley
+    {
+        public string TrolleyNo { get; set; }
+        public string NewRefNo { get; set; }
+        public string PickingNo { get; set; }
     }
 }

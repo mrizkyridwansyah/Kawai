@@ -16,9 +16,9 @@ public class MobileLoadingTrolleyController : HahaController
     private readonly ITransactionProducer _transactionProducer;
     private readonly DataLogger _logger;
 
-    public MobileLoadingTrolleyController(IMobileLoadingTrolleyRepository LoadingTrolleyRepository, ITransactionProducer transactionProducer, DataLogger logger)
+    public MobileLoadingTrolleyController(IMobileLoadingTrolleyRepository loadingTrolleyRepository, ITransactionProducer transactionProducer, DataLogger logger)
     {
-        _loadingTrolleyRepository = LoadingTrolleyRepository;
+        _loadingTrolleyRepository = loadingTrolleyRepository;
         _transactionProducer = transactionProducer;
         _logger = logger;
     }
@@ -95,10 +95,14 @@ public class MobileLoadingTrolleyController : HahaController
 
         var after = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
-        /*
-         * DISINI NIH TEMPAT BUAT CODE REQUEST API EKTERNAL AMR
-        //BackgroundJob.Enqueue<IRobotService>(service => service.SendRobotRequest(model));
-        */
+        /* 
+         * Kalau mau pakai background job, tinggal uncomment ini  
+         * BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model, Auth.User.UserID));
+         * 
+         * Tapi karena ekspektasi nya user bisa langsung tau respon dari api external, jadi kayaknya gak perlu deh.
+         * Nanti koding aja di bawah nya langsung request ke api external nya.
+         * Tapi yaaaa siap2 nge-blocking karna nungguin respon dari sistem luar
+         */
 
         await _logger.SaveDataLog(new DataLogDto
         {
@@ -110,6 +114,7 @@ public class MobileLoadingTrolleyController : HahaController
             Activity = "Complete Mobile Loading Trolley",
             Action = DataLogAction.Update
         });
+
         return Success(after);
     }
 }

@@ -1,11 +1,8 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-create procedure [sp_Wms_Robot_MoveTrolley]
+CREATE   procedure [dbo].[sp_Wms_Robot_MoveTrolley]
 	@RefNo varchar(50),
-	@AreaCode varchar(25),
-	@RobotCode varchar(50)
+	@AddressCode varchar(25),
+	@StopPointCode varchar(25),
+	@RobotCode varchar(50) = 'Robot'
 as
 begin
 	if not exists (select 1 from StockDetail where RefNo = @RefNo)
@@ -20,9 +17,21 @@ begin
 		return
 	end
 
-	if not exists (select 1 from MS_Area where AreaCode = @AreaCode)
+	if not exists (select 1 from MS_Address where AddressCode = @AddressCode)
 	begin
-		raiserror('Address tidak ditemukan!', 16,1)
+		raiserror('Data Address tidak ditemukan!', 16,1)
+		return
+	end
+
+	if not exists (select 1 from MS_StopPoint where StopPointCode = @StopPointCode)
+	begin
+		raiserror('Data Stop Point tidak ditemukan!', 16,1)
+		return
+	end
+
+	if not exists (select 1 from MS_Address where AddressCode = @AddressCode and isnull(StopPointCode, '') = @StopPointCode)
+	begin
+		raiserror('Address belum disetting Stop Point ini!', 16,1)
 		return
 	end
 
@@ -38,23 +47,22 @@ begin
 		LotNo varchar(100), 
 		ToWarehouseCode varchar(50), 
 		ToAreaCode varchar(25), 
-		ToAreaName varchar(max), 
 		ToAddressCode varchar(25), 
+		ToAddressName varchar(max), 
 		Qty numeric(18,9)
 	)
 
-	DECLARE @ToWarehouseCode varchar(25), @ToAreaName varchar(max)
-	select @ToWarehouseCode = a.WarehouseCode, @ToAreaName = AreaName
-	From MS_Area a
+	DECLARE @ToWarehouseCode varchar(25), @ToAreaCode varchar(25), @ToAddressName varchar(max)
+	select @ToWarehouseCode = a.WarehouseCode, @ToAreaCode = a.AreaCode, @ToAddressName = AddressName
+	From MS_Address a
 	left join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
-	where AreaCode = @AreaCode
+	where AddressCode = @AddressCode
 
 	insert into @tbl
 	select 
 		a.RefNo, 
 		a.WarehouseCode, b.WarehouseName, a.AreaCode, a.AddressCode, a.ItemCode, a.BarcodeNo, a.LotNo, 
-		@ToWarehouseCode, @AreaCode, @ToAreaName, 'TMP',
-		Qty
+		@ToWarehouseCode, @ToAreaCode, @AddressCode, @ToAddressName, Qty
 	from StockDetail a
 	left join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
 	where RefNo = @RefNo
@@ -71,11 +79,11 @@ begin
 		'OUT', 'Robot Moving Trolley', RefNo, 
 		FromWarehouseCode, FromAreaCode, FromAddressCode, ItemCode, BarcodeNo, LotNo, 
 		ToWarehouseCode, ToAreaCode, ToAddressCode, ItemCode, BarcodeNo, LotNo, 
-		Qty, 'Robot Moving Trolley ke ' + isnull(ToAreaName, ''), RefNo, 
+		Qty, 'Robot Moving Trolley ke ' + isnull(ToAddressName, ''), RefNo, 
 		getdate(), @RobotCode
 	from @tbl
 
-	exec sp_Wms_Stock_MovingRef @RefNo, @ToWarehouseCode, @AreaCode, 'TMP', NULL, @RobotCode
+	exec sp_Wms_Stock_MovingRef @RefNo, @ToWarehouseCode, @ToAreaCode, @AddressCode, NULL, @RobotCode
 
 	insert into ReceiptSupplyHistory 
 	(
@@ -92,4 +100,3 @@ begin
 		getdate(), @RobotCode
 	from @tbl
 end
-GO

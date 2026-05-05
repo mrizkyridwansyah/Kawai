@@ -1,9 +1,4 @@
 ﻿using Kawai.Domain.Models.Robot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kawai.Domain.Interfaces.Robot
 {
@@ -12,18 +7,20 @@ namespace Kawai.Domain.Interfaces.Robot
         //update nomer trolley dengan parameter RequestID dan TrolleyNo
         Task SetTrolleyAsync(SetTrolleyRequest payload);
 
-        //complete status
-        Task CompleteStatusAsync(CompleteStatusRequest payload);
+        //update nomer trolley dengan parameter RequestID dan TrolleyNo
+        Task MoveTrolley(MovingTrolleyRequest payload);
 
         //update empty trolley dengan parameter TrolleyNo
-        Task EmptyTrolleyAsync(EmptyTrolleyRequest payload);
+        Task EmptyTrolleyAsync(EmptyTrolley payload);
 
         Task<Dictionary<string, object>> CaptureSetTrolley(SetTrolleyRequest payload);
-        Task<Dictionary<string, object>> CaptureCompleteStatus(CompleteStatusRequest payload);
+        Task<Dictionary<string, object>> CaptureStockTrolley(string trolleyNo);
 
-        Task<Dictionary<string, object>> CaptureEmptyTrolley(EmptyTrolleyRequest payload);
+
+        /* kaya nya ga kepake */
+        Task CompleteStatusAsync(CompleteStatusRequest payload);
         Task<string> GetListData();
-
+        Task<Dictionary<string, object>> CaptureCompleteStatus(CompleteStatusRequest payload);
 
     }
 }

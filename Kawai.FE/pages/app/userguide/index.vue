@@ -92,7 +92,7 @@
           </td>
         </tr>
       </table>
- <hr>
+      <hr />
       <!-- Navigation -->
       <div v-if="totalPages > 0" class="mt-4 text-center">
         <div class="mb-2">
@@ -104,9 +104,7 @@
             @click="prevPage"
           />
 
-          <span class="mx-2">
-            Page {{ pageNum }} / {{ totalPages }}
-          </span>
+          <span class="mx-2"> Page {{ pageNum }} / {{ totalPages }} </span>
 
           <v-button
             label="Next Page"
@@ -168,9 +166,7 @@ export default {
 
   methods: {
     normalizeText(text) {
-      return text
-        .toLowerCase()
-         
+      return text.toLowerCase();
     },
 
     async loadPdf() {
@@ -202,79 +198,76 @@ export default {
       }
     },
 
-async renderPage() {
-  if (!pdfDocInstance) return;
+    async renderPage() {
+      if (!pdfDocInstance) return;
 
-  const page = await pdfDocInstance.getPage(this.pageNum);
+      const page = await pdfDocInstance.getPage(this.pageNum);
 
-  const viewport = page.getViewport({
-    scale: this.scale,
-  });
+      const viewport = page.getViewport({
+        scale: this.scale,
+      });
 
-  const canvas = this.$refs.pdfCanvas;
-  const context = canvas.getContext("2d");
+      const canvas = this.$refs.pdfCanvas;
+      const context = canvas.getContext("2d");
 
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
 
-  await page.render({
-    canvasContext: context,
-    viewport,
-  }).promise;
+      await page.render({
+        canvasContext: context,
+        viewport,
+      }).promise;
 
-  if (!this.searchText) return;
+      if (!this.searchText) return;
 
-  const keyword = this.normalizeText(this.searchText);
+      const keyword = this.normalizeText(this.searchText);
 
-  const textContent = await page.getTextContent();
+      const textContent = await page.getTextContent();
 
-  context.save();
-  context.globalAlpha = 0.35;
-  context.fillStyle = "yellow";
-  context.globalCompositeOperation = "multiply";
+      context.save();
+      context.globalAlpha = 0.35;
+      context.fillStyle = "yellow";
+      context.globalCompositeOperation = "multiply";
 
-  textContent.items.forEach((item) => {
-    const raw = item.str;
+      textContent.items.forEach((item) => {
+        const raw = item.str;
 
-    const words = raw.split(/\s+/);
+        const words = raw.split(/\s+/);
 
-    if (!words.length) return;
+        if (!words.length) return;
 
-    const tx = pdfjsLib.Util.transform(
-      viewport.transform,
-      item.transform
-    );
+        const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
 
-    const startX = tx[4];
-    const y = tx[5];
+        const startX = tx[4];
+        const y = tx[5];
 
-    const totalWidth = item.width * this.scale;
-    const h = item.height * this.scale;
+        const totalWidth = item.width * this.scale;
+        const h = item.height * this.scale;
 
-    const avgWidth = totalWidth / raw.length;
+        const avgWidth = totalWidth / raw.length;
 
-    let currentIndex = 0;
+        let currentIndex = 0;
 
-    words.forEach((word) => {
-      const cleanWord = this.normalizeText(word);
+        words.forEach((word) => {
+          const cleanWord = this.normalizeText(word);
 
-      const startChar = raw.indexOf(word, currentIndex);
+          const startChar = raw.indexOf(word, currentIndex);
 
-      if (startChar < 0) return;
+          if (startChar < 0) return;
 
-      const wordWidth = word.length * avgWidth;
-      const x = startX + (startChar * avgWidth);
+          const wordWidth = word.length * avgWidth;
+          const x = startX + startChar * avgWidth;
 
-      if (cleanWord === keyword) {
-        context.fillRect(x, y - h, wordWidth, h);
-      }
+          if (cleanWord === keyword) {
+            context.fillRect(x, y - h, wordWidth, h);
+          }
 
-      currentIndex = startChar + word.length;
-    });
-  });
+          currentIndex = startChar + word.length;
+        });
+      });
 
-  context.restore();
-},
+      context.restore();
+    },
 
     async findText() {
       if (!pdfDocInstance) return;
@@ -312,9 +305,7 @@ async renderPage() {
 
       await this.gotoResult(0);
 
-      toastSuccess(
-        "Ditemukan " + this.searchResults.length + " hasil"
-      );
+      toastSuccess("Ditemukan " + this.searchResults.length + " hasil");
     },
 
     async gotoResult(index) {
