@@ -8,7 +8,7 @@
           :disabled="mode === 'edit'"
           :errors="errors?.Code"
           style="width: 200px"
-          maxlength="20"
+          
         />
       </td>
     </tr>
