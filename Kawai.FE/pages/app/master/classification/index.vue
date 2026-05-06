@@ -31,7 +31,7 @@
               <table class="table table-grid">
                 <thead>
                   <tr>
-                    <th class="text-center">Action</th>
+                    <th class="text-center" style="width: 100px;">Action</th>
                     <th>Code</th>
                     <th>Description</th>
                   </tr>
@@ -41,7 +41,7 @@
                   v-if="detailItems?.TableData && detailItems?.TableData.length"
                 >
                   <tr v-for="row in detailItems?.TableData" :key="row.Code">
-                    <td class="text-center">
+                    <td class="text-center" style="width: 100px;">
                       <font-awesome-icon
                         class="mr-2 text-success"
                         icon="pencil"
