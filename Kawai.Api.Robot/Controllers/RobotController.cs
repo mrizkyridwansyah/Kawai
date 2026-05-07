@@ -107,8 +107,27 @@ public class RobotController : HahaController
     [HttpGet("list-data")]
     public async Task<IActionResult> GetListDetail()
     {
-        var json = await _robotRepository.GetListData();
-        return Content(json, "application/json");
+        var results = await _robotRepository.GetListData();
+        var finalResults = results
+        .GroupBy(x => new { x.RequestSendID, x.LineCode, x.WorkStationCode, x.ProductionDate, x.Model, x.TrolleyCls, x.PickingTime })
+        .Select(g => new
+        {
+            g.Key.RequestSendID,
+            g.Key.LineCode,
+            g.Key.WorkStationCode,
+            g.Key.ProductionDate,
+            g.Key.Model,
+            g.Key.TrolleyCls,
+            g.Key.PickingTime,
+            Details = g.Select(x => new
+            {
+                x.StopPoint,
+                x.PickupSequence,
+                x.Status
+            }).OrderBy(x => x.PickupSequence).ToList()
+        }).ToList(); 
+        
+        return Success(finalResults);
     }
 
 

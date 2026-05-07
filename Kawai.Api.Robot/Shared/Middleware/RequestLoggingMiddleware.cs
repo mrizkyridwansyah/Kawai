@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Kawai.Data.SqlConnections;
 using System.Data;
+using System.Text;
 
 namespace Kawai.Api.Robot.Shared.Middleware;
 public class RequestLoggingMiddleware
@@ -36,6 +37,8 @@ public class RequestLoggingMiddleware
         //var auth = context.RequestServices.GetRequiredService<Auth>();
         string requestPath = context.Request.Path;
         string token = context.Request.Headers["Authorization"].ToString();
+        string userId = DecodeBasicAuth(token);
+
         string remoteIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         long timeStamp = EpochDateTime.Now;
         //string userId = auth?.User?.UserID ?? "";
@@ -51,7 +54,7 @@ public class RequestLoggingMiddleware
         try
         {
             await logExecutor.ExecuteAsync(@"
-                INSERT INTO [dbo].[RequestLogs]
+                INSERT INTO [dbo].[RequestAMRLogs]
                 ([Method], [Path], [Token], [IP], [UserID], [FullName], [Timestamp], [ElapsedtimeMs])
                 VALUES
                 (@Method, @RequestPath, @Token, @RemoteAddr, @UserID, @FullName, @Date, @ElapsedMilliseconds)", new
@@ -60,8 +63,8 @@ public class RequestLoggingMiddleware
                 RequestPath = requestPath,
                 Token = token,
                 RemoteAddr = remoteIp,
-                UserID = "Robot",
-                FullName = "Robot",
+                UserID = remoteIp,
+                FullName = userId,
                 Date = timeStamp,
                 stopwatch.ElapsedMilliseconds
             }, commandType: CommandType.Text);
@@ -70,6 +73,27 @@ public class RequestLoggingMiddleware
         {
             _logger.LogError(ex, "Failed to write request log");
         }
+    }
+
+    public string? DecodeBasicAuth(string authorizationHeader)
+    {
+        if (string.IsNullOrEmpty(authorizationHeader))
+            return null;
+
+        if (!authorizationHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        var base64 = authorizationHeader.Substring("Basic ".Length).Trim();
+
+        var bytes = Convert.FromBase64String(base64);
+        var decoded = Encoding.UTF8.GetString(bytes);
+
+        var parts = decoded.Split(':', 2);
+
+        if (parts.Length != 2)
+            return null;
+
+        return parts[0];
     }
 }
 

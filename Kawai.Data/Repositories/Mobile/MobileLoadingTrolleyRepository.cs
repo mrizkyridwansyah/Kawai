@@ -111,4 +111,10 @@ public class MobileLoadingTrolleyRepository : IMobileLoadingTrolleyRepository
             { "Loading Trolley", result }
         };
     }
+
+    public async Task<List<LoadingTrolleyDto>> GetListRouteTrolley(string trolleyNo)
+    {
+        string sp = "sp_Wms_Mobile_LoadingTrolley_GetListRouteTrolley";
+        return (await _dbExecutor.QueryListAsync<LoadingTrolleyDto>(sp, new { TrolleyNo = trolleyNo })).ToList();
+    }
 }

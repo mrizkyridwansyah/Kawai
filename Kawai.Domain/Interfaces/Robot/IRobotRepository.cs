@@ -1,4 +1,5 @@
-﻿using Kawai.Domain.Models.Robot;
+﻿using Kawai.Domain.DTOs.Robot;
+using Kawai.Domain.Models.Robot;
 
 namespace Kawai.Domain.Interfaces.Robot
 {
@@ -19,7 +20,7 @@ namespace Kawai.Domain.Interfaces.Robot
 
         /* kaya nya ga kepake */
         Task CompleteStatusAsync(CompleteStatusRequest payload);
-        Task<string> GetListData();
+        Task<List<SupplyRequestDto>> GetListData();
         Task<Dictionary<string, object>> CaptureCompleteStatus(CompleteStatusRequest payload);
 
     }

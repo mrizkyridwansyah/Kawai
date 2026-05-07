@@ -1,5 +1,6 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
+using Kawai.Domain.DTOs.Robot;
 using Kawai.Domain.Interfaces.Robot;
 using Kawai.Domain.Models.Robot;
 using System.Data;
@@ -16,10 +17,10 @@ public class RobotRepository : IRobotRepository
         _dbExecutor = dbExecutor;
     }
 
-    public async Task<string> GetListData()
+    public async Task<List<SupplyRequestDto>> GetListData()
     {
-        string sp = "sp_Wms_SendRobot";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<string>(sp);
+        string sp = "sp_Wms_Robot_GetDataRequest";
+        return (await _dbExecutor.QueryListAsync<SupplyRequestDto>(sp)).ToList();
     }
 
     public async Task SetTrolleyAsync(SetTrolleyRequest payload)

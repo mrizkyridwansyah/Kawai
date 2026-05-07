@@ -117,4 +117,11 @@ public class MobileLoadingTrolleyController : HahaController
 
         return Success(after);
     }
+
+    [HttpGet("list-route-trolley")]
+    public async Task<IActionResult> GetListRouteTrolley(string trolleyNo)
+    {
+        var results = await _loadingTrolleyRepository.GetListRouteTrolley(trolleyNo);
+        return Success(results);
+    }
 }

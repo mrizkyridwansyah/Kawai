@@ -10,15 +10,21 @@ namespace Kawai.Api.Robot.Services
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        private readonly IConfiguration _config;
+
+        private string? _failureMessage;
+
         public BasicAuthenticationHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock)
+        ISystemClock clock,
+        IConfiguration config)
         : base(options, logger, encoder, clock)
         {
+            _config = config;
         }
-        private string? _failureMessage;
+
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
 
@@ -36,9 +42,12 @@ namespace Kawai.Api.Robot.Services
 
                 var username = credentials[0];
                 var password = credentials[1];
-                
+
+                var configUsername = _config.GetSection("BasicAuthAMR:Username").Get<string[]>();
+                var configPassword = _config["BasicAuthAMR:Password"];
+
                 //setting bebas
-                if (username != "robot" || password != "kawairobotsecretkey")
+                if (configUsername == null || !configUsername.Contains(username) || password != configPassword)
                 {
                     _failureMessage = "Invalid Username or Password";
                     return Task.FromResult(AuthenticateResult.Fail(_failureMessage));
@@ -46,9 +55,9 @@ namespace Kawai.Api.Robot.Services
 
                 var claims = new[]
                 {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, "Robot")
-        };
+                    new Claim(ClaimTypes.Name, username),
+                    new Claim(ClaimTypes.Role, "Robot")
+                };
 
                 var identity = new ClaimsIdentity(claims, Scheme.Name);
                 var principal = new ClaimsPrincipal(identity);
