@@ -1,7 +1,9 @@
-﻿using Kawai.Api.Services;
+﻿using Hangfire;
+using Kawai.Api.Services;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
+using Kawai.Domain.Models.Robot;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
@@ -114,5 +116,14 @@ public class MobileSupplyScanRequestController : HahaController
             throw new Exception("RabbitMQ unavailable: " + ex.Message);
         }
     }
+
+    [HttpPost("send-request-amr")]
+    public async Task<IActionResult> SendRequestAMR(SendRequestAMR model)
+    {
+        BackgroundJob.Enqueue<IRobotService>(service => service.CompletePicking(model.RequestNoCode));
+        return Success();
+    }
+
+
 
 }
