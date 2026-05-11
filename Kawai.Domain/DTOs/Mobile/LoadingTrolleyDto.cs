@@ -17,5 +17,4 @@ public class LoadingTrolleyDto
     public string StopPointCode { get; set; }
     public string StopPointName { get; set; }
     public bool StatusScan { get; set; }
-    public string StatusAMR { get; set; }
 }

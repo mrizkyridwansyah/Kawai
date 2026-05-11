@@ -14,7 +14,9 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Prometheus;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text;
 using System.Threading.RateLimiting;
 
 
@@ -139,13 +141,26 @@ builder.Services.AddOpenTelemetry()
     });
 
 var robotUriString = builder.Configuration["AMR:URI"];
-if (string.IsNullOrEmpty(robotUriString))
+if (string.IsNullOrWhiteSpace(robotUriString))
     throw new InvalidOperationException("The 'AMR:URI' configuration value is missing or empty.");
+
+var username = builder.Configuration["AMR:Auth:Username"];
+var password = builder.Configuration["AMR:Auth:Password"];
+
+if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+    throw new InvalidOperationException("AMR username/password is missing."); 
 
 builder.Services.AddHttpClient("robot", c =>
 {
     c.BaseAddress = new Uri(robotUriString);
     c.Timeout = TimeSpan.FromSeconds(10);
+
+    var authToken = Convert.ToBase64String(
+        Encoding.ASCII.GetBytes($"{username}:{password}")
+    );
+
+    c.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Basic", authToken);
 });
 
 // init buat trim leading & trailing spasi dan tab di STRING, karna di DB BANYAK pake tipe data CHAR.

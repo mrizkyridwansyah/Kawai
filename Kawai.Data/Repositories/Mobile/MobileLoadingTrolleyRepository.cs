@@ -2,8 +2,10 @@
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Mobile;
+using Kawai.Domain.DTOs.Robot;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models.Mobile;
+using Kawai.Domain.Models.Robot;
 
 namespace Kawai.Data.Repositories.Mobile;
 
@@ -40,10 +42,10 @@ public class MobileLoadingTrolleyRepository : IMobileLoadingTrolleyRepository
         });
     }
 
-    public async Task CompleteLoading(MobileLoadingTrolleyComplete payload, string userId)
+    public async Task<CompleteStatusRequest> CompleteLoading(MobileLoadingTrolleyComplete payload, string userId)
     {
         string sp = "sp_Wms_Mobile_LoadingTrolley_CompleteLoading";
-        int i = await _dbExecutor.ExecuteAsync(sp, new
+        return await _dbExecutor.QueryFirstOrDefaultAsync<CompleteStatusRequest>(sp, new
         {
             payload.TrolleyNo,
             payload.PickingNo,
@@ -112,9 +114,42 @@ public class MobileLoadingTrolleyRepository : IMobileLoadingTrolleyRepository
         };
     }
 
-    public async Task<List<LoadingTrolleyDto>> GetListRouteTrolley(string trolleyNo)
+    public async Task<List<SupplyRequestCompleteDto>> GetListRouteTrolley(string trolleyNo)
     {
         string sp = "sp_Wms_Mobile_LoadingTrolley_GetListRouteTrolley";
-        return (await _dbExecutor.QueryListAsync<LoadingTrolleyDto>(sp, new { TrolleyNo = trolleyNo })).ToList();
+        return (await _dbExecutor.QueryListAsync<SupplyRequestCompleteDto>(sp, new { TrolleyNo = trolleyNo })).ToList();
+    }
+
+    public async Task UpdateStatusAMR(string pickingNo, string stopPoint, string lastStatus)
+    {
+        string sql = "sp_Wms_Mobile_LoadingTrolley_UpdateStatusAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            PickingNo = pickingNo,
+            StopPoint = stopPoint,
+            LastStatus = lastStatus
+        });
+    }
+
+    public async Task SendRequestCompleteStatusAMR(string pickingNo, string stopPoint, string userId)
+    {
+        string sql = "sp_Wms_Mobile_LoadingTrolley_SendRequestCompleteStatusAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            PickingNo = pickingNo,
+            StopPoint = stopPoint,
+            UserId = userId
+        });
+    }
+
+    public async Task<Dictionary<string, object>> CaptureStatusAMR(string pickingNo, string stopPoint)
+    {
+        string sp = "sp_Wms_Mobile_LoadingTrolley_CaptureStatusAMR";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { PickingNo = pickingNo, StopPoint = stopPoint });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 }

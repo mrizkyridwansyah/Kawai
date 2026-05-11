@@ -36,7 +36,7 @@ public class RobotController : HahaController
             Action = DataLogAction.Update
         });
 
-        return Success(after, "Set Trolley success");
+        return Success(message: "Set Trolley success");
     }
 
     [HttpPost("move-trolley")]
@@ -105,26 +105,27 @@ public class RobotController : HahaController
     }
 
     [HttpGet("list-data")]
-    public async Task<IActionResult> GetListDetail()
+    public async Task<IActionResult> GetListDetail(string reqId)
     {
-        var results = await _robotRepository.GetListData();
+        var results = await _robotRepository.GetListData(reqId);
         var finalResults = results
-        .GroupBy(x => new { x.RequestSendID, x.LineCode, x.WorkStationCode, x.ProductionDate, x.Model, x.TrolleyCls, x.PickingTime })
+        .GroupBy(x => new { x.RequestSendID, x.LineCode, x.WorkStationCode, x.ProductionDate, x.Model, x.TrolleyCls, x.TrolleyNo, x.PickingTime })
         .Select(g => new
         {
             g.Key.RequestSendID,
             g.Key.LineCode,
             g.Key.WorkStationCode,
-            g.Key.ProductionDate,
+            ProductionDate = g.Key.ProductionDate.ToString("yyyy-MM-dd"),
             g.Key.Model,
             g.Key.TrolleyCls,
-            g.Key.PickingTime,
-            Details = g.Select(x => new
+            g.Key.TrolleyNo,
+            PickupDatetime = g.Key.PickingTime,
+            Details = g.OrderBy(x => x.PickupSequence).Select(x => new
             {
                 x.StopPoint,
                 x.PickupSequence,
                 x.Status
-            }).OrderBy(x => x.PickupSequence).ToList()
+            }).Distinct().ToList()
         }).ToList(); 
         
         return Success(finalResults);

@@ -86,6 +86,25 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
         return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 
+    public async Task UpdateStatusAMR(string requestNo, string lastStatus)
+    {
+        string sql = "sp_Wms_Mobile_SupplyScanRequest_UpdateStatusAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            RequestNo = requestNo,
+            LastStatus = lastStatus
+        });
+    }
 
+    public async Task<Dictionary<string, object>> CaptureStatusAMR(string requestNo)
+    {
+        string sp = "sp_Wms_Mobile_SupplyScanRequest_CaptureStatusAMR";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { RequestNo = requestNo });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
+    }
 }
 

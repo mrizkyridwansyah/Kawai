@@ -13,6 +13,6 @@ namespace Kawai.Domain.Models.Robot
         [Required(ErrorMessage = "Stop Point Code harus diisi")]
         public string StopPointCode { get; set; }
 
-        public string RobotCode { get; set; }   
+        //public string RobotCode { get; set; }   
     }
 }

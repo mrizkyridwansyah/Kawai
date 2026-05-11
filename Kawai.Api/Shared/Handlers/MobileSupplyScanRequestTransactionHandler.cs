@@ -31,16 +31,7 @@ public class MobileSupplyScanRequestTransactionHandler : ITransactionHandler
 
         // kalo ini adalah proses terakhir yg langsung complete picking, maka request ke api AMR (Eksternal)
         if (hasComplete)
-        {
-            /* 
-             * Kalau mau pakai background job, tinggal uncomment ini  
-             * BackgroundJob.Enqueue<IRobotService>(service => service.CompletePicking(model, userId));
-             * 
-             * Tapi karena ekspektasi nya user bisa langsung tau respon dari api external, jadi kayaknya gak perlu deh.
-             * Nanti koding aja di bawah nya langsung request ke api external nya.
-             * Tapi yaaaa siap2 nge-blocking karna nungguin respon dari sistem luar
-             */
-        }
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompletePicking(model.RequestNoCode));
 
         var after = await _supplyRepo.Capture(model.BarcodeNo, model.RequestNoCode, model.ItemClass);
 

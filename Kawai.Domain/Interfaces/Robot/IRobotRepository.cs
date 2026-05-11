@@ -1,4 +1,5 @@
-﻿using Kawai.Domain.DTOs.Robot;
+﻿using Kawai.Domain.DTOs.Mobile;
+using Kawai.Domain.DTOs.Robot;
 using Kawai.Domain.Models.Robot;
 
 namespace Kawai.Domain.Interfaces.Robot
@@ -18,10 +19,7 @@ namespace Kawai.Domain.Interfaces.Robot
         Task<Dictionary<string, object>> CaptureStockTrolley(string trolleyNo);
 
 
-        /* kaya nya ga kepake */
-        Task CompleteStatusAsync(CompleteStatusRequest payload);
-        Task<List<SupplyRequestDto>> GetListData();
-        Task<Dictionary<string, object>> CaptureCompleteStatus(CompleteStatusRequest payload);
-
+        Task<List<SupplyRequestDto>> GetListData(string reqId);
+        Task<SupplyRequestCompleteDto> GetRequestData(string reqId, string stopPoint);
     }
 }

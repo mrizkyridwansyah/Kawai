@@ -17,10 +17,16 @@ public class RobotRepository : IRobotRepository
         _dbExecutor = dbExecutor;
     }
 
-    public async Task<List<SupplyRequestDto>> GetListData()
+    public async Task<List<SupplyRequestDto>> GetListData(string reqId)
     {
         string sp = "sp_Wms_Robot_GetDataRequest";
-        return (await _dbExecutor.QueryListAsync<SupplyRequestDto>(sp)).ToList();
+        return (await _dbExecutor.QueryListAsync<SupplyRequestDto>(sp, new { RequestSendID = reqId })).ToList();
+    }
+
+    public async Task<SupplyRequestCompleteDto> GetRequestData(string reqId, string stopPoint)
+    {
+        string sp = "sp_Wms_Robot_GetRequestData";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyRequestCompleteDto>(sp, new { RequestSendID = reqId, StopPoint = stopPoint });
     }
 
     public async Task SetTrolleyAsync(SetTrolleyRequest payload)
@@ -42,7 +48,7 @@ public class RobotRepository : IRobotRepository
             RefNo = payload.TrolleyNo,
             payload.AddressCode,
             payload.StopPointCode,
-            payload.RobotCode,
+            //payload.RobotCode,
         });
     }
 
@@ -61,40 +67,11 @@ public class RobotRepository : IRobotRepository
         }
     }
 
-    public async Task CompleteStatusAsync(CompleteStatusRequest payload)
-    {
-        string sql = "sp_Wms_Robot_CompleteStatus";
-        await _dbExecutor.ExecuteAsync(sql, new
-        {
-            payload.RequestID,
-            payload.TrolleyNo,
-            payload.StopPoint,
-            payload.Status
-        });
-    }
-
     public async Task<Dictionary<string, object>> CaptureSetTrolley(SetTrolleyRequest payload)
     {
         string sp = "sp_Wms_Robot_SetTrolley_Capture";
         var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { payload.RequestID });
 
-        if (result == null)
-            return new Dictionary<string, object>();
-
-        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
-    }
-
-    public async Task<Dictionary<string, object>> CaptureCompleteStatus(CompleteStatusRequest payload)
-    {
-        string sp = "sp_Wms_Robot_CompleteStatus_Capture";
-        var param = new
-        {
-            payload.RequestID,
-            payload.TrolleyNo,
-            payload.StopPoint
-        };
-
-        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, param);
         if (result == null)
             return new Dictionary<string, object>();
 

@@ -15,4 +15,10 @@ public interface IMobileSupplyScanRequestRepository
     Task<List<SupplyScanRequestDetailDto>> GetListDetail(string warehouseCode, string requestNo, string itemCode);
     Task<bool> Save(MobilSupplyScanRequestSubmit payload, string userId);
     Task<Dictionary<string, object>> Capture(string barcodeNo, string pickingNo, string itemClass);
+
+
+    #region AMR
+    Task UpdateStatusAMR(string requestNo, string lastStatus);
+    Task<Dictionary<string, object>> CaptureStatusAMR(string requestNo);
+    #endregion
 }

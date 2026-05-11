@@ -5,6 +5,7 @@ using Kawai.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Kawai.Domain.DTOs.Log;
 using Hangfire;
+using Kawai.Domain.Models.Robot;
 
 namespace Kawai.Api.Controllers.Mobile;
 
@@ -91,18 +92,17 @@ public class MobileLoadingTrolleyController : HahaController
     {
         var before = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
-        await _loadingTrolleyRepository.CompleteLoading(model, Auth.User.UserID);
+        var payload = await _loadingTrolleyRepository.CompleteLoading(model, Auth.User.UserID);
 
         var after = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
-        /* 
-         * Kalau mau pakai background job, tinggal uncomment ini  
-         * BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model, Auth.User.UserID));
-         * 
-         * Tapi karena ekspektasi nya user bisa langsung tau respon dari api external, jadi kayaknya gak perlu deh.
-         * Nanti koding aja di bawah nya langsung request ke api external nya.
-         * Tapi yaaaa siap2 nge-blocking karna nungguin respon dari sistem luar
+        /*
+         IsCaseSpecial adalah kondisi dimana proses loading trolley sebelumnya manual lalu step selanjut nya pake AMR.
          */
+        if (payload.IsCaseSpecial)
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(payload));
+        else
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(payload));
 
         await _logger.SaveDataLog(new DataLogDto
         {
@@ -123,5 +123,33 @@ public class MobileLoadingTrolleyController : HahaController
     {
         var results = await _loadingTrolleyRepository.GetListRouteTrolley(trolleyNo);
         return Success(results);
+    }
+
+    [HttpGet("send-complete-status-amr")]
+    public async Task<IActionResult> SendCompleteStatusAMR(CompleteStatusRequest model)
+    {
+        var before = await _loadingTrolleyRepository.CaptureStatusAMR(model.RequestSendID, model.StopPoint);
+
+        await _loadingTrolleyRepository.SendRequestCompleteStatusAMR(model.RequestSendID, model.StopPoint, Auth.User.UserID);
+
+        var after = await _loadingTrolleyRepository.CaptureStatusAMR(model.RequestSendID, model.StopPoint);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Send Request Complete Status AMR",
+            EntityId = model.RequestSendID.ToString() + "|" + model.StopPoint,
+            ReferenceId = model.RequestSendID.ToString() + "|" + model.StopPoint,
+            Before = before,
+            After = after,
+            Activity = "Send Request Complete Status AMR",
+            Action = DataLogAction.Update
+        });
+
+        if (model.IsCaseSpecial)
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(model));
+        else
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model));
+
+        return Success();
     }
 }
