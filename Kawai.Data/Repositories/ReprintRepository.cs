@@ -3,6 +3,7 @@ using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
+using System.Data;
 
 namespace Kawai.Data.Repositories;
 
@@ -27,4 +28,27 @@ public class ReprintRepository : IReprintRepository
         int i = await _dbExecutor.ExecuteAsync(sql, new { BarcodeNo = keyData , Source = valueData , UserID  = userId });
     }
 
+    public async Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(
+    List<string> barcodeNos)
+    {
+        string sp = "sp_Wms_Reprint_List_ByBarcode";
+
+        var dt = new DataTable();
+        dt.Columns.Add("BarcodeNo");
+
+        foreach (var barcode in barcodeNos)
+        {
+            dt.Rows.Add(barcode);
+        }
+
+        return (await _dbExecutor.QueryListAsync<LabelBarcodeDetailDto>(
+            sp,
+            new
+            {
+                tableBarcode = dt
+            }
+        )).ToList();
+    }
+
+        
 }

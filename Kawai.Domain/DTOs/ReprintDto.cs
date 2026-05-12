@@ -16,3 +16,8 @@ public class ReprintDto: DataTableDto
     public string PrintUser { get; set; }
     
 }
+public class SelectedPrintDto
+{
+    public string Key { get; set; }
+    public string Value { get; set; }
+}

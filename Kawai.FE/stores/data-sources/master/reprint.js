@@ -15,11 +15,11 @@ export const useReprint = defineStore('Reprint', {
       Total: 0,
       Filtered: 0,
       Page: 1,
-      Length: 10,
+      Length: 10000,
     },
     filter: {
       Page: 1,
-      Length: 10,
+      Length: 10000,
       Filters: [
 
       ],
@@ -86,6 +86,127 @@ export const useReprint = defineStore('Reprint', {
           .finally(_ => this.isLoading = false);
       })
     },
+printpdf: function (selectedPrint) {
+
+  this.isLoading = true;
+
+  return app.$http.post(
+    `/reprint/printpdf`,
+    selectedPrint,
+    {
+      responseType: 'blob',
+    }
+  )
+    .then((res) => {
+
+      const blob = new Blob(
+        [res.data],
+        {
+          type: 'application/pdf',
+        }
+      );
+
+      const url = window.URL.createObjectURL(blob);
+
+      let fileName = 'Barcode.pdf';
+
+      const contentDisposition =
+        res.headers['content-disposition'];
+
+      if (contentDisposition) {
+
+        // support filename*=UTF-8''
+        let match = contentDisposition.match(
+          /filename\*=UTF-8''([^;]+)/
+        );
+
+        if (match && match[1]) {
+
+          fileName = decodeURIComponent(match[1]);
+
+        } else {
+
+          // fallback filename=
+          match = contentDisposition.match(
+            /filename="?([^"]+)"?/
+          );
+
+          if (match && match[1]) {
+            fileName = match[1];
+          }
+        }
+      }
+
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = fileName;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+
+      toastSuccess("Download success");
+       
+    })
+    .catch(async (err) => {
+
+      if (err?.code === 'ERR_NETWORK')
+        this.isNetworkError = true;
+
+      if (err?.code === 'ERR_BAD_RESPONSE')
+        this.isServerError = true;
+
+      let message = "Download failed";
+
+      try {
+
+        if (err?.response?.data instanceof Blob) {
+
+          const text = await err.response.data.text();
+
+          try {
+
+            const json = JSON.parse(text);
+
+            message =
+              json?.Message ||
+              json?.message ||
+              text;
+
+          } catch {
+
+            message = text;
+          }
+
+        } else {
+
+          message =
+            err?.response?.data?.Message ||
+            err?.message ||
+            message;
+        }
+
+      } catch (e) {
+
+        console.error(e);
+      }
+
+      toastDanger(message);
+
+      console.error(err);
+
+      throw err;
+    })
+    .finally(() => {
+
+      this.isLoading = false;
+    });
+},
   },
 });
 

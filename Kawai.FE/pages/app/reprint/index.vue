@@ -70,12 +70,21 @@
         </tr>
       </table>
       <div class="d-flex flex-fill mt-1">
-        <v-button-print :print="print" cClass="" :is-loading="isLoadingPrint" />
         <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
+          <v-button-print :print="print" cClass="ml-1" :is-loading="isLoadingPrint" />
+      
+         <v-button
+                :action="printpdf"
+                label="Print Label PDF"
+                icon="file-pdf"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoadingPrint"
+              />
       </div>
       <hr />
       <v-table
         :filter="filter"
+         :use-paging=false
         :ds="ds"
         :data-items="ds.data.Items"
         :frozen-column-left="2"
@@ -90,7 +99,14 @@
           >
             <thead>
               <tr>
-                <th class="text-center">Print</th>
+                  <th class="text-center">
+                    <div style="justify-items: center">
+                      <input-checkbox
+                        :modelValue="isAllChecked"
+                        @update:modelValue="checkAll"
+                      />
+                    </div>
+                  </th>
                 <th class="text-center">Barcode No</th>
                 <th class="text-center">Item Code</th>
                 <th class="text-center">Item Name</th>
@@ -110,7 +126,7 @@
                 <td>
                   <div style="justify-items: center">
                     <input-checkbox
-                      :modelValue="isChecked(item.AreaCode)"
+                      :modelValue="isChecked(item.BarcodeNo)"
                       @update:modelValue="(checked) => check(checked, item)"
                     />
                   </div>
@@ -138,6 +154,8 @@
 </template>
 
 <script>
+import { faBullseye } from '@fortawesome/free-solid-svg-icons/faBullseye';
+
 export default {
   data: () => ({
     keywordKeys: [
@@ -190,6 +208,13 @@ export default {
     ds: function () {
       return useReprint();
     },
+     isAllChecked() {
+    if (!this.ds.data.Items?.length) return false;
+
+    return this.ds.data.Items.every((item) =>
+      this.selectedPrint.some((p) => p.Key === item.BarcodeNo)
+    );
+  },
   },
   watch: {
     "filter.factory": function () {
@@ -217,6 +242,7 @@ export default {
   },
   mounted: function () {
     this.search();
+    
   },
   methods: {
     search: function () {
@@ -232,6 +258,17 @@ export default {
 
       this.ds.setFilter(filters);
       this.ds.load();
+    },
+
+    checkAll: function (checked) {
+      if (checked) {
+        this.selectedPrint = this.ds.data.Items.map((item) => ({
+          Key: item.BarcodeNo,
+          Value: item.Source,
+        }));
+      } else {
+        this.selectedPrint = [];
+      }
     },
     reset: function () {
       this.filter.warehouse = null;
@@ -257,7 +294,7 @@ export default {
     print: function () {
       this.isLoadingPrint = true;
       if (this.selectedPrint.length === 0) {
-        toastWarning("Please choose filter");
+        toastWarning("Please choose barcode");
         this.isLoadingPrint = false;
         return;
       }
@@ -284,6 +321,41 @@ export default {
           });
       });
     },
+
+   printpdf: function () {
+  if (this.selectedPrint.length === 0) {
+    toastWarning("Please choose barcode");
+    return;
+  }
+
+  this.isLoadingPrint = true;
+
+  this.ds
+    .printpdf(this.selectedPrint)
+    .then((data) => {
+
+      const blob = new Blob([data], {
+        type: "application/pdf",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url);
+    })
+    .catch((err) => {
+      console.log(err);
+
+      toastDanger(
+        err?.response?.data?.Message ||
+        err?.Message ||
+        "Print PDF failed"
+      );
+    })
+    .finally(() => {
+      this.isLoadingPrint = false;
+    });
+},
+
   },
 };
 </script>
