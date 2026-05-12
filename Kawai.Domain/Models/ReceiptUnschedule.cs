@@ -9,6 +9,9 @@ public class ReceiptUnschedule
 
     public string ReceiptNo { get; set; }
 
+    [Required(ErrorMessage = "Receipt Date tidak boleh kosong")]
+    public DateTime? ReceiptDate { get; set; }
+
     [Required(ErrorMessage = "DN Number tidak boleh kosong")]
     [MaxLength(50, ErrorMessage = "DN Number tidak boleh lebih dari 50 karakter")]
     public string DNNumber { get; set; }

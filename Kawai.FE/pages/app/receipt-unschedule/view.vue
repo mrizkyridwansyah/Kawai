@@ -128,14 +128,28 @@
           <td style="padding-top: 5px">
             <label class="form-label">Police No</label>
           </td>
-          <td style="padding-left: 15px; padding-top: 5px">
-            <input-text
-              v-model="model.VehicleNo"
-              :errors="errors?.VehicleNo"
-              style="width: 130px"
-              maxlength="15"
-            />
-          </td>
+            <table>
+              <tr>
+                <td style="padding-left: 15px; padding-top: 5px">
+                  <input-text
+                    v-model="model.VehicleNo"
+                    :errors="errors?.VehicleNo"
+                    style="width: 130px"
+                    maxlength="15"
+                  />
+                </td>
+                <td style="padding-top: 5px; padding-left: 15px">
+                  <label class="form-label">Receipt Date</label>
+                </td>
+                <td style="padding-left: 5px; padding-top: 5px">
+                  <input-date
+                    v-model="model.ReceiptDate"
+                    style-date="width: 120px"
+                    :errors="errors?.ReceiptDate"
+                  />
+                </td>
+              </tr>
+            </table>
           <td style="padding-left: 15px; padding-top: 5px">
             <label class="form-label">Reference No</label>
           </td>
@@ -340,6 +354,7 @@ export default {
       BCNumber: "",
       BCType: "",
       BCDate: null,
+      ReceiptDate: null,
       VehicleNo: "",
       Transport: null,
       RegisterNo: null,
@@ -390,6 +405,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: today,
+          ReceiptDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -407,6 +423,7 @@ export default {
       this.getReceipt();
     }
     let today = new Date();
+    this.model.ReceiptDate = today;
     this.model.BCDate = today;
     this.model.DNDate = today;
 
@@ -449,6 +466,7 @@ export default {
         BCNumber: "",
         BCType: "",
         BCDate: today,
+        ReceiptDate: today,
         VehicleNo: "",
         Transport: null,
         ReferenceNo: null,
@@ -473,6 +491,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: today,
+          ReceiptDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,

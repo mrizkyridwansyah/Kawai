@@ -136,13 +136,29 @@
           <td style="padding-top: 5px">
             <label class="form-label">Police No</label>
           </td>
-          <td style="padding-left: 15px; padding-top: 5px">
-            <input-text
-              v-model="model.VehicleNo"
-              :errors="errors?.VehicleNo"
-              style="width: 130px"
-              maxlength="15"
-            />
+          <td>
+            <table>
+              <tr>
+                <td style="padding-left: 15px; padding-top: 5px">
+                  <input-text
+                    v-model="model.VehicleNo"
+                    :errors="errors?.VehicleNo"
+                    style="width: 130px"
+                    maxlength="15"
+                  />
+                </td>
+                <td style="padding-top: 5px; padding-left: 15px">
+                  <label class="form-label">Receipt Date</label>
+                </td>
+                <td style="padding-left: 5px; padding-top: 5px">
+                  <input-date
+                    v-model="model.ReceiptDate"
+                    style-date="width: 120px"
+                    :errors="errors?.ReceiptDate"
+                  />
+                </td>
+              </tr>
+            </table>
           </td>
           <td style="padding-left: 15px; padding-top: 5px">
             <label class="form-label">Reference No</label>
@@ -341,6 +357,7 @@ export default {
       BCNumber: "",
       BCType: "",
       BCDate: null,
+      ReceiptDate: null,
       VehicleNo: "",
       Transport: null,
       RegisterNo: null,
@@ -391,6 +408,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: today,
+          ReceiptDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -402,15 +420,15 @@ export default {
     },
   },
   mounted: function () {
-    if(this.$route.query.id) {
+    if (this.$route.query.id) {
       this.filter.ReceiptId = this.$route.query.id;
       this.isNew = false;
       this.getReceipt();
     }
     let today = new Date();
+    this.model.ReceiptDate = today;
     this.model.BCDate = today;
     this.model.DNDate = today;
-
   },
   methods: {
     deepClone: function (obj) {
@@ -450,6 +468,7 @@ export default {
         BCNumber: "",
         BCType: "",
         BCDate: today,
+        ReceiptDate: today,
         VehicleNo: "",
         Transport: null,
         ReferenceNo: null,
@@ -474,6 +493,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: today,
+          ReceiptDate: today,
           VehicleNo: "",
           Transport: null,
           ReferenceNo: null,
@@ -557,7 +577,7 @@ export default {
           toastSuccess(data || "Print Label berhasil!");
         })
         .catch((err) => toastDanger(err.Message))
-        .finally(() => this.isLoading = false);
+        .finally(() => (this.isLoading = false));
     },
     printBarcodesUsingJob: function () {
       if (!this.filter.ReceiptId) {
@@ -573,7 +593,7 @@ export default {
           if (data.Message != "-") toastInfo(data.Message);
         })
         .catch((err) => toastDanger(err.Message))
-        .finally(() => this.isLoading = false);
+        .finally(() => (this.isLoading = false));
     },
     submit: function () {
       this.isLoading = true;

@@ -149,7 +149,7 @@
                 <td style="padding-top: 5px">
                   <label class="form-label">DN Date</label>
                 </td>
-                <td style="padding-left: 15px; padding-top: 5px">
+                <td style="padding-left: 10px; padding-top: 5px">
                   <input-date
                     v-model="model.DNDate"
                     style-date="width: 115px"
@@ -186,14 +186,24 @@
               </tr>
               <tr>
                 <td style="padding-top: 5px">
+                  <label class="form-label">Receipt Date</label>
+                </td>
+                <td style="padding-left: 15px; padding-top: 5px">
+                  <input-date
+                    v-model="model.ReceiptDate"
+                    style-date="width: 115px"
+                    :errors="errors?.ReceiptDate"
+                  />
+                </td>
+                <td style="padding-top: 5px">
                   <label class="form-label">Register No</label>
                 </td>
-                <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+                <td style="padding-top: 5px; padding-left: 10px">
                   <input-text
                     v-model="model.RegisterNo"
                     :errors="errors?.RegisterNo"
                     :disabled="isNew"
-                    style="width: 360px"
+                    style="width: 135px"
                   />
                 </td>
                 <td style="padding-top: 5px; padding-left: 15px">
@@ -372,6 +382,7 @@ export default {
       BCNumber: "",
       BCType: "",
       BCDate: null,
+      ReceiptDate: null,
       VehicleNo: "",
       Transport: null,
       RegisterNo: null,
@@ -430,6 +441,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: today,
+          ReceiptDate: today,
           VehicleNo: "",
           Transport: null,
           RegisterNo: null,
@@ -445,6 +457,7 @@ export default {
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
+    this.model.ReceiptDate = today;
     this.model.BCDate = today;
     this.model.DNDate = today;
 
@@ -480,6 +493,7 @@ export default {
         BCNumber: "",
         BCType: "",
         BCDate: null,
+        ReceiptDate: null,
         VehicleNo: "",
         Transport: null,
         RegisterNo: null,
@@ -512,6 +526,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: null,
+          ReceiptDate: null,
           VehicleNo: "",
           Transport: null,
           RegisterNo: null,

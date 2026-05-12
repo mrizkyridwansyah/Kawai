@@ -109,6 +109,7 @@
                 <th class="text-center">Receipt No</th>
                 <th class="text-center">Supplier</th>
                 <th class="text-center">Delivery Date</th>
+                <th class="text-center">Receipt Date</th>
                 <th class="text-center">Item Code</th>
                 <th class="text-center">Description</th>
                 <th class="text-center">DN Number</th>
@@ -169,6 +170,15 @@
                   }"
                 >
                   {{ $func.formatDate(item.DNDate) }}
+                </td>
+                <td
+                  :class="{
+                    'bg-danger': item.Qty > item.QtyScan,
+                    'table-striped-row':
+                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
+                  }"
+                >
+                  {{ $func.formatDate(item.ReceiptDate) }}
                 </td>
                 <td
                   :class="{

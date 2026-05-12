@@ -24,12 +24,13 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
 
     public async Task Create(ReceiptUnschedule receipt, string userId)
     {
-        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode", new { receipt.FactoryCode });
+        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode", new { receipt.FactoryCode, receipt.ReceiptDate });
 
         string sqlHeader = "sp_Wms_ReceiptUnschedule_Create";
         long newId = await _dbExecutor.QuerySingleOrDefaultAsync<long>(sqlHeader, new
         {
             receipt.ReceiptNo,
+            receipt.ReceiptDate,
             receipt.DNNumber,
             receipt.FactoryCode,
             receipt.SupplierCode,
@@ -52,6 +53,7 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
             receipt.Id,
+            receipt.ReceiptDate,
             receipt.DNNumber,
             receipt.FactoryCode,
             receipt.SupplierCode,
