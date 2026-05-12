@@ -1,8 +1,10 @@
 
 
 
-CREATE procedure [sp_Wms_ReceiptUnschedule_Create]
+
+create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Create]
 	@ReceiptNo		varchar(50),
+	@ReceiptDate	date,
 	@DNNumber		varchar(50),
 	@FactoryCode	varchar(25),
 	@SupplierCode	varchar(25),
@@ -17,6 +19,12 @@ CREATE procedure [sp_Wms_ReceiptUnschedule_Create]
 	@RegisterBy		varchar(25)
 as
 begin
+	if @ReceiptDate < cast(getdate() as date)
+	begin
+		raiserror('Receipt Date tidak boleh back date!', 16, 1)
+		return
+	end
+
 	if exists 
 	(
 		select * From @Details a
@@ -34,8 +42,6 @@ begin
 		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
 		return
 	end
-
-	declare @ReceiptDate date = getdate()
 
 	begin transaction receiptTransaction
 	begin try

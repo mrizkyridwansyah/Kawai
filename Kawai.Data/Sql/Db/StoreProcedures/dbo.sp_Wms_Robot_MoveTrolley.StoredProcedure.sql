@@ -1,27 +1,32 @@
 CREATE   procedure [dbo].[sp_Wms_Robot_MoveTrolley]
 	@RefNo varchar(50),
-	@AddressCode varchar(25),
-	@StopPointCode varchar(25),
+	@FromAddressCode varchar(25),
+	@ToAddressCode varchar(25),
 	@RobotCode varchar(50) = 'Robot'
 as
 begin
+	insert into AMRMoveTrolley (TrolleyNo, FromAddressCode, ToAddressCode, RegisterDate)
+	values (@RefNo, @FromAddressCode, @ToAddressCode, getdate())
+
+	declare @StopPointCode varchar(25) = @ToAddressCode
+
 	if not exists (select 1 from StockDetail where RefNo = @RefNo)
 	begin
-		raiserror('Data Stock tidak ditemukan!', 16,1)
+		--raiserror('Data Stock tidak ditemukan!', 16,1)
 		return
 	end
 
 	if isnull((select sum(Qty) from StockDetail where RefNo = @RefNo), 0) = 0
 	begin
-		raiserror('Qty Stock sudah habis!', 16,1)
+		--raiserror('Qty Stock sudah habis!', 16,1)
 		return
 	end
 
-	if not exists (select 1 from MS_Address where AddressCode = @AddressCode)
-	begin
-		raiserror('Data Address tidak ditemukan!', 16,1)
-		return
-	end
+	--if not exists (select 1 from MS_Address where AddressCode = @AddressCode)
+	--begin
+	--	raiserror('Data Address tidak ditemukan!', 16,1)
+	--	return
+	--end
 
 	if not exists (select 1 from MS_StopPoint where StopPointCode = @StopPointCode)
 	begin
@@ -29,11 +34,11 @@ begin
 		return
 	end
 
-	if not exists (select 1 from MS_Address where AddressCode = @AddressCode and isnull(StopPointCode, '') = @StopPointCode)
-	begin
-		raiserror('Address belum disetting Stop Point ini!', 16,1)
-		return
-	end
+	--if not exists (select 1 from MS_Address where AddressCode = @AddressCode and isnull(StopPointCode, '') = @StopPointCode)
+	--begin
+	--	raiserror('Address belum disetting Stop Point ini!', 16,1)
+	--	return
+	--end
 
 	declare @tbl table 
 	(
@@ -51,6 +56,10 @@ begin
 		ToAddressName varchar(max), 
 		Qty numeric(18,9)
 	)
+
+	declare @AddressCode varchar(25) 
+
+	select top 1 @AddressCode = AddressCode From MS_Address where StopPointCode = @StopPointCode
 
 	DECLARE @ToWarehouseCode varchar(25), @ToAreaCode varchar(25), @ToAddressName varchar(max)
 	select @ToWarehouseCode = a.WarehouseCode, @ToAreaCode = a.AreaCode, @ToAddressName = AddressName

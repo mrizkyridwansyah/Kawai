@@ -17,6 +17,12 @@ CREATE procedure [sp_Wms_Receipt_Create]
 as
 
 begin
+	if @ReceiptDate < cast(getdate() as date)
+	begin
+		raiserror('Receipt Date tidak boleh back date!', 16, 1)
+		return
+	end
+
 	if exists 
 	(
 		select 1 From @Details a
@@ -119,8 +125,6 @@ begin
 		end
 	end
 	
-	declare @ReceiptDate date = getdate()
-
 	begin transaction receiptTransaction
 	begin try
 		DECLARE @registerNox TABLE (RegisterNo VARCHAR(100))

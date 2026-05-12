@@ -30,8 +30,8 @@ public class MobileSupplyScanRequestTransactionHandler : ITransactionHandler
         bool hasComplete = await _supplyRepo.Save(model, userId);
 
         // kalo ini adalah proses terakhir yg langsung complete picking, maka request ke api AMR (Eksternal)
-        if (hasComplete)
-            BackgroundJob.Enqueue<IRobotService>(service => service.CompletePicking(model.RequestNoCode));
+        //if (hasComplete)
+        //    BackgroundJob.Enqueue<IRobotService>(service => service.CompletePicking(model.RequestNoCode));
 
         var after = await _supplyRepo.Capture(model.BarcodeNo, model.RequestNoCode, model.ItemClass);
 

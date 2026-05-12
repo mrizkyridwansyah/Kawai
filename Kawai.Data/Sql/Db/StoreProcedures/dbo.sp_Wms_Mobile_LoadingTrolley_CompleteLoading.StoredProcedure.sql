@@ -57,6 +57,12 @@ begin
 	begin try 
 		begin transaction completeLoadingTransaction
 
+		declare @isManual bit = 
+		(
+			select top 1 IsManual From PartMaterialRequestSendRobotDetail 
+			where RequestSendID = @pickingNo and [Status] = 0 and Stop_Point = @currentStopPoint
+		)
+
 		update PartMaterialRequestSendRobotDetail 
 		set 
 			[Status] = 1, 
@@ -72,7 +78,8 @@ begin
 			TrolleyNo = @TrolleyNo,
 			StopPoint = @currentStopPoint,
 			CompleteStatus = 1,
-			IsCaseSpecial = 0
+			IsCaseSpecial = 0,
+			IsManual = @isManual
 
 	end try
 	begin catch

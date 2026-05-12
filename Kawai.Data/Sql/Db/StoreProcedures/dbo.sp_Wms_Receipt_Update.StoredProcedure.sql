@@ -2,6 +2,7 @@
 
 CREATE procedure [sp_Wms_Receipt_Update]
 	@Id				bigint,
+	@ReceiptDate	date,
 	@DNNumber		varchar(50),
 	@FactoryCode	varchar(25),
 	@SupplierCode	varchar(25),
@@ -38,6 +39,12 @@ begin
 	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id)
 	begin
 		raiserror('Data Receipt sudah tidak bisa diubah karena sudah print label!', 16, 1)
+		return
+	end
+
+	if @ReceiptDate < cast(getdate() as date)
+	begin
+		raiserror('Receipt Date tidak boleh back date!', 16, 1)
 		return
 	end
 
@@ -136,6 +143,7 @@ begin
 	update PartReceiptHeader 
 	set 
 		CompanyCode = @FactoryCode,
+		ReceiptDate = @ReceiptDate,
 		DNNumber	= @DNNumber, 
 		DNDate		= @DNDate, 
 		BCNumber	= @BCNumber, 
@@ -151,8 +159,6 @@ begin
 
 	-- HAPUS DETAIL LAMA
 	DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
-
-	declare @ReceiptDate date = (select ReceiptDate From PartReceiptHeader where Id = @Id)
 
 	-- INSERT DETAIL BARU
 	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)

@@ -10,4 +10,7 @@ begin
 	set
 		StatusAMR = @LastStatus
 	where RequestSendDetailID = @PickingNo and Stop_Point = @StopPoint and isnull([Status], 0) = 1 and isnull(StatusAMR, '') <> 'Completed'
+
+	-- update current process manual jadi false
+	update PartMaterialRequestDetail set IsCurrentProcessManual = 0 where RefNumber = @PickingNo and IsCurrentProcessManual = 1
 end

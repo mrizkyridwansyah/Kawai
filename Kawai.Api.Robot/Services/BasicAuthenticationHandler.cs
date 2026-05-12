@@ -47,7 +47,7 @@ namespace Kawai.Api.Robot.Services
                 var configPassword = _config["BasicAuthAMR:Password"];
 
                 //setting bebas
-                if (username == configUsername || password != configPassword)
+                if (username != configUsername || password != configPassword)
                 {
                     _failureMessage = "Invalid Username or Password";
                     return Task.FromResult(AuthenticateResult.Fail(_failureMessage));

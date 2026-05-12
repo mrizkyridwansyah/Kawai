@@ -1,6 +1,9 @@
 
-CREATE   procedure [sp_Wms_ReceiptUnschedule_Update]
+
+
+create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Update]
 	@Id				bigint,
+	@ReceiptDate	date,
 	@DNNumber		varchar(50),
 	@FactoryCode	varchar(25),
 	@SupplierCode	varchar(25),
@@ -39,6 +42,12 @@ begin
 		return
 	end
 
+	if @ReceiptDate < cast(getdate() as date)
+	begin
+		raiserror('Receipt Date tidak boleh back date!', 16, 1)
+		return
+	end
+
 	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
 	begin
 		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
@@ -49,6 +58,7 @@ begin
 	update PartReceiptHeader 
 	set 
 		CompanyCode = @FactoryCode,
+		ReceiptDate = @ReceiptDate,
 		DNNumber	= @DNNumber, 
 		DNDate		= @DNDate, 
 		BCNumber	= @BCNumber, 
@@ -63,8 +73,6 @@ begin
 
 	-- HAPUS DETAIL LAMA
 	DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
-
-	declare @ReceiptDate date = (select ReceiptDate From PartReceiptHeader where Id = @Id)
 
 	-- INSERT DETAIL BARU
 	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)

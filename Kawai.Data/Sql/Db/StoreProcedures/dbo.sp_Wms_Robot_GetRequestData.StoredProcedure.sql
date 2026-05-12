@@ -11,13 +11,14 @@ begin
 		dtlx.Trolley_No TrolleyNo, 
 		dtl.StatusAMR, 
 		IsComplete = case when isnull(dtl.StatusAMR, '') <> 'Completed' then cast(1 as bit) else cast(0 as bit) end, 
+		IsManual = dtlx.IsCurrentProcessManual,
 		dtl.LastUserRequestAMR, 
 		us.FullName LastUserNameRequestAMR, 
 		dtl.LastRequestDateAMR
 	From PartMaterialRequestSendRobotDetail dtl
 	inner join 
 	(
-		select distinct RefNumber, Trolley_No From PartMaterialRequestDetail
+		select distinct RefNumber, Trolley_No, IsCurrentProcessManual From PartMaterialRequestDetail
 	) dtlx on dtl.RequestSendID = dtlx.RefNumber
 	left join MS_StopPoint msp on dtl.Stop_Point = msp.StopPointCode
 	left join SS_UserSetup us on dtl.LastUserRequestAMR = us.UserID
