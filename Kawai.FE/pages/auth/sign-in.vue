@@ -31,9 +31,9 @@
             <div class="d-flex align-items-center">
               <span class="logo"></span>
 
-              <b>TOS</b> Admin
+              <b>EZR</b>&nbsp;WMS
             </div>
-            <small>Production control by TOS</small>
+            <small>Warehouse Management Systems</small>
           </div>
         </div>
         <!-- END login-header -->
