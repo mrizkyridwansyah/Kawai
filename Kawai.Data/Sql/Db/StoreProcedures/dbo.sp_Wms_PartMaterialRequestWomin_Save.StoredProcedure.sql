@@ -147,7 +147,7 @@ begin
 		inner join MS_BOMPerworkstation_Detail dt on hd.Bomws_ID = dt.Bomws_ID
 	) bomws
 	INNER JOIN @NewRequest req
-		ON bomws.ParentItemCode = req.ItemCode
+		ON bomws.ParentItemCode = req.ItemCode and bomws.Line_Code = @LineCode
 	INNER JOIN MS_WorkStation ws
 		ON bomws.WorkStationCode = ws.WorkStationCode
 	LEFT JOIN Item_Master mi on bomws.ChildItem_Code = mi.Item_Code

@@ -54,7 +54,33 @@ begin
 		return
 	end
 
-	update PartMaterialRequestSendRobotDetail set [Status] = 1
-	where RequestSendID = @pickingNo and [Status] = 0 and Stop_Point = @currentStopPoint
+	begin try 
+		begin transaction completeLoadingTransaction
+
+		update PartMaterialRequestSendRobotDetail 
+		set 
+			[Status] = 1, 
+			StatusAMR = 'Requesting to AMR', 
+			LastUserRequestAMR = @UserId, 
+			LastRequestDateAMR = getdate()
+		where RequestSendID = @pickingNo and [Status] = 0 and Stop_Point = @currentStopPoint
+
+		commit transaction completeLoadingTransaction
+
+		SELECT 
+			RequestSendID = @PickingNo,
+			TrolleyNo = @TrolleyNo,
+			StopPoint = @currentStopPoint,
+			CompleteStatus = 1,
+			IsCaseSpecial = 0
+
+	end try
+	begin catch
+		rollback transaction completeLoadingTransaction
+		set @msg = (select ERROR_MESSAGE())
+
+		raiserror(@msg, 16,1)
+		return
+	end catch
 end
 GO

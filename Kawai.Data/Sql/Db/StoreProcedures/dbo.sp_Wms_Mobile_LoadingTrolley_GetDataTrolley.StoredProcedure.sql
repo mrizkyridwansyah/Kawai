@@ -19,7 +19,7 @@ begin
 	end
 
 	declare @pickingNo varchar(100), @requestDetailID bigint
-	select top 1 @pickingNo = RefNumber, @requestDetailID = @requestDetailID 
+	select top 1 @pickingNo = RefNumber, @requestDetailID = RequestDetailID 
 	From PartMaterialRequestDetail where Trolley_No = @TrolleyNo order by RegisterDate desc
 
 	if @pickingNo is null
@@ -107,7 +107,8 @@ begin
 		pmrh.LineCode, ml.Line_Name LineName,
 		pmrd.WorkStationCode, mw.WorkStationName,
 		sd.*,
-		StatusScan = case when sd.RefNo = @TrolleyNo then cast(1 as bit) else cast(0 as bit) end
+		StatusScan = case when sd.RefNo = @TrolleyNo then cast(1 as bit) else cast(0 as bit) end,
+		StatusAMR = ''
 	From PartMaterialRequestHeader pmrh
 	inner join 
 	(

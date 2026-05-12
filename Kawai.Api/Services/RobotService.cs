@@ -43,7 +43,7 @@ public class RobotService : IRobotService
 
     [AutomaticRetry(
         Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 30, 45, 60, 75, 90 },
+        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
         OnAttemptsExceeded = AttemptsExceededAction.Fail
     )]
     public async Task CompletePicking(string requestNo)
@@ -177,7 +177,7 @@ public class RobotService : IRobotService
 
     [AutomaticRetry(
         Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 30, 45, 60, 75, 90 },
+        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
         OnAttemptsExceeded = AttemptsExceededAction.Fail
     )]
     public async Task CompleteLoading(CompleteStatusRequest payload)
@@ -191,6 +191,13 @@ public class RobotService : IRobotService
             if (request.IsComplete)
             {
                 _logger.LogError($"Request No {payload.RequestSendID} status AMR already complete.");
+                return;
+            }
+
+            // Return kalo status nya manual karena di sp updatestatusamr ada update current process manual jadi false biar asal update + biar ga banyak job nya
+            if (request.IsManual)
+            {
+                _logger.LogError($"Request No {payload.RequestSendID} current status is manual.");
                 return;
             }
 
@@ -272,7 +279,8 @@ public class RobotService : IRobotService
 
     [AutomaticRetry(
         Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 30, 45, 60, 75, 90 },
+        
+        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
         OnAttemptsExceeded = AttemptsExceededAction.Fail
     )]
     public async Task CompleteLoadingSpecial(CompleteStatusRequest payload)
@@ -288,6 +296,13 @@ public class RobotService : IRobotService
             if (request.IsComplete)
             {
                 _logger.LogError($"Request No {payload.RequestSendID} status AMR already complete.");
+                return;
+            }
+
+            // Return kalo status nya bukan manual biar ga banyak job nya
+            if (!request.IsManual)
+            {
+                _logger.LogError($"Request No {payload.RequestSendID} current status already use AMR.");
                 return;
             }
 
@@ -367,7 +382,7 @@ public class RobotService : IRobotService
 
     [AutomaticRetry(
         Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 30, 45, 60, 75, 90 },
+        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
         OnAttemptsExceeded = AttemptsExceededAction.Fail
     )]
     public async Task CancelRequest(string requestNo, string trolleyNo)

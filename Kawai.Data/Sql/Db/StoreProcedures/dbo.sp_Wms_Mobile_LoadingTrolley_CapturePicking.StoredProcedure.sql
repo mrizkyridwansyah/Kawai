@@ -11,6 +11,15 @@ from PartMaterialRequestHeader a
 inner join PartMaterialRequestDetail b on a.RequestID = b.RequestID
 where RefNumber = @PickingNo
 
-select RequestSendDetailID, RequestSendID, Stop_Point, Pickup_Seq, Status from PartMaterialRequestSendRobotDetail a 
+select 
+	RequestSendDetailID, 
+	RequestSendID, 
+	Stop_Point, 
+	Pickup_Seq, 
+	Status,
+	StatusAMR, 
+	LastUserRequestAMR,
+	LastRequestDateAMR
+from PartMaterialRequestSendRobotDetail a 
 where RequestSendID = @PickingNo
 GO

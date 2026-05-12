@@ -46,8 +46,8 @@ public class RobotRepository : IRobotRepository
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
             RefNo = payload.TrolleyNo,
-            payload.AddressCode,
-            payload.StopPointCode,
+            payload.FromAddressCode,
+            payload.ToAddressCode,
             //payload.RobotCode,
         });
     }

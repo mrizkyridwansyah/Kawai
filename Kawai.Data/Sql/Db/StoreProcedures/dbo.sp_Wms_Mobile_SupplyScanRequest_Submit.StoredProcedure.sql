@@ -341,7 +341,14 @@ BEGIN
 			) A where Nilai > 0
 		)
 		BEGIN
-			Update PartMaterialRequestDetail Set RequestStatusID = '5' where RefNumber = @RequestNoCode
+			Update PartMaterialRequestDetail 
+			Set 
+				RequestStatusID = 5, 
+				StatusAMR = 'Requesting to AMR',
+				LastUpdate = getdate(), LastUser = @UserID, 
+				LastRequestDateAMR = getdate(), LastUserRequestAMR = @UserID
+			where RefNumber = @RequestNoCode
+
 			SET @hasComplete = 1
 		END
 

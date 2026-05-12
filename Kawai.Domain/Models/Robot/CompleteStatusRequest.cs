@@ -6,5 +6,5 @@ public class CompleteStatusRequest
     public string TrolleyNo { get; set; }
     public string StopPoint { get; set; }
     public int CompleteStatus { get; set; }
-    public bool IsCaseSpecial { get; set; }
+    public bool IsManual { get; set; }
 }

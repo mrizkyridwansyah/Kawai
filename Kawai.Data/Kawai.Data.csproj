@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="DapperExtension.cs" />
+    <Compile Remove="Repositories\Mobile\MobileEnableAMRModeRepository.cs" />
     <Compile Remove="Repositories\StockMutationRepository.cs" />
     <Compile Remove="SqlConnections\AppDbConnection.cs" />
     <Compile Remove="SqlConnections\DataService.cs" />

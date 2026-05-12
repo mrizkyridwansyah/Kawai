@@ -10,7 +10,7 @@ as
 begin
 	Declare @ItemCode Varchar(100) = (Select ItemCode from StockDetail where BarcodeNo= @BarcodeNo and Qty > 0)
 	declare @RequestDetailID bigint = (select RequestDetailID from PartMaterialRequestDetail where RefNumber = @PickingNo and AreaCode = @ItemClass)	
-	declare @planQty numeric(18,9) = (select ChildRequirement_Qty From PartMaterialRequestItemDetail where RequestDetailID = @RequestDetailID and ItemCode = @ItemCode)
+	 declare @planQty numeric(18,9) = (select top 1 ChildRequirement_Qty From PartMaterialRequestItemDetail A Left JOIN  PartMaterialRequestDetail B ON B.RequestDetailID = A.RequestDetailID where A.RequestDetailID = @RequestDetailID and ItemCode = @ItemCode and RefNumber = @PickingNo)
 
 	declare @scanQty numeric(18,9) = 
 	(

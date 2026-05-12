@@ -97,11 +97,9 @@ public class MobileLoadingTrolleyController : HahaController
         var after = await _loadingTrolleyRepository.CapturePicking(model.PickingNo);
 
         /*
-         IsCaseSpecial adalah kondisi dimana proses loading trolley sebelumnya manual lalu step selanjut nya pake AMR.
+         IsManual adalah kondisi ketika trolley di pilih secara manual bukan pake AMR.
          */
-        if (payload.IsCaseSpecial)
-            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(payload));
-        else
+        if (!payload.IsManual)
             BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(payload));
 
         await _logger.SaveDataLog(new DataLogDto
@@ -125,7 +123,7 @@ public class MobileLoadingTrolleyController : HahaController
         return Success(results);
     }
 
-    [HttpGet("send-complete-status-amr")]
+    [HttpPost("send-complete-status-amr")]
     public async Task<IActionResult> SendCompleteStatusAMR(CompleteStatusRequest model)
     {
         var before = await _loadingTrolleyRepository.CaptureStatusAMR(model.RequestSendID, model.StopPoint);
@@ -145,11 +143,14 @@ public class MobileLoadingTrolleyController : HahaController
             Action = DataLogAction.Update
         });
 
-        if (model.IsCaseSpecial)
+        /*
+         IsManual adalah kondisi ketika trolley di pilih secara manual bukan pake AMR.
+         */
+        if (model.IsManual)
             BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(model));
         else
             BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model));
 
-        return Success();
+        return Success(message: "Requesting to AMR");
     }
 }

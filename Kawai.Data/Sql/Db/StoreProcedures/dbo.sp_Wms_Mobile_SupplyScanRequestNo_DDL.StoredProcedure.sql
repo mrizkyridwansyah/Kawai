@@ -14,10 +14,10 @@ begin
 	From PartMaterialRequestHeader a 
 	inner join PartMaterialRequestDetail bb on bb.RequestID = a.RequestID 
 	left join Manufacture_Line b on a.LineCode = b.Line_Code
-	where 1=1 and bb.RequestStatusID<>'5'
+	where 1=1 AND( (bb.RequestStatusID <>'5') OR (ISNULL(StatusAMR,'0' )='0'))
 	and (@LineCode = 'ALL' or LineCode = @LineCode)
 	and bb.AreaCode = @WareHouseCode
 	and RequestNo like '%' + @Keyword + '%'
-	order by bb.RegisterDate ASC,bb.WorkStationCode ASC
+	order by bb.RegisterDate DESC,bb.WorkStationCode ASC
 end 
 GO

@@ -73,8 +73,8 @@ begin
 		raiserror('Address barcode ini belum setting stop point', 16,1)
 		return
 	end
-	
-	declare @planQty numeric(18,9) = (select ChildRequirement_Qty From PartMaterialRequestItemDetail where RequestDetailID = @RequestDetailID and ItemCode = @ItemCode)
+
+   declare @planQty numeric(18,9) = (select top 1 ChildRequirement_Qty From PartMaterialRequestItemDetail A Left JOIN  PartMaterialRequestDetail B ON B.RequestDetailID = A.RequestDetailID where A.RequestDetailID = @RequestDetailID and ItemCode = @ItemCode and RefNumber = @RequestNo)
 
 	declare @scanQty numeric(18,9) = 
 	(

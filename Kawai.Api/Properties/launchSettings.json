@@ -14,7 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "scalar-api-docs",
-      "applicationUrl": "http://localhost:5056",
+      "applicationUrl": "http://0.0.0.0:5056",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

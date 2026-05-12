@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Remove="DTOs\AssignStorageDto.cs" />
     <Compile Remove="Interfaces\IStockMutationRepository.cs" />
+    <Compile Remove="Interfaces\Mobile\IMobileEnableAMRModeRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>

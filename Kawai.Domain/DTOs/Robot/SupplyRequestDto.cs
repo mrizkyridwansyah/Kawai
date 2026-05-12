@@ -23,6 +23,7 @@ public class SupplyRequestCompleteDto
     public string TrolleyNo { get; set; }
     public string StatusAMR { get; set; }
     public bool IsComplete { get; set; }
+    public bool IsManual { get; set; }
     public string LastUserRequestAMR { get; set; }
     public string LastUserNameRequestAMR { get; set; }
     public DateTime? LastRequestDateAMR { get; set; }
