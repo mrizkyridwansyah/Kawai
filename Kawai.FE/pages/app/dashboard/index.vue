@@ -79,6 +79,18 @@
       />
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+      <apex-chart-progress-bar
+        :current="70"
+        :max="100"
+        :height="30"
+        label-font-size="12px"
+        color="#00E396"
+        remaining-color="#fff"
+        title-panel="Download Progress"
+        :use-panel="false"
+      />
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
       <apex-chart-bar
         title-chart="Chart Bar"
         :series="[
@@ -105,7 +117,16 @@
       <apex-chart-pareto
         title-chart="Pareto"
         title-panel="Chart Pareto"
-        :labels="['Bulan 1', 'Bulan 2', 'Bulan 3', 'Bulan 4', 'Bulan 5', 'Bulan 6', 'Bulan 7', 'Bulan 8']"
+        :labels="[
+          'Bulan 1',
+          'Bulan 2',
+          'Bulan 3',
+          'Bulan 4',
+          'Bulan 5',
+          'Bulan 6',
+          'Bulan 7',
+          'Bulan 8',
+        ]"
         :data="[22, 6, 5, 2, 1, 5, 7, 8]"
         :color-bar="['salmon', 'blue']"
       />

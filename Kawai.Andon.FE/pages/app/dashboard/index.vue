@@ -79,6 +79,18 @@
       />
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+      <apex-chart-progress-bar
+        :current="70"
+        :max="100"
+        :height="30"
+        label-font-size="12px"
+        color="#00E396"
+        remaining-color="#fff"
+        title-panel="Download Progress"
+        :use-panel="false"
+      />
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
       <apex-chart-bar
         title-chart="Chart Bar"
         :series="[
