@@ -353,6 +353,14 @@
         :data="[12, 15, 17, 22, 23, 25, 28, 31, 32, 46, 45]"
       />
     </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+      <apex-chart-single-radial-donut
+        :use-panel="false"
+        :labelColor="'#fff'"
+        :label="'PENCAPAIAN'"
+        :value="90"
+      />
+    </div>
     <!-- <div class="col-lg-6 col-md-6 col-sm-12 col-12">
       <apex-chart-histogram-line
         :data="[12, 15, 17, 22, 23, 25, 28, 31, 32, 46, 45]"

@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Hangfire;
 using Kawai.Api.Hub;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
@@ -52,6 +53,7 @@ public class ExportService : IExportService
      * File akan digenerate lalu disimpan ke directory
      * Setelah itu SignalR akan broadcast ke user yg tadi export kalo file nya udah siap dengan mengirikan Key (ID dari file di direktori)+ FileName (buat jadi nama setelah didownload)
      */
+    [AutomaticRetry(Attempts = 0)]
     public async Task ExportExcelItem(RequestParameter param, string userId, string key)
     {
         var results = await _itemRepository.GetAll(param);
@@ -119,6 +121,7 @@ public class ExportService : IExportService
         await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Master Item" });
     }
 
+    [AutomaticRetry(Attempts = 0)]
     public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId)
     {
         var results = await _receiptRepository.GetListBarcodeDetail(receipt.Id.Value);
@@ -378,6 +381,7 @@ public class ExportService : IExportService
         await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
     }
 
+    [AutomaticRetry(Attempts = 0)]
     public async Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key)
     {
         var fullHtml = await _renderer.RenderAsync(

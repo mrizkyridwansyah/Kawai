@@ -134,6 +134,7 @@ export default {
   color: #999;
   font-size: 14px;
   border-radius: 1em;
+  cursor: pointer !important;
 }
 
 .error-text {
