@@ -130,7 +130,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/receipt/ddlsearch?keyword=${q || ""}&ids=${d || ""}&factory=${this.factoryCode}&supplier=${this.supplierCode || ""}&status=${
+            `/receipt/dn-ddlsearch?keyword=${q || ""}&ids=${d || ""}&factory=${this.factoryCode}&supplier=${this.supplierCode || ""}&status=${
               this.status || ""
             }${
               this.periodFrom

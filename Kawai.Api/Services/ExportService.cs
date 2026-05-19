@@ -371,7 +371,7 @@ public class ExportService : IExportService
 
         string keyStorage = Guid.NewGuid().ToString();
 
-        int defaultTTLMinute = 43200;// simpen file fisik nya selama 1 bulan. 
+        int defaultTTLMinute = 0;// simpen file fisik nya selama 1 bulan. 
 
         // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
         await _dbExecutor.ExecuteAsync(@"
