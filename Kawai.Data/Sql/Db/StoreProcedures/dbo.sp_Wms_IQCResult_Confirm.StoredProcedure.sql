@@ -193,7 +193,7 @@ begin
 
 		-- INSERT STOCK NG KE BARCODE SPLIT BIAR KE PRINT
 		insert into Barcode_Split(Warehouse_Code, Area_Code, Address_Code, BarcodeNo, Item_Code, Lot_No, Qty, Print_Cls, Supplier, RegisterDate, RegisterUser, SourceNG, FromWarehouse)
-		values (@warehouseCalcPartialNG, 'TMP', 'TMP', @NewBarcodePartialNG, @ItemCode, @lotNoCalcPartialNG, @totalNGQty, 0, @SupplierCode, getdate(), @UserId, @Source, @loopFromWH)
+		values (@warehouseCalcPartialNG, 'TMP', 'TMP', @NewBarcodePartialNG, @ItemCode, @lotNoCalcPartialNG, @totalNGQty, 0, @SupplierCode, getdate(), @UserId, 1, @loopFromWH)
 
 		-- BarcodeNGDetail UNTUK TAU ASAL DARI BARCODE NG INI DARI MANA
 		insert into BarcodeNGDetail (ReceiptId, DNNumber, SupplierCode, ItemCode, PONumber, BarcodeOriginal, BarcodeNew, QtyNG)
