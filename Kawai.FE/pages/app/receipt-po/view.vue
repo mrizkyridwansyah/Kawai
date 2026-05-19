@@ -621,11 +621,9 @@ export default {
         };
       });
 
-      if (this.isNew) {
-        this.createReceipt();
-      } else {
+      
         this.updateReceipt();
-      }
+       
     },
     getReceipt: function () {
       this.ds.loadDetail(this.filter.ReceiptId).then((dt) => {
