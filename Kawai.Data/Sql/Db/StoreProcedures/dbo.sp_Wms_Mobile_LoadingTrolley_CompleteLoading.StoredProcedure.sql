@@ -1,9 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   procedure [sp_Wms_Mobile_LoadingTrolley_CompleteLoading]
+
+create   procedure [dbo].[sp_Wms_Mobile_LoadingTrolley_CompleteLoading]
 	@TrolleyNo varchar(50),
 	@PickingNo varchar(50),
 	@UserId varchar(25)
@@ -20,7 +17,7 @@ begin
 		raiserror('Data picking tidak ditemukan!', 16,1)
 		return
 	end
-
+	
 	declare @currentStopPoint varchar(25) = 
 	(
 		select top 1 Stop_Point 
@@ -90,4 +87,3 @@ begin
 		return
 	end catch
 end
-GO

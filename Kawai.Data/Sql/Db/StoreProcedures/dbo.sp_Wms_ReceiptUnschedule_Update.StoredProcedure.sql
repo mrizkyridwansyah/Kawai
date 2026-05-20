@@ -1,6 +1,7 @@
 
 
 
+
 create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Update]
 	@Id				bigint,
 	@ReceiptDate	date,
@@ -14,10 +15,16 @@ create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Update]
 	@VehicleNo		varchar(15),
 	@Transport		varchar(15),
 	@ReferenceNo	varchar(50),
-	@Details		tvp_ReceiptUnscheduleDetail READONLY,
+	@Details		tvp_ReceiptUnscheduleDetail20260519 READONLY,
 	@UpdateBy		varchar(25)
 as
 begin
+	declare @tblCheck table(IsUpdateDetails bit, TypeConfirmation int, TypeConfirmationDesc varchar(100))
+	insert into @tblCheck
+	exec sp_Wms_ReceiptUnschedule_CheckIsDetailsUpdate @Id, @SupplierCode, @Details
+
+	declare @deleteDetailBarcode bit = (select top 1 IsUpdateDetails From @tblCheck)
+
 	if exists 
 	(
 		select * From @Details a
@@ -36,9 +43,9 @@ begin
 		return
 	end
 
-	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id)
+	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
 	begin
-		raiserror('Data Receipt tidak bisa diubah karena sudah print label!', 16, 1)
+		raiserror('Data Receipt sudah tidak bisa diubah karena sudah scan receipt!', 16, 1)
 		return
 	end
 
@@ -74,9 +81,17 @@ begin
 	-- HAPUS DETAIL LAMA
 	DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
 
+	if @deleteDetailBarcode = 1
+	begin
+		insert into PartReceiptDetailBarcodeDeleted (ReceiptId, BarcodeNo, Qty)		
+		SELECT ReceiptId, BarcodeNo, Qty FROM PartReceiptDetailBarcode where ReceiptId = @Id
+
+		DELETE FROM PartReceiptDetailBarcode where ReceiptId = @Id
+	end
+
 	-- INSERT DETAIL BARU
-	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
-	select @Id, @ReceiptDate, null, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '' 
+	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
+	select @Id, @ReceiptDate, null, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '', isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
 	from @Details a
 	left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
 	left join Item_Master mi on a.ItemCode = mi.Item_Code
@@ -92,12 +107,12 @@ begin
 	(
 		Seq_No, Supplier_Code, PO_No, Warehouse_Code, Address, Receipt_Cls, Receipt_Date, Item_Code, Qty, SerialNoFrom, SerialNoTo, 
 		Unit_Cls, Currency_Code, Price, Amount, SuratJalan_No, ProductionResult_Cls, DailySeq_No, Remarks, Transport_Cls, Lot_No,
-		Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId
+		Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId, No_Seri
 	)
 	select 
 		@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, '', it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
 		dtl.UnitCls, pm.Currency_Code, pm.Price, pm.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, '', @Transport, NULL,
-		getdate(), @UpdateBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, @Id
+		getdate(), @UpdateBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, hd.ReceiptNo, @Id, dtl.NoSeri
 	From PartReceiptHeader hd
 	inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 	left join Item_Master it on dtl.ItemCode = it.Item_Code

@@ -1,12 +1,3 @@
-USE [EZRunnerV3_KawaiLive]
-GO
-
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_PickingByScan_GetList]    Script Date: 5/19/2026 9:04:25 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 
 -- EXEC [dbo].[sp_Wms_Mobile_PickingByScan_GetList] 'SI-004/SCRAP/IX/20'
@@ -70,5 +61,3 @@ BEGIN
         sd.Serial_No;
 
 END
-GO
-

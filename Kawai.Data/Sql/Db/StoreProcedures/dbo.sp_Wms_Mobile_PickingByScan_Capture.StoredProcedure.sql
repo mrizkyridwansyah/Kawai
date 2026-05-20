@@ -1,12 +1,3 @@
-USE [EZRunnerV3_KawaiLive]
-GO
-
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_PickingByScan_Capture]    Script Date: 5/19/2026 9:02:58 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE PROCEDURE [dbo].[sp_Wms_Mobile_PickingByScan_Capture]
 (
@@ -121,5 +112,3 @@ BEGIN
         AND sd.Qty >= 0
 
 END
-GO
-

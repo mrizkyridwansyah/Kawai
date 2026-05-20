@@ -1,4 +1,5 @@
-CREATE   procedure [dbo].[sp_Wms_Robot_MoveTrolley]
+
+create   procedure [dbo].[sp_Wms_Robot_MoveTrolley]
 	@RefNo varchar(50),
 	@FromAddressCode varchar(25),
 	@ToAddressCode varchar(25),

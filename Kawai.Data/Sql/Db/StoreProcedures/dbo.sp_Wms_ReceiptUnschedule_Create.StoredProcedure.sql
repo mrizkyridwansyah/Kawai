@@ -15,7 +15,7 @@ create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Create]
 	@VehicleNo		varchar(15),
 	@Transport		varchar(15),
 	@ReferenceNo	varchar(50),
-	@Details		tvp_ReceiptUnscheduleDetail READONLY,
+	@Details		tvp_ReceiptUnscheduleDetail20260519 READONLY,
 	@RegisterBy		varchar(25)
 as
 begin
@@ -63,8 +63,8 @@ begin
 
 		declare @newid bigint = (select SCOPE_IDENTITY())
 
-		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
-		select @newid, @ReceiptDate, NULL, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '' 
+		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
+		select @newid, @ReceiptDate, NULL, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '', isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
 		from @Details a
 		left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
 		left join Item_Master mi on a.ItemCode = mi.Item_Code
@@ -72,17 +72,16 @@ begin
 		declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
 		DECLARE @BCTypeVal varchar(100) = (SELECT Description fROM BCType_Cls	WHERE BCType_Cls = @BCType)
 
-
 		insert into Part_Receipt 
 		(
 			Seq_No, Supplier_Code, PO_No, Warehouse_Code, Address, Receipt_Cls, Receipt_Date, Item_Code, Qty, SerialNoFrom, SerialNoTo, 
 			Unit_Cls, Currency_Code, Price, Amount, SuratJalan_No, ProductionResult_Cls, DailySeq_No, Remarks, Transport_Cls,
-			Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId
+			Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId, No_Seri
 		)
 		select 
 			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, '' , it.WH_Code, '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
 			dtl.UnitCls, pm.Currency_Code, pm.Price, pm.Price * dtl.ReceiptQty , hd.DNNumber, 0, null DailySeq_No, '', @Transport,
-			getdate(), @RegisterBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id
+			getdate(), @RegisterBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id, dtl.NoSeri
 		From PartReceiptHeader hd
 		inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 		left join Item_Master it on dtl.ItemCode = it.Item_Code

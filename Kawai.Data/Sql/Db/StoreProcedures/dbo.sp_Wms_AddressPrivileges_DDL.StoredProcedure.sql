@@ -1,12 +1,10 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
 
 
 
-create   procedure [sp_Wms_AddressPrivileges_DDL]
+
+
+CREATE   PROCEDURE [dbo].[sp_Wms_AddressPrivileges_DDL]
 	@UserId varchar(25) = '',
 	@Keyword varchar(max) = '',
 	@WarehouseCode varchar(25) = '',
@@ -30,4 +28,3 @@ begin
 	and (ma.AddressCode like '%'+ @Keyword +'%' or ma.AddressName like '%'+ @Keyword +'%')
 end
 
-GO

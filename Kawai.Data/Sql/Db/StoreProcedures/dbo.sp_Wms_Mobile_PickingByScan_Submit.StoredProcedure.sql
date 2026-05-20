@@ -1,12 +1,3 @@
-USE [EZRunnerV3_KawaiLive]
-GO
-
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_PickingByScan_Submit]    Script Date: 5/19/2026 9:05:13 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE PROCEDURE [dbo].[sp_Wms_Mobile_PickingByScan_Submit]
 (
@@ -319,5 +310,3 @@ BEGIN
     END CATCH
 
 END
-GO
-

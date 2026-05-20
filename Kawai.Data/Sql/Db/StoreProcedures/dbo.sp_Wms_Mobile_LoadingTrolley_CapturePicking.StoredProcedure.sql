@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_Mobile_LoadingTrolley_CapturePicking]
+
+create   procedure [dbo].[sp_Wms_Mobile_LoadingTrolley_CapturePicking]
 	@PickingNo varchar(50)
 as
 
@@ -22,4 +19,3 @@ select
 	LastRequestDateAMR
 from PartMaterialRequestSendRobotDetail a 
 where RequestSendID = @PickingNo
-GO

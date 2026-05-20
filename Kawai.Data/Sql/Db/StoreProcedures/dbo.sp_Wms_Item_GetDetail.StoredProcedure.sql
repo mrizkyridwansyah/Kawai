@@ -1,4 +1,5 @@
-CREATE   PROCEDURE [dbo].[sp_Wms_Item_GetDetail]
+
+CREATE   procedure [dbo].[sp_Wms_Item_GetDetail]
 	@ItemCode varchar(25)
 as
 begin
@@ -23,13 +24,13 @@ begin
 		MakerItemName			= (select top 1 xx.Item_Name from Item_Master xx where xx.Item_Code = mi.MakerItem_Code),
 		PartCls					= mi.Part_Cls,
 		PartClsDesc				= b.Description,
-		ReserveCls				= case when isnull(mi.Reserve_Cls, '02') = '01' then cast(1 as bit) else cast(0 as bit) end,
+		ReserveCls				= isnull(mi.Reserve_Cls, '02'),
 		ReserveClsDesc			= c.Description,
-		SupplyCls				= case when isnull(mi.Suply_Cls, '02') = '01' then cast(1 as bit) else cast(0 as bit) end,
+		SupplyCls				= isnull(mi.Suply_Cls, '02'),
 		SupplyClsDesc			= d.Description,
-		ProvisionCls			= case when isnull(mi.Provision_Cls, '02') = '01' then cast(1 as bit) else cast(0 as bit) end,
+		ProvisionCls			= isnull(mi.Provision_Cls, '02'),
 		ProvisionClsDesc		= e.Description,
-		ProductionCls			= case when isnull(mi.Production_Cls, '02') = '01' then cast(1 as bit) else cast(0 as bit) end,
+		ProductionCls			= isnull(mi.Production_Cls, '02'),
 		ProductionClsDesc		= f.Description,
 		MaterialCls				= mi.Material_Cls,
 		MaterialClsDesc			= mc.Description,
@@ -61,7 +62,7 @@ begin
 		ExplosionClsDesc		= i.Description,
 		PersonInChargeCls		= mi.PersonInCharge_Cls,
 		PersonInChargeClsDesc	= pic.Description,
-		StockControlCls			= case when isnull(mi.StockControl_Cls, '02') = '01' then cast(1 as bit) else cast(0 as bit) end,
+		StockControlCls			= isnull(mi.StockControl_Cls, '02'),
 		StockControlClsDesc		= g.Description,
 		SupplyIssueCls			= mi.SupplyIssue_Cls,
 		SupplyIssueClsDesc		= '',

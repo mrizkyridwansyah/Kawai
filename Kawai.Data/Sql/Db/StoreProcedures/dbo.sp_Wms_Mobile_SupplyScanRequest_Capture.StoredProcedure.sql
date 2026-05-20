@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE procedure [sp_Wms_Mobile_SupplyScanRequest_Capture]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_SupplyScanRequest_Capture]
 	@BarcodeNo varchar(50),
 	@PickingNo varchar(100),
 	@ItemClass varchar(25)
@@ -26,4 +23,3 @@ begin
 	left join Unit_Cls vc on mi.Unit_Cls =  vc.Unit_Cls
 	WHERE sd.BarcodeNo = @BarcodeNo and sd.Qty > 0
 end
-GO

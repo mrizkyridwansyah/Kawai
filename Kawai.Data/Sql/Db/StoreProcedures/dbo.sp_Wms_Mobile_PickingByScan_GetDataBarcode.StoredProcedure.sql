@@ -1,12 +1,3 @@
-USE [EZRunnerV3_KawaiLive]
-GO
-
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Mobile_PickingByScan_GetDataBarcode]    Script Date: 5/19/2026 9:03:18 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 -- EXEC [dbo].[sp_Wms_Mobile_PickingByScan_GetDataBarcode] 'SI-004/SCRAP/IX/20', 'K3RM202604280018'
 CREATE PROCEDURE [dbo].[sp_Wms_Mobile_PickingByScan_GetDataBarcode]
@@ -144,5 +135,3 @@ BEGIN
     WHERE sd.BarcodeNo = @BarcodeNo AND sd.Qty > 0
 
 END
-GO
-

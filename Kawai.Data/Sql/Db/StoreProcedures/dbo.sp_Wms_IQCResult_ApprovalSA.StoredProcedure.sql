@@ -190,8 +190,8 @@ begin
 					@loopFromWH, @loopFromArea, @loopFromAdddress, @loopItem, @loopBarcode, @loopLot, 
 					@loopQtyNG, @remarks + ' (Approval QC Accepted - NG ' + @typeNG +')', cast(@InspectionID as varchar), getdate(), @UserId
 
-				exec sp_Wms_Stock_UpSertStockHeader @transDate, @loopRef, @loopFromWH, @loopFromArea, @loopItem, @loopLot, @loopQtyNG, @loopIVTQty, 'S', @UserId
-				EXEC sp_Wms_Stock_UpSertStockHeader @transDate, @NewRefNo, @warehouseCalcPartialNG, 'TMP', @ItemCode, @lotNoCalcPartialNG, @loopQtyNG, NULL, 'R', @UserId
+				exec sp_Wms_Stock_UpSertStockHeader @transDate, @loopRef, @loopFromWH, @loopFromArea, @loopItem, @loopLot, @loopQtyNG, null, 'S', @UserId
+				EXEC sp_Wms_Stock_UpSertStockHeader @transDate, @NewRefNo, @warehouseCalcPartialNG, 'TMP', @ItemCode, @lotNoCalcPartialNG, @loopQtyNG, @loopIVTQty, 'R', @UserId
 
 				insert into ReceiptSupplyHistory 
 				(

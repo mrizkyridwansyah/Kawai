@@ -1,7 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 
 CREATE   procedure [sp_Wms_Mobile_SupplyScanRequestNo_DDL]
 	@Keyword varchar(max)='',
@@ -10,7 +7,7 @@ CREATE   procedure [sp_Wms_Mobile_SupplyScanRequestNo_DDL]
 as
 begin
 	select Top 1
-		bb.RefNumber RequestNo,   [Description] = 'Production : ' + convert(varchar, ProductionDate, 113) + ', ' + rtrim(b.Line_Name) +','+ rtrim(bb.workstationCode)
+		bb.RefNumber RequestNo,   [Description] = 'Production : ' + convert(varchar, ProductionDate, 113) + ', ' + rtrim(b.Line_Name) +','+ rtrim(bb.workstationCode) 
 	From PartMaterialRequestHeader a 
 	inner join PartMaterialRequestDetail bb on bb.RequestID = a.RequestID 
 	left join Manufacture_Line b on a.LineCode = b.Line_Code
@@ -20,4 +17,3 @@ begin
 	and RequestNo like '%' + @Keyword + '%'
 	order by bb.RegisterDate DESC,bb.WorkStationCode ASC
 end 
-GO

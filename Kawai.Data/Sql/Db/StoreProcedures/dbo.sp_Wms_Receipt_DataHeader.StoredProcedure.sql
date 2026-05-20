@@ -31,7 +31,8 @@ begin
 		case when @countPO > 1 then 'ALL' else @firstPO end [PONumber],
 		StatusReceipt,
 		a.LastUpdate,
-		c.FullName LastUser
+		c.FullName LastUser,
+		a.RegisterNo
 	FROM PartReceiptHeader a
 	LEFT JOIN trade_master b ON a.SupplierCode = b.Trade_Code
 	left join ss_usersetup c on isnull(a.LastUser, a.RegisterUser) = c.UserID	

@@ -1,4 +1,6 @@
-CREATE PROCEDURE [dbo].[sp_Wms_Receipt_Update]
+
+
+create   procedure [dbo].[sp_Wms_Receipt_Update]
 	@Id				bigint,
 	@ReceiptDate	date,
 	@DNNumber		varchar(50),
@@ -12,10 +14,16 @@ CREATE PROCEDURE [dbo].[sp_Wms_Receipt_Update]
 	@Transport		varchar(15),
 	@Remarks		varchar(max),
 	@RegisterNo		varchar(max),
-	@Details		tvp_ReceiptDetail READONLY,
+	@Details		tvp_ReceiptDetail20260519 READONLY,
 	@UpdateBy		varchar(25)
 as
 begin
+	declare @tblCheck table(IsUpdateDetails bit, TypeConfirmation int, TypeConfirmationDesc varchar(100))
+	insert into @tblCheck
+	exec sp_Wms_Receipt_CheckIsDetailsUpdate @Id, @SupplierCode, @Details
+
+	declare @deleteDetailBarcode bit = (select top 1 IsUpdateDetails From @tblCheck)
+
 	if exists 
 	(
 		select 1 From @Details a
@@ -34,7 +42,7 @@ begin
 		return
 	end
 
-	if exists (select 1 from PartReceiptDetailBarcode A inner join StockDetail B ON A.BarcodeNo = B.BarcodeNo where ReceiptId = @Id)
+	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
 	begin
 		raiserror('Data Receipt sudah tidak bisa diubah karena sudah scan receipt!', 16, 1)
 		return
@@ -123,18 +131,18 @@ begin
 		) res
 		group by res.PONumber, res.ParentItem, res.QtyReceipt
 
-		--declare @msg varchar(max)
-		--if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
-		--begin
-		--	SELECT @msg = STRING_AGG(
-		--		PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
-		--		', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
-		--	, '; ')
-		--	FROM @tblPOItemSummaryBOM
-		--	WHERE QtyMinCanReceipt < QtyReceipt
-		--	RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
-		--	return	
-		--end
+		declare @msg varchar(max)
+		if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
+		begin
+			SELECT @msg = STRING_AGG(
+				PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
+				', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
+			, '; ')
+			FROM @tblPOItemSummaryBOM
+			WHERE QtyMinCanReceipt < QtyReceipt
+			RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
+			return	
+		end
 	end
 	
 	-- UPDATE DATA RECEIPT HEADER
@@ -158,12 +166,18 @@ begin
 	-- HAPUS DETAIL LAMA
 	DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
 	
-	DELETE FROM PartReceiptDetailBarcode where ReceiptId = @Id
+	if @deleteDetailBarcode = 1
+	begin
+		insert into PartReceiptDetailBarcodeDeleted (ReceiptId, BarcodeNo, Qty)		
+		SELECT ReceiptId, BarcodeNo, Qty FROM PartReceiptDetailBarcode where ReceiptId = @Id
+
+		DELETE FROM PartReceiptDetailBarcode where ReceiptId = @Id
+	end
 
 	-- INSERT DETAIL BARU
-	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks)
+	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
 	select 
-		@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks
+		@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks, isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
 	from @Details a 
 	left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
 	left join Item_Master mi on a.ItemCode = mi.Item_Code
@@ -179,12 +193,12 @@ begin
 	(
 		Seq_No, Supplier_Code, PO_No, Warehouse_Code, Address, Receipt_Cls, Receipt_Date, Item_Code, Qty, SerialNoFrom, SerialNoTo, 
 		Unit_Cls, Currency_Code, Price, Amount, SuratJalan_No, ProductionResult_Cls, DailySeq_No, Remarks, Transport_Cls, Lot_No,
-		Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId
+		Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId, No_Seri
 	)
 	select 
 		@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, ISNULL( poh.WHTo ,it.WH_Code) , '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
 		dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport, NULL,
-		getdate(), @UpdateBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @RegisterNo, @Id
+		getdate(), @UpdateBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @RegisterNo, @Id, dtl.NoSeri
 	From PartReceiptHeader hd
 	inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 	left join Item_Master it on dtl.ItemCode = it.Item_Code
