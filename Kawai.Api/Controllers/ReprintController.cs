@@ -198,6 +198,7 @@ public class ReprintController : HahaController
                 top: 0;
                 right: 0;
                 width: 50px;
+                border-top: 1px solid #000;
                 border-left: 1px solid #000;
                 border-bottom: 1px solid #000;
             	 border-right: 1px solid #000;
@@ -208,13 +209,15 @@ public class ReprintController : HahaController
                 background: #fff;
                 color: #000;
                 text-align: center;
+               
+                border-bottom: 1px solid #000;
                 padding: 3px 0;
                 font-size: 6px;
               }
 
               .shipping-lot-number {
                 text-align: center;
-                font-size: 18px;
+                font-size: 22px;
                 font-weight: bold;
                 padding: 4px 0;
                 margin: 2px;

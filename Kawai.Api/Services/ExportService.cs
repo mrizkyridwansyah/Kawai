@@ -208,8 +208,8 @@ public class ExportService : IExportService
 
               /* ===== HEADER ===== */
               .header {
-                background: #0a4f5e;
-                color: #fff;
+                background: #fff;
+                color: #000;
                 font-weight: bold;
                 height: 25px;
               }
@@ -234,6 +234,7 @@ public class ExportService : IExportService
                 top: 0;
                 right: 0;
                 width: 50px;
+                border-top: 1px solid #000;
                 border-left: 1px solid #000;
                 border-bottom: 1px solid #000;
             	 border-right: 1px solid #000;
@@ -241,16 +242,18 @@ public class ExportService : IExportService
               }
 
               .shipping-lot-header {
-                background: #0a4f5e;
-                color: #fff;
+                background: #fff;
+                color: #000;
                 text-align: center;
+               
+                border-bottom: 1px solid #000;
                 padding: 3px 0;
                 font-size: 6px;
               }
 
               .shipping-lot-number {
                 text-align: center;
-                font-size: 15px;
+                font-size: 22px;
                 font-weight: bold;
                 padding: 4px 0;
                 margin: 2px;
@@ -315,7 +318,7 @@ public class ExportService : IExportService
 
               /* ===== FOOTER ===== */
               .footer {
-                background: #efefef;
+                background: #fff;
                 border-top: 1px solid #000;
               }
 
