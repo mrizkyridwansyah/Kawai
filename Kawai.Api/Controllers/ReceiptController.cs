@@ -452,8 +452,8 @@ public class ReceiptController : HahaController
 
               /* ===== HEADER ===== */
               .header {
-                background: #0a4f5e;
-                color: #fff;
+                background: #fff;
+                color: #000;
                 font-weight: bold;
                 height: 25px;
               }
@@ -485,8 +485,8 @@ public class ReceiptController : HahaController
               }
 
               .shipping-lot-header {
-                background: #0a4f5e;
-                color: #fff;
+                background: #fff;
+                color: #000;
                 text-align: center;
                 padding: 3px 0;
                 font-size: 6px;
@@ -494,7 +494,7 @@ public class ReceiptController : HahaController
 
               .shipping-lot-number {
                 text-align: center;
-                font-size: 15px;
+                font-size: 18px;
                 font-weight: bold;
                 padding: 4px 0;
                 margin: 2px;
@@ -559,7 +559,7 @@ public class ReceiptController : HahaController
 
               /* ===== FOOTER ===== */
               .footer {
-                background: #efefef;
+                background: #fff;
                 border-top: 1px solid #000;
               }
 
