@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Kawai.Api.Services;
+using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -31,9 +32,21 @@ public class AddressController : HahaController
     }
 
     [HttpGet("ddlsearch")]
-    public async Task<IActionResult> DDLSearch(string keyword, string warehouse, string area, string ids)
+    public async Task<IActionResult> DDLSearch(string keyword, string warehouse, string area, string ids, bool includeTemp = false)
     {
         var results = await _addressRepository.GetDDL(keyword, warehouse, area);
+        if (includeTemp)
+        {
+            results.Add(new AddressDto
+            {
+                AreaCode = "TMP",
+                AreaName = "Temporary",
+                AddressCode = "TMP",
+                AddressName = "Temporary",
+                DDLDescription = "TMP | Temporary",
+            });
+        }
+
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();
@@ -57,9 +70,21 @@ public class AddressController : HahaController
     }
 
     [HttpGet("ddlsearch-privileges")]
-    public async Task<IActionResult> DDLPrivilegesSearch(string keyword, string warehouse, string area, string ids)
+    public async Task<IActionResult> DDLPrivilegesSearch(string keyword, string warehouse, string area, string ids, bool includeTemp = false)
     {
         var results = await _addressRepository.GetDDLPrivileges(keyword, warehouse, area, Auth.User.UserID);
+        if (includeTemp)
+        {
+            results.Add(new AddressDto
+            {
+                AreaCode = "TMP",
+                AreaName = "Temporary",
+                AddressCode = "TMP",
+                AddressName = "Temporary",
+                DDLDescription = "TMP | Temporary",
+            });
+        }
+
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

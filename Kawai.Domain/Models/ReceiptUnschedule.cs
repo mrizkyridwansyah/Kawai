@@ -63,4 +63,8 @@ public class ReceiptUnscheduleDetail
     [Required(ErrorMessage = "Receipt Qty tidak boleh kosong")]
     [NumberGreaterThan(0)]
     public decimal ReceiptQty { get; set; }
+
+    [Required(ErrorMessage = "No. Seri tidak boleh kosong")]
+    [NumberGreaterThan(0)]
+    public int? NoSeri { get; set; }
 }

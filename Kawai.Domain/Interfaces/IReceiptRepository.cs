@@ -14,7 +14,10 @@ public interface IReceiptRepository
     Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id);
     Task<ReceiptDto> GetDataHeader(long id);
     Task Create(Receipt receipt, string userId);
+
+    Task<ReceiptConfirmationCheckIsDetailsUpdateDto> CheckIsDetailsUpdate(Receipt receipt);
     Task Update(Receipt receipt, string userId);
+
     Task CreateClaim(Receipt receipt, string userId);
     Task UpdateClaim(Receipt receipt, string userId);
     Task Remove(long id);
@@ -41,6 +44,7 @@ public interface IReceiptRepository
     Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string userId);
 
     Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
+    Task<List<PODto>> PODDLSearch(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string userId, long? receiptId);
 
 
     Task<Dictionary<string, object>> Capture(long id);

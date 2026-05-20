@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Hangfire;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
@@ -134,6 +135,13 @@ public class ReceiptController : HahaController
     }
 
 
+    [HttpPatch("check-is-details-update")]
+    public async Task<IActionResult> CheckIsDetailsUpdate([FromBody] Receipt model)
+    {
+        var result = await _receiptRepository.CheckIsDetailsUpdate(model);
+        return Success(result);
+    }
+
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] Receipt model)
     {
@@ -186,6 +194,19 @@ public class ReceiptController : HahaController
         }
 
         return Success(results.Take(100));
+    }
+
+    [HttpGet("po-ddlsearch")]
+    public async Task<IActionResult> PODDLSearch(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string ids, long? receiptId)
+    {
+        var results = await _receiptRepository.PODDLSearch(keyword, factory, supplier, typeDate, periodFrom, periodUntil, showOptionAll, Auth.User.UserID, receiptId);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.PONumber)).ToList();
+        }
+
+        return Success(results);
     }
 
     [HttpPost("print-label")]
@@ -377,21 +398,21 @@ public class ReceiptController : HahaController
             Action = DataLogAction.Update
         });
 
-        string key = "PrintBarcodeUsingJob_" + receiptId.ToString();
+        //string key = "PrintBarcodeUsingJob_" + receiptId.ToString();
         string message = "Data Export PDF sedang diproses!";
-        var fileExport = FileStorage.GetFromExports(key);
-        if (fileExport != null)
-        {
-            message = "-";
-            fileExport.Dispose();
+        //var fileExport = FileStorage.GetFromExports(key);
+        //if (fileExport != null)
+        //{
+        //    message = "-";
+        //    fileExport.Dispose();
 
-            string keyStorage = Guid.NewGuid().ToString();
-            _notification.BroadCastOnlyTo([Auth.User.UserID], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = result.SupplierName + "_" + result.DNNumber });
-        }
-        else
-        {
-            BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReceiptBarcode(result, Auth.User.UserID));
-        }
+        //    string keyStorage = Guid.NewGuid().ToString();
+        //    _notification.BroadCastOnlyTo([Auth.User.UserID], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = result.SupplierName + "_" + result.DNNumber });
+        //}
+        //else
+        //{
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReceiptBarcode(result, Auth.User.UserID));
+        //}
 
         return Pending(message: message);
     }

@@ -47,6 +47,18 @@ public class ReceiptUnscheduleRepository : IReceiptUnscheduleRepository
         receipt.Id = newId;
     }
 
+    public async Task<ReceiptConfirmationCheckIsDetailsUpdateDto> CheckIsDetailsUpdate(ReceiptUnschedule receipt)
+    {
+        string sp = "sp_Wms_ReceiptUnschedule_CheckIsDetailsUpdate";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptConfirmationCheckIsDetailsUpdateDto>(sp, new
+        {
+            receipt.Id,
+            receipt.SupplierCode,
+            Details = DataTableHelper.ToDataTable(receipt.Details)
+        });
+    }
+
+
     public async Task Update(ReceiptUnschedule receipt, string userId)
     {
         string sqlHeader = "sp_Wms_ReceiptUnschedule_Update";

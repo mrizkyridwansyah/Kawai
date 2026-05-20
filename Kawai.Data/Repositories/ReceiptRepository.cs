@@ -68,13 +68,13 @@ public class ReceiptRepository : IReceiptRepository
 
     public async Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(long id)
     {
-         
+
 
         string sp = "sp_Wms_PartReceiptDetailBarcodeLabel";
         return (await _dbExecutor.QueryListAsync<LabelBarcodeDetailDto>(sp, new
         {
             ReceiptNo = id,
-            
+
         })).ToList();
     }
 
@@ -140,6 +140,26 @@ public class ReceiptRepository : IReceiptRepository
         })).ToList();
     }
 
+    public async Task<List<PODto>> PODDLSearch(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string userId, long? receiptId)
+    {
+        string sp = "sp_Wms_Receipt_DDLPO";
+        var today = DateTime.Today;
+        var awalBulan = new DateTime(today.Year, today.Month, 1);
+
+        return (await _dbExecutor.QueryListAsync<PODto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            FactoryCode = String.IsNullOrEmpty(factory) ? "ALL" : factory,
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            TypeDate = typeDate,
+            PeriodFrom = periodFrom.HasValue ? periodFrom.Value : awalBulan,
+            PeriodUntil = periodUntil.HasValue ? periodUntil.Value : DateTime.Today,
+            ReceiptId = receiptId,
+            ShowOptionAll = showOptionAll,
+            UserId = userId
+        })).ToList();
+    }
+
     public async Task Create(Receipt receipt, string userId)
     {
         receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode", new { receipt.FactoryCode, receipt.ReceiptDate });
@@ -162,6 +182,17 @@ public class ReceiptRepository : IReceiptRepository
             RegisterBy = userId
         });
         receipt.Id = newId;
+    }
+
+    public async Task<ReceiptConfirmationCheckIsDetailsUpdateDto> CheckIsDetailsUpdate(Receipt receipt)
+    {
+        string sp = "sp_Wms_Receipt_CheckIsDetailsUpdate";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ReceiptConfirmationCheckIsDetailsUpdateDto>(sp, new
+        {
+            receipt.Id,
+            receipt.SupplierCode,
+            Details = DataTableHelper.ToDataTable(receipt.Details)
+        });
     }
 
     public async Task Update(Receipt receipt, string userId)

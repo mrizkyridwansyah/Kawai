@@ -73,6 +73,14 @@
                     style="width: 360px"
                   />
                 </td>
+
+
+
+
+
+
+
+
               </tr>
             </table>
             <div class="d-flex-fill"></div>
@@ -128,28 +136,28 @@
           <td style="padding-top: 5px">
             <label class="form-label">Police No</label>
           </td>
-            <table>
-              <tr>
-                <td style="padding-left: 15px; padding-top: 5px">
-                  <input-text
-                    v-model="model.VehicleNo"
-                    :errors="errors?.VehicleNo"
-                    style="width: 130px"
-                    maxlength="15"
-                  />
-                </td>
-                <td style="padding-top: 5px; padding-left: 15px">
-                  <label class="form-label">Receipt Date</label>
-                </td>
-                <td style="padding-left: 5px; padding-top: 5px">
-                  <input-date
-                    v-model="model.ReceiptDate"
-                    style-date="width: 120px"
-                    :errors="errors?.ReceiptDate"
-                  />
-                </td>
-              </tr>
-            </table>
+          <table>
+            <tr>
+              <td style="padding-left: 15px; padding-top: 5px">
+                <input-text
+                  v-model="model.VehicleNo"
+                  :errors="errors?.VehicleNo"
+                  style="width: 130px"
+                  maxlength="15"
+                />
+              </td>
+              <td style="padding-top: 5px; padding-left: 15px">
+                <label class="form-label">Receipt Date</label>
+              </td>
+              <td style="padding-left: 5px; padding-top: 5px">
+                <input-date
+                  v-model="model.ReceiptDate"
+                  style-date="width: 120px"
+                  :errors="errors?.ReceiptDate"
+                />
+              </td>
+            </tr>
+          </table>
           <td style="padding-left: 15px; padding-top: 5px">
             <label class="form-label">Reference No</label>
           </td>
@@ -181,7 +189,7 @@
                 :action="printBarcodesUsingJob"
                 label="Print Label PDF"
                 icon="file-pdf"
-                class="ml-1 btn-green"
+                class="btn-green"
                 :is-loading="isLoading"
               />
 
@@ -221,6 +229,7 @@
                     <th class="text-center">Qty DN</th>
                     <th class="text-center">Total Packing</th>
                     <th class="text-center">Qty Packing</th>
+                    <th class="text-center">No. Seri</th>
                     <th class="text-center">Last Update</th>
                     <th class="text-center">Last User</th>
                     <th class="text-center"></th>
@@ -277,6 +286,13 @@
                     </td>
                     <td class="text-right">
                       {{ $func.formatMoney(item.QtyPacking) }}
+                    </td>
+                    <td>
+                      <input-money-small
+                        v-model="item.NoSeri"
+                        :errors="errors?.[`Details[${idx}].NoSeri`]"
+                        style="width: 100px"
+                      />
                     </td>
                     <td></td>
                     <td></td>
@@ -338,6 +354,7 @@
 <script>
 export default {
   data: () => ({
+    noSeri: 0,
     isNew: true,
     filter: {
       FactoryCode: null,
@@ -417,7 +434,7 @@ export default {
     },
   },
   mounted: function () {
-    if(this.$route.query.id) {
+    if (this.$route.query.id) {
       this.filter.ReceiptId = this.$route.query.id;
       this.isNew = false;
       this.getReceipt();
@@ -426,7 +443,6 @@ export default {
     this.model.ReceiptDate = today;
     this.model.BCDate = today;
     this.model.DNDate = today;
-
   },
   methods: {
     deepClone: function (obj) {
@@ -435,6 +451,17 @@ export default {
         : JSON.parse(JSON.stringify(obj));
     },
     add: function () {
+      let lastNoSeriInGrid = this.items.filter((p) => (p.NoSeri ?? 0) > 0);
+      if (lastNoSeriInGrid.length > 0) {
+        const maxNoSeri = Math.max(
+          ...lastNoSeriInGrid.map((p) => p.NoSeri ?? 0),
+        );
+
+        this.noSeri = maxNoSeri + 1;
+      } else {
+        this.noSeri = 1;
+      }
+
       let obj = {
         Id: null,
         ReceiptId: null,
@@ -444,6 +471,7 @@ export default {
         UnitClsName: null,
         ReceiptQty: 0,
         TotalPacking: 0,
+        NoSeri: this.noSeri,
         QtyPacking: null,
       };
 
@@ -575,7 +603,7 @@ export default {
           toastSuccess(data || "Print Label berhasil!");
         })
         .catch((err) => toastDanger(err.Message))
-        .finally(() => this.isLoading = false);
+        .finally(() => (this.isLoading = false));
     },
     printBarcodesUsingJob: function () {
       if (!this.filter.ReceiptId) {
@@ -591,7 +619,7 @@ export default {
           if (data.Message != "-") toastInfo(data.Message);
         })
         .catch((err) => toastDanger(err.Message))
-        .finally(() => this.isLoading = false);
+        .finally(() => (this.isLoading = false));
     },
     submit: function () {
       this.isLoading = true;
@@ -608,11 +636,7 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = this.items;
 
-      if (this.isNew) {
-        this.createReceipt();
-      } else {
-        this.updateReceipt();
-      }
+      this.checkIsDetailUpdate();
     },
     search: function () {
       this.dsReceipt.listDetail(this.filter.ReceiptId).then((dt) => {
@@ -627,6 +651,34 @@ export default {
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
           // this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+    },
+    checkIsDetailUpdate: function () {
+      this.ds
+        .checkIsDetailUpdate(this.model)
+        .then((dt) => {
+          if (dt.Data.IsUpdateDetails) {
+            let modalMessage = `<div style="font-size: medium">Anda mengubah <strong>${dt.Data.TypeConfirmationDesc}</strong>.
+                <br><strong>Barcode Label Saat ini</strong> akan menjadi <strong class="text-danger">TIDAK VALID</strong> 
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
+
+            confirmSubmit(
+              () =>
+                new Promise((resolve) => {
+                  this.updateReceipt();
+                  resolve();
+                }),
+              () => (this.isLoading = false),
+              modalMessage,
+            );
+          } else {
+            this.updateReceipt();
+          }
         })
         .catch((err) => {
           this.errors = err?.Errors;

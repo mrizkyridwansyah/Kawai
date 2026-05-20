@@ -8,5 +8,6 @@ public interface IReceiptUnscheduleRepository
 {
     Task<List<ItemPackingSupplierDto>> GetListItem(RequestParameter param);
     Task Create(ReceiptUnschedule receipt, string userId);
+    Task<ReceiptConfirmationCheckIsDetailsUpdateDto> CheckIsDetailsUpdate(ReceiptUnschedule receipt);
     Task Update(ReceiptUnschedule receipt, string userId);
 }

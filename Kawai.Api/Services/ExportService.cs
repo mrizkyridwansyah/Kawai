@@ -369,12 +369,12 @@ public class ExportService : IExportService
         var fullHtml = sb.ToString();
         var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
 
-        string key = "PrintBarcodeUsingJob_" + receipt.Id.Value.ToString();
+        string keyStorage = Guid.NewGuid().ToString();
+        string key = "PrintBarcodeUsingJob_" + receipt.Id.Value.ToString() + "_" + keyStorage;
         _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
 
-        string keyStorage = Guid.NewGuid().ToString();
 
-        int defaultTTLMinute = 0;// simpen file fisik nya selama 1 bulan. 
+        int defaultTTLMinute = 5;// simpen file fisik nya selama 1 bulan. 
 
         // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
         await _dbExecutor.ExecuteAsync(@"

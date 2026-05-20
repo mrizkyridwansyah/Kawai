@@ -18,7 +18,7 @@ public class QualityCheckResult
     public string AttachmentName { get; set; }
 
     [RequiredIfNotNullOrZero(nameof(QtyNG), ErrorMessage = "Attachment tidak boleh kosong")]
-    public IFormFile Attachment { get; set; }
+    public IFormFile? Attachment { get; set; }
 
 }
 

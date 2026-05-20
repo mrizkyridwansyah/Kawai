@@ -51,9 +51,16 @@ public class Item
     [AllowedValues(["01", "02", "03", "04"])]
     public string PartCls { get; set; }
 
+    [Required(ErrorMessage = "Reserver Cls tidak boleh kosong")]
     public string ReserveCls { get; set; }
+
+    [Required(ErrorMessage = "Supply Cls tidak boleh kosong")]
     public string SupplyCls { get; set; }
+
+    [Required(ErrorMessage = "Provision Cls tidak boleh kosong")]
     public string ProvisionCls { get; set; }
+
+    [Required(ErrorMessage = "Production Cls tidak boleh kosong")]
     public string ProductionCls { get; set; }
 
     [Required(ErrorMessage = "Stock Control Cls tidak boleh kosong")]

@@ -1,5 +1,5 @@
 <template>
-  <div class="row" style="max-height: 80vh;">
+  <div class="row" style="max-height: 80vh; overflow-y: scroll;">
     <div class="col-lg-12">
       <div class="mb-3">
         <label class="form-label">DN Number</label>

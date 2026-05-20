@@ -220,6 +220,17 @@ export const useReceipt = defineStore('Receipt', {
           .finally(_ => this.isCreating = false);
       })
     },
+    checkIsDetailUpdate: function (data) {
+      this.isEditing = true;
+      return new Promise((resolve, reject) => {
+        app.$http.patch(`/receipt/check-is-details-update`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isEditing = false);
+      })
+    },
     update: function (data) {
       this.isEditing = true;
       return new Promise((resolve, reject) => {

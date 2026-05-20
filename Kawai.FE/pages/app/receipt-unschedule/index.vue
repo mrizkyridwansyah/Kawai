@@ -192,7 +192,7 @@
                 :action="printBarcodesUsingJob"
                 label="Print Label PDF"
                 icon="file-pdf"
-                cClass="ml-1 btn-green"
+                cClass="btn-green"
                 :is-loading="isLoading"
               />
             </div>
@@ -224,6 +224,7 @@
                     <th class="text-center">Qty DN</th>
                     <th class="text-center">Total Packing</th>
                     <th class="text-center">Qty Packing</th>
+                    <th class="text-center">No. Seri</th>
                     <th class="text-center">Last Update</th>
                     <th class="text-center">Last User</th>
                     <th class="text-center"></th>
@@ -280,6 +281,13 @@
                     </td>
                     <td class="text-right">
                       {{ $func.formatMoney(item.QtyPacking) }}
+                    </td>
+                    <td>
+                      <input-money-small
+                        v-model="item.NoSeri"
+                        :errors="errors?.[`Details[${idx}].NoSeri`]"
+                        style="width: 100px"
+                      />
                     </td>
                     <td></td>
                     <td></td>
@@ -341,6 +349,7 @@
 <script>
 export default {
   data: () => ({
+    noSeri: 0,
     isNew: true,
     filter: {
       FactoryCode: null,
@@ -437,6 +446,17 @@ export default {
         : JSON.parse(JSON.stringify(obj));
     },
     add: function () {
+      let lastNoSeriInGrid = this.items.filter((p) => (p.NoSeri ?? 0) > 0);
+      if (lastNoSeriInGrid.length > 0) {
+        const maxNoSeri = Math.max(
+          ...lastNoSeriInGrid.map((p) => p.NoSeri ?? 0),
+        );
+
+        this.noSeri = maxNoSeri + 1;
+      } else {
+        this.noSeri = 1;
+      }
+
       let obj = {
         Id: null,
         ReceiptId: null,
@@ -446,6 +466,7 @@ export default {
         UnitClsName: null,
         ReceiptQty: 0,
         TotalPacking: 0,
+        NoSeri: this.noSeri,
         QtyPacking: null,
       };
 
@@ -613,7 +634,7 @@ export default {
       if (this.isNew) {
         this.createReceipt();
       } else {
-        this.updateReceipt();
+        this.checkIsDetailUpdate();
       }
     },
     search: function () {
@@ -629,6 +650,34 @@ export default {
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
           // this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+    },
+    checkIsDetailUpdate: function () {
+      this.ds
+        .checkIsDetailUpdate(this.model)
+        .then((dt) => {
+          if (dt.Data.IsUpdateDetails) {
+            let modalMessage = `<div style="font-size: medium">Anda mengubah <strong>${dt.Data.TypeConfirmationDesc}</strong>.
+                <br><strong>Barcode Label Saat ini</strong> akan menjadi <strong class="text-danger">TIDAK VALID</strong> 
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
+
+            confirmSubmit(
+              () =>
+                new Promise((resolve) => {
+                  this.updateReceipt();
+                  resolve();
+                }),
+              () => (this.isLoading = false),
+              modalMessage,
+            );
+          } else {
+            this.updateReceipt();
+          }
         })
         .catch((err) => {
           this.errors = err?.Errors;

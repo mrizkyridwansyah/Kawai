@@ -270,7 +270,7 @@ export default {
       this.$nextTick(() => setTimeout(() => this.load(), 500));
     },
     showModal: function (dt, mode) {
-      this.title = "IQC Result Approval";
+      this.title = "IQC Result SA Approval";
       this.modalMode = mode;
       this.idSelected = dt.InspectionId;
       this.$bvModal.show("modal-form-iqc-result");

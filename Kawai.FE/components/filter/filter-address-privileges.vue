@@ -62,6 +62,7 @@ export default {
     'styleCode',
     'styleDesc',
     "showOptionAll",
+    "includeTemp",
   ],
   data: () => ({
     isLoading: false,
@@ -138,7 +139,9 @@ export default {
         clearTimeout(this.debounce);
 
       this.debounce = setTimeout(() => {
-        this.$http.get(`/address/ddlsearch-privileges?keyword=${q || ''}&ids=${d || ''}&warehouse=${this.warehouse || 'ALL'}&area=${this.area || 'ALL'}`)
+        this.$http.get(`/address/ddlsearch-privileges?keyword=${q || ''}&ids=${d || ''}&warehouse=${this.warehouse || 'ALL'}&area=${this.area || 'ALL'}${
+              this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"
+            }`)
               .then((p) => {
             this.list =
               (this.showOptionAll || false) &&

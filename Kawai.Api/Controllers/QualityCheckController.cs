@@ -71,7 +71,9 @@ public class QualityCheckController : HahaController
         }
         else
         {
-            FileStorage.RemoveFromAttachments(model.AttachmentName);
+            if (!String.IsNullOrEmpty(model.AttachmentName))
+                FileStorage.RemoveFromAttachments(model.AttachmentName);
+
             model.AttachmentName = "";
         }
 

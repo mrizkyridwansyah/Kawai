@@ -50,6 +50,13 @@ public class ReceiptUnscheduleController : HahaController
         return Success(after);
     }
 
+    [HttpPatch("check-is-details-update")]
+    public async Task<IActionResult> CheckIsDetailsUpdate([FromBody] ReceiptUnschedule model)
+    {
+        var result = await _receiptUnscheduleRepository.CheckIsDetailsUpdate(model);
+        return Success(result);
+    }
+
     [HttpPatch("update")]
     public async Task<IActionResult> Update([FromBody] ReceiptUnschedule model)
     {

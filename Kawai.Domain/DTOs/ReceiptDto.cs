@@ -43,6 +43,7 @@ public class ReceiptDetailDto : DataTableDto
     public decimal QtyPacking { get; set; }
     public decimal ReceiptQty { get; set; }
     public string IQCResult { get; set; }
+    public int? NoSeri { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
 }
@@ -117,4 +118,11 @@ public class ReceiptInquiryDto: DataTableDto
     public decimal Amount { get; set; }
     public string StatusIQC { get; set; }
     public string StatusHoldNG { get; set; }
+}
+
+public class ReceiptConfirmationCheckIsDetailsUpdateDto
+{
+    public bool IsUpdateDetails { get; set; }
+    public int TypeConfirmation { get; set; }
+    public string TypeConfirmationDesc { get; set; }
 }

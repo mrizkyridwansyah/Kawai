@@ -57,7 +57,7 @@
                   <label class="form-label">PO Number</label>
                 </td>
                 <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-                  <input-po
+                  <input-receipt-po
                     class="form-control"
                     v-model="filter.PONumber"
                     :factory-code="filter.FactoryCode"
@@ -66,6 +66,7 @@
                     :period-from="filter.PeriodFrom"
                     :period-until="filter.PeriodUntil"
                     :show-option-all="true"
+                    :receipt-id="filter.ReceiptId"
                     style="width: 360px"
                   />
                 </td>
@@ -81,6 +82,7 @@
                         <input-receipt
                           class="form-control"
                           :disabled="isNew"
+
                           source-menu="RECEIPT PO"
                           :factory-code="filter.FactoryCode"
                           :supplier-code="filter.SupplierCode"
@@ -335,7 +337,13 @@
                     <td class="text-right">
                       {{ $func.formatMoney(item.QtyPacking) }}
                     </td>
-                    <td>{{ item.NoSeri }}</td>
+                    <td>
+                      <input-money-small
+                        v-model="item.NoSeri"
+                        :errors="errors?.[`Details[${idx}].NoSeri`]"
+                        style="width: 100px"
+                      />
+                    </td>
                     <td>{{ $func.formatDate(item.ProductionDate) }}</td>
                     <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                     <td>{{ item.LastUser }}</td>
@@ -363,6 +371,7 @@
 export default {
   data: () => ({
     isNew: true,
+    noSeri: 0,
     filter: {
       FactoryCode: null,
       SupplierCode: null,
@@ -461,7 +470,7 @@ export default {
     this.model.BCDate = today;
     this.model.DNDate = today;
 
-    if(this.$route.query.id) {
+    if (this.$route.query.id) {
       this.filter.ReceiptId = this.$route.query.id;
       this.getReceipt();
     }
@@ -547,6 +556,24 @@ export default {
     check: function (e, item) {
       item.Selected = e.target.checked;
       item.ReceiptQty = e.target.checked ? item.RemainingQty : 0;
+      if (item.Selected) {
+        let lastNoSeriInGrid = this.listPODetail.filter(
+          (p) => (p.NoSeri ?? 0) > 0,
+        );
+        if (lastNoSeriInGrid.length > 0) {
+          const maxNoSeri = Math.max(
+            ...lastNoSeriInGrid.map((p) => p.NoSeri ?? 0),
+          );
+
+          this.noSeri = maxNoSeri + 1;
+        } else {
+          this.noSeri = 1;
+        }
+
+        item.NoSeri = this.noSeri;
+      } else {
+        item.NoSeri = 0;
+      }
     },
     printLabel: function () {
       this.isLoading = true;
@@ -618,12 +645,11 @@ export default {
           ExpectedQty: p.RemainingQty,
           TotalPacking: p.TotalPacking,
           ReceiptQty: p.ReceiptQty,
+          NoSeri: p.NoSeri,
         };
       });
 
-      
-        this.updateReceipt();
-       
+      this.updateReceipt();
     },
     getReceipt: function () {
       this.ds.loadDetail(this.filter.ReceiptId).then((dt) => {
@@ -679,15 +705,43 @@ export default {
         confirmSubmit(
           () =>
             new Promise((resolve) => {
-              this.update();
+              this.checkIsDetailUpdate();
               resolve();
             }),
           () => (this.isLoading = false),
           `You change the <strong>Register No</strong>. Are you sure to <strong>CONTINUE</strong> changes?`,
         );
       } else {
-        this.update();
+        this.checkIsDetailUpdate();
       }
+    },
+    checkIsDetailUpdate: function () {
+      this.ds
+        .checkIsDetailUpdate(this.model)
+        .then((dt) => {
+          if (dt.Data.IsUpdateDetails) {
+            let modalMessage = `<div style="font-size: medium">Anda mengubah <strong>${dt.Data.TypeConfirmationDesc}</strong>.
+                <br><strong>Barcode Label Saat ini</strong> akan menjadi <strong class="text-danger">TIDAK VALID</strong> 
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
+
+            confirmSubmit(
+              () =>
+                new Promise((resolve) => {
+                  this.update();
+                  resolve();
+                }),
+              () => (this.isLoading = false),
+              modalMessage,
+            );
+          } else {
+            this.update();
+          }
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
     },
     update: function () {
       this.ds
