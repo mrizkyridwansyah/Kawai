@@ -137,7 +137,7 @@
 							<td class="td-pemisah"></td>
 							<td class="label-td" style="border: none">Lot</td>
 							<td style="border: none">:</td>
-							<td style="border: none"></td>
+							<td style="border: none">@firstData?.ReceiptDate.Month</td>
 						</tr>
 						<tr>
 							<td class="label-td">Tgl. Issue QCR</td>
@@ -199,10 +199,10 @@
 						<td class="left">@item.ItemName</td>
 						<td class="left">@item.Model</td>
 						<td class="left">@item.NoPPR</td>
-						<td class="right">@item.TotalQtyNG</td>
+						<td class="right">@(item.TotalQtyNG.ToString("0"))</td>
 						<td class="left"></td>
 						<td class="left"></td>
-						<td class="right">@item.TotalQtyNG</td>
+						<td class="right">@(item.TotalQtyNG.ToString("0"))</td>
 						<td class="left"></td>
 						<td class="left"></td>
 						<td class="left" style="border-right: none;">@item.Remarks</td>
