@@ -19,7 +19,7 @@ create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Create]
 	@RegisterBy		varchar(25)
 as
 begin
-	if @ReceiptDate < cast(getdate() as date)
+	if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
 	begin
 		raiserror('Receipt Date tidak boleh back date!', 16, 1)
 		return
@@ -72,6 +72,11 @@ begin
 		declare @seqNo int = (isnull((select max(Seq_No) From Part_Receipt with (updlock, holdlock)), 0))
 		DECLARE @BCTypeVal varchar(100) = (SELECT Description fROM BCType_Cls	WHERE BCType_Cls = @BCType)
 
+		declare @priceTable table (Currency_Code varchar(50), Item_Code varchar(25), Price numeric(18,9), StartDate date, EndDate date)
+		insert into @priceTable
+		SELECT Currency_Code, Item_Code, Price, dbo.ConvertToDateTimeFromString(Start_Date), dbo.ConvertToDateTimeFromString(End_Date)
+		fROM Price_Master where Trade_Code = @SupplierCode and Price_Cls = '01'
+
 		insert into Part_Receipt 
 		(
 			Seq_No, Supplier_Code, PO_No, Warehouse_Code, Address, Receipt_Cls, Receipt_Date, Item_Code, Qty, SerialNoFrom, SerialNoTo, 
@@ -85,7 +90,7 @@ begin
 		From PartReceiptHeader hd
 		inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 		left join Item_Master it on dtl.ItemCode = it.Item_Code
-		left join Price_Master pm on dtl.ItemCode = pm.Item_Code and hd.SupplierCode = pm.Trade_Code and Price_Cls = '01'
+		left join @priceTable pm on dtl.ItemCode = pm.Item_Code and hd.ReceiptDate between pm.StartDate and pm.EndDate
 		where hd.Id = @newid
 
 		select @newid

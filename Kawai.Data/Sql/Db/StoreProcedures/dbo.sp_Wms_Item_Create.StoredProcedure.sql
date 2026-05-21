@@ -1,9 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   procedure [sp_Wms_Item_Create]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Item_Create]
 	@ItemCode varchar(25),
 	@ItemName varchar(75),
 	@FinishGoodPartCls varchar(2),
@@ -246,7 +243,7 @@ begin
 		, @PersonInChargeCls
 		, CASE WHEN @StockControlCls = 1 then '01' else '02' end
 		, @SupplyIssueCls
-		, @UseEndDay
+		, format(@UseEndDay, 'yyyyMMdd')
 		, @HSCode
 		, GETDATE()
 		, @RegisterBy
@@ -262,4 +259,3 @@ begin
 		, @POTypeCls
 	)
 end
-GO

@@ -1,9 +1,6 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 
-CREATE   procedure [sp_Wms_Item_Update]
+
+CREATE   PROCEDURE [dbo].[sp_Wms_Item_Update]
 	@ItemCode varchar(25),
 	@ItemName varchar(75),
 	@FinishGoodPartCls varchar(2),
@@ -166,7 +163,7 @@ begin
 		, PersonInCharge_Cls			= @PersonInChargeCls
 		, StockControl_Cls				= @StockControlCls
 		, SupplyIssue_Cls				= @SupplyIssueCls
-		, Use_EndDay					= @UseEndDay
+		, Use_EndDay					= format(@UseEndDay, 'yyyyMMdd')
 		, HS_Code						= @HSCode
 		, Last_Update					= GETDATE()
 		, Last_User						= @UpdateBy
@@ -182,4 +179,3 @@ begin
 		, POType_Cls					= @POTypeCls
 	where item_Code = @ItemCode
 end
-GO
