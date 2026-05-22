@@ -1,5 +1,5 @@
 <template>
-  <table>
+  <table class="w-100">
     <tr>
       <td><label class="form-label">Supplier Code</label></td>
       <td style="padding-left: 15px">
@@ -21,7 +21,7 @@
           v-model="model.ItemCode"
           :errors="errors?.ItemCode"
           style-code="width: 160px"
-          style-desc="width: 250px"
+          style-desc="width: 300px"
         />
       </td>
     </tr>

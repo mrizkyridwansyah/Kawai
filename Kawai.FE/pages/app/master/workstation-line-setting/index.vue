@@ -60,13 +60,13 @@
               <font-awesome-icon icon="save" v-else />
               <span class="ml-2">Save </span>
             </button>
-           
+
             <v-button-search-reset
               class="ms-1"
               :search="search"
               :reset="reset"
             />
-             <v-button-print
+            <v-button-print
               :print="print"
               cClass="ml-1"
               :is-loading="isLoadingPrint"
@@ -240,7 +240,9 @@ export default {
       this.search();
     },
   },
-
+  mounted: function () {
+    this.ds.resetList();
+  },
   methods: {
     onStopPointChange: function (value, item) {
       //jika belum centang allowsetting maka error

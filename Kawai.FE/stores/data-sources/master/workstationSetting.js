@@ -1,8 +1,8 @@
 
 var app = useNuxtApp();
 
-export const useWorkStationSetting= defineStore('WorkStationSetting', {
-    state: () => ({
+export const useWorkStationSetting = defineStore('WorkStationSetting', {
+  state: () => ({
     isLoading: false,
     isCreating: false,
     isEditing: false,
@@ -25,10 +25,10 @@ export const useWorkStationSetting= defineStore('WorkStationSetting', {
 
       ],
       Sorts: {},
-        },
-    }),
-    actions: {
-       load: function () {
+    },
+  }),
+  actions: {
+    load: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
@@ -49,28 +49,32 @@ export const useWorkStationSetting= defineStore('WorkStationSetting', {
           })
           .finally(_ => this.isLoading = false);
       })
-    },    
-  
-      submitworkstationsetting: function (data) {
-            
+    },
+    submitworkstationsetting: function (data) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/workstationsetting/save`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
 
-            this.isLoading = true;
-            return new Promise((resolve, reject) => {
-                app.$http.post(`/workstationsetting/save`, data)
-                    .then(({ data }) => {
-                        resolve(data);
-                    })
-                    .catch((err) => reject(err.response?.data))
-                    .finally(_ => this.isLoading = false);
-            })
-
-        },
-        setSort: function (v) {
+    },
+    setSort: function (v) {
       this.filter.Sorts = v;
     },
     setFilter: function (v) {
       this.filter.Filters = v;
       this.filter.Page = 1;
+    },
+    resetList: function () {
+      this.data.Items = [];
+      this.data.Total = 0;
+      this.data.Filtered = 0;
+      this.data.Page = 1;
+      this.data.Length = 25;
     },
     exportQR: function (selectedPrint) {
       return new Promise((resolve, reject) => {
@@ -100,16 +104,16 @@ export const useWorkStationSetting= defineStore('WorkStationSetting', {
             }
           })
           .catch(async (err) => {
-              reject(err?.response?.data);
+            reject(err?.response?.data);
           })
           .finally(() => {
             this.isLoading = false;
           });
       })
     },
-    },
+  },
 });
 
 if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useWorkStationSetting, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useWorkStationSetting, import.meta.hot));
 }

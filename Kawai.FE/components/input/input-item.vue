@@ -21,13 +21,14 @@
           @open="open"
           @close="close"
           :select="change"
-          :class="cClass || 'input-wrapper'"
+          :class="cClass"
           :multiple="multiple !== undefined || false"
           :disabled="
             (disabled !== undefined || disabled === true) && disabled !== false
           "
           select-label=""
           deselect-label=""
+          :style="styleCode"
         />
 
         <small class="form-text text-muted" v-if="description">{{
@@ -35,13 +36,15 @@
         }}</small>
       </td>
       <td :style="this.styleDesc" style="padding-left: 5px">
-        <input
-          v-if="!this.descNewRow"
-          type="text"
-          disabled
-          :value="tempValue ? fuckingDescription : ''"
-          class="w-100 form-control"
-        />
+        <div>
+          <input
+            v-if="!this.descNewRow"
+            type="text"
+            disabled
+            :value="tempValue ? fuckingDescription : ''"
+            class="w-100 form-control"
+          />
+        </div>
       </td>
     </tr>
     <tr>

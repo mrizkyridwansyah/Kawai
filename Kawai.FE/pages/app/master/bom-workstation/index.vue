@@ -248,6 +248,8 @@ export default {
   mounted() {
     const q = this.$route.query;
 
+    this.ds.resetList();
+
     if (q && Object.keys(q).length > 0) {
       this.isRestoringRoute = true;
 

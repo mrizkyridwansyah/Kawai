@@ -162,6 +162,10 @@ builder.Services.AddHttpClient("robot", c =>
     c.DefaultRequestHeaders.Authorization =
         new AuthenticationHeaderValue("Basic", authToken);
 });
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null;
+});
 
 // init buat trim leading & trailing spasi dan tab di STRING, karna di DB BANYAK pake tipe data CHAR.
 SqlMapper.AddTypeHandler(typeof(string), new TrimString());

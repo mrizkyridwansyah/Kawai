@@ -112,7 +112,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{
@@ -126,7 +126,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ item.SupplierName }}
@@ -136,17 +136,17 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
-                      {{ item.DNNumber }}
+                      {{ item.DNNumber }} {{(idx+1) % 2}}
                     </td>
                     <td
                       :class="{
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ $func.formatDate(item.DNDate) }}
@@ -156,7 +156,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ item.ItemCode }}
@@ -166,7 +166,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ item.ItemName }}
@@ -176,7 +176,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ item.UnitClsDescription }}
@@ -186,7 +186,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                       class="text-right"
                     >
@@ -197,7 +197,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                       class="text-right"
                     >
@@ -208,7 +208,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                       class="text-right"
                     >
@@ -219,7 +219,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                       class="text-center"
                     >
@@ -246,7 +246,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ item.RegisterUserName }}
@@ -256,7 +256,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ $func.formatDateTime(item.RegisterDate) }}
@@ -266,7 +266,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ item.InspectorName }}
@@ -276,7 +276,7 @@
                         'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
                         'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
                         'table-striped-row':
-                          item.StatusQC == 'NEW' || idx % 2 === 0,
+                          item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
                       {{ $func.formatDateTime(item.InspectionDate) }}

@@ -4,6 +4,7 @@ using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Interfaces.Robot;
 using Kawai.Domain.Models.Robot;
+using System.Text.Json;
 
 namespace Kawai.Api.Services;
 public interface IRobotService
@@ -100,9 +101,15 @@ public class RobotService : IRobotService
                 })
                 .ToList();
 
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null
+            };
+
             var response = await _client.PostAsJsonAsync(
                 "/api/robot/send-request",
-                payload
+                payload[0],
+                options
             );
 
             var result = await response.Content
@@ -123,7 +130,7 @@ public class RobotService : IRobotService
 
             var after = await _supplyScanRequestRepository.CaptureStatusAMR(requestNo);
 
-            await _changeDataLogger.SaveDataLog(new DataLogDto
+            await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
             {
                 DocumentType = "Robot - Send Request Complete Picking",
                 EntityId = requestNo,
@@ -132,7 +139,7 @@ public class RobotService : IRobotService
                 After = after,
                 Action = DataLogAction.Update,
                 Activity = "Send Request Complete Picking By Robot"
-            });
+            }, "CompletePicking");
 
             _logger.LogInformation(
                 "Robot API success for {RequestNoCode}. Message: {Message}",
@@ -211,7 +218,12 @@ public class RobotService : IRobotService
                 payload.CompleteStatus
             };
 
-            var response = await _client.PostAsJsonAsync("/api/robot/complete-status", newPayload);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/robot/complete-status", newPayload, options);
 
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
@@ -231,7 +243,7 @@ public class RobotService : IRobotService
 
             var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
 
-            await _changeDataLogger.SaveDataLog(new DataLogDto
+            await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
             {
                 DocumentType = "Robot - Send Request Complete Loading",
                 EntityId = payload.RequestSendID + "|" + payload.StopPoint,
@@ -240,7 +252,7 @@ public class RobotService : IRobotService
                 After = after,
                 Action = DataLogAction.Update,
                 Activity = "Send Request Complete Loading By Robot"
-            });
+            }, "CompleteLoading");
 
             _logger.LogInformation(
                 "Robot API success for {PickingNo}. Message: {Message}",
@@ -279,7 +291,7 @@ public class RobotService : IRobotService
 
     [AutomaticRetry(
         Attempts = 6,
-        
+
         DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
         OnAttemptsExceeded = AttemptsExceededAction.Fail
     )]
@@ -334,7 +346,7 @@ public class RobotService : IRobotService
 
             var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
 
-            await _changeDataLogger.SaveDataLog(new DataLogDto
+            await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
             {
                 DocumentType = "Robot - Send Request Complete Loading",
                 EntityId = payload.RequestSendID + "|" + payload.StopPoint,
@@ -343,7 +355,7 @@ public class RobotService : IRobotService
                 After = after,
                 Action = DataLogAction.Update,
                 Activity = "Send Request Complete Loading By Robot"
-            });
+            }, "CompleteLoadingSpecial");
 
             _logger.LogInformation(
                 "Robot API success for {PickingNo}. Message: {Message}",
@@ -417,7 +429,7 @@ public class RobotService : IRobotService
 
             //var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
 
-            //await _changeDataLogger.SaveDataLog(new DataLogDto
+            //await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
             //{
             //    DocumentType = "Robot - Send Request Complete Loading",
             //    EntityId = payload.RequestSendID + "|" + payload.StopPoint,
@@ -426,7 +438,7 @@ public class RobotService : IRobotService
             //    After = after,
             //    Action = DataLogAction.Update,
             //    Activity = "Send Request Complete Loading By Robot"
-            //});
+            //}, "CancelRequest");
 
             _logger.LogInformation(
                 "Robot API success for {PickingNo}. Message: {Message}",
@@ -458,7 +470,7 @@ public class RobotService : IRobotService
 
         var after = await _supplyScanRequestRepository.CaptureStatusAMR(requestNoCode);
 
-        await _changeDataLogger.SaveDataLog(new DataLogDto
+        await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
         {
             DocumentType = "Robot - Send Request Complete Picking",
             EntityId = requestNoCode,
@@ -467,7 +479,7 @@ public class RobotService : IRobotService
             After = after,
             Action = DataLogAction.Update,
             Activity = "Send Request Complete Picking By Robot"
-        });
+        }, "CompletePicking");
 
         _logger.LogError(
             "Robot request failed for {RequestNoCode}. Message: {Message}",
@@ -484,7 +496,7 @@ public class RobotService : IRobotService
 
         var after = await _loadingTrolleyRepository.CaptureStatusAMR(pickingNo, stopPoint);
 
-        await _changeDataLogger.SaveDataLog(new DataLogDto
+        await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
         {
             DocumentType = "Robot - Send Request Complete Loading",
             EntityId = pickingNo,
@@ -493,7 +505,7 @@ public class RobotService : IRobotService
             After = after,
             Action = DataLogAction.Update,
             Activity = "Send Request Complete Loading By Robot"
-        });
+        }, "CompleteLoading");
 
         _logger.LogError(
             "Robot request failed for {PickingNo}. Message: {Message}",

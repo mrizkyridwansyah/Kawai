@@ -94,6 +94,45 @@ public class DataLogger(Auth auth, IHttpContextAccessor contextAccessor, LogExec
             (@Date, @UserId, @FullName, @UserAgent, @RemoteAddr, @Method, @RequestPath, @Action, @Activity, @DocumentType, @EntityId, @ReferenceId, @Data, 0)", log, commandType: CommandType.Text);
     }
 
+    public async Task SaveDataLogByRobot(DataLogDto data, string jobName)
+    {
+        var diff = DataLogComparer.Compare(data.Before, data.After);
+        var json = JsonConvert.SerializeObject(new
+        {
+            diff.Before,
+            diff.After
+        }, Formatting.Indented);
+        //var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+        //{
+        //    { "Before", data.Before ?? new Dictionary<string, object>() },
+        //    { "After", data.After ?? new Dictionary<string, object>() }
+        //});
+
+
+        var log = new DataLog
+        {
+            Action = data.Action.ToString(),
+            Activity = string.IsNullOrEmpty(data.Activity) ? data.Action.ToString() : data.Activity,
+            DocumentType = data.DocumentType,
+            ReferenceId = data.ReferenceId,
+            EntityId = data.EntityId,
+            Date = EpochDateTime.Now,
+            Data = json,
+            Method = "-",
+            RequestPath = "Background Job - " + jobName,
+            RemoteAddr = "-",
+            UserAgent = "-",
+            UserId = "Robot",
+            FullName = "Robot",
+        };
+
+        await _logExecutor.ExecuteAsync(@"
+            INSERT INTO [dbo].[DataLogs]
+            ([Date], [UserId], [FullName], [UserAgent], [RemoteAddr], [Method], [RequestPath], [Action], [Activity], [DocumentType], [EntityId], [ReferenceId], [Data], [ElapsedMilliseconds])
+            VALUES
+            (@Date, @UserId, @FullName, @UserAgent, @RemoteAddr, @Method, @RequestPath, @Action, @Activity, @DocumentType, @EntityId, @ReferenceId, @Data, 0)", log, commandType: CommandType.Text);
+    }
+
 
     protected static IDictionary<string, IDictionary<string, object>> Compare(
        Dictionary<string, object> before = null,
