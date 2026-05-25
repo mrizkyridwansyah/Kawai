@@ -99,8 +99,8 @@ public class MobileLoadingTrolleyController : HahaController
         /*
          IsManual adalah kondisi ketika trolley di pilih secara manual bukan pake AMR.
          */
-        //if (!payload.IsManual)
-        //    BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(payload));
+        if (!payload.IsManual)
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(payload));
 
         await _logger.SaveDataLog(new DataLogDto
         {
@@ -146,10 +146,10 @@ public class MobileLoadingTrolleyController : HahaController
         /*
          IsManual adalah kondisi ketika trolley di pilih secara manual bukan pake AMR.
          */
-        //if (model.IsManual)
-        //    BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(model));
-        //else
-        //    BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model));
+        if (model.IsManual)
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(model));
+        else
+            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model));
 
         return Success(message: "Requesting to AMR");
     }

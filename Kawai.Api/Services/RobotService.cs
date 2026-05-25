@@ -239,7 +239,7 @@ public class RobotService : IRobotService
 
             var before = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
 
-            await _loadingTrolleyRepository.UpdateStatusAMR(payload.RequestSendID, payload.StopPoint, message);
+            await _loadingTrolleyRepository.UpdateStatusAMR(payload.RequestSendID, payload.StopPoint, "Completed");
 
             var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
 
@@ -326,6 +326,11 @@ public class RobotService : IRobotService
                 payload.CompleteStatus
             };
 
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null
+            };
+
             var response = await _client.PostAsJsonAsync("/api/robot/complete-status-special", newPayload);
 
             var result = await response.Content
@@ -408,6 +413,11 @@ public class RobotService : IRobotService
             };
 
             _logger.LogInformation("Sending robot request for {PickingNo}", payload.RequestSendID);
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null
+            };
 
             var response = await _client.PostAsJsonAsync("/api/robot/cancel-request", payload);
 
