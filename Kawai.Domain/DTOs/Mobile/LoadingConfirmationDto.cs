@@ -71,7 +71,7 @@ public class LoadingConfirmationDetailDto
     // =========================
     // TAMBAHAN PREVIEW DATA
     // =========================
-    public string PickingNo { get; set; }
+    public string LoadingNo { get; set; }
     public string StatusReceipt { get; set; }
     public string WarehouseCode { get; set; }
     public string AreaCode { get; set; }

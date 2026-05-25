@@ -8,10 +8,10 @@ AS
 SET NOCOUNT ON;
 
 SELECT 
-    [PickingNo] = LTRIM(RTRIM(ph.Picking_No)), 
+    [LoadingNo] = LTRIM(RTRIM(ph.Loading_No)), 
     [InstructionNo] = LTRIM(RTRIM(ph.SI_No)),
     [PONo] = LTRIM(RTRIM(pd.PO_No)),
-    [WarehouseCode] = LTRIM(RTRIM(ph.WH_Code)), 
+    [WarehouseCode] = LTRIM(RTRIM(pd.WarehouseCode)), 
     [AreaCode] = LTRIM(RTRIM(pd.AreaCode)),
     [AddressCode] = LTRIM(RTRIM(pd.AddressCode)), 
     [PartNo] = LTRIM(RTRIM(pd.Item_Code)),
@@ -20,10 +20,10 @@ SELECT
     [BarcodeNo] = LTRIM(RTRIM(pd.Barcode_No)),
     --[PickingDate] = CASE WHEN pd.Scan_Date IS NULL THEN NULL ELSE FORMAT(pd.Scan_Date, 'yyyy-MM-dd') END,
     --[PickingTime] = CASE WHEN pd.Scan_Date IS NULL THEN NULL ELSE FORMAT(pd.Scan_Date, 'hh:mm:ss tt') END
-    [PickingDate] = CASE WHEN pd.Scan_Date IS NULL THEN NULL ELSE CAST(pd.Scan_Date AS DATE) END,
-    [PickingTime] = CASE WHEN pd.Scan_Date IS NULL THEN NULL ELSE CAST(pd.Scan_Date AS TIME) END
-FROM dbo.PickingScan_Header ph
-JOIN dbo.PickingScan_Detail pd ON pd.Picking_No = ph.Picking_No AND pd.SI_No = ph.SI_No
+    [LoadingDate] = CASE WHEN pd.Scan_Date IS NULL THEN NULL ELSE CAST(pd.Scan_Date AS DATE) END,
+    [LoadingTime] = CASE WHEN pd.Scan_Date IS NULL THEN NULL ELSE CAST(pd.Scan_Date AS TIME) END
+FROM dbo.LoadingConfirmationScan_Header ph
+JOIN dbo.LoadingConfirmationScan_Detail pd ON pd.Loading_No = ph.Loading_No AND pd.SI_No = ph.SI_No
 LEFT JOIN dbo.Item_Master im ON im.Item_Code = pd.Item_Code
 WHERE 
         ph.SI_NO = @InstructionNo
