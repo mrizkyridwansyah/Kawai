@@ -170,20 +170,10 @@ export default {
     },
   },
   mounted: async function () {
-    this.search();
-    // const nuxtApp = useNuxtApp();
-    // const signalr = await nuxtApp.$createSignalR("/notifapprovalhub");
+    setInterval(() => {
+      this.search();
+    }, 3000);
 
-    // if (!signalr) {
-    //   console.warn("SignalR connection not found!");
-    //   return;
-    // }
-
-    // // Register event handler
-    // signalr.on("AndonReceivingNotification", (data) => {
-    //   this.hasNewNotification = true;
-    //   this.search();
-    // });
   },
   methods: {
     search: function () {
