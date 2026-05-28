@@ -737,6 +737,20 @@ export default {
               () => (this.isLoading = false),
               modalMessage,
             );
+          } else if (!dt.Data.IsUpdateDetails && dt.Data.TypeConfirmation == 3) {
+            let modalMessage = `<div style="font-size: medium">Anda sudah melakukan <strong>SCAN RECEIVING MOBILE</strong>.
+                <br>Perubahan hanya berlaku untuk informasi <strong>Header</strong> saja. 
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
+
+            confirmSubmit(
+              () =>
+                new Promise((resolve) => {
+                  this.update();
+                  resolve();
+                }),
+              () => (this.isLoading = false),
+              modalMessage,
+            );
           } else {
             this.update();
           }
