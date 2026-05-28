@@ -12,11 +12,11 @@ public interface ITransactionProducer
 
 public class TransactionProducer : ITransactionProducer, IDisposable
 {
-    private readonly string _exchangeName = "stock_transaction_exchange";
-    private readonly string _queueName = "stock_transaction_queue";
-    private readonly string _routingKey = "stock_transaction";
-    private readonly string _dlxExchange = "stock_transaction_dlx";
-    private readonly string _dlxRoutingKey = "dead.stock_transaction";
+    private readonly string _exchangeName = "stock_trial_transaction_exchange";
+    private readonly string _queueName = "stock_trial_transaction_queue";
+    private readonly string _routingKey = "stock_trial_transaction";
+    private readonly string _dlxExchange = "stock_trial_transaction_dlx";
+    private readonly string _dlxRoutingKey = "dead.stock_trial_transaction";
 
     private IConnection? _connection;
     private IModel? _channel;

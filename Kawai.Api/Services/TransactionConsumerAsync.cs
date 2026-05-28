@@ -16,12 +16,12 @@ public class TransactionConsumerAsync : BackgroundService
     private IModel? _channel;
 
     private readonly IServiceScopeFactory _scopeFactory;
-    private const string ExchangeName = "stock_transaction_exchange";
-    private const string QueueName = "stock_transaction_queue";
-    private const string RoutingKey = "stock_transaction";
-    private const string DlxExchange = "stock_transaction_dlx";
-    private const string DlxQueue = "stock_transaction_dead_letter_queue_v1";
-    private const string DlxRoutingKey = "dead.stock_transaction";
+    private const string ExchangeName = "stock_trial_transaction_exchange";
+    private const string QueueName = "stock_trial_transaction_queue";
+    private const string RoutingKey = "stock_trial_transaction";
+    private const string DlxExchange = "stock_trial_transaction_dlx";
+    private const string DlxQueue = "stock_trial_transaction_dead_letter_queue_v1";
+    private const string DlxRoutingKey = "dead.stock_trial_transaction";
 
     public TransactionConsumerAsync(IServiceScopeFactory scopeFactory)
     {
