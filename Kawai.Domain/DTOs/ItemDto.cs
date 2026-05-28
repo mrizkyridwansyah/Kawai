@@ -109,6 +109,8 @@ public class ItemDto : DataTableDto
     public string POTypeClsDesc { get; set; }
     public string ClasificationPartCls { get; set; }
     public string ClasificationPartClsDesc { get; set; }
+    public string Grouping_Class_Part_Code { get; set; }
+    public string Grouping_Class_Part_Descs { get; set; }
 
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }

@@ -524,7 +524,8 @@
                           />
                         </td>
                       </tr>
-                      <tr>
+
+                       <tr>
                         <td style="vertical-align: middle; padding-top: 5px">
                           <label class="form-label">Use End Date</label>
                         </td>
@@ -534,7 +535,27 @@
                             :errors="errors?.UseEndDay"
                           />
                         </td>
+                        <td
+                          style="
+                            vertical-align: middle;
+                            padding-top: 5px;
+                            padding-left: 15px;
+                          "
+                        >
+                          <label class="form-label">Grouping Part Cls</label>
+                        </td>
+                        <td style="padding-left: 15px; padding-top: 5px">
+                          <input-cls
+                            type-data="Grouping_Class_Part"
+                            v-model="model.Grouping_Class_Part_Code"
+                            style-code="width: 90px"
+                            style-desc="width: 120px"
+                          />
+                        </td>
                       </tr>
+
+
+               
                       <tr>
                         <td style="vertical-align: middle; padding-top: 5px">
                           <label class="form-label">Delivery Leadtime</label>
@@ -1282,6 +1303,7 @@ export default {
       ProvisionCls: "",
       ProductionCls: "",
       StockControlCls: "",
+      Grouping_Class_Part_Code:"",
     },
     errorResponse: {},
     errors: {},
@@ -1381,6 +1403,7 @@ export default {
           ProvisionCls: result.ProvisionCls,
           ProductionCls: result.ProductionCls,
           StockControlCls: result.StockControlCls,
+          Grouping_Class_Part_Code : result.Grouping_Class_Part_Code,
         };
         this.$bvModal.hide("shared-item");
       })
@@ -1509,6 +1532,7 @@ export default {
         ProvisionCls: "",
         ProductionCls: "",
         StockControlCls: "",
+        Grouping_Class_Part_Code:"",
       };
     },
   },

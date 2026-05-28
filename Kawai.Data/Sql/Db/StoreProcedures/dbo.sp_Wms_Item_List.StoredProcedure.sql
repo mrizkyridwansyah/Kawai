@@ -1,5 +1,4 @@
-
-CREATE   PROCEDURE [dbo].[sp_Wms_Item_List]
+CREATE procedure [dbo].[sp_Wms_Item_List]
 	-- PARAMETER WAJIB
 	@Page int = 1,
 	@Length int = 10,
@@ -180,7 +179,7 @@ begin
 			LastUser				= mi.Last_User,	
 			RegisterDate			= mi.Register_Date,	
 			UseEndDay				= dbo.ConvertToDateTimeFromString(mi.Use_EndDay),
-			mi.Thickness, mi.Width, mi.Length, mi.Weight, mi.GrossWeight, mi.Pitch, mi.Sample
+			mi.Thickness, mi.Width, mi.Length, mi.Weight, mi.GrossWeight, mi.Pitch, mi.Sample,mi.Grouping_Class_Part_Code
 		From Item_Master mi 
 		left join 
 		(
@@ -221,3 +220,4 @@ begin
 		left join vw_ExplosionCls i on mi.Explosion_Cls = i.Code			
 	end
 end
+

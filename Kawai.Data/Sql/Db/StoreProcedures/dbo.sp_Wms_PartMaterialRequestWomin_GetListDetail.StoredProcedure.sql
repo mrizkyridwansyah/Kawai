@@ -1,4 +1,4 @@
-CREATE   procedure [dbo].[sp_Wms_PartMaterialRequestWomin_GetListDetail]
+CREATE  procedure [dbo].[sp_Wms_PartMaterialRequestWomin_GetListDetail]
 	@LineCode varchar(25),
 	@NewRequest tvp_PartMaterialRequestWomin READONLY
 as
@@ -36,7 +36,7 @@ begin
 		mi.Item_Name AS ParentItemName,
 		bomws.ChildItem_Code AS ChildItemCode,
 		mic.Item_Name AS ChildItemName,
-		isnull(mic.ClasificationPart_Cls, '20') AS ChildClassificationPart,
+		isnull(mic.Grouping_Class_Part_Code, '20') AS ChildClassificationPart,
 		isnull(cp.Description, 'OTHERS') AS ChildClassificationPartDesc,
 
 		bomws.Qty AS QtyBOM,
@@ -72,8 +72,8 @@ begin
 		ON req.ItemCode = mi.Item_Code
 	LEFT JOIN Item_Master mic
 		ON bomws.ChildItem_Code = mic.Item_Code
-	LEFT JOIN ClasificationPart_Cls cp
-		ON mic.ClasificationPart_Cls = cp.ClasificationPart_Cls
+	LEFT JOIN Grouping_Class_Part cp
+		ON mic.Grouping_Class_Part_Code = cp.Grouping_Class_Part_Code
 	LEFT JOIN PartMaterialRequestHeader pmrh
 		ON pmrh.RequestID = req.RequestId
 
@@ -85,10 +85,11 @@ begin
 	INNER JOIN Numbers n
 		ON n.n <= CEILING(q.TotalQty * 1.0 / bomws.MaxCapacity)
 	LEFT JOIN PartMaterialRequestDetail pmrd
-		ON pmrd.RequestID = pmrh.RequestID and pmrd.SEQ = n.n and pmrd.WorkStationCode = bomws.WorkStationCode and pmrd.AreaCode = isnull(mic.ClasificationPart_Cls, '20')
+		ON pmrd.RequestID = pmrh.RequestID and pmrd.SEQ = n.n and pmrd.WorkStationCode = bomws.WorkStationCode and pmrd.AreaCode = isnull(mic.Grouping_Class_Part_Code, '20')
 	LEFT JOIN RequestStatusCls reqCls on pmrd.RequestStatusID = reqCls.RequestStatusID
 	LEFT JOIN @tblScan scan on pmrd.RequestDetailID = scan.RequestDetailId and bomws.ChildItem_Code = scan.ItemCode
 
 	order by n.n, bomws.WorkStationCode
-
+	OPTION (RECOMPILE)
 end
+

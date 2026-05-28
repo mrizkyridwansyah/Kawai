@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [Item_Master](
+ 
+CREATE TABLE [dbo].[Item_Master](
 	[Item_Code] [char](25) NOT NULL,
 	[Item_Name] [char](75) NOT NULL,
 	[FinishGoodPart_Cls] [char](2) NOT NULL,
@@ -75,91 +72,38 @@ CREATE TABLE [Item_Master](
 	[SAP_Item_Code] [char](18) NULL,
 	[TypeAccs] [char](2) NULL,
 	[Model_Cls] [char](10) NULL,
-	[ClasificationPart_Cls] [varchar](2) NULL,
-	[Destination_Cls] [varchar](2) NULL,
-	[Color_Cls] [varchar](2) NULL,
 	[POType_Cls] [varchar](2) NULL,
+	[ClasificationPart_Cls] [varchar](2) NULL,
+	[Destination_cls] [varchar](2) NULL,
+	[Color_cls] [varchar](2) NULL,
+	[Grouping_Class_Part_Code] [varchar](4) NULL,
  CONSTRAINT [PK_Item_Master] PRIMARY KEY CLUSTERED 
 (
 	[Item_Code] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-SET ANSI_PADDING ON
+
+ALTER TABLE [dbo].[Item_Master] ADD  CONSTRAINT [DF_Item_Master_SupplyIssue_Cls_1]  DEFAULT ('01') FOR [SupplyIssue_Cls]
 GO
-CREATE NONCLUSTERED INDEX [IX_ItemMaster_Cls] ON [Item_Master]
-(
-	[FinishGoodPart_Cls] ASC,
-	[Part_Cls] ASC,
-	[Reserve_Cls] ASC,
-	[Suply_Cls] ASC,
-	[Provision_Cls] ASC,
-	[Production_Cls] ASC,
-	[StockControl_Cls] ASC,
-	[MakeBuy_Cls] ASC,
-	[Explosion_Cls] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+ALTER TABLE [dbo].[Item_Master] ADD  CONSTRAINT [DF_Item_Master_Register_Date]  DEFAULT (getdate()) FOR [Register_Date]
 GO
-SET ANSI_PADDING ON
-GO
-CREATE NONCLUSTERED INDEX [IX_ItemMaster_DisplayRefs] ON [Item_Master]
-(
-	[PackingStyle_Cls] ASC,
-	[Group_Cls] ASC,
-	[Control_Cls] ASC,
-	[Color_Cls] ASC,
-	[Destination_Cls] ASC,
-	[Unit_Cls] ASC,
-	[PersonInCharge_Cls] ASC,
-	[Model_Cls] ASC,
-	[POType_Cls] ASC,
-	[ClasificationPart_Cls] ASC,
-	[HS_Code] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-CREATE NONCLUSTERED INDEX [IX_ItemMaster_JoinMain] ON [Item_Master]
-(
-	[WH_Code] ASC,
-	[Supplier_Code] ASC,
-	[Manufacture_Code] ASC,
-	[Line_Code] ASC,
-	[MakerItem_Code] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-CREATE NONCLUSTERED INDEX [IX_ItemMaster_Material] ON [Item_Master]
-(
-	[Material_Cls] ASC,
-	[SheetCoil_Cls] ASC,
-	[DrawingMaterial_Cls] ASC,
-	[SurfaceTreatment_Cls] ASC,
-	[HeatTreatment_Cls] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-CREATE NONCLUSTERED INDEX [NonClusteredIndex-20250811-175823] ON [Item_Master]
-(
-	[Item_Name] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-CREATE NONCLUSTERED INDEX [NonClusteredIndex-20250812-161236] ON [Item_Master]
-(
-	[Register_Date] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-ALTER TABLE [Item_Master]  WITH CHECK ADD  CONSTRAINT [FK_Item_Master_Control_Cls] FOREIGN KEY([Control_Cls])
-REFERENCES [Control_Cls] ([Control_Cls])
+
+ALTER TABLE [dbo].[Item_Master]  WITH NOCHECK ADD  CONSTRAINT [FK_Item_Master_Control_Cls] FOREIGN KEY([Control_Cls])
+REFERENCES [dbo].[Control_Cls] ([Control_Cls])
 ON UPDATE CASCADE
 GO
-ALTER TABLE [Item_Master] CHECK CONSTRAINT [FK_Item_Master_Control_Cls]
+
+ALTER TABLE [dbo].[Item_Master] CHECK CONSTRAINT [FK_Item_Master_Control_Cls]
 GO
-ALTER TABLE [Item_Master]  WITH CHECK ADD  CONSTRAINT [FK_Item_Master_Trade_Master] FOREIGN KEY([Supplier_Code])
-REFERENCES [Trade_Master] ([Trade_Code])
+
+ALTER TABLE [dbo].[Item_Master]  WITH NOCHECK ADD  CONSTRAINT [FK_Item_Master_Trade_Master] FOREIGN KEY([Supplier_Code])
+REFERENCES [dbo].[Trade_Master] ([Trade_Code])
 ON UPDATE CASCADE
 GO
-ALTER TABLE [Item_Master] CHECK CONSTRAINT [FK_Item_Master_Trade_Master]
+
+ALTER TABLE [dbo].[Item_Master] CHECK CONSTRAINT [FK_Item_Master_Trade_Master]
 GO
+
+ 

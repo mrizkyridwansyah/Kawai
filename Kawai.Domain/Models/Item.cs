@@ -181,4 +181,6 @@ public class Item
 
     [MaxLength(2, ErrorMessage = "Color Cls tidak boleh lebih dari 2 karakter")]
     public string ColorCls { get; set; }
+
+    public string Grouping_Class_Part_Code { get; set; }
 }

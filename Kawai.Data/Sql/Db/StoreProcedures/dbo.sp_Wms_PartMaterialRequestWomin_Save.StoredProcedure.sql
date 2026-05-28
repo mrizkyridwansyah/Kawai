@@ -1,6 +1,4 @@
-
-
-create   procedure [dbo].[sp_Wms_PartMaterialRequestWomin_Save]
+CREATE procedure [dbo].[sp_Wms_PartMaterialRequestWomin_Save]
 	@LineCode varchar(25), 
 	@NewRequest tvp_PartMaterialRequestWomin READONLY,
 	@UserId varchar(25)
@@ -126,7 +124,7 @@ begin
 		bomws.ChildItem_Code AS ChildItemCode,
 		bomws.Unit_Cls UnitCls,
 		n.n SetNumber,
-		mi.ClasificationPart_Cls,
+		mi.Grouping_Class_Part_Code AS ClasificationPart_Cls,
 		bomws.Qty AS QtyBOM,
 		CASE
 			WHEN n.n * bomws.MaxCapacity <= TotalQty THEN bomws.MaxCapacity

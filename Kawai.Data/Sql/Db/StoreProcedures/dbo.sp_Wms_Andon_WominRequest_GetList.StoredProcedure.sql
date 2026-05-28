@@ -1,7 +1,6 @@
- 
-CREATE   PROCEDURE [dbo].[sp_Wms_Andon_WominRequest_GetList]
+CREATE procedure [dbo].[sp_Wms_Andon_WominRequest_GetList]
 --declare
-@Area VARCHAR(50)='02'
+@Area VARCHAR(50)='01'
 AS
 BEGIN
 
@@ -38,8 +37,11 @@ BEGIN
 	LTRIM(RTRIM(F.Item_Name)) PickingArea,
 	G.Description as Model,
 	A.Trolley_No as TrollyNumber ,
-	(Select Top 1 AreaName from MS_Address ss Left JOIN MS_Area cc ON ss.AreaCode = cc.AreaCode where StopPointCode = (select LastPosition from MS_Trolley where TrolleyCode = 	A.Trolley_No))  CurrentPosition ,
-	'' NextLocation, TotalItem=1, Remaining=0 ,
+	(Select Top 1 AreaName from MS_Address ss Left JOIN MS_Area cc ON ss.AreaCode = cc.AreaCode where StopPointCode = (select top 1 ToAddressCode from AMRMoveTrolley xx where TrolleyNo = 	A.Trolley_No order by xx.RegisterDate desc))  CurrentPosition ,
+ 
+	(select top 1 ff.StopPointCode from PartMaterialRequestSendRobotDetail ddd left join MS_Address ff on ff.StopPointCode = ddd.Stop_Point where  ddd.RequestSendID =A.RefNumber and ddd.Status = 0  order by Pickup_Seq ASC ) 	 NextLocation,
+	
+	TotalItem=1, Remaining=0 ,
 	A.RefNumber,
 	(select Top 1 Pickup_Seq from PartMaterialRequestSendRobotDetail ddd where  ddd.RequestSendID =A.RefNumber and Stop_Point in (select LastPosition from MS_Trolley where TrolleyCode = 	A.Trolley_No)) Picking_Seq
 	into #Tblmain
@@ -51,7 +53,7 @@ BEGIN
 	left join Item_Master F ON F.Item_Code = B.ParentItem_Code
 	LEFT JOIN Model_Cls G ON G.Model_Cls = F.Model_Cls
 	 
-	where AreaCode = @Area
+	where AreaCode = @Area and b.ProductionDate >= '2026-05-25'
 
 	 
 	 select 
@@ -66,12 +68,13 @@ BEGIN
 	 ,Model
 	 ,TrollyNumber	
 	 ,CurrentPosition	
-	  	, (Select Top 1 AreaName from MS_Address ss Left JOIN MS_Area cc ON ss.AreaCode = cc.AreaCode where StopPointCode =(select Top 1 Stop_Point from PartMaterialRequestSendRobotDetail ddd where  ddd.RequestSendID =A.RefNumber and ddd.Pickup_Seq > a.Picking_Seq )) NextLocation	
+	  	,Case when CurrentPosition is NULL then NULL else NextLocation	end NextLocation
 	 ,TotalItem	
 	 ,ISNULL(@CountData,0) - ISNULL(@CountDataScan,0)  Remaining	 ,
 	 ISNULL(@CountProdID,0) Womin,
 	 Cast(ISNULL(@CountDataScan,0) as varchar) + '/' + Cast( ISNULL(@CountData,0) as varchar) PickingProgress
 
+	 
 	  
  from #Tblmain A
 	 Drop table #Tblmain
@@ -79,5 +82,3 @@ BEGIN
 
 END
 
-
- 

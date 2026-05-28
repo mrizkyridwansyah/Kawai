@@ -1,6 +1,4 @@
-
-
-CREATE   PROCEDURE [dbo].[sp_Wms_Item_Create]
+CREATE  procedure [dbo].[sp_Wms_Item_Create]
 	@ItemCode varchar(25),
 	@ItemName varchar(75),
 	@FinishGoodPartCls varchar(2),
@@ -74,6 +72,7 @@ CREATE   PROCEDURE [dbo].[sp_Wms_Item_Create]
 	@ClasificationPartCls varchar(2),
 	@DestinationCls varchar(2),
 	@ColorCls varchar(2),
+	@Grouping_Class_Part_Code varchar(4),
 	@RegisterBy varchar(25)
 as
 begin
@@ -178,6 +177,7 @@ begin
 		, Destination_Cls
 		, Color_Cls
 		, POType_Cls
+		,Grouping_Class_Part_Code
 	)
 	values 
 	(
@@ -256,6 +256,7 @@ begin
 		, @ClasificationPartCls
 		, @DestinationCls
 		, @ColorCls
-		, @POTypeCls
+		, @POTypeCls,
+		@Grouping_Class_Part_Code
 	)
 end

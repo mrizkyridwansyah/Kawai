@@ -1,15 +1,9 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
---select * from ClasificationPart_Cls
-CREATE procedure [sp_Wms_Mobile_SupplyScanRequestNo_WarehouseDDL]
+CREATE  procedure [dbo].[sp_Wms_Mobile_SupplyScanRequestNo_WarehouseDDL]
 	@Keyword varchar(max) 
 	 
 as
 	select 
-		ClasificationPart_Cls WarehouseCode , [Description] WarehouseName, rtrim(ClasificationPart_Cls) + ' | ' + [Description] DDLDescription
-	From ClasificationPart_Cls
+		Grouping_Class_Part_Code WarehouseCode , [Description] WarehouseName, rtrim(Grouping_Class_Part_Code) + ' | ' + [Description] DDLDescription
+	From Grouping_Class_Part
 	where 1=1
- 	and (ClasificationPart_Cls like '%' + @Keyword + '%' or [Description] like '%' + @Keyword + '%')
-GO
+ 	and ((rtrim(Grouping_Class_Part_Code) + ' | ' + [Description]) like '%' + @Keyword + '%')

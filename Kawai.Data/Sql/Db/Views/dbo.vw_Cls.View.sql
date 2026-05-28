@@ -1,10 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-
-CREATE view [vw_Cls]
+ 
+CREATE   VIEW [dbo].[vw_Cls]
 as
 select rtrim('BCType_Cls') TypeData, BCType_Cls ClsCode, BCType_Cls Description from BCType_Cls			
 union all
@@ -113,4 +108,9 @@ union all
 select 'IQCResult' TypeData, Code, Description from vw_IQCResult
 Union all
 select 'Trolley_Cls' TypeData, Trolley_Cls Code, Description from Trolley_Cls
+
+Union all
+select 'Grouping_Class_Part' TypeData, Grouping_Class_Part_Code Code, Description from Grouping_Class_Part
 GO
+
+

@@ -1,6 +1,4 @@
-
-
-CREATE   PROCEDURE [dbo].[sp_Wms_Item_Update]
+CREATE procedure [dbo].[sp_Wms_Item_Update]
 	@ItemCode varchar(25),
 	@ItemName varchar(75),
 	@FinishGoodPartCls varchar(2),
@@ -74,6 +72,7 @@ CREATE   PROCEDURE [dbo].[sp_Wms_Item_Update]
 	@ClasificationPartCls varchar(2),
 	@DestinationCls varchar(2),
 	@ColorCls varchar(2),
+	@Grouping_Class_Part_Code varchar(4),
 	@UpdateBy varchar(25)
 as
 begin
@@ -177,5 +176,6 @@ begin
 		, Destination_Cls				= @DestinationCls
 		, Color_Cls						= @ColorCls
 		, POType_Cls					= @POTypeCls
+		,Grouping_Class_Part_Code = @Grouping_Class_Part_Code  
 	where item_Code = @ItemCode
 end

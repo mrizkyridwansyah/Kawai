@@ -127,6 +127,7 @@ public class ItemRepository : IItemRepository
             item.ClasificationPartCls,
             item.DestinationCls,
             item.ColorCls,
+            item.Grouping_Class_Part_Code,
             RegisterBy = userId
         });
     }
@@ -208,6 +209,7 @@ public class ItemRepository : IItemRepository
             item.ClasificationPartCls,
             item.DestinationCls,
             item.ColorCls,
+            item.Grouping_Class_Part_Code,
             UpdateBy = userId
         });
     }
