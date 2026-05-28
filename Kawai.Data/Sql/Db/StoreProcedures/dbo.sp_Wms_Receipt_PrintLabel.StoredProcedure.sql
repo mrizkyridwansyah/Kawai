@@ -1,5 +1,5 @@
-
-CREATE   procedure [dbo].[sp_Wms_Receipt_PrintLabel]
+ 
+CREATE PROCEDURE [dbo].[sp_Wms_Receipt_PrintLabel]
 	@ReceiptId		varchar(50),
 	@MustPrint	bit = null,
 	@UserId			varchar(25)
@@ -62,13 +62,20 @@ begin
 			[WarehouseCode] [varchar](25)
 		)
 	
+		--insert into @partReceiptDetail
+		--select ROW_NUMBER() over (order by Id), Id, a.PONumber, a.ItemCode, a.ReceiptQty, isnull(b.QtyPacking, mi.Number_Box), isnull(po.WHTo, mi.WH_Code)
+		--From PartReceiptDetail a
+		--left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
+		--left join PurchaseOrder_Master po on a.PONumber = po.PO_No
+		--inner join Item_Master mi on a.ItemCode = mi.Item_Code
+		--where ReceiptId = @ReceiptId
+
 		insert into @partReceiptDetail
-		select ROW_NUMBER() over (order by Id), Id, a.PONumber, a.ItemCode, a.ReceiptQty, isnull(b.QtyPacking, mi.Number_Box), isnull(po.WHTo, mi.WH_Code)
-		From PartReceiptDetail a
+		select ROW_NUMBER() over (order by a.ItemCode), ROW_NUMBER() over (order by a.ItemCode), '' PONumber, a.ItemCode, a.ReceiptQty, isnull(b.QtyPacking, mi.Number_Box),  mi.WH_Code
+		From (select ItemCode , SUM(ReceiptQty) ReceiptQty from PartReceiptDetail where ReceiptId = @ReceiptId   group by ItemCode) a
 		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-		left join PurchaseOrder_Master po on a.PONumber = po.PO_No
 		inner join Item_Master mi on a.ItemCode = mi.Item_Code
-		where ReceiptId = @ReceiptId
+	 
 
 		while @i <= (select count(1) from @partReceiptDetail)
 		begin
@@ -224,3 +231,4 @@ begin
 	end
 	
 end
+
