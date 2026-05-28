@@ -1,8 +1,9 @@
 ﻿using Hangfire;
 using Kawai.Api.Services;
-using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
+using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
+using Kawai.Domain.Models.Robot;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
@@ -12,12 +13,14 @@ namespace Kawai.Api.Controllers.Mobile;
 public class MobileManualTrolleyAssignController : HahaController
 {
     private readonly IMobileManualTrolleyAssignRepository _manualTrolleyAssignRepository;
+    private readonly ITransactionProducer _transactionProducer;
     private readonly DataLogger _logger;
 
-    public MobileManualTrolleyAssignController(IMobileManualTrolleyAssignRepository manualTrolleyAssignRepository, DataLogger logger)
+    public MobileManualTrolleyAssignController(IMobileManualTrolleyAssignRepository manualTrolleyAssignRepository, DataLogger logger, ITransactionProducer transactionProducer)
     {
         _manualTrolleyAssignRepository = manualTrolleyAssignRepository;
-        _logger = logger;   
+        _logger = logger;
+        _transactionProducer = transactionProducer; 
     }
 
     [HttpGet("ddl-line")]
@@ -46,35 +49,97 @@ public class MobileManualTrolleyAssignController : HahaController
         return Success(results);
     }
 
-    [HttpGet("data-trolley")]
-    public async Task<IActionResult> GetDataTrolley(string trolleyNo)
+    [HttpGet("data-request")]
+    public async Task<IActionResult> GetDataRequest(string requestNo)
     {
-        var result = await _manualTrolleyAssignRepository.GetDataTrolley(trolleyNo);
+        var result = await _manualTrolleyAssignRepository.GetDataRequest(requestNo);
+        return Success(result);
+    }
+
+    [HttpGet("data-trolley")]
+    public async Task<IActionResult> GetDataTrolley(string requestNo, string trolleyNo)
+    {
+        var result = await _manualTrolleyAssignRepository.GetDataTrolley(requestNo, trolleyNo);
+        return Success(result);
+    }
+
+    [HttpPost("check")]
+    public async Task<IActionResult> CheckValidation(MobileManualTrolleyAssign model)
+    {
+        var result = await _manualTrolleyAssignRepository.CheckValidation(model);
         return Success(result);
     }
 
     [HttpPost("save")]
     public async Task<IActionResult> Save(MobileManualTrolleyAssign model)
     {
-        var before = await _manualTrolleyAssignRepository.Capture(model.RequestNo);
-
-        await _manualTrolleyAssignRepository.Save(model, Auth.User.UserID);
-
-        var after = await _manualTrolleyAssignRepository.Capture(model.RequestNo);
-
-        BackgroundJob.Enqueue<IRobotService>(service => service.CancelRequest(model.RequestNo, model.TrolleyNo));
-
-        await _logger.SaveDataLog(new DataLogDto
+        var message = new StockTransactionMessage<MobileManualTrolleyAssign>
         {
-            DocumentType = "Mobile Manual Trolley Assign",
-            EntityId = model.RequestNo,
-            ReferenceId = model.RequestNo,
-            Before = before,
-            After = after,
-            Activity = "Mobile Manual Trolley Assign",
-            Action = DataLogAction.Update
-        });
+            AuthUserId = Auth.User.UserID,
+            TimeStamp = EpochDateTime.Now,
+            TransactionType = "MANUAL-TROLLEY-ASSIGN-MOBILE",
+            FormatMessage = "Manual Trolley Assign Mobile",
+            Payload = model,
+            LogContext = new LogContext
+            {
+                Method = HttpContext.Request.Method,
+                RequestPath = HttpContext.Request.Path,
+                RemoteAddr = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString(),
+                UserAgent = HttpContext.Request.Headers.UserAgent.ToString(),
+                UserID = Auth.User.UserID,
+                FullName = Auth.User.FullName
+            }
+        };
 
-        return Success(after);
+        try
+        {
+            _transactionProducer.Publish<MobileManualTrolleyAssign>(message);
+            return Pending(message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("RabbitMQ unavailable: " + ex.Message);
+        }
+    }
+
+    [HttpPost("send-cancel-request-amr")]
+    public async Task<IActionResult> SendCancelRequestAMR(string requestNo)
+    {
+        var result = await _manualTrolleyAssignRepository.GetDataRequest(requestNo);
+
+        if (String.IsNullOrEmpty(result.TrolleyNo)) return Invalid("Data Trolley belum memiliki trolley baru!");
+
+        if (result.IsCurrentProcessManual) return Invalid("Data Request sudah manual!");
+
+        await _manualTrolleyAssignRepository.SendRequestCancelAMR(result.RequestNo, result.TrolleyNo, Auth.User.UserID);
+
+        BackgroundJob.Enqueue<IRobotService>(service => service.CancelRequest(result.RequestNo, result.TrolleyNo));
+
+        return Success(message: "Requesting to AMR");
+    }
+
+    [HttpPost("send-complete-special-amr")]
+    public async Task<IActionResult> SendCompleteSpecialAMR(string requestNo)
+    {
+        var result = await _manualTrolleyAssignRepository.GetDataRequest(requestNo);
+
+        if (String.IsNullOrEmpty(result.LastStopPointComplete)) return Invalid("Belum ada Stop Point yang Complete Loading!");
+
+        if (!result.IsCurrentProcessManual) return Invalid("Data Request sudah auto!");
+
+        await _manualTrolleyAssignRepository.SendRequestCancelAMR(result.RequestNo, result.TrolleyNo, Auth.User.UserID);
+
+        CompleteStatusRequest payload = new CompleteStatusRequest
+        {
+            RequestSendID = result.RequestNo,
+            TrolleyNo = result.TrolleyNo,
+            StopPoint = result.LastStopPointComplete,
+            CompleteStatus = 1,
+            IsManual = true
+        };
+
+        BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(payload));
+
+        return Success(message: "Requesting to AMR");
     }
 }

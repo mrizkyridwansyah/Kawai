@@ -22,6 +22,7 @@ public class RobotService : IRobotService
     private readonly ILogger<RobotService> _logger;
     private readonly IMobileLoadingTrolleyRepository _loadingTrolleyRepository;
     private readonly IMobileSupplyScanRequestRepository _supplyScanRequestRepository;
+    private readonly IMobileManualTrolleyAssignRepository _manualTrolleyAssignRepository;
     private readonly IRobotRepository _robotRepository;
 
     public RobotService
@@ -29,6 +30,7 @@ public class RobotService : IRobotService
         IHttpClientFactory factory,
         IMobileLoadingTrolleyRepository loadingTrolleyRepository,
         IMobileSupplyScanRequestRepository supplyScanRequestRepository,
+        IMobileManualTrolleyAssignRepository manualTrolleyAssignRepository,
         IRobotRepository robotRepository,
         ILogger<RobotService> logger,
         DataLogger changeDataLogger
@@ -37,6 +39,7 @@ public class RobotService : IRobotService
         _client = factory.CreateClient("robot");
         _loadingTrolleyRepository = loadingTrolleyRepository;
         _supplyScanRequestRepository = supplyScanRequestRepository;
+        _manualTrolleyAssignRepository = manualTrolleyAssignRepository;
         _robotRepository = robotRepository;
         _logger = logger;
         _changeDataLogger = changeDataLogger;
@@ -397,11 +400,6 @@ public class RobotService : IRobotService
     }
 
 
-    [AutomaticRetry(
-        Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
-        OnAttemptsExceeded = AttemptsExceededAction.Fail
-    )]
     public async Task CancelRequest(string requestNo, string trolleyNo)
     {
         try
@@ -433,22 +431,7 @@ public class RobotService : IRobotService
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
 
-            //var before = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
-
-            //await _loadingTrolleyRepository.UpdateStatusAMR(payload.RequestSendID, message);
-
-            //var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
-
-            //await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
-            //{
-            //    DocumentType = "Robot - Send Request Complete Loading",
-            //    EntityId = payload.RequestSendID + "|" + payload.StopPoint,
-            //    ReferenceId = payload.RequestSendID + "|" + payload.StopPoint,
-            //    Before = before,
-            //    After = after,
-            //    Action = DataLogAction.Update,
-            //    Activity = "Send Request Complete Loading By Robot"
-            //}, "CancelRequest");
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(payload.RequestSendID, payload.TrolleyNo, message);
 
             _logger.LogInformation(
                 "Robot API success for {PickingNo}. Message: {Message}",
@@ -462,11 +445,16 @@ public class RobotService : IRobotService
 
             _logger.LogWarning(ex, "Timeout sending robot request for {PickingNo}", requestNo);
 
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(requestNo, trolleyNo, message);
+
             throw; // tetap retry
         }
         catch (Exception ex)
         {
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(requestNo, trolleyNo, ex.Message);
+
             _logger.LogError(ex, "Error sending robot request for PickingNo {PickingNo}", requestNo);
+
             throw;
         }
     }

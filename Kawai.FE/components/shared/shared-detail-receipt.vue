@@ -56,7 +56,7 @@
 
 <script>
 export default {
-  props: ["receiptDetailId", "counter"],
+  props: ["receiptId", "itemCode", "counter"],
   data: () => ({
     filter: {
       keyword: null,
@@ -100,7 +100,10 @@ export default {
     },
   },
   watch: {
-    receiptDetailId: function () {
+    receiptId: function () {
+      this.search();
+    },
+    itemCode: function () {
       this.search();
     },
     counter: function () {
@@ -122,7 +125,8 @@ export default {
       let filters = [
         {
           Keyword: this.filter.keyword || "",
-          ReceiptDetailId: this.receiptDetailId.toString() || null,
+          ReceiptId: this.receiptId.toString() || null,
+          ItemCode: this.itemCode.toString() || null,
         },
       ];
 
@@ -130,7 +134,8 @@ export default {
       this.ds.loadDetail();
     },
     reset: function () {
-      this.receiptDetailId = null;
+      this.receiptId = null;
+      this.itemCode = null;
       this.search();
     },
   },

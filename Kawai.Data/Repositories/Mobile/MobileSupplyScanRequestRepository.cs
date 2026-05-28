@@ -96,6 +96,16 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
         });
     }
 
+    public async Task SendRequestCancelAMR(string requestNo, string userId)
+    {
+        string sql = "sp_Wms_Mobile_SupplyScanRequest_SendRequestAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            RequestNo = requestNo,
+            UserId = userId
+        });
+    }
+
     public async Task<Dictionary<string, object>> CaptureStatusAMR(string requestNo)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequest_CaptureStatusAMR";

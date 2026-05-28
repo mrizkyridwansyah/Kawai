@@ -8,8 +8,12 @@ public interface IMobileManualTrolleyAssignRepository
 {
     Task<List<ManufactureLineDto>> GetLineDDL(string keyword,string itemClass);
     Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string lineCode, string itemClass);
-    Task<TrolleyDto> GetDataTrolley(string trolleyNo);
+    Task<ManualTrolleyAssignDto> GetDataRequest(string requestNo);
+    Task<TrolleyDto> GetDataTrolley(string requestNo, string trolleyNo);
+    Task<ManualTrolleyAssignValidation> CheckValidation(MobileManualTrolleyAssign payload);
     Task Save(MobileManualTrolleyAssign payload, string userId);
+    Task SendRequestCancelAMR(string requestNo, string trolleyNo, string userId);
+    Task UpdateStatusAMR(string requestNo, string trolleyNo, string lastStatus);
     Task<Dictionary<string, object>> Capture(string requestNo);
 
     #region AMR
