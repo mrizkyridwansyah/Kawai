@@ -281,8 +281,52 @@
               </div>
             </div>
             <!-- END tab-pane -->
-            <!-- BEGIN tab-pane MOBILE -->
+
+             <!-- BEGIN tab-pane AREA -->
             <div class="tab-pane fade" id="default-tab-5" role="tabpanel">
+              <div class="v-table-wrapper">
+                <table
+                  class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="vertical-align: middle">
+                        Grouping Class Part Code
+                      </th>
+                      <th class="text-center" style="vertical-align: middle">
+                         Grouping Class Part Name
+                      </th>
+                     
+                      <th class="text-center" style="vertical-align: middle">
+                        <span>Show</span>
+                        <div class="mt-1" style="justify-items: center">
+                          <input-checkbox
+                            @click="(e) => allowAllAccessGroupingClass(e)"
+                          />
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                     <tr v-for="(item, idx) in allowed.groupingclass">
+                      <td>{{ item.GroupingClassPartCode }}</td>
+                      <td>{{ item.GroupingClassPartDescs }}</td>
+                      <td>
+                        <div style="justify-items: center">
+                          <input-checkbox
+                            v-model="item.AllowAccess"
+                            @click="(e) => allowAccessGroupingClassPart(e, item)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- END tab-pane -->
+            <!-- BEGIN tab-pane MOBILE -->
+            <div class="tab-pane fade" id="default-tab-6" role="tabpanel">
               <div class="v-table-wrapper">
                 <table
                   class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
@@ -347,6 +391,7 @@ export default {
       { value: "Factory", text: "Factory", defaultActive: false },
       { value: "Warehouse", text: "Warehouse", defaultActive: false },
       { value: "Area", text: "Area", defaultActive: false },
+      { value: "GroupingClassPart", text: "Grouping Class Part", defaultActive: false },
       { value: "Mobile", text: "Mobile", defaultActive: false },
     ],
     allowed: {
@@ -354,6 +399,7 @@ export default {
       factory: [],
       warehouse: [],
       area: [],
+      groupingclass : [],
       mobile: [],
     },
   }),
@@ -396,6 +442,7 @@ export default {
           x.AllowedAccessWarehouse = true;
       });
 
+      this.allowed.groupingclass = dt.Data.GroupingClassPrivileges;
       this.allowed.mobile = dt.Data.MenuMobilePrivileges;
     });
   },
@@ -463,6 +510,20 @@ export default {
     allowAllAccessArea: function (e) {
       this.allowed.area.map((p) => (p.AllowAccess = e.target.checked));
     },
+
+    
+
+     allowAllAccessGroupingClass: function (e) {
+      this.allowed.groupingclass.map((p) => (p.AllowAccess = e.target.checked));
+       
+    },
+
+    allowAccessGroupingClassPart: function (e, item) {
+      this.allowed.groupingclass.find((p) => p.GroupingClassPartCode === item.GroupingClassPartCode).AllowAccess =
+        e.target.checked;
+    },
+
+
     allowAllAccessMenuMobile: function (e) {
       this.allowed.mobile.map((p) => (p.AllowAccess = e.target.checked));
     },
@@ -479,6 +540,7 @@ export default {
         FactoryPrivileges: this.allowed.factory,
         WarehousePrivileges: this.allowed.warehouse,
         AreaPrivileges: this.allowed.area,
+        GroupingClassPrivileges: this.allowed.groupingclass,
         MenuMobilePrivileges: this.allowed.mobile,
       };
 
