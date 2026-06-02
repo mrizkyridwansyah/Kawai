@@ -1,6 +1,4 @@
-
-
-create   procedure [dbo].[sp_Wms_Receipt_Update]
+CREATE procedure [dbo].[sp_Wms_Receipt_Update]
 	@Id				bigint,
 	@ReceiptDate	date,
 	@DNNumber		varchar(50),
@@ -24,6 +22,14 @@ begin
 
 	declare @deleteDetailBarcode bit = (select top 1 IsUpdateDetails From @tblCheck)
 
+
+	if Exists (select top 1 1 from PartReceiptHeader where  id <> @id and DNNumber = @DNNumber)
+	BEGIN
+		raiserror('Surat Jalan / DN Number sudah terdaftar pada data receipt yang lain!', 16, 1)
+		return
+	END
+
+
 	if exists 
 	(
 		select 1 From @Details a
@@ -39,18 +45,6 @@ begin
 	if not exists (select 1 from PartReceiptHeader where Id = @Id)
 	begin
 		raiserror('Data Receipt tidak ditemukan!', 16, 1)
-		return
-	end
-
-	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
-	begin
-		raiserror('Data Receipt sudah tidak bisa diubah karena sudah scan receipt!', 16, 1)
-		return
-	end
-
-	if @ReceiptDate < cast(getdate() as date)
-	begin
-		raiserror('Receipt Date tidak boleh back date!', 16, 1)
 		return
 	end
 
@@ -131,18 +125,18 @@ begin
 		) res
 		group by res.PONumber, res.ParentItem, res.QtyReceipt
 
-		declare @msg varchar(max)
-		if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
-		begin
-			SELECT @msg = STRING_AGG(
-				PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
-				', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
-			, '; ')
-			FROM @tblPOItemSummaryBOM
-			WHERE QtyMinCanReceipt < QtyReceipt
-			RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
-			return	
-		end
+		--declare @msg varchar(max)
+		--if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
+		--begin
+		--	SELECT @msg = STRING_AGG(
+		--		PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
+		--		', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
+		--	, '; ')
+		--	FROM @tblPOItemSummaryBOM
+		--	WHERE QtyMinCanReceipt < QtyReceipt
+		--	RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
+		--	return	
+		--end
 	end
 	
 	-- UPDATE DATA RECEIPT HEADER
@@ -164,9 +158,19 @@ begin
 	where Id = @Id
 
 	-- HAPUS DETAIL LAMA
-	DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
-	
-	if @deleteDetailBarcode = 1
+
+	declare @updateDetailBarcode bit = 1
+	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
+	begin
+		set @updateDetailBarcode = 0
+	end
+
+	if @updateDetailBarcode = 1
+	begin
+		DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
+	end
+
+	if @deleteDetailBarcode = 1 and @updateDetailBarcode = 1
 	begin
 		insert into PartReceiptDetailBarcodeDeleted (ReceiptId, BarcodeNo, Qty)		
 		SELECT ReceiptId, BarcodeNo, Qty FROM PartReceiptDetailBarcode where ReceiptId = @Id
@@ -175,12 +179,15 @@ begin
 	end
 
 	-- INSERT DETAIL BARU
-	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
-	select 
-		@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks, isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
-	from @Details a 
-	left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
-	left join Item_Master mi on a.ItemCode = mi.Item_Code
+	if @updateDetailBarcode = 1
+	begin
+		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
+		select 
+			@Id, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks, isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
+		from @Details a 
+		left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
+	end
 
 	-- HAPUS DETAIL LAMA DI PART RECEIPT EZR
 	DELETE FROM Part_Receipt WHERE RefWMSReceiptId = @Id
