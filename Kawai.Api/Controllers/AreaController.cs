@@ -71,7 +71,7 @@ public class AreaController : HahaController
     [HttpGet("ddl-area-search-by-stock")]
     public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string item, string statusReceipt, string statusHoldNG, string ids)
     {
-        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, statusReceipt, statusHoldNG, item);
+        var results = await _areaRepository.DDLSearchByStock(keyword, warehouse, item, statusReceipt, statusHoldNG);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

@@ -17,7 +17,7 @@ begin
 		union all
 		select distinct a.AreaCode, b.AreaName , a.AreaCode +' | '+ b.AreaName DDLDescription
 		From StockDetail a
-		inner join MS_Area b on a.AreaCode = b.AreaCode
+		inner join vw_Area b on a.AreaCode = b.AreaCode
 		where 1=1
 		and (@WarehouseCode = 'ALL' or a.WarehouseCode = @WarehouseCode)
 		and (@ItemCode = 'ALL' or a.ItemCode = @ItemCode)
