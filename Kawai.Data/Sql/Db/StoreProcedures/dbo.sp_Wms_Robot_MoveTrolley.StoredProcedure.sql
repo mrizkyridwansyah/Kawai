@@ -68,21 +68,38 @@ begin
 
 	select top 1 @AddressCode = AddressCode From MS_Address where StopPointCode = @StopPointCode
 
-	DECLARE @ToWarehouseCode varchar(25), @ToAreaCode varchar(25), @ToAddressName varchar(max)
-	select @ToWarehouseCode = a.WarehouseCode, @ToAreaCode = a.AreaCode, @ToAddressName = AddressName
+	DECLARE @ToWarehouseCode varchar(25), @ToAreaCode varchar(25)--, @ToAddressName varchar(max)
+	select @ToWarehouseCode = a.WarehouseCode, @ToAreaCode = a.AreaCode--, @ToAddressName = AddressName
 	From MS_Address a
 	left join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
 	where AddressCode = @AddressCode
+
+	DECLARE @CurrentWarehouseCode varchar(25), @CurrentAreaCode varchar(25)
+	SELECT TOP 1 @CurrentWarehouseCode = WarehouseCode, @CurrentAreaCode = AreaCode 
+	FROM StockDetail WHERE RefNo = @RefNo AND isnull(Qty, 0) > 0
+
+	if isnull(@ToWarehouseCode, '') = ''
+	begin
+		print 'destination warehouse pake current warehouse'
+		set @ToWarehouseCode = @CurrentWarehouseCode
+	end
+
+	if isnull(@ToAreaCode, '') = ''
+	begin
+		print 'destination area pake current area'
+		set @ToAreaCode = @CurrentAreaCode
+	end
 
 	insert into @tbl
 	select 
 		a.RefNo, 
 		a.WarehouseCode, b.WarehouseName, a.AreaCode, a.AddressCode, a.ItemCode, a.BarcodeNo, a.LotNo, 
-		@ToWarehouseCode, @ToAreaCode, @AddressCode, @ToAddressName, Qty
+		@ToWarehouseCode, @ToAreaCode, @StopPointCode, @StopPointCode, Qty
 	from StockDetail a
 	left join vw_WarehouseLine b on a.WarehouseCode = b.WarehouseCode
 	where RefNo = @RefNo
 	and isnull(qty,	0) > 0
+
 
 	insert into ReceiptSupplyHistory 
 	(
@@ -95,11 +112,11 @@ begin
 		'OUT', 'Robot Moving Trolley', RefNo, 
 		FromWarehouseCode, FromAreaCode, FromAddressCode, ItemCode, BarcodeNo, LotNo, 
 		ToWarehouseCode, ToAreaCode, ToAddressCode, ItemCode, BarcodeNo, LotNo, 
-		Qty, 'Robot Moving Trolley ke ' + isnull(ToAddressName, ''), RefNo, 
+		Qty, 'Robot Moving Trolley ke stop point ' + isnull(ToAddressName, ''), RefNo, 
 		getdate(), @RobotCode
 	from @tbl
 
-	exec sp_Wms_Stock_MovingRef @RefNo, @ToWarehouseCode, @ToAreaCode, @AddressCode, NULL, @RobotCode
+	exec sp_Wms_Stock_MovingRef @RefNo, @ToWarehouseCode, @ToAreaCode, @StopPointCode, NULL, @RobotCode
 
 	insert into ReceiptSupplyHistory 
 	(

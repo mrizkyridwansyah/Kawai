@@ -7,5 +7,7 @@ CREATE view [vw_Area]
 as
 select AreaCode, AreaName from MS_Area
 union all
+select WorkStationCode, WorkStationName From MS_WorkStation
+union all
 select 'TMP', 'Temporary'
 GO
