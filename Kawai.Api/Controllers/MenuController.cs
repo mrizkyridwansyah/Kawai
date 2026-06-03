@@ -34,6 +34,8 @@ public class MenuController : HahaController
         var factoryPriv = await _factoryRepository.GetAllFactoryIncludePrivileges(userID);
         var warehousePriv = await _warehouseRepository.GetAllWarehouseIncludePrivileges(userID);
         var areaPriv = await _areaRepository.GetAllAreaIncludePrivileges(userID);
+        var groupingclassPriv = await _menuRepository.GetAllGroupingClassIncludePrivileges(userID);
+
         var result = new
         {
             UserID = userID,
@@ -41,7 +43,8 @@ public class MenuController : HahaController
             MenuMobilePrivileges = menuMobilePriv,
             FactoryPrivileges = factoryPriv,
             WarehousePrivileges = warehousePriv,
-            AreaPrivileges = areaPriv
+            AreaPrivileges = areaPriv,
+            GroupingClassPrivileges = groupingclassPriv
         };
 
         return Success(result);

@@ -20,6 +20,13 @@ public class MenuRepository : IMenuRepository
         string sp = "sp_WMS_UserSetup_UserPrivilege";
         return (await _dbExecutor.QueryListAsync<MenuDto>(sp, new { UserID = userId })).ToList();
     }
+
+    public async Task<List<GroupingClassDto>> GetAllGroupingClassIncludePrivileges(string userId)
+    {
+        string sp = "sp_WMS_UserSetup_GroupingClassPrivilege";
+        return (await _dbExecutor.QueryListAsync<GroupingClassDto>(sp, new { UserID = userId })).ToList();
+    }
+
     public async Task<List<MenuMobileDto>> GetAllMenuMobileIncludePrivileges(string userId)
     {
         string sp = "sp_WMS_UserSetup_UserMobilePrivilege";
@@ -65,6 +72,20 @@ public class MenuRepository : IMenuRepository
                 menuPriv.AllowAccess,
             }, CommandType.StoredProcedure));
         }
+
+        var groupingclassPrivs = privileges.GroupingClassPrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value).ToList();
+        foreach (var groupingclassPriv in groupingclassPrivs)
+        {
+            commands.Add(("sp_WMS_UserSetup_UserPrivilegeGroupingClassUpd", new
+            {
+                UserID = privileges.UserId,
+                groupingclassPriv.GroupingClassPartCode,
+                groupingclassPriv.AllowAccess,
+                UpdateBy = userId
+            }, CommandType.StoredProcedure));
+        }
+
+
 
         var factoryPrivs = privileges.FactoryPrivileges.Where(p => p.AllowAccess.HasValue && p.AllowAccess.Value).ToList();
         foreach (var factoryPriv in factoryPrivs)
@@ -116,6 +137,10 @@ public class MenuRepository : IMenuRepository
         string spFactoryPriv = "sp_Wms_Privileges_CaptureFactoryPrivileges";
         var factoryPrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spFactoryPriv, new { UserID = userId })).ToList();
 
+
+        string spGroungClassPriv = "sp_Wms_Privileges_CaptureGroupingClassPrivileges";
+        var groupingclassPrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spGroungClassPriv, new { UserID = userId })).ToList();
+
         string spWHPriv = "sp_Wms_Privileges_CaptureWarehousePrivileges";
         var warehousePrivileges = (await _dbExecutor.QueryListAsync<dynamic>(spWHPriv, new { UserID = userId })).ToList();
 
@@ -128,7 +153,8 @@ public class MenuRepository : IMenuRepository
             { "MobilePrivileges", mobilePrivileges },
             { "FactoryPrivileges", factoryPrivileges },
             { "WarehousePrivileges", warehousePrivileges },
-            { "AreaPrivileges", areaPrivileges }
+            { "AreaPrivileges", areaPrivileges },
+            { "GroupingClassPrivileges", groupingclassPrivileges }
         };
     }
 }

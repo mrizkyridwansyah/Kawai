@@ -16,6 +16,13 @@ public class MenuDto
     public bool AllowPrice { get; set; }
 }
 
+public class GroupingClassDto
+{
+    public string GroupingClassPartCode { get; set; }
+    public string GroupingClassPartDescs { get; set; }
+     public bool AllowAccess { get; set; }
+}
+
 public class MenuMobileDto
 {
     public string MenuID { get; set; }
