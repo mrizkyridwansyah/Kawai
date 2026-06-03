@@ -9,6 +9,12 @@ begin
 	insert into AMRMoveTrolley (TrolleyNo, FromAddressCode, ToAddressCode, RegisterDate)
 	values (@RefNo, @FromAddressCode, @ToAddressCode, getdate())
 
+	insert into AMRRequestHistory (RequestNo, FromData, ToData, [Action], SourceAction, StatusAMR, RegisterDate, RegisterUser)
+	select top 1
+		RefNumber, @FromAddressCode, @ToAddressCode, 'MOVE TROLLEY BY AMR', 'sp_Wms_Robot_MoveTrolley', null, GETDATE(), 'Robot'
+	From PartMaterialRequestDetail
+	where Trolley_No = @RefNo order by RegisterDate desc
+
 	declare @StopPointCode varchar(25) = @ToAddressCode
 
 	if not exists (select 1 from StockDetail where RefNo = @RefNo)

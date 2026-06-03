@@ -63,13 +63,13 @@ BEGIN
     DECLARE @MsgErr VARCHAR(MAX)
     DECLARE @IvtYear INT, @IvtMonth INT, @StartPeriod DATETIME, @EndPeriod DATETIME
 
-	declare @validSO varchar(max) = (select dbo.fn_ValidateTransactionPeriod())
+	--declare @validSO varchar(max) = (select dbo.fn_ValidateTransactionPeriod())
 
-	if @validSO <> 'OK'
-	begin
-        RAISERROR(@validSO,16,1)
-        RETURN
-	end
+	--if @validSO <> 'OK'
+	--begin
+ --       RAISERROR(@validSO,16,1)
+ --       RETURN
+	--end
 
     IF NOT EXISTS (SELECT TOP 1 1 FROM #zTempData WHERE ItemCode = @ItemCode)
     BEGIN
@@ -323,7 +323,7 @@ BEGIN
 			select 
 				'IN', 'Mobile Supply Scan Request', @ToPalletNo, @FromWarehouseCode, @FromAreaCode, @FromAddressCode, 
 				@ItemCode, @BarcodeNo, @LotNo, @FromWarehouseCode, @FromAreaCode, @FromAddressCode, 
-				@ItemCode, @BarcodeNo, @LotNo, @QtyOutstanding, 'Mobile Supply Scan Request dari palet ' + isnull(@FromRefNo, ''), @FromRefNo, 
+				@ItemCode, @BarcodeNo, @LotNo, @Qty, 'Mobile Supply Scan Request dari palet ' + isnull(@FromRefNo, ''), @FromRefNo, 
 				getdate(), @UserId
 		END
 
@@ -333,11 +333,12 @@ BEGIN
 		(
 			Select * from 
 			(
-			    select A.ItemCode, RequestDetailID, ChildRequirement_Qty - ISNULL(SUM(B.Qty),0) Nilai 
+			    select A.ItemCode, a.RequestDetailID, ChildRequirement_Qty - ISNULL(SUM(B.Qty),0) Nilai 
 				from PartMaterialRequestItemDetail A 
+				inner join PartMaterialRequestDetail dtl on a.RequestDetailID = dtl.RequestDetailID
 				LEFT JOIN PartMaterialRequestItemDetailScan B ON A.IDSeq = B.IDSeq and A.ItemCode = B.ItemCode  
-				where A.RequestDetailID = @ReqID
-				Group by RequestDetailID, ChildRequirement_Qty , A.ItemCode
+				WHERE dtl.RefNumber = @RequestNoCode
+				Group by a.RequestDetailID, ChildRequirement_Qty , A.ItemCode
 			) A where Nilai > 0
 		)
 		BEGIN
@@ -348,6 +349,8 @@ BEGIN
 				LastUpdate = getdate(), LastUser = @UserID, 
 				LastRequestDateAMR = getdate(), LastUserRequestAMR = @UserID
 			where RefNumber = @RequestNoCode
+
+			EXEC SP_Scheduler_TransferDataRobot2 @RequestNoCode, @UserId
 
 			SET @hasComplete = 1
 		END

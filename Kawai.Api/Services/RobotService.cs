@@ -348,15 +348,15 @@ public class RobotService : IRobotService
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
 
-            var before = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
+            var before = await _manualTrolleyAssignRepository.CaptureStatusAMR(payload.RequestSendID);
 
-            await _loadingTrolleyRepository.UpdateStatusAMR(payload.RequestSendID, payload.StopPoint, message);
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(payload.RequestSendID, payload.TrolleyNo, message);
 
-            var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
+            var after = await _manualTrolleyAssignRepository.CaptureStatusAMR(payload.RequestSendID);
 
             await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
             {
-                DocumentType = "Robot - Send Request Complete Loading",
+                DocumentType = "Robot - Send Request Complete Loading Special",
                 EntityId = payload.RequestSendID + "|" + payload.StopPoint,
                 ReferenceId = payload.RequestSendID + "|" + payload.StopPoint,
                 Before = before,
@@ -377,9 +377,9 @@ public class RobotService : IRobotService
 
             _logger.LogWarning(ex, "Timeout sending robot request for {PickingNo}", payload.RequestSendID);
 
-            await HandleFailureCompleteLoading(
+            await HandleFailureCompleteLoadingSpecial(
                 payload.RequestSendID,
-                payload.StopPoint,
+                payload.TrolleyNo,
                 message
             );
 
@@ -389,9 +389,9 @@ public class RobotService : IRobotService
         {
             _logger.LogError(ex, "Error sending robot request for PickingNo {PickingNo}", payload.RequestSendID);
 
-            await HandleFailureCompleteLoading(
+            await HandleFailureCompleteLoadingSpecial(
                 payload.RequestSendID,
-                payload.StopPoint,
+                payload.TrolleyNo,
                 ex.Message
             );
 
@@ -504,6 +504,32 @@ public class RobotService : IRobotService
             Action = DataLogAction.Update,
             Activity = "Send Request Complete Loading By Robot"
         }, "CompleteLoading");
+
+        _logger.LogError(
+            "Robot request failed for {PickingNo}. Message: {Message}",
+            pickingNo,
+            message
+        );
+    }
+
+    private async Task HandleFailureCompleteLoadingSpecial(string pickingNo, string trolleyNo, string message)
+    {
+        var before = await _manualTrolleyAssignRepository.CaptureStatusAMR(pickingNo);
+
+        await _manualTrolleyAssignRepository.UpdateStatusAMR(pickingNo, trolleyNo, message);
+
+        var after = await _manualTrolleyAssignRepository.CaptureStatusAMR(pickingNo);
+
+        await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
+        {
+            DocumentType = "Robot - Send Request Complete Loading Special",
+            EntityId = pickingNo,
+            ReferenceId = pickingNo,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update,
+            Activity = "Send Request Complete Loading By Robot"
+        }, "CompleteLoadingSpecial");
 
         _logger.LogError(
             "Robot request failed for {PickingNo}. Message: {Message}",

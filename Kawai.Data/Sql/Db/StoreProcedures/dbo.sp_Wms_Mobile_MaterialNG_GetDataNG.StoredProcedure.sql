@@ -1,5 +1,7 @@
 
-CREATE   PROCEDURE [dbo].[sp_Wms_Mobile_MaterialNG_GetDataNG]
+
+
+create   procedure [dbo].[sp_Wms_Mobile_MaterialNG_GetDataNG]
 	@BarcodeNo varchar(100) 
 as
 begin
@@ -31,22 +33,23 @@ begin
 		return
 	end
 
-	declare @PONumber varchar(100), @ItemCode varchar(25)
-	select @PONumber = PONumber, @ItemCode = ItemCode
-	From PartReceiptDetailBarcode 
+	declare @ReceiptNo varchar(100), @ItemCode varchar(25)
+	select @ReceiptNo = hd.ReceiptNo, @ItemCode = dtl.ItemCode
+	From PartReceiptDetailBarcode dtl
+	inner join PartReceiptHeader hd on dtl.ReceiptId = hd.Id
 	where BarcodeNo = @BarcodeNo
 
 	if exists 
 	(
 		select 1 from IQC_SamplingBarcodeDetail dtl
 		inner join IQC_Inspection_Header hd on dtl.InspectionID = hd.InspectionID 
-		where hd.PO_Number = @PONumber 
+		where hd.ReceiptNo = @ReceiptNo 
 		and hd.ItemCode = @ItemCode 
 		and hd.Soruce = 'Material NG' 
 		and hd.StatusQC = 'CONFIRMED'
 	)
 	begin
-		raiserror('Material NG dari PO barcode ini sudah diconfirm!', 16,1)
+		raiserror('Material NG dari DN barcode ini sudah diconfirm!', 16,1)
 		return
 	end
 

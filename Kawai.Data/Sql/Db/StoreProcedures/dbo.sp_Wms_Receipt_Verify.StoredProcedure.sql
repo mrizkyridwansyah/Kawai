@@ -87,18 +87,19 @@ as
 				@AreaCode varchar(25) = 'TMP', @AddressCode varchar(25) = 'TMP'
 
 		SELECT 
-			@ReceiptId = ReceiptId, @WarehouseCode = isnull(po.WHTo, mi.WH_Code), @ItemCode = ItemCode, @LotNo = LotNo
+			@ReceiptId = pr.ReceiptId, @WarehouseCode = isnull(po.WHTo, mi.WH_Code), @ItemCode = pr.ItemCode, @LotNo = pr.LotNo
 		FROM 
 		(
 			select * From PartReceiptDetailBarcode WHERE Id = @Id
 		) pr
+		inner join PartReceiptDetail dtl on pr.ReceiptDetailId = dtl.Id
 		inner join Item_Master mi on pr.ItemCode = mi.Item_Code
-		left join PurchaseOrder_Master po on pr.PONumber = po.PO_No
+		left join PurchaseOrder_Master po on dtl.PONumber = po.PO_No
 
 		UPDATE PartReceiptHeader SET StatusReceipt = 'PENDING', LastUpdate = GETDATE(), LastUser = @VerifiedBy WHERE Id = @ReceiptId
 
 		EXEC sp_Wms_Stock_UpSertStockDetail @RefNo, @WarehouseCode, @AreaCode, @AddressCode, @ItemCode, @BarcodeNo, @LotNo, @QtyVerify, NULL, NULL, @VerifiedBy, 'HOLD', 'Vendor'
-		EXEC sp_Wms_Stock_UpSertStockHeader @TransDate, @RefNo, @WarehouseCode, @AddressCode, @ItemCode, @LotNo, @QtyVerify, NULL, 'R', @VerifiedBy
+		EXEC sp_Wms_Stock_UpSertStockHeader @TransDate, @RefNo, @WarehouseCode, @AreaCode, @ItemCode, @LotNo, @QtyVerify, NULL, 'R', @VerifiedBy
 
 		insert into ReceiptSupplyHistory 
 		(

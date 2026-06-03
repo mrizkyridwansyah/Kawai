@@ -1,22 +1,14 @@
 
-CREATE   procedure [dbo].[sp_Wms_Mobile_ManualTrolleyAssign_GetDataTrolley]
-	@RequestNo varchar(50),
+CREATE procedure [dbo].[sp_Wms_Mobile_ManualTrolleyAssign_CheckValidation]
+	@RequestNo varchar(100),
 	@TrolleyNo varchar(50)
 as
 begin
-	if not exists (SELECT 1 fROM PartMaterialRequestDetail WHERE RefNumber = @RequestNo)
-	begin
-		raiserror('Data Request tidak ditemukan!', 16, 1)
-		return
-	end
-
-	declare @trolleyCls varchar(15), @trolleyClsDesc varchar(100), @id bigint, @isActive bit, @description varchar(150)
+	declare @trolleyCls varchar(15), @id bigint, @isActive bit, @description varchar(150)
 
 	select 
-		@id = a.SeNo, @trolleyCls = a.Trolley_Cls, @isActive = a.IsActive, @description = a.[Description], @trolleyClsDesc = b.Description
-	From MS_Trolley a
-	inner join Trolley_Cls b on a.Trolley_Cls = b.Trolley_Cls
-	where TrolleyCode = @TrolleyNo
+		@id = SeNo, @trolleyCls = Trolley_Cls, @isActive = IsActive, @description = [Description]
+	From MS_Trolley where TrolleyCode = @TrolleyNo
 
 	if @id is null
 	begin
@@ -27,6 +19,12 @@ begin
 	if isnull(@isActive, 0) = 0
 	begin
 		raiserror('Status Trolley tidak aktif!', 16, 1)
+		return
+	end
+
+	if not exists (select 1 from PartMaterialRequestDetail where RefNumber = @RequestNo)
+	begin
+		raiserror('Data Request tidak ditemukan!', 16, 1)
 		return
 	end
 
@@ -56,5 +54,19 @@ begin
 		return
 	end
 
-	select TrolleyCode = @TrolleyNo, Trolley_Cls = @trolleyCls, Trolley_ClsDescs = @trolleyClsDesc, Description = @description, IsActive = isnull(@isActive, 0)
+	if exists 
+	(
+		select 1 from 
+		(	
+			select RefNo from StockDetail where isnull(Picking_No, '') = @RequestNo and Qty > 0
+		) stok
+		inner join MS_Trolley troli on stok.RefNo = troli.TrolleyCode
+	)
+	begin
+		SELECT CAST(1 AS BIT) AlreadyHadStock, 'Trolley sebelumnya SUDAH ADA STOK. Anda akan ganti ke trolley ' + @TrolleyNo  MessageConfirmation
+		return
+	end
+
+	SELECT CAST(0 AS BIT) AlreadyHadStock, 'Request SUDAH MEMILIKI TROLLEY. Anda akan ganti ke trolley ' + @TrolleyNo MessageConfirmation
+	return
 end

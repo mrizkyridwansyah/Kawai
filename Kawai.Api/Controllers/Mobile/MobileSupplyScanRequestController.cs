@@ -118,6 +118,13 @@ public class MobileSupplyScanRequestController : HahaController
         }
     }
 
+    [HttpGet("get-request-amr")]
+    public async Task<IActionResult> GetRequestAMR(string requestNo)
+    {
+        var result = await _supplyscanrequestRepository.GetRequestAMR(requestNo);
+        return Success(result);
+    }
+
     [HttpPost("send-request-amr")]
     public async Task<IActionResult> SendRequestAMR(SendRequestAMR model)
     {

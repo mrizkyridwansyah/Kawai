@@ -1,4 +1,6 @@
 
+
+
 create   procedure [dbo].[sp_Wms_ReceiptUnschedule_CheckIsDetailsUpdate]
 	@Id				bigint,
 	@SupplierCode	varchar(25),
@@ -8,6 +10,12 @@ begin
 	if not exists (SELECT 1 fROM PartReceiptDetailBarcode WHERE ReceiptId = @Id)
 	begin
 		SELECT cast(0 as bit) IsUpdateDetails, 0 TypeConfirmation, 'Not Yet Print Label' TypeConfirmationDesc
+		return
+	end
+
+	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and VerifiedDate is not null)
+	begin
+		SELECT cast(0 as bit) IsUpdateDetails, 3 TypeConfirmation, 'Already Scan Mobile Receiving' TypeConfirmationDesc
 		return
 	end
 

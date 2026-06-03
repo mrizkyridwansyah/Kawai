@@ -21,7 +21,7 @@ public class MobileManualTrolleyAssignRepository: IMobileManualTrolleyAssignRepo
         return (await _dbExecutor.QueryListAsync<ManufactureLineDto>(sp, new { Keyword = keyword ?? "", ItemClass = itemClass })).ToList();
     }
 
-    public async Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string lineCode, string itemClass)
+    public async Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string itemClass, string lineCode)
     {
         string sp = "sp_Wms_Mobile_ManualTrolleyAssign_RequestNoDDL";
         return (await _dbExecutor.QueryListAsync<SupplyScanRequestNoDto>(sp, new { Keyword = keyword ?? "", LineCode = lineCode, ItemClass = itemClass })).ToList();
@@ -39,10 +39,10 @@ public class MobileManualTrolleyAssignRepository: IMobileManualTrolleyAssignRepo
         return await _dbExecutor.QueryFirstOrDefaultAsync<TrolleyDto>(sp, new { RequestNo = requestNo, TrolleyNo = trolleyNo });
     }
 
-    public async Task<ManualTrolleyAssignValidation> CheckValidation(MobileManualTrolleyAssign payload)
+    public async Task<ManualTrolleyAssignValidationDto> CheckValidation(MobileManualTrolleyAssign payload)
     {
         string sql = "sp_Wms_Mobile_ManualTrolleyAssign_CheckValidation";
-        return await _dbExecutor.QueryFirstOrDefaultAsync<ManualTrolleyAssignValidation>(sql, new
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ManualTrolleyAssignValidationDto>(sql, new
         {
             payload.RequestNo,
             payload.TrolleyNo
@@ -93,4 +93,20 @@ public class MobileManualTrolleyAssignRepository: IMobileManualTrolleyAssignRepo
         });
     }
 
+    public async Task<List<ManualTrolleyDetailRequestDto>> GetListDetailRequestAMR(string requestNo)
+    {
+        string sp = "sp_Wms_Mobile_ManualTrolleyAssign_GetListDetailRequestAMR";
+        return (await _dbExecutor.QueryListAsync<ManualTrolleyDetailRequestDto>(sp, new { RequestNo = requestNo })).ToList();
+    }
+
+    public async Task<Dictionary<string, object>> CaptureStatusAMR(string pickingNo)
+    {
+        string sp = "sp_Wms_Mobile_ManualTrolleyAssign_CaptureStatusAMR";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { PickingNo = pickingNo });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
+    }
 }

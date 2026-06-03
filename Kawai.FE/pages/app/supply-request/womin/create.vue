@@ -50,12 +50,14 @@
                 icon="print"
                 cClass="ml-1 btn-blue"
                 :is-loading="isLoading"
+                :disabled="this.groupLists.length == 0"
               />
 
               <v-button-submit
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
+                :disabled="this.groupLists.length == 0"
               />
             </div>
           </td>
@@ -222,6 +224,8 @@ export default {
     search: function () {
       this.ds.loadDetail().then((dt) => {
         let grouped = {};
+
+        this.lineName = this.ds.newRequest[0].LineCode;
 
         // Isi lineName dari data pertama
         if (dt.Data.length > 0) {

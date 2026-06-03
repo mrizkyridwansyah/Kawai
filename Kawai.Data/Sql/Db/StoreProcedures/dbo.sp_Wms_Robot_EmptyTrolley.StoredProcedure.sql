@@ -4,19 +4,19 @@ AS
 BEGIN
 	if not exists (select 1 from MS_Trolley where TrolleyCode = @RefNo)
 	begin
-		raiserror('Data Trolley tidak ditemukan!', 16,1)
+		--raiserror('Data Trolley tidak ditemukan!', 16,1)
 		return
 	end
 
 	if not exists (select 1 from StockDetail where RefNo = @RefNo)
 	begin
-		raiserror('Data Trolley sudah kosong!', 16,1)
+		--raiserror('Data Trolley sudah kosong!', 16,1)
 		return
 	end
 
 	if isnull((select sum(Qty) from StockDetail where RefNo = @RefNo), 0) = 0
 	begin
-		raiserror('Data Trolley sudah kosong!', 16,1)
+		--raiserror('Data Trolley sudah kosong!', 16,1)
 		return
 	end
 
@@ -41,6 +41,12 @@ BEGIN
 	from StockDetail a
 	where RefNo = @RefNo
 	and isnull(qty,	0) > 0
+
+	insert into AMRRequestHistory (RequestNo, FromData, ToData, [Action], SourceAction, StatusAMR, RegisterDate, RegisterUser)
+	select top 1
+		RefNumber, @RefNo, @RefNo, 'EMPTY TROLLEY BY AMR', 'sp_Wms_Robot_EmptyTrolley', null, GETDATE(), 'Robot'
+	From PartMaterialRequestDetail
+	where Trolley_No = @RefNo order by RegisterDate desc
 
 	BEGIN TRY
 		BEGIN TRANSACTION EmptyTrolleyTransaction
@@ -91,3 +97,4 @@ BEGIN
 		RETURN 
 	end catch
 END
+

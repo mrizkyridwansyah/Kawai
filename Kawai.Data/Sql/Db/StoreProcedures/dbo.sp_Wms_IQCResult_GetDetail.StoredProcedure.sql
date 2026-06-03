@@ -19,7 +19,10 @@ begin
 		att.[FileName] AttachmentFileName
 	from IQC_Inspection_Header iqch
 	inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
-	inner join PartReceiptDetail pdtl on pdtl.ReceiptId = prh.Id and isnull(pdtl.PONumber, '') = iqch.PO_Number and pdtl.ItemCode = iqch.ItemCode
+	inner join 
+	(
+		select ReceiptId, ItemCode, sum(ReceiptQty) ReceiptQty From PartReceiptDetail group by ReceiptId, ItemCode 
+	) pdtl on pdtl.ReceiptId = prh.Id and pdtl.ItemCode = iqch.ItemCode
 	left join IQC_Attachment att on iqch.InspectionID = att.InspectionID
 	where iqch.InspectionID = @InspectionId
 

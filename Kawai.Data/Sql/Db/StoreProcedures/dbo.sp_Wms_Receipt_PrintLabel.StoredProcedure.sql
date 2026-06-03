@@ -71,8 +71,13 @@ begin
 		--where ReceiptId = @ReceiptId
 
 		insert into @partReceiptDetail
-		select ROW_NUMBER() over (order by a.ItemCode), ROW_NUMBER() over (order by a.ItemCode), '' PONumber, a.ItemCode, a.ReceiptQty, isnull(b.QtyPacking, mi.Number_Box),  mi.WH_Code
-		From (select ItemCode , SUM(ReceiptQty) ReceiptQty from PartReceiptDetail where ReceiptId = @ReceiptId   group by ItemCode) a
+		select ROW_NUMBER() over (order by a.ItemCode), a.ReceiptDetailId, '' PONumber, a.ItemCode, a.ReceiptQty, isnull(b.QtyPacking, mi.Number_Box),  mi.WH_Code
+		From 
+		(
+			select ItemCode, MIN(Id) ReceiptDetailId , SUM(ReceiptQty) ReceiptQty 
+			from PartReceiptDetail where ReceiptId = @ReceiptId   
+			group by ItemCode
+		) a
 		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
 		inner join Item_Master mi on a.ItemCode = mi.Item_Code
 	 

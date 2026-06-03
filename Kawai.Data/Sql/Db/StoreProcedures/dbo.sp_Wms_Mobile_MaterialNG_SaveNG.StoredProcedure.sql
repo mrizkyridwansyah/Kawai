@@ -38,8 +38,8 @@ begin
 		return
 	end
 
-	declare @ReceiptId bigint, @DNNumber varchar(50), @PONumber varchar(100), @ItemCode varchar(25), @factoryCode varchar(25), @SupplierCode varchar(25)
-	select @ReceiptId = pr.ReceiptId, @DNNumber = prh.DNNumber, @PONumber = pr.PONumber, @ItemCode = pr.ItemCode, @factoryCode = prh.CompanyCode, @SupplierCode = prh.SupplierCode
+	declare @ReceiptId bigint, @DNNumber varchar(50), @ReceiptNo varchar(100), @ItemCode varchar(25), @factoryCode varchar(25), @SupplierCode varchar(25)
+	select @ReceiptId = pr.ReceiptId, @DNNumber = prh.DNNumber, @ReceiptNo = prh.ReceiptNo, @ItemCode = pr.ItemCode, @factoryCode = prh.CompanyCode, @SupplierCode = prh.SupplierCode
 	From PartReceiptDetailBarcode pr
 	inner join PartReceiptHeader prh on prh.Id = pr.ReceiptId
 	where BarcodeNo = @BarcodeNo
@@ -58,17 +58,17 @@ begin
 	(
 		select 1 from IQC_SamplingBarcodeDetail dtl
 		inner join IQC_Inspection_Header hd on dtl.InspectionID = hd.InspectionID 
-		where hd.PO_Number = @PONumber 
+		where hd.ReceiptNo = @ReceiptNo 
 		and hd.ItemCode = @ItemCode 
 		and hd.Soruce = 'Material NG' 
 		and hd.StatusQC = 'CONFIRMED'
 	)
 	begin
-		raiserror('Material NG dari PO barcode ini sudah diconfirm!', 16,1)
+		raiserror('Material NG dari DN barcode ini sudah diconfirm!', 16,1)
 		return
 	end
 
-	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Material NG')
+	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Material NG')
 
 	declare @transDate date = getdate()
 	declare @prefixFactory varchar(5) = (select PrefixGlobalBarcode from Company_Profile where Company_Code = @factoryCode)
@@ -78,7 +78,7 @@ begin
 
 	begin transaction ngTransaction
 	begin try
-		if not exists (select 1 from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Material NG')
+		if not exists (select 1 from IQC_Inspection_Header where ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Material NG')
 		begin
 			insert into IQC_Inspection_Header 
 			(
@@ -153,7 +153,7 @@ begin
 				values (@warehouse, 'TMP', 'TMP', @NewBarcodePartialNG, @BarcodeNo, @ItemCode, @lotNo, @QtyNG, 0, null, getdate(), @UserId)
 
 				insert into BarcodeNGDetail (ReceiptId, DNNumber, SupplierCode, ItemCode, PONumber, BarcodeOriginal, BarcodeNew, QtyNG)
-				values (@ReceiptId, @DNNumber, @SupplierCode, @ItemCode, @PONumber, @BarcodeNo, @NewBarcodePartialNG, @QtyNG)
+				values (@ReceiptId, @DNNumber, @SupplierCode, @ItemCode, null, @BarcodeNo, @NewBarcodePartialNG, @QtyNG)
 
 				insert into ReceiptSupplyHistory 
 				(

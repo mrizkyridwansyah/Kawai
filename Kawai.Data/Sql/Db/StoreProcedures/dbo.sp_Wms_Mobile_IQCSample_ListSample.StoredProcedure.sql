@@ -10,15 +10,16 @@ begin
 		dtl.ItemCode, mi.Item_Name ItemName, iqc.TotalQtySample
 	FROM 
 	(
-		select a.*, b.ReceiptNo From PartReceiptDetail a
+		select a.ItemCode, b.ReceiptNo, sum(a.ReceiptQty) ReceiptQty From PartReceiptDetail a
 		inner join PartReceiptHeader b on a.ReceiptId = b.Id
 		where ReceiptId = @ReceiptId
+		group by a.ItemCode, b.ReceiptNo
 	) dtl
 	left join Item_Master mi on dtl.ItemCode = mi.Item_Code
 	left join 
 	(
 		SELECT * fROM IQC_Inspection_Header WHERE Soruce = 'Incoming Material'
-	) iqc on dtl.ReceiptNo = iqc.ReceiptNo and isnull(dtl.PONumber, '') = iqc.PO_Number and dtl.ItemCode = iqc.ItemCode
+	) iqc on dtl.ReceiptNo = iqc.ReceiptNo and dtl.ItemCode = iqc.ItemCode
 end
 
 GO

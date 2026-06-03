@@ -2,6 +2,8 @@
 
 
 
+
+
 create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Update]
 	@Id				bigint,
 	@ReceiptDate	date,
@@ -43,17 +45,17 @@ begin
 		return
 	end
 
-	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
-	begin
-		raiserror('Data Receipt sudah tidak bisa diubah karena sudah scan receipt!', 16, 1)
-		return
-	end
+	--if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
+	--begin
+	--	raiserror('Data Receipt sudah tidak bisa diubah karena sudah scan receipt!', 16, 1)
+	--	return
+	--end
 
-	if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
-	begin
-		raiserror('Receipt Date tidak boleh back date!', 16, 1)
-		return
-	end
+	--if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
+	--begin
+	--	raiserror('Receipt Date tidak boleh back date!', 16, 1)
+	--	return
+	--end
 
 	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
 	begin
@@ -78,10 +80,19 @@ begin
 		ReferenceNo = @ReferenceNo
 	where Id = @Id
 
-	-- HAPUS DETAIL LAMA
-	DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
+	declare @updateDetailBarcode bit = 1
+	if exists (select 1 from PartReceiptDetailBarcode where ReceiptId = @Id and isnull(IsVerified, 0) = 1)
+	begin
+		set @updateDetailBarcode = 0
+	end
 
-	if @deleteDetailBarcode = 1
+	-- HAPUS DETAIL LAMA
+	if @updateDetailBarcode = 1
+	begin
+		DELETE FROM PartReceiptDetail WHERE ReceiptId = @Id
+	end
+
+	if @deleteDetailBarcode = 1 and @updateDetailBarcode = 1
 	begin
 		insert into PartReceiptDetailBarcodeDeleted (ReceiptId, BarcodeNo, Qty)		
 		SELECT ReceiptId, BarcodeNo, Qty FROM PartReceiptDetailBarcode where ReceiptId = @Id
@@ -90,11 +101,14 @@ begin
 	end
 
 	-- INSERT DETAIL BARU
-	insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
-	select @Id, @ReceiptDate, null, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '', isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
-	from @Details a
-	left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
-	left join Item_Master mi on a.ItemCode = mi.Item_Code
+	if @updateDetailBarcode = 1
+	begin
+		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
+		select @Id, @ReceiptDate, null, a.ItemCode, isnull(isp.UnitCls, mi.Unit_Cls), 0, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '', isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
+		from @Details a
+		left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
+		left join Item_Master mi on a.ItemCode = mi.Item_Code
+	end
 
 	-- HAPUS DETAIL LAMA DI PART RECEIPT EZR
 	DELETE FROM Part_Receipt WHERE RefWMSReceiptId = @Id

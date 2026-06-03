@@ -20,7 +20,7 @@ public class MobileManualTrolleyAssignController : HahaController
     {
         _manualTrolleyAssignRepository = manualTrolleyAssignRepository;
         _logger = logger;
-        _transactionProducer = transactionProducer; 
+        _transactionProducer = transactionProducer;
     }
 
     [HttpGet("ddl-line")]
@@ -102,8 +102,35 @@ public class MobileManualTrolleyAssignController : HahaController
         }
     }
 
+    [HttpGet("get-request-amr")]
+    public async Task<IActionResult> GetRequestAMR(string requestNo)
+    {
+        var results = await _manualTrolleyAssignRepository.GetListDetailRequestAMR(requestNo);
+        var grouped = results
+        .GroupBy(x => new { x.RequestNo, x.TrolleyNo, x.IsCurrentProcessManual })
+        .Select(g => new
+        {
+            g.Key.RequestNo,
+            g.Key.TrolleyNo,
+            g.Key.IsCurrentProcessManual,
+            Details = g.Select(x => new
+            {
+                x.StopPoint,
+                x.StopPointDesc,
+                x.StatusAMR,
+                x.IsCompleteLoading,
+                x.IsCurrentProcessManual,
+                x.LastUserRequestAMR,
+                x.LastRequestDateAMR
+            }).ToList()
+        })
+        .FirstOrDefault();
+
+        return Success(grouped);
+    }
+
     [HttpPost("send-cancel-request-amr")]
-    public async Task<IActionResult> SendCancelRequestAMR(string requestNo)
+    public async Task<IActionResult> SendCancelRequestAMR([FromQuery] string requestNo)
     {
         var result = await _manualTrolleyAssignRepository.GetDataRequest(requestNo);
 
@@ -115,11 +142,11 @@ public class MobileManualTrolleyAssignController : HahaController
 
         BackgroundJob.Enqueue<IRobotService>(service => service.CancelRequest(result.RequestNo, result.TrolleyNo));
 
-        return Success(message: "Requesting to AMR");
+        return Success(message: "Requesting to Cancel Request AMR");
     }
 
     [HttpPost("send-complete-special-amr")]
-    public async Task<IActionResult> SendCompleteSpecialAMR(string requestNo)
+    public async Task<IActionResult> SendCompleteSpecialAMR([FromQuery] string requestNo)
     {
         var result = await _manualTrolleyAssignRepository.GetDataRequest(requestNo);
 
@@ -140,6 +167,6 @@ public class MobileManualTrolleyAssignController : HahaController
 
         BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(payload));
 
-        return Success(message: "Requesting to AMR");
+        return Success(message: "Requesting to Complete Special AMR");
     }
 }

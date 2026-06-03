@@ -74,7 +74,7 @@ begin
 			select 
 			 	PO_No PONumber, Item_Code ItemCode, sum(Qty) ReceiptQty 
 			from Part_Receipt 
-			WHERE (RefWMSReceiptId is null or isnull(RefWMSReceiptId, 0) <> isnull(@ReceiptId, 0))
+			WHERE Supplier_Code = @SupplierCode and (RefWMSReceiptId is null or isnull(RefWMSReceiptId, 0) <> isnull(@ReceiptId, 0))
 			group by PO_No, Item_Code
 		) rcpSum on pod.PO_No = rcpSum.PONumber and pod.Item_Code = rcpSum.ItemCode
 		WHERE (pod.Qty - isnull(rcpSum.ReceiptQty, 0)) > 0
@@ -95,7 +95,7 @@ begin
 				select 
 			 		PO_No PONumber, Item_Code ItemCode, sum(Qty) ReceiptQty 
 				from Part_Receipt 
-				WHERE (RefWMSReceiptId is null or isnull(RefWMSReceiptId, 0) <> isnull(@ReceiptId, 0))
+				WHERE Supplier_Code = @SupplierCode and (RefWMSReceiptId is null or isnull(RefWMSReceiptId, 0) <> isnull(@ReceiptId, 0))
 				group by PO_No, Item_Code
 			) rcpSum on pod.PO_No = rcpSum.PONumber and pod.Item_Code = rcpSum.ItemCode
 			WHERE (pod.Qty - isnull(rcpSum.ReceiptQty, 0)) > 0
@@ -114,7 +114,7 @@ begin
 				select 
 			 		PO_No PONumber, Item_Code ItemCode, sum(Qty) ReceiptQty 
 				from Part_Receipt 
-				WHERE isnull(RefWMSReceiptId, 0) = isnull(@ReceiptId, 0)
+				WHERE Supplier_Code = @SupplierCode and  isnull(RefWMSReceiptId, 0) = isnull(@ReceiptId, 0)
 				group by PO_No, Item_Code
 			) rcpSum on pod.PO_No = rcpSum.PONumber and pod.Item_Code = rcpSum.ItemCode
 			UNION ALL

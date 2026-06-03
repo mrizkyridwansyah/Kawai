@@ -11,7 +11,8 @@ CREATE   procedure [sp_Wms_Receipt_InquiryDetail]
 
 	-- PARAMETER OPSIONAL
 	@Keyword varchar(max) = '',
-	@ReceiptDetailId bigint
+	@ReceiptId bigint,
+	@ItemCode varchar(25)
 as
 begin
 	declare @sqlSort varchar(max) = ''
@@ -42,7 +43,8 @@ begin
 			OR a.ItemCode LIKE '%' + @Keyword + '%' 
 			OR mi.Item_Name LIKE '%' + @Keyword + '%'
 		)
-		and ReceiptDetailId = @ReceiptDetailId
+		and ReceiptId = @ReceiptId
+		and ItemCode = @ItemCode
 	)
 
 	DECLARE @sql NVARCHAR(MAX) = N'
@@ -51,7 +53,7 @@ begin
 				LotNo,
 				BarcodeNo
 			FROM PartReceiptDetailBarcode
-			WHERE ReceiptDetailId = @ReceiptDetailId
+			WHERE ReceiptId = @ReceiptId and ItemCode = @ItemCode
 		),
 		RankedStock AS (
 			SELECT
@@ -114,7 +116,7 @@ begin
 		) stok 
 			ON a.LotNo = stok.LotNo
 		   AND a.BarcodeNo = stok.BarcodeNo
-		WHERE a.ReceiptDetailId = @ReceiptDetailId
+		WHERE a.ReceiptId = @ReceiptId and a.ItemCode = @ItemCode
 		  AND (
 				@Keyword IS NULL
 				OR a.BarcodeNo LIKE ''%'' + @Keyword + ''%''
@@ -134,12 +136,12 @@ begin
 
 	EXEC sp_executesql
 		@sql,
-		N'@Keyword VARCHAR(MAX), @ReceiptDetailId BIGINT, @Offset INT, @Length INT, @TotalRow INT',
+		N'@Keyword VARCHAR(MAX), @ReceiptId BIGINT, @ItemCode VARCHAR(25), @Offset INT, @Length INT, @TotalRow INT',
 		@Keyword = @Keyword,
-		@ReceiptDetailId = @ReceiptDetailId,
+		@ReceiptId = @ReceiptId,
+		@ItemCode = @ItemCode,
 		@Offset = @offset,
 		@Length = @Length,
 		@TotalRow = @TotalRow;
 	
 end
-GO

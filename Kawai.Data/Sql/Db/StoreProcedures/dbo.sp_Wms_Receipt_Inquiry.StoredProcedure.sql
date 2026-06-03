@@ -121,11 +121,11 @@ begin
 		inner join Item_Master mi on dtl.ItemCode = mi.Item_Code
 		left join 
 		(
-			select ReceiptDetailId, ReceiptId, sum(Qty) QtyScan 
+			select ReceiptId, ItemCode, sum(Qty) QtyScan 
 			From PartReceiptDetailBarcode
 			where isnull(IsVerified, 0) = 1
-			group by ReceiptDetailId, ReceiptId
-		) xx on a.Id = xx.ReceiptId and dtl.Id = xx.ReceiptDetailId
+			group by ReceiptId, ItemCode
+		) xx on a.Id = xx.ReceiptId and dtl.ItemCode = xx.ItemCode
 		LEFT JOIN 
 		(
 			select 
@@ -139,8 +139,8 @@ begin
 		left join Unit_Cls uc on dtl.UnitCls = uc.Unit_Cls
 		LEFT JOIN trade_master b ON a.SupplierCode = b.Trade_Code
 		left join Price_Master pm on dtl.ItemCode = pm.Item_Code and a.SupplierCode = pm.Trade_Code and Price_Cls = ''01'' AND a.ReceiptDate BETWEEN 
-			(select dbo.ConvertToDateTimeFromFuckingString(Start_Date)) and 
-			(select dbo.ConvertToDateTimeFromFuckingString(End_Date))
+			(select dbo.ConvertToDateTimeFromString(Start_Date)) and 
+			(select dbo.ConvertToDateTimeFromString(End_Date))
 		left join Curr_Cls cc on cc.Curr_Cls = isnull(pod.Currency_Code, pm.Currency_Code)
 		LEFT JOIN IQC_Inspection_Header iqch on a.ReceiptNo = iqch.ReceiptNo and dtl.ItemCode = iqch.ItemCode and iqch.Soruce = ''Incoming Material''
 		WHERE
@@ -183,3 +183,4 @@ begin
 		@TotalRow = @TotalRow;
 	
 end
+

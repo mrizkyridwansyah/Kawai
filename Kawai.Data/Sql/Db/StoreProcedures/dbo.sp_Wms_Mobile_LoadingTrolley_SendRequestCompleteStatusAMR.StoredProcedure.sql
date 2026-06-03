@@ -12,4 +12,8 @@ begin
 		LastRequestDateAMR = getdate()
 	where RequestSendID = @PickingNo and [Status] = 1 
 	and Stop_Point = @StopPoint
+
+	insert into AMRRequestHistory (RequestNo, FromData, ToData, [Action], SourceAction, StatusAMR, RegisterDate, RegisterUser)
+	values (@PickingNo, @StopPoint, @StopPoint, 'SEND COMPLETE STATUS FROM WMS', 'sp_Wms_Mobile_LoadingTrolley_SendRequestCompleteStatusAMR', 'Requesting to AMR', GETDATE(), @UserId)
+
 end

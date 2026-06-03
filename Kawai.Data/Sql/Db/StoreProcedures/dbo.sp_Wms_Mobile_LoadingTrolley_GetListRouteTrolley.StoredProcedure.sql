@@ -11,13 +11,19 @@ begin
 	WHERE ISNULL(Trolley_No, '') = @TrolleyNo 
 	ORDER BY RegisterDate DESC
 
+	if @RequestSendID  is null and isnull(@TrolleyNo, '') <> ''
+	begin
+		raiserror('Data Request Trolley tidak ditemukan!', 16, 1)
+		return;
+	end
+
 	select 
 		dtl.RequestSendID, 
 		dtl.Stop_Point StopPoint, 
 		msp.Description StopPointDesc, 
 		@TrolleyNo TrolleyNo, 
 		StatusAMR = isnull(dtl.StatusAMR, ''), 
-		IsComplete = case when isnull(dtl.StatusAMR, '') <> 'Completed' then cast(1 as bit) else cast(0 as bit) end, 
+		IsComplete = case when isnull(dtl.StatusAMR, '') <> 'Completed' then cast(0 as bit) else cast(1 as bit) end, 
 		IsManual = @IsCurrentProcessManual,
 		dtl.LastUserRequestAMR, 
 		us.FullName LastUserNameRequestAMR, 

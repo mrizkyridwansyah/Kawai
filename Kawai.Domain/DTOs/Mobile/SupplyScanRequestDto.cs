@@ -30,3 +30,13 @@ public class SupplyScanRequestDetailDto
     public string LotNo { get; set; }
 
 }
+
+public class SupplyScanRequestAMRDto
+{
+    public string RequestNo { get; set; }
+    public string TrolleyNo { get; set; }
+    public string LastStatus { get; set; }
+    public string LastRequestUser { get; set; }
+    public DateTime? LastRequestDate { get; set; }
+    public bool ValidToSendRequest { get; set; }
+}

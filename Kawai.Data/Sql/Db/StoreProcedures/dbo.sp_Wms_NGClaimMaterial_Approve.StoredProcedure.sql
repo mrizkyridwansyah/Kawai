@@ -1,7 +1,12 @@
 
 
 
-CREATE  procedure [dbo].[sp_Wms_NGClaimMaterial_Approve]
+
+
+
+
+
+create   procedure [dbo].[sp_Wms_NGClaimMaterial_Approve]
 	@ClaimId				bigint,
 	@DNNumber		varchar(50),
 	@SupplierCode	varchar(25),
