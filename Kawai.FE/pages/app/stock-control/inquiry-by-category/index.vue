@@ -51,7 +51,7 @@
             <filter-lot-by-stock
               class="form-control"
               v-model="filter.lotno"
-              warehouse="ALL"
+              :warehouse="filter.warehouse"
               area="ALL"
               address="ALL"
               :item="filter.item"
