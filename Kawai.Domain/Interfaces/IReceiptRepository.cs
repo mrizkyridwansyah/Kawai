@@ -2,6 +2,7 @@
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Shared;
+using System.Data;
 
 namespace Kawai.Domain.Interfaces;
 
@@ -45,6 +46,21 @@ public interface IReceiptRepository
 
     Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
     Task<List<PODto>> PODDLSearch(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string userId, long? receiptId);
+
+
+    #region Import
+
+    Task<ReceiptImport> ValidateImport(
+     ReceiptHeaderImport header,
+     DataTable datas,
+     string userId);
+
+    Task Import(
+        ReceiptHeaderImport header,
+        DataTable datas,
+        string userId, string factoryCode);
+
+    #endregion
 
 
     Task<Dictionary<string, object>> Capture(long id);

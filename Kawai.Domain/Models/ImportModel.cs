@@ -14,6 +14,9 @@ public class ImportModel
 
     [Required]
     public IFormFile File { get; set; }
+    
+   
+    public string FactoryCode { get; set; }
 }
 
 public class ImportHistory
