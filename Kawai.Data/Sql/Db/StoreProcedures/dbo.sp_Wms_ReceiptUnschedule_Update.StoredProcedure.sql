@@ -1,14 +1,4 @@
-<<<<<<< HEAD
-
-
-
-
-
-
-create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Update]
-=======
 CREATE  procedure [dbo].[sp_Wms_ReceiptUnschedule_Update]
->>>>>>> feature/upload-receipt
 	@Id				bigint,
 	@ReceiptDate	date,
 	@DNNumber		varchar(50),
