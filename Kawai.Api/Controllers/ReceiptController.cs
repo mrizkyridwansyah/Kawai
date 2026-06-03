@@ -1,9 +1,7 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Hangfire;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
-using Kawai.Data.Repositories;
 using Kawai.Data;
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
@@ -15,9 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text;
-using Newtonsoft.Json;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 namespace Kawai.Api.Controllers;
 
