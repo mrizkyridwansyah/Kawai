@@ -1,99 +1,70 @@
-CREATE  procedure [dbo].[sp_Wms_Receipt_Create]
-	@ReceiptNo		varchar(50),
-	@ReceiptDate	date,
-	@DNNumber		varchar(50),
-	@FactoryCode	varchar(25),
-	@SupplierCode	varchar(25),
-	@DNDate			date,
-	@BCNumber		varchar(50),
-	@BCType			varchar(15),
-	@BCDate			date,
-	@VehicleNo		varchar(15),
-	@Transport		varchar(15),
-	@Remarks		varchar(max),
-	@Details		tvp_ReceiptDetail20260519 READONLY,
-	@RegisterBy		varchar(25)
+CREATE PROCEDURE [dbo].[sp_Wms_Receipt_Import]
+--DECLARE
+      @SupplierCode VARCHAR(15)='S0037'
+    , @DNNumber VARCHAR(50)='SJ_20260407001-0'
+    , @ReceiptDate DATE='2026/12/12'
+    , @BCType VARCHAR(15)='BC 2.3'
+    , @BCNumber VARCHAR(50)='BCNo'
+    , @BCDate DATE='2026/12/12' 
+	,@DataImport tvp_ReceiptImport READONLY 
+	, @UserId varchar(25)='admin'
+	,@FactoryCode Varchar(10) 
 as
-
-begin
-	--if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
-	--begin
-	--	raiserror('Receipt Date tidak boleh back date!', 16, 1)
-	--	return
-	--end
+begin	
+ 
+  
 
 
-	if Exists (select top 1 1 from PartReceiptHeader where DNNumber = @DNNumber)
-	BEGIN
-		raiserror('Surat Jalan / DN Number sudah terdaftar pada data receipt yang lain!', 16, 1)
-		return
-	END
-
-	if exists 
-	(
-		select 1 From @Details a
-		left join ItemSupplierPacking b on a.ItemCode = b.ItemCode and b.SupplierCode = @SupplierCode
-		left join Item_Master mi on a.ItemCode = mi.Item_Code
-		where isnull(b.QtyPacking, mi.Number_Box) <= 0
+	DECLARE @ResultHeader TABLE(
+	    SupplierCode VARCHAR(15),
+        DNNumber VARCHAR(50),
+        ReceiptDate DATE,
+        BCType VARCHAR(15),
+        BCNumber VARCHAR(50),
+        BCDate DATE,
+		Errors varchar(max)
 	)
-	begin
-		raiserror('Qty Packing Item ini belum disetting!', 16, 1)
-		return
-	end
 
-	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @RegisterBy and isnull(AllowAccess, 0) = 1)
-	begin
-		raiserror('User tidak memiliki hak akses ke factory ini!', 16, 1)
-		return
-	end
+	DECLARE @ResultDetail TABLE(
+	    [PONumber] [varchar](25) NOT NULL,
+	    [ItemCode] [varchar](25) NOT NULL,
+	    [ReceiptQty] [int] NULL,
+		[RowNumber] [int] NULL,
+		[Errors] varchar(max)
+	)
+
+	insert into @ResultHeader
+	select  @SupplierCode , @DNNumber , @ReceiptDate , @BCType , @BCNumber , @BCDate , ''
+
+	insert into @ResultDetail
+	select [PONumber] ,[ItemCode] ,[ReceiptQty] ,ROW_NUMBER() OVER (ORDER BY [PONumber], [ItemCode]) , [Errors] from  @DataImport
 
 	declare @warehouseSubcon varchar(25), @tradeCls varchar(3) 
 	select @warehouseSubcon = Subcon_WH_Code, @TradeCls = Trade_Cls from Trade_Master where Trade_Code = @SupplierCode
 
-	if @tradeCls = '3' and isnull(@warehouseSubcon, '') = ''
-	begin
-		raiserror('Warehouse Subcon belum disetting di Trade Master!', 16, 1)
-		return
-	end
+ 
+    
+	DECLARE	@ReceiptNo varchar(50), @prefixReceiptNo varchar(10) = 'R.' + FORMAT(@ReceiptDate, 'yyyyMMdd') + '.'
+	EXEC dbo.GenerateNumerator @Prefix = @prefixReceiptNo, @LengthSequence = 4, @Result = @ReceiptNo OUTPUT;			
 
-	declare @overReceiptPO varchar(max) = 
-	(
-		select STRING_AGG(a.PO_No, ', ') From PurchaseOrder_Detail a
-		inner join Item_Master mi on a.Item_Code = mi.Item_Code
-		left join 
-		(
-			select 
-				prd.PONumber, prd.ItemCode, sum(prd.ReceiptQty) ReceiptQty 
-			from PartReceiptDetail prd
-			inner join @Details dl on prd.PONumber = dl.PONumber and prd.ItemCode = dl.ItemCode
-			group by prd.PONumber, prd.ItemCode
-		) rcpSum on a.PO_No = rcpSum.PONumber and a.Item_Code = rcpSum.ItemCode
-		inner join @Details dtl on a.PO_No = dtl.PONumber and a.Item_Code = dtl.ItemCode
-		where a.Qty - (isnull(rcpSum.ReceiptQty, 0) + dtl.ReceiptQty) < 0
-	)
+ 
 
-	if isnull(@overReceiptPO, '') <> ''
-	begin
-		declare @errors varchar(max) = 'Over Qty ('+@overReceiptPO+')!'
-		raiserror(@errors, 16, 1)
-		return
-	end
-
-	if @tradeCls = '3'
+ 
+ if @tradeCls = '3'
 	begin
 		declare @tblRequirementMaterial table (PONumber varchar(100), ParentItem varchar(25), ItemCode varchar(25), BOMQty numeric(18,9), ReceiptQty numeric(18,9))
 
 		insert into @tblRequirementMaterial
 		select dtl.PONumber, dtl.ItemCode, bom.Item_Code, bom.Qty, dtl.ReceiptQty
 		From BOM_Master bom 
-		inner join @Details dtl on bom.Parent_ItemCode = dtl.ItemCode
+		inner join @ResultDetail dtl on bom.Parent_ItemCode = dtl.ItemCode
 
 		declare @pickingNos table (PONumber varchar(100), ParentItem varchar(25), PickingNo varchar(100))
 		insert into @pickingNos
 		select distinct hd.PO_NO, hd.ParentItem_Code, dtl.RefNumber From PartMaterialRequestDetail_PO dtl
 		inner join PartMaterialRequestHeader_PO hd on dtl.RequestID = hd.RequestID
 		inner join PartMaterialRequestItemDetail_PO dtli on dtl.RequestDetailID = dtli.RequestDetailID
-		inner join @Details req on hd.PO_NO = req.PONumber
+		inner join @ResultDetail req on hd.PO_NO = req.PONumber
 
 		declare @tblPOItemSummaryBOM table (PONumber varchar(100), ParentItem varchar(25), QtyReceipt numeric(18,9), QtyMinCanReceipt numeric(18,9))
 		insert into @tblPOItemSummaryBOM
@@ -117,19 +88,7 @@ begin
 		) res
 		group by res.PONumber, res.ParentItem, res.QtyReceipt
 
-		-- COMMENT SEMENTARA UNTUK TRIAL
-		--declare @msg varchar(max)
-		--if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
-		--begin
-		--	SELECT @msg = STRING_AGG(
-		--		PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
-		--		', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
-		--	, '; ')
-		--	FROM @tblPOItemSummaryBOM
-		--	WHERE QtyMinCanReceipt < QtyReceipt
-		--	RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
-		--	return	
-		--end
+		 
 	end
 
 	begin transaction receiptTransaction
@@ -140,7 +99,7 @@ begin
 		IF @BCType NOT IN ('BC 2.3', 'BC 2.6.2', 'BC 4.0')
 		BEGIN
 			INSERT INTO @registerNox
-			EXEC sp_GetNoRegister @ReceiptDate, 'R', @RegisterBy
+			EXEC sp_GetNoRegister @ReceiptDate, 'R', @UserId
 
 			SELECT top 1 @registerNo = RegisterNo FROM @registerNox
 		END
@@ -148,14 +107,14 @@ begin
 		insert into PartReceiptHeader 
 		(ReceiptNo, ReceiptDate, SupplierCode, DNNumber, DNDate, BCNumber, BCType, BCDate, VehicleNo, RegisterDate, RegisterUser, IsManual, Transport, Remarks, SourceMenu, CompanyCode, RegisterNo)
 		values 
-		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @DNDate, @BCNumber, @BCType, @BCDate, @VehicleNo, getdate(), @RegisterBy, 1, @Transport, @Remarks, 'RECEIPT PO', @FactoryCode, @registerNo)
+		(@ReceiptNo, @ReceiptDate, @SupplierCode, @DNNumber, @BCDate, @BCNumber, @BCType, @BCDate, '', getdate(), @UserId, 1, NULL, '', 'RECEIPT PO', @FactoryCode, @registerNo)
 
 		declare @newid bigint = (select SCOPE_IDENTITY())
 
 		insert into PartReceiptDetail (ReceiptId, ReceiptDate, PONumber, ItemCode, UnitCls, ExpectedQty, TotalPacking, ReceiptQty, Remarks, QtyPacking, NoSeri)
 		select 
-			@newid, @ReceiptDate, a.PONumber, a.ItemCode, a.UnitClsCode, a.ExpectedQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, @Remarks, isnull(isp.QtyPacking, mi.Number_Box), a.NoSeri
-		from @Details a 
+			@newid, @ReceiptDate, a.PONumber, a.ItemCode, '01', a.ReceiptQty, CEILING(CAST(a.ReceiptQty AS FLOAT) / isnull(isp.QtyPacking, mi.Number_Box)), a.ReceiptQty, '', isnull(isp.QtyPacking, mi.Number_Box), a.RowNumber
+		from @ResultDetail a 
 		left join ItemSupplierPacking isp on a.ItemCode = isp.ItemCode and isp.SupplierCode = @SupplierCode
 		left join Item_Master mi on a.ItemCode = mi.Item_Code
 
@@ -170,8 +129,8 @@ begin
 		)
 		select 
 			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, ISNULL(POH.WHTo, it.WH_Code), '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
-			dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport,
-			getdate(), @RegisterBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id, dtl.NoSeri
+			dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, '', NULL,
+			getdate(), @UserId, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id, dtl.NoSeri
 		From PartReceiptHeader hd
 		inner join PartReceiptDetail dtl on hd.Id = dtl.ReceiptId
 		left join Item_Master it on dtl.ItemCode = it.Item_Code
@@ -190,7 +149,10 @@ begin
 		return
 	end catch
 
-end
 
-/****** Object:  StoredProcedure [dbo].[sp_Wms_Item_Update]    Script Date: 5/22/2026 10:31:34 AM ******/
-SET ANSI_NULLS ON
+
+
+
+
+	
+end

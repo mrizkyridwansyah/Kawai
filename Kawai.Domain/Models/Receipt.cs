@@ -1,5 +1,7 @@
-﻿using Kawai.Domain.Shared.Validator;
+﻿using Kawai.Domain.Shared;
+using Kawai.Domain.Shared.Validator;
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kawai.Domain.Models;
 
@@ -74,4 +76,33 @@ public class ReceiptDetail
     [Required(ErrorMessage = "No. Seri tidak boleh kosong")]
     [NumberGreaterThan(0)]
     public int? NoSeri { get; set; }
+}
+
+
+ 
+public class ReceiptImport
+{
+    public ReceiptHeaderImport Header { get; set; }
+    public List<ReceiptDetailImport> Details { get; set; } = new();
+}
+
+public class ReceiptHeaderImport
+{
+      public string SupplierCode { get; set; }
+      public DateTime? ReceiptDate { get; set; }
+      public string BCType { get; set; }
+      public DateTime? BCDate { get; set; }
+      public string DNNumber { get; set; }
+      public string BCNumber { get; set; }
+      public string Errors { get; set; } = "";
+}
+
+public class ReceiptDetailImport : ImportBase
+{
+
+    public string PONumber { get; set; }
+    public string ItemCode { get; set; }
+    public decimal ReceiptQty { get; set; }
+    
+
 }

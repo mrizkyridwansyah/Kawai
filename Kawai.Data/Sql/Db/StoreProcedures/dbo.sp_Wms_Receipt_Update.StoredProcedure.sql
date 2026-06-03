@@ -1,6 +1,4 @@
-
-
-create   procedure [dbo].[sp_Wms_Receipt_Update]
+CREATE procedure [dbo].[sp_Wms_Receipt_Update]
 	@Id				bigint,
 	@ReceiptDate	date,
 	@DNNumber		varchar(50),
@@ -24,6 +22,14 @@ begin
 
 	declare @deleteDetailBarcode bit = (select top 1 IsUpdateDetails From @tblCheck)
 
+
+	if Exists (select top 1 1 from PartReceiptHeader where  id <> @id and DNNumber = @DNNumber)
+	BEGIN
+		raiserror('Surat Jalan / DN Number sudah terdaftar pada data receipt yang lain!', 16, 1)
+		return
+	END
+
+
 	if exists 
 	(
 		select 1 From @Details a
@@ -41,12 +47,6 @@ begin
 		raiserror('Data Receipt tidak ditemukan!', 16, 1)
 		return
 	end
-
-	--if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
-	--begin
-	--	raiserror('Receipt Date tidak boleh back date!', 16, 1)
-	--	return
-	--end
 
 	if not exists (select 1 from SS_UserFactoryPrivilege where UserID = @UpdateBy and isnull(AllowAccess, 0) = 1)
 	begin
