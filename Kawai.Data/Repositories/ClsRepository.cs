@@ -18,4 +18,10 @@ public class ClsRepository : IClsRepository
         string sp = "sp_Wms_Cls_DDL";
         return (await _dbExecutor.QueryListAsync<ClsDto>(sp, new { Keyword = keyword ?? "", TypeData = typedata })).ToList();
     }
+
+    public async Task<List<GroupingClassPartDto>> GetGroupingClassPartDDLPrivileges(string keyword, string userId)
+    {
+        string sp = "sp_Wms_GroupingClassPartPrivieges_DDL";
+        return (await _dbExecutor.QueryListAsync<GroupingClassPartDto>(sp, new { Keyword = keyword ?? "", UserId = userId })).ToList();
+    }
 }
