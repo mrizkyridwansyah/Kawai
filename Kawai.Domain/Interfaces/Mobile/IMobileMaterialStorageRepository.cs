@@ -11,4 +11,6 @@ public interface IMobileMaterialStorageRepository
     Task Save(MobileMaterialStorage payload, string userId);
     Task SaveMerge(MobileMaterialMergeStorage payload, string userId);
     Task<Dictionary<string, object>> Capture(string refNo);
+
+    Task<List<MaterialStorageDto>> GetListRemainingStock(string userId);
 }
