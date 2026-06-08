@@ -23,14 +23,14 @@ public class ReceiptRepository : IReceiptRepository
     public async Task Import( ReceiptHeaderImport header, DataTable dtDetail, string userId, string factoryCode)
     {
         string sql = @"sp_Wms_Receipt_Import";
-        await _dbExecutor.ExecuteAsync(sql, new
+        await _dbExecutor.ExecuteNonTransactionAsync(sql, new
         {
-            SupplierCode = header.SupplierCode,
-            DNNumber = header.DNNumber,
-            ReceiptDate = header.ReceiptDate,
-            BCType = header.BCType,
-            BCNumber = header.BCNumber,
-            BCDate = header.BCDate,
+            header.SupplierCode,
+            header.DNNumber,
+            header.ReceiptDate,
+            header.BCType,
+            header.BCNumber,
+            header.BCDate,
             DataImport = dtDetail,
             UserId = userId,
             FactoryCode = factoryCode
@@ -334,7 +334,7 @@ public class ReceiptRepository : IReceiptRepository
     public async Task PrintLabel(long id, string userId, bool? mustBePrint)
     {
         string sqlHeader = "sp_Wms_Receipt_PrintLabel";
-        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        await _dbExecutor.ExecuteNonTransactionAsync(sqlHeader, new
         {
             ReceiptId = id,
             MustPrint = mustBePrint ?? true,

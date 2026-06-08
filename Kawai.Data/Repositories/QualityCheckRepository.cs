@@ -59,7 +59,7 @@ public class QualityCheckRepository : IQualityCheckRepository
     public async Task Confirm(QualityCheckConfirm payload, string userId)
     {
         string sql = @"sp_Wms_IQCResult_Confirm";
-        int i = await _dbExecutor.ExecuteAsync(sql, new
+        int i = await _dbExecutor.ExecuteNonTransactionAsync(sql, new
         {
             payload.InspectionId,
             payload.InspectionResult,
@@ -81,7 +81,7 @@ public class QualityCheckRepository : IQualityCheckRepository
     public async Task ApprovalSA(QualityCheckConfirmSA payload, string userId)
     {
         string sql = @"sp_Wms_IQCResult_ApprovalSA";
-        int i = await _dbExecutor.ExecuteAsync(sql, new
+        int i = await _dbExecutor.ExecuteNonTransactionAsync(sql, new
         {
             payload.InspectionId,
             payload.InspectionResult,

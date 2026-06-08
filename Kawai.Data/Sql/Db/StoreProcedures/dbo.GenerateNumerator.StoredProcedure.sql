@@ -1,8 +1,5 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE PROCEDURE [GenerateNumerator]
+
+CREATE PROCEDURE [dbo].[GenerateNumerator]
     @Prefix VARCHAR(50),
     @LengthSequence INT,
     @Result VARCHAR(100) OUTPUT
@@ -10,31 +7,37 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-	BEGIN TRY
-		BEGIN TRAN
+    DECLARE @NewSeq INT;
 
-		DECLARE @NewSeq INT = ISNULL(
-			(SELECT LastSeq FROM LastSequence WITH (HOLDLOCK, UPDLOCK) WHERE Prefix = @Prefix), 0
-		) + 1;
+    -- Atomic Update: Eksekusi instan, tambah 1 dan kunci baris secara otomatis
+    UPDATE LastSequence 
+    SET @NewSeq = LastSeq = LastSeq + 1 
+    WHERE Prefix = @Prefix;
 
-		IF NOT EXISTS (SELECT 1 FROM LastSequence WHERE Prefix = @Prefix)
-		BEGIN
-			INSERT INTO LastSequence(Prefix, LastSeq) VALUES (@Prefix, @NewSeq);
-		END
-		ELSE
-		BEGIN
-			UPDATE LastSequence SET LastSeq = @NewSeq WHERE Prefix = @Prefix;
-		END
+    -- Jika Prefix belum terdaftar di tabel
+    IF @@ROWCOUNT = 0
+    BEGIN
+        SET @NewSeq = 1;
+        
+        BEGIN TRY
+            INSERT INTO LastSequence (Prefix, LastSeq) 
+            VALUES (@Prefix, @NewSeq);
+        END TRY
+        BEGIN CATCH
+            -- Tangani Race Condition: Jika Thread lain keduluan melakukan INSERT
+            IF ERROR_NUMBER() IN (2601, 2627)
+            BEGIN
+                UPDATE LastSequence 
+                SET @NewSeq = LastSeq = LastSeq + 1 
+                WHERE Prefix = @Prefix;
+            END
+            ELSE
+            BEGIN
+                ;THROW;
+            END
+        END CATCH
+    END
 
-		COMMIT TRAN
-
-		SET @Result = @Prefix + RIGHT(REPLICATE('0', @LengthSequence) + CAST(@NewSeq AS VARCHAR), @LengthSequence);
-	END TRY
-    BEGIN CATCH
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRAN;
-
-        THROW;
-    END CATCH
+    -- Format penggabungan Prefix dan Angka (Contoh: INV0001)
+    SET @Result = @Prefix + RIGHT(REPLICATE('0', @LengthSequence) + CAST(@NewSeq AS VARCHAR), @LengthSequence);
 END
-GO

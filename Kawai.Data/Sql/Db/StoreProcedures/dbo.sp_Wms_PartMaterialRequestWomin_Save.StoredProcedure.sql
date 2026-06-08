@@ -6,17 +6,13 @@ as
 begin
 	declare @prodIdSampling bigint = (select top 1 ProductionId from @NewRequest)
 	declare @prefixFactory varchar(5)
+	
 	select @prefixFactory = fak.PrefixGlobalBarcode From Company_Profile fak
 	inner join Manufacture_Line ml on fak.Company_Code = ml.Company_Code
 	inner join
 	(
 		select Factory_code, Line_Code From Daily_Production where Seq_No = @prodIdSampling
 	) dp on dp.Factory_code = ml.Manufacture_Code and dp.Line_Code = ml.Line_Code
-
-	declare @RowCount int = (select count(1) from @NewRequest)
-	declare @prefix varchar(20) = @prefixFactory + 'REQ.' + FORMAT(GETDATE(), 'yyyyMM')
-	declare @lastSequence int
-	exec GenerateNumeratorBatch @Prefix = @prefix, @RowCount = @RowCount, @LastSequence = @lastSequence OUTPUT
 
 	DECLARE @Request TABLE
 	(
@@ -31,69 +27,6 @@ begin
 	INSERT INTO @Request (TempRowId, ProductionId, ScheduleDate, ItemCode, RequestSetQty)
 	SELECT NEWID(), ProductionId, ScheduleDate, ItemCode, RequestSetQty FROM @NewRequest;
 
-	DECLARE @InsertedHeader TABLE
-	(
-		TempRowId UNIQUEIDENTIFIER,
-		RequestId INT
-	);
-
-	MERGE PartMaterialRequestHeader AS tgt
-	USING
-	(
-		SELECT
-			TempRowId,
-			ProductionId,
-			ScheduleDate,
-			ItemCode,
-			RequestSetQty,
-			ROW_NUMBER() OVER (ORDER BY ProductionId) AS RowNum
-		FROM @Request
-	) AS src
-	ON 1 = 0   -- FORCE INSERT
-	WHEN NOT MATCHED THEN
-		INSERT
-		(
-			RequestNo,
-			RequestDate,
-			ProductionID,
-			LineCode,
-			ProductionDate,
-			ParentItem_Code,
-			RequestSetQty,
-			Status,
-			Remarks,
-			RegisterDate,
-			RegisterUser
-		)
-		VALUES
-		(
-			@prefix + RIGHT(
-				REPLICATE('0', 4)
-				+ CAST(isnull(@lastSequence, 0) + src.RowNum AS VARCHAR),
-				4
-			),
-			GETDATE(),
-			src.ProductionId,
-			@LineCode,
-			src.ScheduleDate,
-			src.ItemCode,
-			src.RequestSetQty,
-			'',
-			'',
-			GETDATE(),
-			@UserId
-		)
-	OUTPUT
-		INSERTED.RequestID,
-		src.TempRowId
-	INTO @InsertedHeader (RequestId, TempRowId);
-
-	UPDATE r
-	SET r.RequestId = i.RequestId
-	FROM @Request r
-	JOIN @InsertedHeader i
-		ON r.TempRowId = i.TempRowId;
-
 	DECLARE @BomTemp table 
 	(
 		ProductionId bigint, 
@@ -107,14 +40,13 @@ begin
 		QtyBOM numeric(18, 9), 
 		QtySet numeric(18, 9), 
 		RequirementQty numeric(18, 9)
-	)
+	);
 
 	;WITH Numbers AS (
 		SELECT TOP (1000)
 			ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
 		FROM sys.objects
 	)
-
 	insert into @BomTemp
 	SELECT
 		req.ProductionId,
@@ -124,13 +56,12 @@ begin
 		bomws.ChildItem_Code AS ChildItemCode,
 		bomws.Unit_Cls UnitCls,
 		n.n SetNumber,
-		mi.Grouping_Class_Part_Code AS ClasificationPart_Cls,
+		isnull(mi.Grouping_Class_Part_Code, 'OT') AS ClasificationPart_Cls,
 		bomws.Qty AS QtyBOM,
 		CASE
 			WHEN n.n * bomws.MaxCapacity <= TotalQty THEN bomws.MaxCapacity
 			ELSE TotalQty - ((n.n - 1) * bomws.MaxCapacity)
 		END AS QtySet,
-
 		bomws.Qty *
 		CASE
 			WHEN n.n * bomws.MaxCapacity <= TotalQty THEN bomws.MaxCapacity
@@ -152,16 +83,29 @@ begin
 	CROSS APPLY (
 		SELECT req.RequestSetQty AS TotalQty
 	) q
-
 	INNER JOIN Numbers n
 		ON n.n <= CEILING(q.TotalQty * 1.0 / bomws.MaxCapacity);
 
-	set @RowCount = 
+	-- ==========================================
+	-- 2. GENERATE NUMERATOR BATCH (AWAL)
+	-- ==========================================
+	
+	-- A. Numerator Header
+	declare @RowCountHeader int = (select count(1) from @NewRequest)
+	declare @prefix varchar(20) = @prefixFactory + 'REQ.' + FORMAT(GETDATE(), 'yyyyMM')
+	declare @lastSequence int
+	
+	exec GenerateNumeratorBatch @Prefix = @prefix, @RowCount = @RowCountHeader, @LastSequence = @lastSequence OUTPUT
+
+	-- B. Numerator Detail
+	declare @RowCountDetail int = 
 	(
 		select sum(TotalDetil) 
 		from 
 		(
-			select a.ProductionId, bomws.WorkStationCode, max(SetNumber) TotalDetil from @Request a inner join @BomTemp bomws on a.ItemCode = bomws.ParentItemCode
+			select a.ProductionId, bomws.WorkStationCode, max(SetNumber) TotalDetil 
+			from @Request a 
+			inner join @BomTemp bomws on a.ItemCode = bomws.ParentItemCode
 			group by a.ProductionId, bomws.WorkStationCode, bomws.ChildClassification
 		) x
 	)
@@ -169,39 +113,124 @@ begin
 	declare @prefixDetail varchar(14) = @prefixFactory + 'REQ.DTL.' + FORMAT(GETDATE(), 'yyyyMM')
 	declare @lastSequenceDetail int
 
-	exec GenerateNumeratorBatch @Prefix = @prefixDetail, @RowCount = @RowCount, @LastSequence = @lastSequenceDetail OUTPUT
+	exec GenerateNumeratorBatch @Prefix = @prefixDetail, @RowCount = @RowCountDetail, @LastSequence = @lastSequenceDetail OUTPUT
 
-	insert into PartMaterialRequestDetail 
+	-- ==========================================
+	-- 3. INSERT / MERGE DATA KE TABEL FISIK
+	-- ==========================================
+	
+	-- Insert Header
+	DECLARE @InsertedHeader TABLE
 	(
-		RequestDetailNo, RequestID, WorkStationCode, AreaCode, SEQ, Trolley_No, RefNumber, RequestStatusID, Remarks, RegisterDate, RegisterUser
-	)
-	select 
-		@prefixDetail + RIGHT(REPLICATE('0', 4) + CAST(isnull(@lastSequenceDetail, 0) + ROW_NUMBER() OVER (ORDER BY bomws.WorkStationCode) AS VARCHAR), 4),  
-		r.RequestId, 
-		bomws.WorkStationCode, 
-		isnull(bomws.ChildClassification, '20'), -- untuk default adalah OTHERS 
-		bomws.SetNumber, 
-		null, 
-		cast(r.RequestId as varchar) + rtrim(bomws.WorkStationCode) + cast(bomws.SetNumber as varchar), 
-		0, '', getdate(), @UserId
-	From 		
-	(
-		select distinct ProductionId, WorkStationCode, ChildClassification, SetNumber from @BomTemp
-	) bomws
-	inner join @Request r on bomws.ProductionId = r.ProductionId
+		TempRowId UNIQUEIDENTIFIER,
+		RequestId INT
+	);
 
-	insert into PartMaterialRequestItemDetail 
-	(
-		RequestDetailID, ItemCode, unit_Cls, ChildRequirement_Qty, Remarks, RegisterDate, RegisterUser
-	)
-	select 
-		pmrd.RequestDetailID, bomws.ChildItemCode, bomws.UnitCls, bomws.RequirementQty, '', getdate(), @UserId
-	From @BomTemp bomws
-	inner join 
-	(
-		select dtl.RequestDetailID, r.ProductionId , dtl.WorkStationCode, dtl.AreaCode, dtl.SEQ URutan From @Request r 
-		inner join PartMaterialRequestDetail dtl on dtl.RequestID = r.RequestId	
-	) pmrd on bomws.ProductionId = pmrd.ProductionId and pmrd.WorkStationCode = bomws.WorkStationCode and pmrd.URutan = bomws.SetNumber 
-	and pmrd.AreaCode = bomws.ChildClassification
+    BEGIN TRY
+        BEGIN TRAN;
 
+		MERGE PartMaterialRequestHeader AS tgt
+		USING
+		(
+			SELECT
+				TempRowId,
+				ProductionId,
+				ScheduleDate,
+				ItemCode,
+				RequestSetQty,
+				ROW_NUMBER() OVER (ORDER BY ProductionId) AS RowNum
+			FROM @Request
+		) AS src
+		ON 1 = 0   -- FORCE INSERT
+		WHEN NOT MATCHED THEN
+			INSERT
+			(
+				RequestNo,
+				RequestDate,
+				ProductionID,
+				LineCode,
+				ProductionDate,
+				ParentItem_Code,
+				RequestSetQty,
+				Status,
+				Remarks,
+				RegisterDate,
+				RegisterUser
+			)
+			VALUES
+			(
+				@prefix + RIGHT(
+					REPLICATE('0', 4)
+					+ CAST(isnull(@lastSequence, 0) + src.RowNum AS VARCHAR),
+					4
+				),
+				GETDATE(),
+				src.ProductionId,
+				@LineCode,
+				src.ScheduleDate,
+				src.ItemCode,
+				src.RequestSetQty,
+				'',
+				'',
+				GETDATE(),
+				@UserId
+			)
+		OUTPUT
+			INSERTED.RequestID,
+			src.TempRowId
+		INTO @InsertedHeader (RequestId, TempRowId);
+
+		-- Update TempTable dengan RequestId yang baru digenerate
+		UPDATE r
+		SET r.RequestId = i.RequestId
+		FROM @Request r
+		JOIN @InsertedHeader i
+			ON r.TempRowId = i.TempRowId;
+
+		-- Insert Detail
+		insert into PartMaterialRequestDetail 
+		(
+			RequestDetailNo, RequestID, WorkStationCode, AreaCode, SEQ, Trolley_No, RefNumber, RequestStatusID, Remarks, RegisterDate, RegisterUser
+		)
+		select 
+			@prefixDetail + RIGHT(REPLICATE('0', 4) + CAST(isnull(@lastSequenceDetail, 0) + ROW_NUMBER() OVER (ORDER BY bomws.WorkStationCode) AS VARCHAR), 4),  
+			r.RequestId, 
+			bomws.WorkStationCode, 
+			isnull(bomws.ChildClassification, 'OT'), -- untuk default adalah OTHERS 
+			bomws.SetNumber, 
+			null, 
+			cast(r.RequestId as varchar) + rtrim(bomws.WorkStationCode) + cast(bomws.SetNumber as varchar), 
+			0, '', getdate(), @UserId
+		From 		
+		(
+			select distinct ProductionId, WorkStationCode, ChildClassification, SetNumber from @BomTemp
+		) bomws
+		inner join @Request r on bomws.ProductionId = r.ProductionId
+
+		-- Insert Item Detail
+		insert into PartMaterialRequestItemDetail 
+		(
+			RequestDetailID, ItemCode, unit_Cls, ChildRequirement_Qty, Remarks, RegisterDate, RegisterUser
+		)
+		select 
+			pmrd.RequestDetailID, bomws.ChildItemCode, bomws.UnitCls, bomws.RequirementQty, '', getdate(), @UserId
+		From @BomTemp bomws
+		inner join 
+		(
+			select dtl.RequestDetailID, r.ProductionId , dtl.WorkStationCode, dtl.AreaCode, dtl.SEQ URutan From @Request r 
+			inner join PartMaterialRequestDetail dtl on dtl.RequestID = r.RequestId	
+		) pmrd on bomws.ProductionId = pmrd.ProductionId and pmrd.WorkStationCode = bomws.WorkStationCode and pmrd.URutan = bomws.SetNumber 
+		and pmrd.AreaCode = bomws.ChildClassification
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+		declare @msgErr varchar(max) = (select ERROR_MESSAGE())
+
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRAN;
+
+		raiserror(@msgErr, 16, 1)
+        RETURN;
+    END CATCH
 end

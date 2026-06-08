@@ -1,20 +1,15 @@
 CREATE PROCEDURE [dbo].[sp_Wms_Receipt_Import]
---DECLARE
-      @SupplierCode VARCHAR(15)='S0037'
-    , @DNNumber VARCHAR(50)='SJ_20260407001-0'
-    , @ReceiptDate DATE='2026/12/12'
-    , @BCType VARCHAR(15)='BC 2.3'
-    , @BCNumber VARCHAR(50)='BCNo'
-    , @BCDate DATE='2026/12/12' 
-	,@DataImport tvp_ReceiptImport READONLY 
-	, @UserId varchar(25)='admin'
-	,@FactoryCode Varchar(10) 
+      @SupplierCode VARCHAR(15)
+    , @DNNumber VARCHAR(50)			
+    , @ReceiptDate DATE				
+    , @BCType VARCHAR(15)			
+    , @BCNumber VARCHAR(50)			
+    , @BCDate DATE					
+	, @DataImport tvp_ReceiptImport READONLY 
+	, @UserId varchar(25)
+	, @FactoryCode Varchar(10) 
 as
 begin	
- 
-  
-
-
 	DECLARE @ResultHeader TABLE(
 	    SupplierCode VARCHAR(15),
         DNNumber VARCHAR(50),
@@ -86,9 +81,7 @@ begin
 				group by x.PONumber, x.ParentItem, ItemCode
 			) stok on req.PONumber = stok.PONumber and req.ParentItem = stok.ParentItem and stok.ItemCode = req.ItemCode
 		) res
-		group by res.PONumber, res.ParentItem, res.QtyReceipt
-
-		 
+		group by res.PONumber, res.ParentItem, res.QtyReceipt		 
 	end
 
 	begin transaction receiptTransaction
@@ -148,11 +141,4 @@ begin
 		raiserror(@msgErr, 16, 1)
 		return
 	end catch
-
-
-
-
-
-
-	
 end

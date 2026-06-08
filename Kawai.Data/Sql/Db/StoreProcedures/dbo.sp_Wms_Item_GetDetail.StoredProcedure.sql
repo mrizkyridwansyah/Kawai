@@ -107,7 +107,7 @@ begin
 		LastUser				= mi.Last_User,	
 		RegisterDate			= mi.Register_Date,	
 		UseEndDay				= dbo.ConvertToDateTimeFromString(mi.Use_EndDay),
-		mi.Thickness, mi.Width, mi.Length, mi.Weight, mi.GrossWeight, mi.Pitch, mi.Sample ,mi.Grouping_Class_Part_Code
+		mi.Thickness, mi.Width, mi.[Length], mi.[Weight], mi.GrossWeight, mi.Pitch, mi.[Sample], mi.Grouping_Class_Part_Code
 	From Item_Master mi 
 	left join 
 	(

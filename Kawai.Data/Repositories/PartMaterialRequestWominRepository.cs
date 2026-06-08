@@ -55,7 +55,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
     public async Task Save(List<PartMaterialRequestWominModel> models, string userId)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_Save";
-        await _dbExecutor.ExecuteAsync(sp, new
+        await _dbExecutor.ExecuteNonTransactionAsync(sp, new
         {
             models[0].LineCode,
             NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),

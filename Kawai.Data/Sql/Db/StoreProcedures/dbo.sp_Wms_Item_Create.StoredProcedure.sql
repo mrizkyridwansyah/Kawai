@@ -256,7 +256,7 @@ begin
 		, @ClasificationPartCls
 		, @DestinationCls
 		, @ColorCls
-		, @POTypeCls,
-		@Grouping_Class_Part_Code
+		, @POTypeCls
+		, @Grouping_Class_Part_Code
 	)
 end

@@ -68,6 +68,7 @@ begin
 		return
 	end
 
+
 	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Material NG')
 
 	declare @transDate date = getdate()
@@ -76,6 +77,18 @@ begin
 	declare @prefixPallet varchar(20) = 'PLT.' + FORMAT(GETDATE(), 'yyyyMMdd') + '.'
 	DECLARE	@NewRefNo varchar(50), @NewBarcodePartialNG varchar(50)
 
+
+	if not exists (select 1 from IQC_SamplingBarcodeDetail where InspectionID = @InspectionId and BarcodeNo = @BarcodeNo)
+	begin
+		if @QtyNG < @Qty
+		begin
+			EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcodePartialNG OUTPUT;
+		end
+
+		EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
+	end
+
+				
 	begin transaction ngTransaction
 	begin try
 		if not exists (select 1 from IQC_Inspection_Header where ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Material NG')
@@ -123,10 +136,7 @@ begin
 		if not exists (select 1 from IQC_SamplingBarcodeDetail where InspectionID = @InspectionId and BarcodeNo = @BarcodeNo)
 		begin
 			-- PARTIAL NG			if @QtyNG < @Qty
-			begin
-				EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcodePartialNG OUTPUT;
-				EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
-			
+			begin			
 				insert into ReceiptSupplyHistory 
 				(
 					[Status], ProcessMenu, RefNo, 
@@ -185,8 +195,6 @@ begin
 					@QtyNG, 'Material NG Process', cast(@InspectionId as varchar), getdate(), @UserId
 				)
 
-				EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
-				
 				EXEC sp_Wms_Stock_UpSertStockDetail @refNo, @warehouse, @area, @address, @ItemCode, @BarcodeNo, @lotNo, 0, NULL, NULL, @UserId, 'HOLD', 'Process'
 				EXEC sp_Wms_Stock_UpSertStockHeader @transDate, @refNo, @warehouse, @area, @ItemCode, @lotNo, @Qty, NULL, 'S', @UserId
 
