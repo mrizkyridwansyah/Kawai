@@ -28,6 +28,13 @@ builder.Logging.AddFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log
 
 var config = builder.Configuration;
 
+// Initialize dynamic cryptography keys from configuration if present
+Cryptography.Initialize(config["Security:DefaultKey"], config["Security:DefaultSalt"]);
+SecurityExtension.Initialize(
+    config["Security:ExtraKeySuffix"],
+    !string.IsNullOrEmpty(config["Security:SecuritySalt"]) ? Encoding.UTF8.GetBytes(config["Security:SecuritySalt"]) : null
+);
+
 // CORS
 // tadi nya pake ini, tapi signalr nya error
 //builder.Services.AddCors(confg =>
@@ -148,7 +155,7 @@ var username = builder.Configuration["AMR:Auth:Username"];
 var password = builder.Configuration["AMR:Auth:Password"];
 
 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-    throw new InvalidOperationException("AMR username/password is missing."); 
+    throw new InvalidOperationException("AMR username/password is missing.");
 
 builder.Services.AddHttpClient("robot", c =>
 {

@@ -1,4 +1,4 @@
-﻿using Kawai.Data;
+using Kawai.Data;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain;
 using Microsoft.AspNetCore.Diagnostics;
@@ -17,10 +17,14 @@ public static class Extension
         app.UseExceptionHandler(a => a.Run(async context =>
         {
             var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-            var exception = exceptionHandlerPathFeature.Error;
+            var exception = exceptionHandlerPathFeature?.Error;
+
+            if (exception == null)
+            {
+                exception = new Exception("An unidentified error occurred.");
+            }
 
             var typeName = exception.GetType().Name;
-
             string message = exception.Message;
 
             int statusCode = exception switch
@@ -30,11 +34,13 @@ public static class Extension
                 _ => 500
             };
 
-
             string requestBody = null;
             try
             {
-                context.Request.Body.Position = 0;
+                if (context.Request.Body.CanSeek)
+                {
+                    context.Request.Body.Position = 0;
+                }
 
                 if (context.Request.ContentType?.StartsWith("multipart/form-data") == true)
                 {
@@ -47,7 +53,10 @@ public static class Extension
                     requestBody = await reader.ReadToEndAsync();
                 }
 
-                context.Request.Body.Position = 0;
+                if (context.Request.Body.CanSeek)
+                {
+                    context.Request.Body.Position = 0;
+                }
             }
             catch
             {
@@ -56,33 +65,35 @@ public static class Extension
 
             try
             {
-                var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
-                var auth = context.RequestServices.GetRequiredService<Auth>();
-                var logExecutor = context.RequestServices.GetRequiredService<LogExecutor>();
+                var auth = context.RequestServices.GetService<Auth>();
+                var logExecutor = context.RequestServices.GetService<LogExecutor>();
 
-                var sql = @"
-                    INSERT INTO ErrorLogs
-                    (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
-                    VALUES
-                    (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
-                ";
-
-                var log = new
+                if (logExecutor != null)
                 {
-                    Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value, // Replace with EpochDateTime.Now if needed
-                    Message = exception?.InnerException?.Message ?? exception?.Message,
-                    context.Request.Method,
-                    UserAgent = context.Request.Headers.UserAgent.ToString(),
-                    RemoteAddr = context.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
-                    RequestPath = context.Request.Path.ToString(),
-                    RequestBody = requestBody,
-                    StackTrace = exception?.InnerException?.StackTrace ?? exception?.StackTrace,
-                    context.Response.StatusCode,
-                    auth?.User?.UserID,
-                    auth?.User?.FullName
-                };
+                    var sql = @"
+                        INSERT INTO ErrorLogs
+                        (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
+                        VALUES
+                        (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
+                    ";
 
-                await logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
+                    var log = new
+                    {
+                        Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
+                        Message = exception?.InnerException?.Message ?? exception?.Message,
+                        Method = context.Request.Method,
+                        UserAgent = context.Request.Headers.UserAgent.ToString(),
+                        RemoteAddr = context.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
+                        RequestPath = context.Request.Path.ToString(),
+                        RequestBody = requestBody,
+                        StackTrace = exception?.InnerException?.StackTrace ?? exception?.StackTrace,
+                        StatusCode = statusCode,
+                        UserId = auth?.User?.UserID,
+                        FullName = auth?.User?.FullName
+                    };
+
+                    await logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
+                }
             }
             catch { }
 
@@ -90,9 +101,7 @@ public static class Extension
             {
                 Code = statusCode,
                 Status = "Invalid",
-                Message = exception?.InnerException?.Message ?? exception.Message,
-                //StackTrace = exception?.InnerException?.StackTrace.Split(Environment.NewLine) ?? exception.StackTrace.Split(Environment.NewLine),
-                //Errors = new { }
+                Message = exception?.InnerException?.Message ?? exception.Message
             });
 
             context.Response.StatusCode = statusCode;

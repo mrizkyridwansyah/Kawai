@@ -1,12 +1,18 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Kawai.Api;
 
 public class Cryptography
 {
-    const string DefaultKey = "asd^&gjh12&*S21==";
-    const string DefaultSalt = "4ìR123»7Ï5xx§#";
+    public static string DefaultKey { get; set; } = "asd^&gjh12&*S21==";
+    public static string DefaultSalt { get; set; } = "4ìR123»7Ï5xx§#";
+
+    public static void Initialize(string key, string salt)
+    {
+        if (!string.IsNullOrEmpty(key)) DefaultKey = key;
+        if (!string.IsNullOrEmpty(salt)) DefaultSalt = salt;
+    }
 
     /// <summary>
     /// Method which does the encryption using Rijndeal algorithm

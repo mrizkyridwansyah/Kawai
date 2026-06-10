@@ -71,20 +71,24 @@
       </table>
       <div class="d-flex flex-fill mt-1">
         <v-button-search-reset class="ms-1" :search="search" :reset="reset" />
-          <v-button-print :print="print" cClass="ml-1" :is-loading="isLoadingPrint" />
-      
-         <v-button
-                :action="printpdf"
-                label="Print Label PDF"
-                icon="file-pdf"
-                cClass="ml-1 btn-green"
-                :is-loading="isLoadingPrint"
-              />
+        <v-button-print
+          :print="print"
+          cClass="ml-1"
+          :is-loading="isLoadingPrint"
+        />
+
+        <v-button
+          :action="printpdf"
+          label="Print Label PDF"
+          icon="file-pdf"
+          cClass="ml-1 btn-green"
+          :is-loading="isLoadingPrint"
+        />
       </div>
       <hr />
       <v-table
         :filter="filter"
-         :use-paging=false
+        :use-paging="false"
         :ds="ds"
         :data-items="ds.data.Items"
         :frozen-column-left="2"
@@ -99,14 +103,14 @@
           >
             <thead>
               <tr>
-                  <th class="text-center">
-                    <div style="justify-items: center">
-                      <input-checkbox
-                        :modelValue="isAllChecked"
-                        @update:modelValue="checkAll"
-                      />
-                    </div>
-                  </th>
+                <th class="text-center">
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isAllChecked"
+                      @update:modelValue="checkAll"
+                    />
+                  </div>
+                </th>
                 <th class="text-center">Barcode No</th>
                 <th class="text-center">Item Code</th>
                 <th class="text-center">Item Name</th>
@@ -154,8 +158,6 @@
 </template>
 
 <script>
-import { faBullseye } from '@fortawesome/free-solid-svg-icons/faBullseye';
-
 export default {
   data: () => ({
     keywordKeys: [
@@ -208,13 +210,13 @@ export default {
     ds: function () {
       return useReprint();
     },
-     isAllChecked() {
-    if (!this.ds.data.Items?.length) return false;
+    isAllChecked() {
+      if (!this.ds.data.Items?.length) return false;
 
-    return this.ds.data.Items.every((item) =>
-      this.selectedPrint.some((p) => p.Key === item.BarcodeNo)
-    );
-  },
+      return this.ds.data.Items.every((item) =>
+        this.selectedPrint.some((p) => p.Key === item.BarcodeNo),
+      );
+    },
   },
   watch: {
     "filter.factory": function () {
@@ -242,7 +244,6 @@ export default {
   },
   mounted: function () {
     this.search();
-    
   },
   methods: {
     search: function () {
@@ -322,40 +323,30 @@ export default {
       });
     },
 
-   printpdf: function () {
-  if (this.selectedPrint.length === 0) {
-    toastWarning("Please choose barcode");
-    return;
-  }
+    printpdf: function () {
+      if (this.selectedPrint.length === 0) {
+        toastWarning("Please choose barcode");
+        return;
+      }
 
-  this.isLoadingPrint = true;
+      this.isLoadingPrint = true;
 
-  this.ds
-    .printpdf(this.selectedPrint)
-    .then((data) => {
+      this.ds
+        .printpdf(this.selectedPrint)
+        .then(() => {
+          // Download is handled by the store (reprint.js)
+        })
+        .catch((err) => {
+          console.log(err);
 
-      const blob = new Blob([data], {
-        type: "application/pdf",
-      });
-
-      const url = window.URL.createObjectURL(blob);
-
-      window.open(url);
-    })
-    .catch((err) => {
-      console.log(err);
-
-      toastDanger(
-        err?.response?.data?.Message ||
-        err?.Message ||
-        "Print PDF failed"
-      );
-    })
-    .finally(() => {
-      this.isLoadingPrint = false;
-    });
-},
-
+          toastDanger(
+            err?.response?.data?.Message || err?.Message || "Print PDF failed",
+          );
+        })
+        .finally(() => {
+          this.isLoadingPrint = false;
+        });
+    },
   },
 };
 </script>

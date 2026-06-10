@@ -577,7 +577,8 @@ export default {
       return new Promise((resolve, reject) => {
         this.ds
           .exportExcel(filters)
-          .then((_) => {
+          .then((data) => {
+            if(data) toastInfo(data.Message)
             resolve();
           })
           .catch((err) => {

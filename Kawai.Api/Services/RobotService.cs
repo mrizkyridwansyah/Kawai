@@ -66,7 +66,7 @@ public class RobotService : IRobotService
             string trolleyNo = results.First().TrolleyNo;
             if (!string.IsNullOrWhiteSpace(trolleyNo))
             {
-                _logger.LogError($"Request No {requestNo} already has trolley number {trolleyNo} in robot request data.");
+                _logger.LogWarning($"Request No {requestNo} already has trolley number {trolleyNo} in robot request data.");
                 return;
             }
 
@@ -115,14 +115,20 @@ public class RobotService : IRobotService
                 options
             );
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
 
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
@@ -200,14 +206,14 @@ public class RobotService : IRobotService
 
             if (request.IsComplete)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} status AMR already complete.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} status AMR already complete.");
                 return;
             }
 
             // Return kalo status nya manual karena di sp updatestatusamr ada update current process manual jadi false biar asal update + biar ga banyak job nya
             if (request.IsManual)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} current status is manual.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} current status is manual.");
                 return;
             }
 
@@ -228,14 +234,20 @@ public class RobotService : IRobotService
 
             var response = await _client.PostAsJsonAsync("/api/robot/complete-status", newPayload, options);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
 
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
@@ -310,14 +322,14 @@ public class RobotService : IRobotService
 
             if (request.IsComplete)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} status AMR already complete.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} status AMR already complete.");
                 return;
             }
 
             // Return kalo status nya bukan manual biar ga banyak job nya
             if (!request.IsManual)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} current status already use AMR.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} current status already use AMR.");
                 return;
             }
 
@@ -336,14 +348,20 @@ public class RobotService : IRobotService
 
             var response = await _client.PostAsJsonAsync("/api/robot/complete-status-special", newPayload);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
 
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
@@ -419,14 +437,20 @@ public class RobotService : IRobotService
 
             var response = await _client.PostAsJsonAsync("/api/robot/cancel-request", payload);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
 
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);

@@ -61,8 +61,7 @@ public class ClaimDetailDto : DataTableDto
 
 public class LabelBarcodeDetailDto : DataTableDto
 {
-
-public string BarcodeNo { get; set; }
+    public string BarcodeNo { get; set; }
     public string ReceiptNo { get; set; }
     public string FromCompany { get; set; }
     public string ToCompany { get; set; }
@@ -74,5 +73,5 @@ public string BarcodeNo { get; set; }
     public string DeliveryDate { get; set; }
     public string DNNumber { get; set; }
     public string ShippingLabelNo { get; set; }
-   
+
 }
