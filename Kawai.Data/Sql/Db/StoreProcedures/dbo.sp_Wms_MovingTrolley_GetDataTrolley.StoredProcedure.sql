@@ -14,6 +14,12 @@ begin
 		return
 	end
 
+	if exists (select 1 from StockDetail where RefNo = @TrolleyNo and isnull(Picking_No, '') = '' and Qty > 0)
+	begin
+		raiserror('Stock Trolley tidak milik Request No!', 16, 1)
+		return
+	end
+
 	SELECT 
 		sd.WarehouseCode, wh.WarehouseName, sd.AreaCode, area.AreaName, sd.AddressCode, adr.AddressName, sd.Picking_No RequestNo, 
 		sd.ItemCode, mi.Item_Name ItemName,

@@ -67,6 +67,11 @@ begin
 		return
 	end
 
-	SELECT CAST(0 AS BIT) AlreadyHadStock, 'Request SUDAH MEMILIKI TROLLEY. Anda akan ganti ke trolley ' + @TrolleyNo MessageConfirmation
-	return
+	IF @currentTrolley IS NOT NULL
+	BEGIN
+		SELECT CAST(0 AS BIT) AlreadyHadStock, 'Request SUDAH MEMILIKI TROLLEY. Anda akan ganti ke trolley ' + @TrolleyNo MessageConfirmation
+		return
+	END
+
+	SELECT CAST(0 AS BIT) AlreadyHadStock, 'Request akan memakai trolley ' + @TrolleyNo  MessageConfirmation
 end

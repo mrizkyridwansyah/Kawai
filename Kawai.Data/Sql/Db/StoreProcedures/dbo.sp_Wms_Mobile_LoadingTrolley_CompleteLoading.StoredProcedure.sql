@@ -34,38 +34,41 @@ begin
 		return
 	end
 
-	--if exists 
-	--(
-	--	select 1 from StockDetail sd
-	--	left join MS_Address ma on sd.AddressCode = ma.AddressCode
-	--	left join MS_StopPoint msp on ma.StopPointCode = msp.StopPointCode
-	--	where sd.RefNo <> @TrolleyNo 
-	--	and sd.Picking_No = @pickingNo 
-	--	and msp.StopPointCode = @currentStopPoint 
-	--	and sd.Qty > 0
-	--)
-	--begin
-	--	declare @stopPointName varchar(100) = (select [Description] from MS_StopPoint where StopPointCode = @currentStopPoint)
-	--	set @msg = 'Silahkan scan semua stok loading (' + @pickingNo + ' | '+@stopPointName+') !'
-	--	raiserror(@msg, 16,1)
-	--	return
-	--end
+	if exists 
+	(
+		select scan.BarcodeNo From PartMaterialRequestItemDetailScan scan 
+		inner join PartMaterialRequestItemDetail idtl on scan.IDSeq = idtl.IDSeq
+		inner join PartMaterialRequestDetail dtl on idtl.RequestDetailID = dtl.RequestDetailID
+		inner join StockDetail sd on scan.BarcodeNo = sd.BarcodeNo and sd.Qty > 0
+		where dtl.RefNumber = @PickingNo and sd.RefNo <> @TrolleyNo 
+	)
+	begin
+		declare @stopPointName varchar(100) = (select [Description] from MS_StopPoint where StopPointCode = @currentStopPoint)
+		set @msg = 'Silahkan scan semua stok loading (' + @PickingNo + ' | '+@stopPointName+') !'
+		raiserror(@msg, 16,1)
+		return
+	end
 
 	begin try 
 		begin transaction completeLoadingTransaction
 
-		declare @isManual bit = 
-		(
-			select top 1 IsManual From PartMaterialRequestSendRobotDetail 
-			where RequestSendID = @pickingNo and [Status] = 0 and Stop_Point = @currentStopPoint
-		)
+		declare @isManual bit = (select top 1 IsCurrentProcessManual From PartMaterialRequestDetail where RefNumber = @pickingNo)
+		declare @statusAMR varchar(max), @lastUserRequestAMR varchar(25), @lastRequestDateAMR date
+
+		if isnull(@isManual, 0) = 0
+		begin
+			set @statusAMR = 'Requesting to AMR'
+			set @lastUserRequestAMR = @UserId
+			set @lastRequestDateAMR = getdate()
+		end
 
 		update PartMaterialRequestSendRobotDetail 
 		set 
 			[Status] = 1, 
-			StatusAMR = 'Requesting to AMR', 
-			LastUserRequestAMR = @UserId, 
-			LastRequestDateAMR = getdate()
+			IsManual = @isManual,
+			StatusAMR = @statusAMR, 
+			LastUserRequestAMR = @lastUserRequestAMR,
+			LastRequestDateAMR = @lastRequestDateAMR
 		where RequestSendID = @pickingNo and [Status] = 0 and Stop_Point = @currentStopPoint
 
 		commit transaction completeLoadingTransaction

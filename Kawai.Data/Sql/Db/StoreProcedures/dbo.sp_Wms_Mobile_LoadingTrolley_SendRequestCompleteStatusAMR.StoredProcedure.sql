@@ -5,6 +5,12 @@ create   procedure [dbo].[sp_Wms_Mobile_LoadingTrolley_SendRequestCompleteStatus
 	@UserId varchar(25)	
 as
 begin
+	IF EXISTS (SELECT 1 FROM PartMaterialRequestDetail WHERE RefNumber = @PickingNo AND IsCurrentProcessManual = 1)
+	BEGIN
+		RAISERROR('Saat ini proses supply request sedang tidak menggunakan AMR', 16, 1)
+		RETURN
+	END
+
 	update PartMaterialRequestSendRobotDetail 
 	set 
 		StatusAMR = 'Requesting to AMR', 
