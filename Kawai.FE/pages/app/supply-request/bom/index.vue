@@ -34,13 +34,12 @@
           </td>
         </tr>
         <tr>
-          <td style="padding-top: 5px;">
+          <td style="padding-top: 5px">
             <label class="form-label">Supplier</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-trade-2
               class="form-control"
-              
               :trade-cls="['3']"
               v-model="filter.SupplierCode"
               style-code="width: 120px"
@@ -53,7 +52,6 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <input-po
               class="form-control"
-              
               v-model="filter.PONumber"
               :factory-code="filter.FactoryCode"
               :supplier-code="filter.SupplierCode"
@@ -72,7 +70,6 @@
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-warehouse-privileges
               class="form-control"
-              
               disabled
               :factory-code="filter.FactoryCode"
               v-model="filter.Warehouse"
@@ -85,7 +82,7 @@
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-yes-no-all
-              class="form-control"              
+              class="form-control"
               v-model="filter.RemainingCls"
               style="width: 110px"
             />
@@ -291,10 +288,12 @@ export default {
     search: function () {
       let rangePeriodDays = this.$func.dateDiffInDays(
         this.filter.PeriodFrom,
-        this.filter.PeriodUntil
+        this.filter.PeriodUntil,
       );
 
-      if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
+      if (
+        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
+      ) {
         toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
         return;
       }
@@ -304,17 +303,17 @@ export default {
         return;
       }
 
-      if(!this.filter.SupplierCode) {
+      if (!this.filter.SupplierCode) {
         toastWarning("Silahkan pilih supplier.");
         return;
       }
 
-      if(!this.filter.PONumber) {
+      if (!this.filter.PONumber) {
         toastWarning("Silahkan pilih PO.");
         return;
       }
 
-      if(!this.filter.RemainingCls) {
+      if (!this.filter.RemainingCls) {
         toastWarning("Silahkan pilih filter remaining.");
         return;
       }
@@ -331,10 +330,10 @@ export default {
           RemainingCls: this.filter.RemainingCls,
           Warehouse: this.filter.Warehouse,
           PeriodFrom: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodFrom)
+            new Date(this.filter.PeriodFrom),
           ),
           PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodUntil)
+            new Date(this.filter.PeriodUntil),
           ),
         },
       ];
@@ -355,7 +354,7 @@ export default {
 
           if (!grouped[key]) {
             let totalRequestQty = dt.Data.Items.filter(
-              (x) => x.PONumber == item.PONumber && x.RequestId != null
+              (x) => x.PONumber == item.PONumber && x.RequestId != null,
             ).reduce((a, b) => a + (b.RequestSetQty || 0), 0);
 
             grouped[key] = {
@@ -394,13 +393,17 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
       this.search();
     },
     check: function (e, item) {
-      item.Selected = e.target.checked;
+      const isChecked = e.target.checked;
+      this.groupLists.forEach((x) => {
+        x.Selected = false;
+      });
+      item.Selected = isChecked;
     },
     newRequest: function () {
       let selected = this.groupLists.filter((x) => x.Selected);
@@ -456,7 +459,7 @@ export default {
       this.filter.PeriodFrom = new Date(
         today.getFullYear(),
         today.getMonth(),
-        1
+        1,
       );
       this.filter.PeriodUntil = today;
       this.filter.RemainingCls = "ALL";
