@@ -1,7 +1,9 @@
-﻿using Kawai.Domain.Models;
+using Kawai.Domain.Models;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
+
+using Microsoft.Extensions.Configuration;
 
 namespace Kawai.Api.Services;
 
@@ -23,11 +25,14 @@ public class TransactionProducer : ITransactionProducer, IDisposable
     private readonly object _lock = new();
     private readonly ConnectionFactory _factory;
 
-    public TransactionProducer()
+    public TransactionProducer(IConfiguration configuration)
     {
         _factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = configuration["RabbitMQ:HostName"] ?? "localhost",
+            UserName = configuration["RabbitMQ:UserName"] ?? "guest",
+            Password = configuration["RabbitMQ:Password"] ?? "guest",
+            Port = int.TryParse(configuration["RabbitMQ:Port"], out var port) ? port : 5672,
             AutomaticRecoveryEnabled = true,
             NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
         };

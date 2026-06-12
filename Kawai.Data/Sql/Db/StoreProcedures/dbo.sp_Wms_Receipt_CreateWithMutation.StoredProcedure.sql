@@ -16,6 +16,14 @@ CREATE OR ALTER PROCEDURE [sp_Wms_Receipt_CreateWithMutation]
 	@RegisterBy		varchar(25)
 as
 begin
+
+
+	if Exists (select top 1 1 from PartReceiptHeader where DNNumber = @DNNumber)
+	BEGIN
+		raiserror('Surat Jalan / DN Number sudah terdaftar pada data receipt yang lain!', 16, 1)
+		return
+	END
+
 	if @IsManual = 1 
 	and exists 
 	(

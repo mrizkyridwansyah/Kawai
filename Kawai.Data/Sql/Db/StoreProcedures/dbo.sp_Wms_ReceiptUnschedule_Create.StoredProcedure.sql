@@ -1,8 +1,4 @@
-
-
-
-
-create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Create]
+CREATE  procedure [dbo].[sp_Wms_ReceiptUnschedule_Create]
 	@ReceiptNo		varchar(50),
 	@ReceiptDate	date,
 	@DNNumber		varchar(50),
@@ -19,11 +15,17 @@ create   procedure [dbo].[sp_Wms_ReceiptUnschedule_Create]
 	@RegisterBy		varchar(25)
 as
 begin
-	if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
-	begin
-		raiserror('Receipt Date tidak boleh back date!', 16, 1)
+	--if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
+	--begin
+	--	raiserror('Receipt Date tidak boleh back date!', 16, 1)
+	--	return
+	--end
+
+	if Exists (select top 1 1 from PartReceiptHeader where DNNumber = @DNNumber)
+	BEGIN
+		raiserror('Surat Jalan / DN Number sudah terdaftar pada data receipt yang lain!', 16, 1)
 		return
-	end
+	END
 
 	if exists 
 	(

@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Kawai.Api.Services;
+using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
@@ -117,11 +118,36 @@ public class MobileSupplyScanRequestController : HahaController
         }
     }
 
+    [HttpGet("get-request-amr")]
+    public async Task<IActionResult> GetRequestAMR(string requestNo)
+    {
+        var result = await _supplyscanrequestRepository.GetRequestAMR(requestNo);
+        return Success(result);
+    }
+
     [HttpPost("send-request-amr")]
     public async Task<IActionResult> SendRequestAMR(SendRequestAMR model)
     {
+        var before = await _supplyscanrequestRepository.CaptureStatusAMR(model.RequestNoCode);
+
+        await _supplyscanrequestRepository.SendRequestCancelAMR(model.RequestNoCode, Auth.User.UserID);
+
+        var after = await _supplyscanrequestRepository.CaptureStatusAMR(model.RequestNoCode);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Send Request Complete Picking AMR",
+            EntityId = model.RequestNoCode,
+            ReferenceId = model.RequestNoCode,
+            Before = before,
+            After = after,
+            Activity = "Send Request Complete Picking AMR",
+            Action = DataLogAction.Update
+        });
+
         BackgroundJob.Enqueue<IRobotService>(service => service.CompletePicking(model.RequestNoCode));
-        return Success();
+
+        return Success(message: "Requesting to AMR");
     }
 
 

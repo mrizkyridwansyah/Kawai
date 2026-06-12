@@ -1,4 +1,4 @@
-﻿using Amazon;
+using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -8,8 +8,34 @@ using Amazon.S3.Util;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using System.Net;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace Kawai.Api;
+
+public static class FileValidator
+{
+    private static readonly string[] WhitelistExtensions = { ".pdf", ".xls", ".xlsx", ".png", ".jpg", ".jpeg", ".csv", ".bin" };
+    private const long MaxFileSize = 10 * 1024 * 1024; // 10MB
+
+    public static void Validate(IFormFile file)
+    {
+        if (file == null) return;
+
+        // Size check
+        if (file.Length > MaxFileSize)
+        {
+            throw new Exception($"File size exceeds the limit of 10MB. Current size: {file.Length / 1024.0 / 1024.0:F2}MB");
+        }
+
+        // Extension check
+        var ext = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) || !WhitelistExtensions.Contains(ext))
+        {
+            throw new Exception($"File type '{ext}' is not allowed. Allowed extensions: {string.Join(", ", WhitelistExtensions)}");
+        }
+    }
+}
 
 public static class FileStorageExtensions
 {
@@ -113,6 +139,7 @@ public class LocalFileStorage : IFileStorage
 
     private void Save(string category, string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         using var stream = file.OpenReadStream();
         Save(category, key, stream);
     }
@@ -556,6 +583,7 @@ public class GoogleFileStorage : IFileStorage
 
     public void SaveToAttachments(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"attachments/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -566,6 +594,7 @@ public class GoogleFileStorage : IFileStorage
 
     public void SaveToExports(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"exports/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -576,6 +605,7 @@ public class GoogleFileStorage : IFileStorage
 
     public void SaveToImages(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"images/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -586,6 +616,7 @@ public class GoogleFileStorage : IFileStorage
 
     public void SaveToImports(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"imports/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -847,6 +878,7 @@ public class AwsS3FileStorage(IAmazonS3 client, IConfiguration configuration) : 
 
     public void SaveToAttachments(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"attachments/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -857,6 +889,7 @@ public class AwsS3FileStorage(IAmazonS3 client, IConfiguration configuration) : 
 
     public void SaveToExports(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"exports/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -867,6 +900,7 @@ public class AwsS3FileStorage(IAmazonS3 client, IConfiguration configuration) : 
 
     public void SaveToImages(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"images/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 
@@ -877,6 +911,7 @@ public class AwsS3FileStorage(IAmazonS3 client, IConfiguration configuration) : 
 
     public void SaveToImports(string key, IFormFile file)
     {
+        FileValidator.Validate(file);
         AddFileToBucket($"imports/{key.Sha256Hex()}", file.OpenReadStream()).Wait();
     }
 

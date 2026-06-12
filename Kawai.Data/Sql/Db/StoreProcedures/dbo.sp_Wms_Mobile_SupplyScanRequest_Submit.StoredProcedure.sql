@@ -1,4 +1,8 @@
-CREATE PROCEDURE [dbo].[sp_Wms_Mobile_SupplyScanRequest_Submit]
+
+
+
+
+CREATE   procedure [dbo].[sp_Wms_Mobile_SupplyScanRequest_Submit]
     @WarehouseCode VARCHAR(100),
     @BarcodeNo VARCHAR(100),
     @LineCode VARCHAR(100),
@@ -63,13 +67,13 @@ BEGIN
     DECLARE @MsgErr VARCHAR(MAX)
     DECLARE @IvtYear INT, @IvtMonth INT, @StartPeriod DATETIME, @EndPeriod DATETIME
 
-	declare @validSO varchar(max) = (select dbo.fn_ValidateTransactionPeriod())
+	--declare @validSO varchar(max) = (select dbo.fn_ValidateTransactionPeriod())
 
-	if @validSO <> 'OK'
-	begin
-        RAISERROR(@validSO,16,1)
-        RETURN
-	end
+	--if @validSO <> 'OK'
+	--begin
+ --       RAISERROR(@validSO,16,1)
+ --       RETURN
+	--end
 
     IF NOT EXISTS (SELECT TOP 1 1 FROM #zTempData WHERE ItemCode = @ItemCode)
     BEGIN
@@ -126,7 +130,7 @@ BEGIN
 		@PickingNo = Picking_No,
 		@StatusReceipt = StatusReceipt,
         @LastQty = ISNULL(Qty,0)
-    FROM dbo.StockDetail 
+    FROM dbo.StockDetail with (updlock, rowlock)
     WHERE BarcodeNo = @BarcodeNo AND ISNULL(Qty,0) > 0
 
 	if @FromWarehouseCode in (select Subcon_WH_Code from Trade_Master where Trade_Cls = '3') 
@@ -162,6 +166,25 @@ BEGIN
         RETURN
     END
 
+    DECLARE @NewBarcode VARCHAR(50)
+
+	IF @LastQty > @Qty
+	begin
+		declare @factoryCode varchar(25) = (select Company_Code From WareHouse_Master where WH_Code = @FromWarehouseCode)
+		declare @prefixFactory varchar(5) = (select PrefixGlobalBarcode From Company_Profile where Company_Code = @factoryCode)
+
+		declare @dt varchar(8) = format(getdate(), 'yyyyMMdd')
+		declare @prefixBarcode varchar(20) = @prefixFactory + 'FQR' + @dt
+		EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcode OUTPUT;			
+	end
+
+    IF ISNULL(@ToPalletNo,'') = ''
+    BEGIN
+        INSERT INTO @TablePallet
+        EXEC sp_Wms_Stock_GeneratePalletNo
+        SELECT @ToPalletNo = PalletNo FROM @TablePallet
+	end
+
     BEGIN TRY  
 		BEGIN TRANSACTION SupplyTransaction
 
@@ -171,9 +194,6 @@ BEGIN
 
         IF ISNULL(@ToPalletNo,'') = ''
         BEGIN
-            INSERT INTO @TablePallet
-            EXEC sp_Wms_Stock_GeneratePalletNo
-            SELECT @ToPalletNo = PalletNo FROM @TablePallet
             INSERT INTO PartMaterialRequestDetailPallet 
             VALUES(@ReqID, @ToPalletNo, GETDATE(), @UserID, @StopPoint)
         END
@@ -181,14 +201,6 @@ BEGIN
         IF @LastQty > @Qty
         BEGIN
             PRINT('split')
-
-			declare @factoryCode varchar(25) = (select Company_Code From WareHouse_Master where WH_Code = @FromWarehouseCode)
-			declare @prefixFactory varchar(5) = (select PrefixGlobalBarcode From Company_Profile where Company_Code = @factoryCode)
-
-            DECLARE @NewBarcode VARCHAR(50)
-			declare @dt varchar(8) = format(getdate(), 'yyyyMMdd')
-			declare @prefixBarcode varchar(20) = @prefixFactory + 'FQR' + @dt
-			EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcode OUTPUT;			
 
             IF NOT EXISTS(
                 SELECT 1 
@@ -323,7 +335,7 @@ BEGIN
 			select 
 				'IN', 'Mobile Supply Scan Request', @ToPalletNo, @FromWarehouseCode, @FromAreaCode, @FromAddressCode, 
 				@ItemCode, @BarcodeNo, @LotNo, @FromWarehouseCode, @FromAreaCode, @FromAddressCode, 
-				@ItemCode, @BarcodeNo, @LotNo, @QtyOutstanding, 'Mobile Supply Scan Request dari palet ' + isnull(@FromRefNo, ''), @FromRefNo, 
+				@ItemCode, @BarcodeNo, @LotNo, @Qty, 'Mobile Supply Scan Request dari palet ' + isnull(@FromRefNo, ''), @FromRefNo, 
 				getdate(), @UserId
 		END
 
@@ -333,11 +345,12 @@ BEGIN
 		(
 			Select * from 
 			(
-			    select A.ItemCode, RequestDetailID, ChildRequirement_Qty - ISNULL(SUM(B.Qty),0) Nilai 
+			    select A.ItemCode, a.RequestDetailID, ChildRequirement_Qty - ISNULL(SUM(B.Qty),0) Nilai 
 				from PartMaterialRequestItemDetail A 
+				inner join PartMaterialRequestDetail dtl on a.RequestDetailID = dtl.RequestDetailID
 				LEFT JOIN PartMaterialRequestItemDetailScan B ON A.IDSeq = B.IDSeq and A.ItemCode = B.ItemCode  
-				where A.RequestDetailID = @ReqID
-				Group by RequestDetailID, ChildRequirement_Qty , A.ItemCode
+				WHERE dtl.RefNumber = @RequestNoCode
+				Group by a.RequestDetailID, ChildRequirement_Qty , A.ItemCode
 			) A where Nilai > 0
 		)
 		BEGIN
@@ -348,6 +361,8 @@ BEGIN
 				LastUpdate = getdate(), LastUser = @UserID, 
 				LastRequestDateAMR = getdate(), LastUserRequestAMR = @UserID
 			where RefNumber = @RequestNoCode
+
+			EXEC SP_Scheduler_TransferDataRobot2 @RequestNoCode, @UserId
 
 			SET @hasComplete = 1
 		END

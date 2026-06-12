@@ -143,12 +143,7 @@ public class MobileLoadingTrolleyController : HahaController
             Action = DataLogAction.Update
         });
 
-        /*
-         IsManual adalah kondisi ketika trolley di pilih secara manual bukan pake AMR.
-         */
-        if (model.IsManual)
-            BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoadingSpecial(model));
-        else
+        if (!model.IsManual)
             BackgroundJob.Enqueue<IRobotService>(service => service.CompleteLoading(model));
 
         return Success(message: "Requesting to AMR");

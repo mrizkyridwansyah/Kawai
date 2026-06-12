@@ -24,7 +24,7 @@
 
         <!-- name -->
         <div class="name">
-          {{ f.FactoryName }}
+          {{ f.FactoryCode }} - {{ f.FactoryName }}
         </div>
 
         <!-- overlay lock (hanya kalau tidak punya akses) -->

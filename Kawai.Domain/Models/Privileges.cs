@@ -21,6 +21,9 @@ public class Privileges
 
     [Required]
     public List<AreaPrivilege> AreaPrivileges { get; set; }
+
+    [Required]
+    public List<GroupingClassPrivilege> GroupingClassPrivileges { get; set; }
 }
 
 public class MenuPrivilege
@@ -34,6 +37,12 @@ public class MenuPrivilege
 public class MenuMobilePrivilege
 {
     public string MenuID { get; set; }
+    public bool? AllowAccess { get; set; } = false;
+}
+
+public class GroupingClassPrivilege
+{
+    public string GroupingClassPartCode { get; set; }
     public bool? AllowAccess { get; set; } = false;
 }
 

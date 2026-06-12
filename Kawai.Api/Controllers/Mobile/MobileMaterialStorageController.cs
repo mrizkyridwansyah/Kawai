@@ -105,4 +105,11 @@ public class MobileMaterialStorageController : HahaController
             throw new Exception("RabbitMQ unavailable: " + ex.Message);
         }
     }
+
+    [HttpGet("list-remaining-stock")]
+    public async Task<IActionResult> GetListRemainingStock()
+    {
+        var result = await _materialStorageRepository.GetListRemainingStock(Auth.User.UserID);
+        return Success(result);
+    }
 }

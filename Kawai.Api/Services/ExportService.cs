@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using Hangfire;
 using Kawai.Api.Hub;
 using Kawai.Data.SqlConnections;
@@ -17,8 +17,10 @@ namespace Kawai.Api.Services;
 public interface IExportService
 {
     Task ExportExcelItem(RequestParameter param, string userId, string key);
+    Task ExportExcelReceiptInquiry(RequestParameter param, string userId, string key);
     Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId);
     Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key);
+    Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userId, string key);
 }
 
 public class ExportService : IExportService
@@ -27,6 +29,7 @@ public class ExportService : IExportService
     private readonly IFileStorage _fileStorage;
     private readonly IItemRepository _itemRepository;
     private readonly IReceiptRepository _receiptRepository;
+    private readonly IReprintRepository _reprintRepository;
     private readonly NotificationService<NotifApprovalHub> _notificationService;
     private readonly DbExecutor _dbExecutor;
 
@@ -35,6 +38,7 @@ public class ExportService : IExportService
         IFileStorage fileStorage,
         IItemRepository itemRepository,
         IReceiptRepository receiptRepository,
+        IReprintRepository reprintRepository,
         NotificationService<NotifApprovalHub> notificationService,
         RazorViewRenderer renderer,
         DbExecutor dbExecutor
@@ -43,6 +47,7 @@ public class ExportService : IExportService
         _fileStorage = fileStorage;
         _itemRepository = itemRepository;
         _receiptRepository = receiptRepository;
+        _reprintRepository = reprintRepository;
         _notificationService = notificationService;
         _renderer = renderer;
         _dbExecutor = dbExecutor;
@@ -154,219 +159,7 @@ public class ExportService : IExportService
             renderedLabels.Add(html);
         }
 
-        var sb = new StringBuilder();
-
-        sb.Append("""
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="utf-8" />
-                        <style>
-                        @page {
-                          size: A4;
-                          margin: 10mm;
-                        }
-
-                        body {
-                          margin: 0;
-                          font-family: Arial, sans-serif;
-                        }
-
-                        .page {
-                          width: 190mm;
-                          height: 277mm;
-                          display: grid;
-                          grid-template-columns: repeat(2, 1fr);
-                          grid-template-rows: repeat(4, 1fr);
-                          gap: 5mm;
-                                    /* pastikan TIDAK ada kotak */
-                          border: none;
-                          outline: none;
-                          box-shadow: none;
-                          page-break-after: always;
-                        }
-
-                        
-                
-
-              .label {
-                width: 321px;
-                margin: 5px auto;
-                background: #fff;
-                position: relative;
-              }
-
-              table {
-                width: 100%;
-                border-collapse: collapse;
-              }
-
-              td {
-                padding: 0;
-                vertical-align: top;
-              }
-
-              /* ===== HEADER ===== */
-              .header {
-                background: #fff;
-                color: #000;
-                font-weight: bold;
-                height: 25px;
-              }
-
-              .header-title {
-                font-size: 10px;
-                padding-left: 5px;
-            	padding-top: 8px;
-
-              }
-
-              .header-page {
-                width: 90px;
-                text-align: center;
-                font-size: 10px;
-            	padding-top: 8px;
-              }
-
-              /* ===== SHIPPING LOT (OVERLAY) ===== */
-              .shipping-lot {
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 50px;
-                border-top: 1px solid #000;
-                border-left: 1px solid #000;
-                border-bottom: 1px solid #000;
-            	 border-right: 1px solid #000;
-                background: #fff;
-              }
-
-              .shipping-lot-header {
-                background: #fff;
-                color: #000;
-                text-align: center;
-               
-                border-bottom: 1px solid #000;
-                padding: 3px 0;
-                font-size: 6px;
-              }
-
-              .shipping-lot-number {
-                text-align: center;
-                font-size: 22px;
-                font-weight: bold;
-                padding: 4px 0;
-                margin: 2px;
-              }
-
-              /* ===== FROM / TO ===== */
-              .fromto td {
-                width: 50%;
-                padding: 2px 3px;
-                border-top: 1px solid #000;
-                border-bottom: 1px solid #000;
-              }
-
-              .fromto td:first-child {
-                border-right: 1px solid #000;
-              }
-
-              .small {
-              margin-top: 2px;
-                font-size: 6px;
-                font-weight: bold;
-              }
-
-              .big {
-                margin-top: 3px;
-                font-size: 9px;
-                font-weight: bold;
-              }
-
-              /* ===== CONTENT ===== */
-              .content td {
-                padding: 5px;
-
-              }
-
-              .detail td {
-                font-size: 10px;
-                padding: 3px;
-
-
-              }
-
-              .lbl {
-                width: 70px;
-
-                font-weight: bold;
-              }
-
-              .colon {
-                width: 5px;
-              }
-
-              .qr {
-                text-align: right;
-              }
-
-              .qr img {
-                width: 95px;
-                height: 95px;
-
-              }
-
-              /* ===== FOOTER ===== */
-              .footer {
-                background: #fff;
-                border-top: 1px solid #000;
-              }
-
-              .footer td {
-                width: 50%;
-                padding: 3px 4px;
-              }
-
-              .footer td:first-child {
-                border-right: 1px solid #000;
-              }
-
-              .footer-title {
-              margin-top: 2px;
-                font-size: 7px;
-                font-weight: bold;
-              }
-
-              .footer-value {
-                margin-top: 8px;
-            	 font-size: 10px;
-                font-weight: bold;
-              }
-                        </style>
-                    </head>
-                    <body>
-            """);
-
-        foreach (var chunk in renderedLabels.Chunk(8))
-        {
-            sb.Append("<div class='page'>");
-
-            foreach (var label in chunk)
-            {
-                sb.Append("<div class='label'>");
-                sb.Append(label);
-                sb.Append("</div>");
-            }
-
-            sb.Append("</div>");
-        }
-
-        sb.Append("""
-                    </body>
-                    </html>
-        """);
-
-        var fullHtml = sb.ToString();
+        var fullHtml = HtmlTemplateHelper.BuildA4Html(renderedLabels);
         var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
 
         string keyStorage = Guid.NewGuid().ToString();
@@ -407,4 +200,129 @@ public class ExportService : IExportService
         await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = "Report_NG_" + list[0].DNNumber });
     }
 
+    [AutomaticRetry(Attempts = 0)]
+    public async Task ExportExcelReceiptInquiry(RequestParameter param, string userId, string key)
+    {
+        var results = await _receiptRepository.Inquiry(param);
+        if (results == null || !results.Any()) return;
+
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 1;
+
+        List<string> headers = ["Receipt No", "Supplier", "Delivery Date", "Item Code", "Description", "DN Number", "PO Number", "BC Type", "BC Number", "BC Date", "Qty", "Qty Scan", "Unit", "Currency", "Price", "Amount"];
+        ExcelHelper.SetHeader(ws, rowIdx, headers);
+
+        foreach (var result in results)
+        {
+            rowIdx++;
+            var row = ws.Row(rowIdx);
+            int colIdx = 1;
+
+            ExcelHelper.SetCell(row, colIdx, result.ReceiptNo);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.SupplierName);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.DNDate.ToString("dd MMM yyyy"));
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.ItemCode);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.ItemName);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.DNNumber);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.PONumber);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.BCType);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.BCNumber);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.BCDate.ToString("dd MMM yyyy"));
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Qty);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.QtyScan);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.UnitClsDescription);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Currency);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Price);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Amount);
+        }
+
+        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
+
+        var range = ws.Range(1, 1, rowIdx, headers.Count);
+        ExcelHelper.SetBorders(range);
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms, false);
+        ms.Position = 0;
+
+        _fileStorage.SaveToExports(key, ms);
+
+        int defaultTTLMinute = 5; // simpan file fisik selama 5 menit
+
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
+
+        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Receipt Inquiry" });
+    }
+
+    [AutomaticRetry(Attempts = 0)]
+    public async Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userId, string key)
+    {
+        var barcodeNos = selectedPrint
+            .Select(x => x.Key)
+            .ToList();
+
+        var results = await _reprintRepository
+            .GetListBarcodeDetail(barcodeNos);
+
+        if (results == null || !results.Any()) return;
+
+        var renderedLabels = new List<string>();
+
+        foreach (var item in results)
+        {
+            var model = new LabelBarcodeDetailDto
+            {
+                BarcodeNo = item.BarcodeNo,
+                FromCompany = item.FromCompany,
+                ToCompany = item.ToCompany,
+                PONumber = item.PONumber,
+                ShippingLot = item.ShippingLot,
+                ItemCode = item.ItemCode,
+                ItemName = item.ItemName,
+                Qty = item.Qty,
+                DeliveryDate = item.DeliveryDate,
+                DNNumber = item.DNNumber,
+                ShippingLabelNo = item.ShippingLabelNo,
+            };
+
+            var html = await _renderer.RenderAsync(
+                "Templates/PrintBarcode.cshtml",
+                model);
+
+            renderedLabels.Add(html);
+        }
+
+        var fullHtml = HtmlTemplateHelper.BuildA4Html(renderedLabels);
+        var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
+
+        _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
+
+        string keyStorage = Guid.NewGuid().ToString();
+        int defaultTTLMinute = 5; // simpan file fisik selama 5 menit
+
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
+
+        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Reprint_Barcode_{DateTime.Now:yyyyMMddHHmmss}"  });
+    }
 }

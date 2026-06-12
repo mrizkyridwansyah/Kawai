@@ -1,4 +1,4 @@
-﻿using Kawai.Domain.Models;
+using Kawai.Domain.Models;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using System.Text;
@@ -23,9 +23,12 @@ public class TransactionConsumerAsync : BackgroundService
     private const string DlxQueue = "stock_transaction_dead_letter_queue_v1";
     private const string DlxRoutingKey = "dead.stock_transaction";
 
-    public TransactionConsumerAsync(IServiceScopeFactory scopeFactory)
+    private readonly IConfiguration _configuration;
+
+    public TransactionConsumerAsync(IServiceScopeFactory scopeFactory, IConfiguration configuration)
     {
         _scopeFactory = scopeFactory;
+        _configuration = configuration;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -54,7 +57,10 @@ public class TransactionConsumerAsync : BackgroundService
     {
         var factory = new RabbitMQ.Client.ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = _configuration["RabbitMQ:HostName"] ?? "localhost",
+            UserName = _configuration["RabbitMQ:UserName"] ?? "guest",
+            Password = _configuration["RabbitMQ:Password"] ?? "guest",
+            Port = int.TryParse(_configuration["RabbitMQ:Port"], out var port) ? port : 5672,
             DispatchConsumersAsync = true,
             AutomaticRecoveryEnabled = true,
             NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
@@ -155,7 +161,7 @@ public class TransactionConsumerAsync : BackgroundService
             notification.Receiver = message.AuthUserId;
 
             Console.WriteLine($"[RABBITMQ] HandleMessage: {message.FormatMessage}");
-            
+
             await ProcessMessageAsync(message);
 
             _channel!.BasicAck(ea.DeliveryTag, false);

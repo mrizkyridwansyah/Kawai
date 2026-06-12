@@ -125,28 +125,28 @@
                 </td>
                 <td>{{ item.WorkStationCode }}</td>
                 <td>{{ item.WorkStationName }}</td>
-                <td style="width: 150px !important">
+                <td style="width: max-content !important">
                   <div style="justify-items: center; display: grid">
                     <input-stoppointbyaddress
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode"
-                      :width="'100%'"
-                      :include-temp="true"
+                       :include-temp="true"
                       :errors="item.errors?.StopPointCode"
+                      style-code="width:150px"
                       @update:modelValue="
                         (value) => onStopPointChange(value, item)
                       "
                     />
                   </div>
                 </td>
-                <td style="width: 150px !important">
+                 <td style="width: max-content !important">
                   <div style="justify-items: center; display: grid">
                     <input-stoppointbyaddress
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode2"
-                      :width="'100%'"
+                      style-code="width:150px"
                       :include-temp="true"
                       :errors="item.errors?.StopPointCode2"
                       @update:modelValue="
@@ -155,13 +155,13 @@
                     />
                   </div>
                 </td>
-                <td style="width: 150px !important">
+                 <td style="width: max-content !important">
                   <div style="justify-items: center; display: grid">
                     <input-stoppointbyaddress
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode3"
-                      :width="'100%'"
+                       style-code="width:150px"
                       :include-temp="true"
                       :errors="item.errors?.StopPointCode3"
                       @update:modelValue="

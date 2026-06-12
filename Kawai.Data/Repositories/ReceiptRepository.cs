@@ -1,9 +1,12 @@
-﻿using Kawai.Data.SqlConnections;
+﻿using Dapper;
+using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Shared;
+using System.Data;
+
 
 namespace Kawai.Data.Repositories;
 
@@ -16,6 +19,63 @@ public class ReceiptRepository : IReceiptRepository
     {
         _dbExecutor = dbExecutor;
     }
+
+    public async Task Import( ReceiptHeaderImport header, DataTable dtDetail, string userId, string factoryCode)
+    {
+        string sql = @"sp_Wms_Receipt_Import";
+        await _dbExecutor.ExecuteNonTransactionAsync(sql, new
+        {
+            header.SupplierCode,
+            header.DNNumber,
+            header.ReceiptDate,
+            header.BCType,
+            header.BCNumber,
+            header.BCDate,
+            DataImport = dtDetail,
+            UserId = userId,
+            FactoryCode = factoryCode
+        });
+        
+        
+    }
+
+    public async Task<ReceiptImport> ValidateImport(
+    ReceiptHeaderImport header,
+    DataTable datas,
+    string userId)
+    {
+        return await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_Receipt_ValidateImport",
+            param: new
+            {
+                SupplierCode = header.SupplierCode,
+                DNNumber = header.DNNumber,
+                ReceiptDate = header.ReceiptDate,
+                BCType = header.BCType,
+                BCNumber = header.BCNumber,
+                BCDate = header.BCDate,
+                DataImport = datas,
+                UserId = userId
+            },
+            async multi =>
+            {
+                var headerResult =
+                    (await multi.ReadAsync<ReceiptHeaderImport>())
+                    .FirstOrDefault();
+
+                var detailResult =
+                    (await multi.ReadAsync<ReceiptDetailImport>())
+                    .ToList();
+
+                return new ReceiptImport
+                {
+                    Header = headerResult,
+                    Details = detailResult
+                };
+            }
+        );
+    }
+
 
     public async Task<List<ReceiptDto>> GetList(RequestParameter param)
     {
@@ -274,7 +334,7 @@ public class ReceiptRepository : IReceiptRepository
     public async Task PrintLabel(long id, string userId, bool? mustBePrint)
     {
         string sqlHeader = "sp_Wms_Receipt_PrintLabel";
-        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        await _dbExecutor.ExecuteNonTransactionAsync(sqlHeader, new
         {
             ReceiptId = id,
             MustPrint = mustBePrint ?? true,

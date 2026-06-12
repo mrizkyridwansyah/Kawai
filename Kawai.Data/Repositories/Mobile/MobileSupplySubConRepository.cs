@@ -47,7 +47,7 @@ public class MobileSupplySubConRepository : IMobileSupplySubconRepository
     public async Task Save(MobileSupplySubcon payload, string userId)
     {
         string sql = "sp_Wms_Mobile_SupplySubcon_Submit";
-        int i = await _dbExecutor.ExecuteAsync(sql, new
+        int i = await _dbExecutor.ExecuteNonTransactionAsync(sql, new
         {
             payload.BarcodeNo,
             payload.LotNo,

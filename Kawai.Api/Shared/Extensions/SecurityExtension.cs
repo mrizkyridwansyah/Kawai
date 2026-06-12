@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Security.Cryptography;
 
 
@@ -6,6 +6,15 @@ namespace Kawai.Api;
 
 public static class SecurityExtension
 {
+    public static string ExtraKeySuffix { get; set; } = "WebPECGI2020";
+    public static byte[] SecuritySalt { get; set; } = new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 };
+
+    public static void Initialize(string extraKeySuffix, byte[] securitySalt)
+    {
+        if (!string.IsNullOrEmpty(extraKeySuffix)) ExtraKeySuffix = extraKeySuffix;
+        if (securitySalt != null && securitySalt.Length > 0) SecuritySalt = securitySalt;
+    }
+
     public static string Sha256(this string input)
     {
         if (string.IsNullOrEmpty(input) || string.IsNullOrWhiteSpace(input))
@@ -50,11 +59,11 @@ public static class SecurityExtension
 
     public static string Encrypt(this string clearText, string EncryptionKey)
     {
-        EncryptionKey = EncryptionKey + "WebPECGI2020";
+        EncryptionKey = EncryptionKey + ExtraKeySuffix;
         byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
         using (Aes encryptor = Aes.Create())
         {
-            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, SecuritySalt);
             encryptor.Key = pdb.GetBytes(32);
             encryptor.IV = pdb.GetBytes(16);
             using (MemoryStream ms = new MemoryStream())
@@ -76,11 +85,11 @@ public static class SecurityExtension
         {
             return cipherText;
         }
-        EncryptionKey = EncryptionKey + "WebPECGI2020";
+        EncryptionKey = EncryptionKey + ExtraKeySuffix;
         byte[] cipherBytes = System.Convert.FromBase64String(cipherText);
         using (Aes encryptor = Aes.Create())
         {
-            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+            Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, SecuritySalt);
             encryptor.Key = pdb.GetBytes(32);
             encryptor.IV = pdb.GetBytes(16);
             using (MemoryStream ms = new MemoryStream())

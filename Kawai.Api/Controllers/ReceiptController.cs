@@ -1,8 +1,9 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Hangfire;
 using Kawai.Api.Hub;
 using Kawai.Api.Services;
+using Kawai.Data;
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Log;
@@ -11,6 +12,7 @@ using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text;
 
 namespace Kawai.Api.Controllers;
@@ -251,67 +253,9 @@ public class ReceiptController : HahaController
     [HttpPost("export/excel-inquiry")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
-        var results = await _receiptRepository.Inquiry(parameter);
-        if (results == null || !results.Any()) return NoContent();
-
-        using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Data");
-
-        int rowIdx = 1;
-
-        List<string> headers = ["Receipt No", "Supplier", "Delivery Date", "Item Code", "Description", "DN Number", "PO Number", "BC Type", "BC Number", "BC Date", "Qty", "Qty Scan", "Unit", "Currency", "Price", "Amount"];
-        ExcelHelper.SetHeader(ws, rowIdx, headers);
-
-        foreach (var result in results)
-        {
-            rowIdx++;
-            var row = ws.Row(rowIdx);
-            int colIdx = 1;
-
-            ExcelHelper.SetCell(row, colIdx, result.ReceiptNo);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.SupplierName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.DNDate.ToString("dd MMM yyyy"));
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ItemCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ItemName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.DNNumber);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.PONumber);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.BCType);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.BCNumber);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.BCDate.ToString("dd MMM yyyy"));
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Qty);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.QtyScan);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.UnitClsDescription);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Currency);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Price);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Amount);
-        }
-
-        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
-
-        var range = ws.Range(1, 1, rowIdx, headers.Count);
-        ExcelHelper.SetBorders(range);
-
-        using var ms = new MemoryStream();
-        workbook.SaveAs(ms);
-        var fileBytes = ms.ToArray();
-        var base64File = Convert.ToBase64String(fileBytes);
-
-        return Success(base64File);
+        string key = "ReceiptInquiryExport_" + Guid.NewGuid().ToString();
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelReceiptInquiry(parameter, Auth.User.UserID, key));
+        return Pending(message: "Data Export Excel sedang diproses!");
     }
 
     [HttpPost("print-barcodes")]
@@ -368,7 +312,7 @@ public class ReceiptController : HahaController
             renderedLabels.Add(html);
         }
 
-        var fullHtml = BuildA4Html(renderedLabels);
+        var fullHtml = HtmlTemplateHelper.BuildA4Html(renderedLabels);
         var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
         return File(pdfBytes, "application/pdf", result.SupplierName + "_" + result.DNNumber);
@@ -417,221 +361,303 @@ public class ReceiptController : HahaController
         return Pending(message: message);
     }
 
-    protected string BuildA4Html(List<string> labelHtmls)
+    public static ReceiptImport ReadReceiptImport(IFormFile file)
     {
-        var sb = new StringBuilder();
+        if (file == null || file.Length == 0)
+            throw new Exception("File kosong.");
 
-        sb.Append("""
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="utf-8" />
-                        <style>
-                        @page {
-                          size: A4;
-                          margin: 10mm;
-                        }
+        using var stream = new MemoryStream();
+        file.CopyTo(stream);
 
-                        body {
-                          margin: 0;
-                          font-family: Arial, sans-serif;
-                        }
+        using var workbook = new XLWorkbook(stream);
+        var ws = workbook.Worksheet(1);
 
-                        .page {
-                          width: 190mm;
-                          height: 277mm;
-                          display: grid;
-                          grid-template-columns: repeat(2, 1fr);
-                          grid-template-rows: repeat(4, 1fr);
-                          gap: 5mm;
-                                    /* pastikan TIDAK ada kotak */
-                          border: none;
-                          outline: none;
-                          box-shadow: none;
-                          page-break-after: always;
-                        }
+        var result = new ReceiptImport();
 
-                        
-                
+        int lastRow = ws.LastRowUsed().RowNumber();
 
-              .label {
-                width: 321px;
-                margin: 5px auto;
-                background: #fff;
-                position: relative;
-              }
+        if (lastRow > 10000)
+            throw new Exception("Upload gagal: maksimal 10.000 baris.");
 
-              table {
-                width: 100%;
-                border-collapse: collapse;
-              }
+        #region HEADER
 
-              td {
-                padding: 0;
-                vertical-align: top;
-              }
+        result.Header = new ReceiptHeaderImport();
 
-              /* ===== HEADER ===== */
-              .header {
-                background: #fff;
-                color: #000;
-                font-weight: bold;
-                height: 25px;
-              }
+        result.Header.SupplierCode = ws.Cell("A3").GetString()?.Trim();
+        result.Header.DNNumber = ws.Cell("B3").GetString()?.Trim();
 
-              .header-title {
-                font-size: 10px;
-                padding-left: 5px;
-            	padding-top: 8px;
+        string receiptDateText = ws.Cell("C3").GetString()?.Trim();
 
-              }
+        result.Header.BCType = ws.Cell("D3").GetString()?.Trim();
+        result.Header.BCNumber = ws.Cell("E3").GetString()?.Trim();
 
-              .header-page {
-                width: 90px;
-                text-align: center;
-                font-size: 10px;
-            	padding-top: 8px;
-              }
+        string bcDateText = ws.Cell("F3").GetString()?.Trim();
 
-              /* ===== SHIPPING LOT (OVERLAY) ===== */
-              .shipping-lot {
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 50px;
-                border-top: 1px solid #000;
-                border-left: 1px solid #000;
-                border-bottom: 1px solid #000;
-            	 border-right: 1px solid #000;
-                background: #fff;
-              }
+        var headerErrors = new List<string>();
+        string supplier = result.Header.SupplierCode.Trim();
+        string dnno = result.Header.DNNumber.Trim();
+        string bctype = result.Header.BCType.Trim();
+        string bcno = result.Header.BCNumber.Trim();
 
-              .shipping-lot-header {
-                background: #fff;
-                color: #000;
-                text-align: center;
-               
-                border-bottom: 1px solid #000;
-                padding: 3px 0;
-                font-size: 6px;
-              }
+        if (string.IsNullOrWhiteSpace(result.Header.SupplierCode))
+            headerErrors.Add("Supplier wajib diisi");
 
-              .shipping-lot-number {
-                text-align: center;
-                font-size: 22px;
-                font-weight: bold;
-                padding: 4px 0;
-                margin: 2px;
-              }
+        if (string.IsNullOrWhiteSpace(result.Header.DNNumber))
+            headerErrors.Add("DN Number wajib diisi");
 
-              /* ===== FROM / TO ===== */
-              .fromto td {
-                width: 50%;
-                padding: 2px 3px;
-                border-top: 1px solid #000;
-                border-bottom: 1px solid #000;
-              }
+        if (string.IsNullOrWhiteSpace(result.Header.BCType))
+            headerErrors.Add("BC Type wajib diisi");
 
-              .fromto td:first-child {
-                border-right: 1px solid #000;
-              }
+        if (string.IsNullOrWhiteSpace(result.Header.BCNumber))
+            headerErrors.Add("BC Number wajib diisi");
 
-              .small {
-              margin-top: 2px;
-                font-size: 6px;
-                font-weight: bold;
-              }
+        if (!DateTime.TryParse(receiptDateText, out var receiptDate))
+            headerErrors.Add("Receipt Date tidak valid");
+        else
+            result.Header.ReceiptDate = receiptDate;
 
-              .big {
-                margin-top: 3px;
-                font-size: 9px;
-                font-weight: bold;
-              }
+        if (!DateTime.TryParse(bcDateText, out var bcDate))
+            headerErrors.Add("BC Date tidak valid");
+        else
+            result.Header.BCDate = bcDate;
 
-              /* ===== CONTENT ===== */
-              .content td {
-                padding: 5px;
+        // Length Validation
+        if (!string.IsNullOrWhiteSpace(supplier) && supplier.Length > 15)
+            headerErrors.Add("Supplier maksimal 15 karakter.");
 
-              }
+        if (!string.IsNullOrWhiteSpace(dnno) && dnno.Length > 50)
+            headerErrors.Add("DNNumber maksimal 50 karakter.");
 
-              .detail td {
-                font-size: 10px;
-                padding: 3px;
+        if (!string.IsNullOrWhiteSpace(bctype) && bctype.Length > 15)
+            headerErrors.Add("BCType maksimal 15 karakter.");
+
+        if (!string.IsNullOrWhiteSpace(bcno) && bcno.Length > 50)
+            headerErrors.Add("BCNo maksimal 50 karakter.");
 
 
-              }
 
-              .lbl {
-                width: 70px;
+        result.Header.Errors = string.Join(", ", headerErrors);
 
-                font-weight: bold;
-              }
 
-              .colon {
-                width: 5px;
-              }
 
-              .qr {
-                text-align: right;
-              }
+        #endregion
 
-              .qr img {
-                width: 95px;
-                height: 95px;
+        #region DETAIL
 
-              }
+        int startRow = 6;
 
-              /* ===== FOOTER ===== */
-              .footer {
-                background: #fff;
-                border-top: 1px solid #000;
-              }
-
-              .footer td {
-                width: 50%;
-                padding: 3px 4px;
-              }
-
-              .footer td:first-child {
-                border-right: 1px solid #000;
-              }
-
-              .footer-title {
-              margin-top: 2px;
-                font-size: 7px;
-                font-weight: bold;
-              }
-
-              .footer-value {
-                margin-top: 8px;
-            	 font-size: 10px;
-                font-weight: bold;
-              }
-                        </style>
-                    </head>
-                    <body>
-            """);
-
-        foreach (var chunk in labelHtmls.Chunk(8))
+        for (int row = startRow; row <= lastRow; row++)
         {
-            sb.Append("<div class='page'>");
-
-            foreach (var label in chunk)
+            var detail = new ReceiptDetailImport
             {
-                sb.Append("<div class='label'>");
-                sb.Append(label);
-                sb.Append("</div>");
+                RowNumber = row
+            };
+
+            string po = ws.Cell(row, 1).GetValue<string>()?.Trim();
+            string item = ws.Cell(row, 2).GetValue<string>()?.Trim();
+            string qtyText = ws.Cell(row, 3).GetValue<string>()?.Trim();
+
+            bool allEmpty =
+                string.IsNullOrWhiteSpace(po) &&
+                string.IsNullOrWhiteSpace(item) &&
+                string.IsNullOrWhiteSpace(qtyText);
+
+            if (allEmpty)
+                continue;
+
+            detail.PONumber = po;
+            detail.ItemCode = item;
+
+
+
+            // Required Validation
+            if (string.IsNullOrWhiteSpace(po))
+                detail.Errors += $"Row {row}, PO wajib diisi. ";
+
+            if (string.IsNullOrWhiteSpace(item))
+                detail.Errors += $"Row {row}, Item wajib diisi. ";
+
+            // Length Validation
+            if (!string.IsNullOrWhiteSpace(po) && po.Length > 50)
+                detail.Errors += $"Row {row}, PO maksimal 50 karakter. ";
+
+            if (!string.IsNullOrWhiteSpace(item) && item.Length > 25)
+                detail.Errors += $"Row {row}, Item maksimal 25 karakter. ";
+
+            // Qty Validation
+            if (!decimal.TryParse(qtyText, out decimal qty))
+            {
+                detail.Errors += $"Row {row}, Qty harus berupa angka. ";
+            }
+            else
+            {
+                detail.ReceiptQty = qty;
+
+                if (qty <= 0)
+                    detail.Errors += $"Row {row}, Qty harus lebih besar dari 0. ";
             }
 
-            sb.Append("</div>");
+            // Custom Validation
+            detail.IsValid();
+
+            result.Details.Add(detail);
         }
 
-        sb.Append("""
-                    </body>
-                    </html>
-        """);
+        #endregion
 
-        return sb.ToString();
+        #region VALIDASI AKHIR
+
+        if (!result.Details.Any())
+            throw new Exception("Detail receipt tidak ditemukan.");
+
+        var duplicates = result.Details
+            .GroupBy(x => new
+            {
+                PONumber = x.PONumber?.Trim().ToUpper(),
+                ItemCode = x.ItemCode?.Trim().ToUpper()
+            })
+            .Where(g => g.Count() > 1);
+
+        foreach (var duplicate in duplicates)
+        {
+            foreach (var item in duplicate)
+            {
+                item.Errors += $"Row {item.RowNumber}, PO '{item.PONumber}' dan Item '{item.ItemCode}' duplicate dalam file. ";
+            }
+        }
+
+
+
+        #endregion
+
+        return result;
     }
 
+    [HttpPost("import")]
+    public async Task<IActionResult> Import(ImportModel payload)
+    {
+        try
+        {
+            Stopwatch timer = new();
+            timer.Start();
+
+            // Read Excel
+            var importData = ReadReceiptImport(payload.File);
+
+            #region VALIDASI EXCEL
+
+            bool hasHeaderError =
+                !string.IsNullOrWhiteSpace(importData.Header?.Errors);
+
+            bool hasDetailError =
+                importData.Details.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.Errors));
+
+            if (hasHeaderError || hasDetailError)
+            {
+                timer.Stop();
+
+                return ImportInvalid(
+                    "DATA IMPORT TIDAK VALID",
+                    importData
+                );
+            }
+
+            #endregion
+
+            #region VALIDASI DATABASE
+
+            var dtDetail = DataTableHelper.ToDataTable(importData.Details);
+
+            var validateResult = await _receiptRepository.ValidateImport(
+                importData.Header,
+                dtDetail,
+                Auth.User.UserID);
+
+            // update header
+            if (validateResult.Header != null)
+            {
+                importData.Header.Errors =
+                    validateResult.Header.Errors;
+            }
+
+            // update detail
+            importData.Details = validateResult.Details;
+
+            bool hasDbHeaderError =
+                !string.IsNullOrWhiteSpace(importData.Header?.Errors);
+
+            bool hasDbDetailError =
+                importData.Details.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.Errors));
+
+            if (hasDbHeaderError || hasDbDetailError)
+            {
+                timer.Stop();
+
+                return ImportInvalid(
+                    "DATA IMPORT TIDAK VALID",
+                    importData
+                );
+            }
+
+            #endregion
+
+            #region EXECUTE
+
+            if (payload.Action == "EXECUTE")
+            {
+                await _receiptRepository.Import(
+                    importData.Header,
+                    dtDetail,
+                    Auth.User.UserID,
+                    payload.FactoryCode);
+
+                await _logger.SaveDataLog(new DataLogDto
+                {
+                    DocumentType = "Receipt",
+                    EntityId = importData.Header.DNNumber,
+                    ReferenceId = importData.Header.DNNumber,
+                    Action = DataLogAction.Import,
+                    Activity = "Import Receipt",
+                    Before = null,
+                    After = Newtonsoft.Json.Linq.JObject
+                        .FromObject(importData)
+                        .ToObject<Dictionary<string, object>>()
+                });
+            }
+
+            #endregion
+
+            timer.Stop();
+
+            return Success(importData);
+        }
+        catch (Exception ex)
+        {
+            return Invalid(ex.Message);
+        }
+    }
+
+    [HttpDelete("remove")]
+    public async Task<IActionResult> Remove(long id)
+    {
+        var before = await _receiptRepository.Capture(id);
+
+        await _receiptRepository.Remove(id);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Delete Part Receipt Material",
+            EntityId = id.ToString(),
+            ReferenceId = id.ToString(),
+            Before = before,
+            After = null,
+            Action = DataLogAction.Delete,
+            Activity = "Delete Part Receipt Material"
+        });
+
+        return Success();
+    }
 }
+

@@ -23,7 +23,7 @@ begin
 
 	select 
 		req.RequestId, req.PONumber,  req.PODate, @WarehouseCode WarehouseCode, @WarehouseName WarehouseName, 
-		isnull(mic.ClasificationPart_Cls, '20') ClassificationCode, cls.Description ClassificationName,
+		isnull(mic.Grouping_Class_Part_Code, 'OT') ClassificationCode, cls.Description ClassificationName,
 		req.ItemCode ParentItemCode, mi.Item_Name ParentItemName,
 		bom.Item_Code ChildItemCode, mic.Item_Name ChildItemName,
 		bom.Qty QtyBOM, 
@@ -35,10 +35,10 @@ begin
 	inner join @NewRequest req on bom.Parent_ItemCode = req.ItemCode
 	inner join Item_Master mi on req.ItemCode = mi.Item_Code
 	left join Item_Master mic on bom.Item_Code = mic.Item_Code
-	inner join ClasificationPart_Cls cls on isnull(mic.ClasificationPart_Cls, '20') = cls.ClasificationPart_Cls
+	inner join Grouping_Class_Part cls on isnull(mic.Grouping_Class_Part_Code, 'OT') = cls.Grouping_Class_Part_Code
 	left join PartMaterialRequestHeader_PO pmrh on pmrh.RequestID = req.RequestId
 	LEFT JOIN PartMaterialRequestDetail_PO pmrd
-		ON pmrd.RequestID = pmrh.RequestID and pmrd.AreaCode = isnull(mic.ClasificationPart_Cls, '20')
+		ON pmrd.RequestID = pmrh.RequestID and pmrd.AreaCode = isnull(mic.Grouping_Class_Part_Code, 'OT')
 	left join SS_UserSetup us on pmrh.RegisterUser = us.UserID
 	LEFT JOIN RequestStatusCls reqCls on pmrd.RequestStatusID = reqCls.RequestStatusID
 	LEFT JOIN @tblScan scan on pmrd.RequestDetailID = scan.RequestDetailId and bom.Item_Code = scan.ItemCode

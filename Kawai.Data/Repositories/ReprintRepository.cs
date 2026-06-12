@@ -25,30 +25,18 @@ public class ReprintRepository : IReprintRepository
     public async Task UpdatePrintValue(string keyData, string valueData, string userId)
     {
         string sql = "sp_Wms_Reprint_Update";
-        int i = await _dbExecutor.ExecuteAsync(sql, new { BarcodeNo = keyData , Source = valueData , UserID  = userId });
+        int i = await _dbExecutor.ExecuteAsync(sql, new { BarcodeNo = keyData, Source = valueData, UserID = userId });
     }
 
     public async Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(
     List<string> barcodeNos)
     {
         string sp = "sp_Wms_Reprint_List_ByBarcode";
-
-        var dt = new DataTable();
-        dt.Columns.Add("BarcodeNo");
-
-        foreach (var barcode in barcodeNos)
+        return (await _dbExecutor.QueryListAsync<LabelBarcodeDetailDto>(sp, new
         {
-            dt.Rows.Add(barcode);
-        }
-
-        return (await _dbExecutor.QueryListAsync<LabelBarcodeDetailDto>(
-            sp,
-            new
-            {
-                tableBarcode = dt
-            }
-        )).ToList();
+            tableBarcode = DataTableHelper.ToDataTableSingle(barcodeNos, "BarcodeNo")
+        })).ToList();
     }
 
-        
+
 }

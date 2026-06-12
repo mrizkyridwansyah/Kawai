@@ -55,7 +55,7 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
     public async Task Save(List<PartMaterialRequestBomModel> models, string userId)
     {
         string sp = "sp_Wms_PartMaterialRequestBom_Save";
-        await _dbExecutor.ExecuteAsync(sp, new
+        await _dbExecutor.ExecuteNonTransactionAsync(sp, new
         {
             models[0].WarehouseCode,
             NewRequest = DataTableHelper.ToDataTable(models, ["WarehouseCode"]),

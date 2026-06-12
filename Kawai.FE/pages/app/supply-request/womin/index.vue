@@ -367,7 +367,11 @@ export default {
       this.search();
     },
     check: function (e, item) {
-      item.Selected = e.target.checked;
+      const isChecked = e.target.checked;
+      this.groupLists.forEach((x) => {
+        x.Selected = false;
+      });
+      item.Selected = isChecked;
     },
     newRequest: function () {
       let selected = this.groupLists.filter((x) => x.Selected);

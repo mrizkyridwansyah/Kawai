@@ -18,7 +18,9 @@ public interface IMobileSupplyScanRequestRepository
 
 
     #region AMR
+    Task<SupplyScanRequestAMRDto> GetRequestAMR(string requestNo);
     Task UpdateStatusAMR(string requestNo, string lastStatus);
+    Task SendRequestCancelAMR(string requestNo, string userId);
     Task<Dictionary<string, object>> CaptureStatusAMR(string requestNo);
     #endregion
 }

@@ -115,7 +115,6 @@
                 <th class="text-center">DN Number</th>
                 <th class="text-center">PO Number</th>
                 <th class="text-center">Qty DN</th>
-                <th class="text-center">Qty Scan</th>
                 <th class="text-center">Unit</th>
                 <th class="text-center">Currency</th>
                 <th class="text-center">Price</th>
@@ -232,16 +231,6 @@
                     'table-striped-row':
                       !(item.Qty > item.QtyScan) && idx % 2 === 0,
                   }"
-                  class="text-right"
-                >
-                  {{ $func.formatMoney(item.QtyScan) }}
-                </td>
-                <td
-                  :class="{
-                    'bg-danger': item.Qty > item.QtyScan,
-                    'table-striped-row':
-                      !(item.Qty > item.QtyScan) && idx % 2 === 0,
-                  }"
                 >
                   {{ item.UnitClsDescription }}
                 </td>
@@ -336,7 +325,8 @@
   </v-frame>
   <v-modal title="Detail Receipt" class="modal-lg" id="modal-list-receipt">
     <shared-detail-receipt
-      :receiptDetailId="this.selectedReceiptDetailId"
+      :receiptId="this.selectedReceiptId"
+      :itemCode="this.selectedItemCode"
       :counter="this.counter"
     />
   </v-modal>
@@ -385,7 +375,8 @@ export default {
       ],
     },
     debounce: null,
-    selectedReceiptDetailId: null,
+    selectedReceiptId: null,
+    selectedItemCode: null,
     counter: 0,
     isLoading: false,
     lists: [],
@@ -586,7 +577,8 @@ export default {
       return new Promise((resolve, reject) => {
         this.ds
           .exportExcel(filters)
-          .then((_) => {
+          .then((data) => {
+            if(data) toastInfo(data.Message)
             resolve();
           })
           .catch((err) => {
@@ -596,7 +588,8 @@ export default {
       });
     },
     viewDetail: function (item) {
-      this.selectedReceiptDetailId = item.ReceiptDetailId;
+      this.selectedReceiptId = item.Id;
+      this.selectedItemCode = item.ItemCode;
       this.counter++;
       this.$bvModal.show("modal-list-receipt");
     },

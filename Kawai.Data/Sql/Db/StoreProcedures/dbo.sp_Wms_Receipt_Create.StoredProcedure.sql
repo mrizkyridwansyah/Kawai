@@ -1,5 +1,4 @@
-
-CREATE PROCEDURE [dbo].[sp_Wms_Receipt_Create]
+CREATE  procedure [dbo].[sp_Wms_Receipt_Create]
 	@ReceiptNo		varchar(50),
 	@ReceiptDate	date,
 	@DNNumber		varchar(50),
@@ -17,11 +16,18 @@ CREATE PROCEDURE [dbo].[sp_Wms_Receipt_Create]
 as
 
 begin
-	if @ReceiptDate < cast(getdate() as date)
-	begin
-		raiserror('Receipt Date tidak boleh back date!', 16, 1)
+	--if @ReceiptDate < cast(DAteAdd(day, -1,getdate()) as date)
+	--begin
+	--	raiserror('Receipt Date tidak boleh back date!', 16, 1)
+	--	return
+	--end
+
+
+	if Exists (select top 1 1 from PartReceiptHeader where DNNumber = @DNNumber)
+	BEGIN
+		raiserror('Surat Jalan / DN Number sudah terdaftar pada data receipt yang lain!', 16, 1)
 		return
-	end
+	END
 
 	if exists 
 	(
@@ -111,20 +117,21 @@ begin
 		) res
 		group by res.PONumber, res.ParentItem, res.QtyReceipt
 
-		declare @msg varchar(max)
-		if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
-		begin
-			SELECT @msg = STRING_AGG(
-				PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
-				', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
-			, '; ')
-			FROM @tblPOItemSummaryBOM
-			WHERE QtyMinCanReceipt < QtyReceipt
-			RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
-			return	
-		end
+		-- COMMENT SEMENTARA UNTUK TRIAL
+		--declare @msg varchar(max)
+		--if exists (select 1 from @tblPOItemSummaryBOM where QtyMinCanReceipt < QtyReceipt)
+		--begin
+		--	SELECT @msg = STRING_AGG(
+		--		PONumber + ' (Need: ' + CAST(QtyReceipt AS VARCHAR) +
+		--		', Can: ' + CAST(QtyMinCanReceipt AS VARCHAR) + ')'
+		--	, '; ')
+		--	FROM @tblPOItemSummaryBOM
+		--	WHERE QtyMinCanReceipt < QtyReceipt
+		--	RAISERROR('Material di warehouse subcon tidak mencukupi untuk PO: %s', 16, 1, @msg)
+		--	return	
+		--end
 	end
-	
+
 	begin transaction receiptTransaction
 	begin try
 		DECLARE @registerNox TABLE (RegisterNo VARCHAR(100))
@@ -162,7 +169,7 @@ begin
 			Last_Update, Last_User, Register_Date, BC_Type, BC40_No, BC40_Date, Receipt_Status, No_Register, RefWMSReceiptId, No_Seri
 		)
 		select 
-			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, ISNULL( poh.WHTo ,it.WH_Code), '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
+			@seqNo + ROW_NUMBER() OVER (ORDER BY dtl.Id), hd.SupplierCode, dtl.PONumber, ISNULL(POH.WHTo, it.WH_Code), '' [Address], 'R', @ReceiptDate, dtl.ItemCode, dtl.ReceiptQty, null SerialNoFrom, null SerialNoTo,  
 			dtl.UnitCls, pod.Currency_Code, pod.Price, pod.Price * dtl.ReceiptQty, hd.DNNumber, 0, null DailySeq_No, @Remarks, @Transport,
 			getdate(), @RegisterBy, getdate(), isnull(@BCTypeVal, hd.BCType), hd.BCNumber, hd.BCDate, null Receipt_Status, @registerNo, hd.Id, dtl.NoSeri
 		From PartReceiptHeader hd
@@ -184,5 +191,6 @@ begin
 	end catch
 
 end
- 
 
+/****** Object:  StoredProcedure [dbo].[sp_Wms_Item_Update]    Script Date: 5/22/2026 10:31:34 AM ******/
+SET ANSI_NULLS ON

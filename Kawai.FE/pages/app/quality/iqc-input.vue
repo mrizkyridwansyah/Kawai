@@ -139,7 +139,7 @@
                           item.StatusQC == 'NEW' && (idx+1) % 2 == 0,
                       }"
                     >
-                      {{ item.DNNumber }} {{(idx+1) % 2}}
+                      {{ item.DNNumber }}
                     </td>
                     <td
                       :class="{

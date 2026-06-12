@@ -133,6 +133,7 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
 
         app.$http.post(`/receipt/export/excel-inquiry`, filterExport)
           .then(({ data }) => {
+            console.log(data);
             if (data.Data) {
               const byteCharacters = atob(data.Data); // decode base64
               const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
@@ -152,6 +153,8 @@ export const useReceiptInquiry = defineStore('ReceiptInquiry', {
               URL.revokeObjectURL(url);
 
               resolve();
+            } else if(data.Code == 202) {
+              resolve(data);
             } else {
               reject(data);
             }

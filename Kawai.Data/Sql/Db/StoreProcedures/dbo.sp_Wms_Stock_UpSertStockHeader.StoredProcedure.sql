@@ -1,5 +1,13 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
-create   procedure [dbo].[sp_Wms_Stock_UpSertStockHeader]
+
+
+
+
+create   procedure [sp_Wms_Stock_UpSertStockHeader]
 	@TransDate		date,
 	@RefNo			varchar(50),
 	@WarehouseCode	varchar(25),
@@ -12,14 +20,24 @@ create   procedure [dbo].[sp_Wms_Stock_UpSertStockHeader]
 	@UserId			varchar(25)
 as
 begin
+
+	select 
+		@InventoryQty = TMInventory 
+	From StockHeader 
+	where RefNo = @RefNo 
+	and WarehouseCode = @WarehouseCode 
+	and AreaCode = @AreaCode 
+	and ItemCode = @ItemCode 
+	and LotNo = @LotNo
+
 	if @Type = 'R'
 	begin
-		if exists 
-		(
-			select 1 from StockHeader 
-			where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and ItemCode = @ItemCode and LotNo = @LotNo
-		) 
-		begin		
+		--if exists 
+		--(
+		--	select 1 from StockHeader 
+		--	where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and ItemCode = @ItemCode and LotNo = @LotNo
+		--) 
+		--begin		
 			update StockHeader 
 			set 
 				TMCurrent	= TMCurrent + @QtyTrans, 
@@ -30,8 +48,9 @@ begin
 				LastUpdate	= getdate(),
 				LastUser	= @UserId
 			where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and ItemCode = @ItemCode and LotNo = @LotNo
-		end
-		else 
+		--end
+		--else 
+		if @@ROWCOUNT = 0
 		begin
 			insert into StockHeader 
 			(RefNo, WarehouseCode, AreaCode, ItemCode, LotNo, TMCurrent, TMReceipt, TMInventory, NMPreMonth, NMCurrent, RegisterDate, LastUpdate, LastUser )
@@ -46,12 +65,12 @@ begin
 		--	set @QtyTrans = @QtyTrans * (-1)
 		--end
 
-		if exists 
-		(
-			select 1 from StockHeader 
-			where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and ItemCode = @ItemCode and LotNo = @LotNo
-		) 
-		begin		
+		--if exists 
+		--(
+		--	select 1 from StockHeader 
+		--	where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and ItemCode = @ItemCode and LotNo = @LotNo
+		--) 
+		--begin		
 		PRINT 'SUPPLY'
 
 			update StockHeader 
@@ -64,8 +83,9 @@ begin
 				LastUpdate	= getdate(),
 				LastUser	= @UserId
 			where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and ItemCode = @ItemCode and LotNo = @LotNo
-		end
-		else 
+		--end
+		--else 
+		if @@ROWCOUNT = 0
 		begin
 			insert into StockHeader 
 			(RefNo, WarehouseCode, AreaCode, ItemCode, LotNo, TMCurrent, TMSupply, TMInventory, NMPreMonth, NMCurrent, RegisterDate, LastUpdate, LastUser )
@@ -75,3 +95,5 @@ begin
 	end
 
 end
+
+GO

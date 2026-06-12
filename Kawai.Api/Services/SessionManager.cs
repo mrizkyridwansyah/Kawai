@@ -1,4 +1,4 @@
-﻿using Kawai.Api.Models;
+using Kawai.Api.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -36,17 +36,36 @@ public class SessionManager(Auth auth,
     private readonly string CacheKey = "__session_manager";
     private readonly DbExecutor _dbExecutor = dbExecutor;
 
+    private static readonly object _lock = new();
+
     public List<Session> Sessions
     {
         get
         {
-            if (MemoryCache.Get(CacheKey) is List<Session> existing)
-                return existing;
-            return [];
+            lock (_lock)
+            {
+                if (MemoryCache.Get(CacheKey) is List<Session> existing)
+                {
+                    var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    var valid = existing.Where(s => s.ExpiryDate >= now).ToList();
+                    if (valid.Count != existing.Count)
+                    {
+                        MemoryCache.Set(CacheKey, valid);
+                    }
+                    return valid;
+                }
+                return new List<Session>();
+            }
         }
         set
         {
-            MemoryCache.Set(CacheKey, value);
+            lock (_lock)
+            {
+                var list = value ?? new List<Session>();
+                var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                var valid = list.Where(s => s.ExpiryDate >= now).ToList();
+                MemoryCache.Set(CacheKey, valid);
+            }
         }
     }
 
@@ -93,8 +112,12 @@ public class SessionManager(Auth auth,
             INSERT INTO Sessions (UserId, Date, ExpiryDate, UserAgent, RemoteAddr, Token)
             VALUES (@UserId, @Date, @ExpiryDate, @UserAgent, @RemoteAddr, @Token)", session, commandType: CommandType.Text);
 
-            Sessions.Add(session);
-            MemoryCache.Set(CacheKey, Sessions);
+            var list = Sessions;
+            if (!list.Any(s => s.Token == session.Token))
+            {
+                list.Add(session);
+                Sessions = list;
+            }
 
             return new SessionResult
             {
@@ -134,8 +157,12 @@ public class SessionManager(Auth auth,
             INSERT INTO Sessions (UserId, Date, ExpiryDate, UserAgent, RemoteAddr, Token)
             VALUES (@UserId, @Date, @ExpiryDate, @UserAgent, @RemoteAddr, @Token)", session, commandType: CommandType.Text);
 
-        Sessions.Add(session);
-        MemoryCache.Set(CacheKey, Sessions);
+        var list = Sessions;
+        if (!list.Any(s => s.Token == session.Token))
+        {
+            list.Add(session);
+            Sessions = list;
+        }
 
         return new SessionResult
         {
@@ -156,8 +183,12 @@ public class SessionManager(Auth auth,
         if (session == null)
             return new SessionResult { IsSucceeded = false };
 
-        Sessions.Add(session);
-        MemoryCache.Set(CacheKey, Sessions);
+        var list = Sessions;
+        if (!list.Any(s => s.Token == session.Token))
+        {
+            list.Add(session);
+            Sessions = list;
+        }
 
         return new SessionResult
         {
@@ -211,11 +242,12 @@ public class SessionManager(Auth auth,
 
     public void RemoveSession(string token)
     {
-        var session = Sessions.FirstOrDefault(p => p.Token == token);
+        var list = Sessions;
+        var session = list.FirstOrDefault(p => p.Token == token);
         if (session != null)
         {
-            Sessions.Remove(session);
-            MemoryCache.Set(CacheKey, Sessions);
+            list.Remove(session);
+            Sessions = list;
         }
     }
 }

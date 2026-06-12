@@ -19,7 +19,7 @@
           @search-change="search"
           @open="open"
           :select="change"
-          :class="cClass || 'input-wrapper'"
+          :class="cClass || ''"
           :multiple="multiple !== undefined || false"
           :disabled="disabled !== undefined || false"
           select-label=""

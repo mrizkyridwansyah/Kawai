@@ -37,7 +37,10 @@ begin
 		iqch.StatusQC
 	from IQC_Inspection_Header iqch
 	inner join PartReceiptHeader prh on iqch.ReceiptNo = prh.ReceiptNo
-	inner join PartReceiptDetail pdtl on pdtl.ReceiptId = prh.Id and isnull(pdtl.PONumber, '') = iqch.PO_Number and pdtl.ItemCode = iqch.ItemCode
+	inner join 
+	(
+		select ReceiptId, ItemCode, sum(ReceiptQty) ReceiptQty From PartReceiptDetail group by ReceiptId, ItemCode
+	) pdtl on pdtl.ReceiptId = prh.Id and pdtl.ItemCode = iqch.ItemCode
 	inner join Trade_Master sp on iqch.SupplierCode = sp.Trade_Code
 	inner join Item_Master mi on iqch.ItemCode = mi.Item_Code
 	inner join Unit_Cls uc on mi.Unit_Cls = uc.Unit_Cls

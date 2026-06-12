@@ -56,10 +56,10 @@ begin
 		, DisposalCls		
 		, StatusReceipt	
 		, Picking_No
-		, RegisterDate	
-		, RegisterUser	
-		, Lastupdate		
-		, LastUser		
+		, getdate()	
+		, @UserId	
+		, getdate()	
+		, @UserId	
 	from StockDetail
 	where RefNo = @RefNo
 	and isnull(Qty, 0) > 0
@@ -81,6 +81,10 @@ begin
 		ROW_NUMBER() over (order by LotNo), RefNo, WarehouseCode, AreaCode, ItemCode, LotNo, sum(Qty) TotalQtyDetail, sum(InventoryQty) TotalIvtQtyDetail 
 	From StockDetail
 	where RefNo = @RefNo
+	and 
+	(
+		@RefNo <> isnull(@ToRefNo, @RefNo) OR WarehouseCode <> @ToWarehouseCode OR AreaCode <> @ToAreaCode
+	)
 	and isnull(Qty, 0) > 0
 	group by RefNo, WarehouseCode, AreaCode, ItemCode, LotNo
 
@@ -103,12 +107,19 @@ begin
 
 		exec sp_Wms_Stock_UpSertStockHeader @TransDate, @RefNo, @WarehouseCode, @AreaCode, @ItemCode, @LotNo, @Qty, @InventoryQty, 'S', @UserId
 
+		IF @ToRefNo IS NULL
+		BEGIN
+			SET @ToRefNo = @RefNo
+		END
+
+		exec sp_Wms_Stock_UpSertStockHeader @TransDate, @ToRefNo, @ToWarehouseCode, @ToAreaCode, @ItemCode, @LotNo, @Qty, @InventoryQty, 'R', @UserId
+
 		set @i += 1
 	end
 
 	update StockDetail 
 	set 
-		Qty = 0, InventoryQty = case when InventoryQty is null then null else 0 end
+		Qty = 0, InventoryQty = case when InventoryQty is null then null else 0 end, Lastupdate = getdate(), LastUser = @UserId
 	where RefNo = @RefNo
 	and isnull(Qty, 0) > 0
 
@@ -186,16 +197,6 @@ begin
 			, sc.LastUser		
 		);
 
-	delete from @tblStockHeader
-
-	insert into @tblStockHeader
-	select 
-		ROW_NUMBER() over (order by LotNo), RefNo, WarehouseCode, AreaCode, ItemCode, LotNo, sum(Qty) TotalQtyDetail, sum(InventoryQty) TotalIvtQtyDetail 
-	From StockDetail
-	where RefNo = @RefNo
-	and isnull(Qty, 0) > 0
-	group by RefNo, WarehouseCode, AreaCode, ItemCode, LotNo
-
 	update so 
 		set 
 			RefNo = sd.RefNo, 
@@ -207,20 +208,7 @@ begin
 	from StockOpname so
 	inner join 
 	(
-		select * From StockDetail where RefNo = @RefNo and isnull(Qty, 0) > 0
+		select * From StockDetail where RefNo = @ToRefNo and isnull(Qty, 0) > 0
 	) sd on so.BarcodeNo = sd.BarcodeNo and so.LotNo = sd.LotNo and so.ItemCode = sd.ItemCode	
-
-	set @i = 1
-	while @i <= (select count(1) from @tblStockHeader)
-	begin
-		select 
-			@WarehouseCode = WarehouseCode, @AreaCode = AreaCode, @ItemCode = ItemCode, @LotNo = LotNo, 
-			@Qty = TotalQty, @InventoryQty = case when TotalInventoryQty is null then null else TotalInventoryQty end
-		from @tblStockHeader where Urutan = @i
-
-		exec sp_Wms_Stock_UpSertStockHeader @TransDate, @RefNo, @WarehouseCode, @AreaCode, @ItemCode, @LotNo, @Qty, @InventoryQty, 'R', @UserId
-
-		set @i += 1
-	end
 end
 GO

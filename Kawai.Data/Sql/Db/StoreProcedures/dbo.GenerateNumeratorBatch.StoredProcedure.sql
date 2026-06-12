@@ -1,37 +1,43 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE PROCEDURE [GenerateNumeratorBatch]
+
+CREATE PROCEDURE [dbo].[GenerateNumeratorBatch]
     @Prefix VARCHAR(50),
-	@RowCount INT = 1,
-    @LastSequence INT OUTPUT
+    @RowCount INT = 1,
+    @LastSequence INT OUTPUT 
 AS
 BEGIN
     SET NOCOUNT ON;
 
-	BEGIN TRY
-		BEGIN TRAN
+    -- Validasi proteksi: Pastikan kuota yang direquest minimal 1
+    IF @RowCount < 1 SET @RowCount = 1;
 
-		SET @LastSequence = (SELECT LastSeq FROM LastSequence WITH (HOLDLOCK, UPDLOCK) WHERE Prefix = @Prefix);
-		DECLARE @NewSeq INT = ISNULL(@LastSequence, 0) + @RowCount;
+    -- Atomic Update: Ambil nilai saat ini sebagai titik awal, lalu tambahkan kuota
+    UPDATE LastSequence 
+    SET @LastSequence = LastSeq, 
+        LastSeq = LastSeq + @RowCount 
+    WHERE Prefix = @Prefix;
 
-		IF NOT EXISTS (SELECT 1 FROM LastSequence WHERE Prefix = @Prefix)
-		BEGIN
-			INSERT INTO LastSequence(Prefix, LastSeq) VALUES (@Prefix, @NewSeq);
-		END
-		ELSE
-		BEGIN
-			UPDATE LastSequence SET LastSeq = @NewSeq WHERE Prefix = @Prefix;
-		END
-
-		COMMIT TRAN
-	END TRY
-    BEGIN CATCH
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRAN;
-
-        THROW;
-    END CATCH
+    -- Jika Prefix belum terdaftar di tabel
+    IF @@ROWCOUNT = 0
+    BEGIN
+        SET @LastSequence = 0; -- Mulai dari 0 agar pemanggil menggunakan range 1 s/d RowCount
+        
+        BEGIN TRY
+            INSERT INTO LastSequence (Prefix, LastSeq) 
+            VALUES (@Prefix, @RowCount);
+        END TRY
+        BEGIN CATCH
+            -- Tangani Race Condition: Jika Thread lain keduluan melakukan INSERT
+            IF ERROR_NUMBER() IN (2601, 2627)
+            BEGIN
+                UPDATE LastSequence 
+                SET @LastSequence = LastSeq, 
+                    LastSeq = LastSeq + @RowCount 
+                WHERE Prefix = @Prefix;
+            END
+            ELSE
+            BEGIN
+                ;THROW
+            END
+        END CATCH
+    END
 END
-GO

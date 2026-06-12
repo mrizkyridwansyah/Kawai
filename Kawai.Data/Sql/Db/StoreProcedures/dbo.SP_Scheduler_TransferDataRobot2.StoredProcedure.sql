@@ -1,6 +1,8 @@
 
 
 create   procedure [dbo].[SP_Scheduler_TransferDataRobot2]
+	@RefNumber varchar(100),
+	@UserId varchar(25)
 AS
 
 BEGIN
@@ -37,7 +39,7 @@ FROM
         Seq,
         RequestStatusID
     FROM PartMaterialRequestDetail
-	WHERE RequestStatusID = 5
+	WHERE RefNumber = @RefNumber and RequestStatusID = 5
 ) dtl
 INNER JOIN PartMaterialRequestHeader hd 
 	ON dtl.RequestID = hd.RequestID
@@ -71,9 +73,9 @@ SELECT
 	ParentItemCode, 
 	TrolleyCls,
     GETDATE(),
-    'Scheduller',
+    @UserId,
     GETDATE(),
-    'Scheduller'
+    @UserId
 fROM @TableMain ORDER BY RefNo
 
 INSERT INTO PartMaterialRequestSendRobotDetail
@@ -93,9 +95,9 @@ SELECT
     StopPointCode,
     PickingSeq,
     GETDATE(),
-    'Scheduller',
+    @UserId,
     GETDATE(),
-    'Scheduller',
+    @UserId,
     0,
 	IsCurrentProcessManual
 FROM

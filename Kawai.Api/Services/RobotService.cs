@@ -22,6 +22,7 @@ public class RobotService : IRobotService
     private readonly ILogger<RobotService> _logger;
     private readonly IMobileLoadingTrolleyRepository _loadingTrolleyRepository;
     private readonly IMobileSupplyScanRequestRepository _supplyScanRequestRepository;
+    private readonly IMobileManualTrolleyAssignRepository _manualTrolleyAssignRepository;
     private readonly IRobotRepository _robotRepository;
 
     public RobotService
@@ -29,6 +30,7 @@ public class RobotService : IRobotService
         IHttpClientFactory factory,
         IMobileLoadingTrolleyRepository loadingTrolleyRepository,
         IMobileSupplyScanRequestRepository supplyScanRequestRepository,
+        IMobileManualTrolleyAssignRepository manualTrolleyAssignRepository,
         IRobotRepository robotRepository,
         ILogger<RobotService> logger,
         DataLogger changeDataLogger
@@ -37,6 +39,7 @@ public class RobotService : IRobotService
         _client = factory.CreateClient("robot");
         _loadingTrolleyRepository = loadingTrolleyRepository;
         _supplyScanRequestRepository = supplyScanRequestRepository;
+        _manualTrolleyAssignRepository = manualTrolleyAssignRepository;
         _robotRepository = robotRepository;
         _logger = logger;
         _changeDataLogger = changeDataLogger;
@@ -63,7 +66,7 @@ public class RobotService : IRobotService
             string trolleyNo = results.First().TrolleyNo;
             if (!string.IsNullOrWhiteSpace(trolleyNo))
             {
-                _logger.LogError($"Request No {requestNo} already has trolley number {trolleyNo} in robot request data.");
+                _logger.LogWarning($"Request No {requestNo} already has trolley number {trolleyNo} in robot request data.");
                 return;
             }
 
@@ -112,14 +115,20 @@ public class RobotService : IRobotService
                 options
             );
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
 
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
@@ -197,14 +206,14 @@ public class RobotService : IRobotService
 
             if (request.IsComplete)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} status AMR already complete.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} status AMR already complete.");
                 return;
             }
 
             // Return kalo status nya manual karena di sp updatestatusamr ada update current process manual jadi false biar asal update + biar ga banyak job nya
             if (request.IsManual)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} current status is manual.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} current status is manual.");
                 return;
             }
 
@@ -225,14 +234,20 @@ public class RobotService : IRobotService
 
             var response = await _client.PostAsJsonAsync("/api/robot/complete-status", newPayload, options);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
 
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
@@ -307,14 +322,14 @@ public class RobotService : IRobotService
 
             if (request.IsComplete)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} status AMR already complete.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} status AMR already complete.");
                 return;
             }
 
             // Return kalo status nya bukan manual biar ga banyak job nya
             if (!request.IsManual)
             {
-                _logger.LogError($"Request No {payload.RequestSendID} current status already use AMR.");
+                _logger.LogWarning($"Request No {payload.RequestSendID} current status already use AMR.");
                 return;
             }
 
@@ -333,27 +348,33 @@ public class RobotService : IRobotService
 
             var response = await _client.PostAsJsonAsync("/api/robot/complete-status-special", newPayload);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
-
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
 
-            var before = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
+            var before = await _manualTrolleyAssignRepository.CaptureStatusAMR(payload.RequestSendID);
 
-            await _loadingTrolleyRepository.UpdateStatusAMR(payload.RequestSendID, payload.StopPoint, message);
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(payload.RequestSendID, payload.TrolleyNo, message);
 
-            var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
+            var after = await _manualTrolleyAssignRepository.CaptureStatusAMR(payload.RequestSendID);
 
             await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
             {
-                DocumentType = "Robot - Send Request Complete Loading",
+                DocumentType = "Robot - Send Request Complete Loading Special",
                 EntityId = payload.RequestSendID + "|" + payload.StopPoint,
                 ReferenceId = payload.RequestSendID + "|" + payload.StopPoint,
                 Before = before,
@@ -374,9 +395,9 @@ public class RobotService : IRobotService
 
             _logger.LogWarning(ex, "Timeout sending robot request for {PickingNo}", payload.RequestSendID);
 
-            await HandleFailureCompleteLoading(
+            await HandleFailureCompleteLoadingSpecial(
                 payload.RequestSendID,
-                payload.StopPoint,
+                payload.TrolleyNo,
                 message
             );
 
@@ -386,9 +407,9 @@ public class RobotService : IRobotService
         {
             _logger.LogError(ex, "Error sending robot request for PickingNo {PickingNo}", payload.RequestSendID);
 
-            await HandleFailureCompleteLoading(
+            await HandleFailureCompleteLoadingSpecial(
                 payload.RequestSendID,
-                payload.StopPoint,
+                payload.TrolleyNo,
                 ex.Message
             );
 
@@ -397,11 +418,6 @@ public class RobotService : IRobotService
     }
 
 
-    [AutomaticRetry(
-        Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
-        OnAttemptsExceeded = AttemptsExceededAction.Fail
-    )]
     public async Task CancelRequest(string requestNo, string trolleyNo)
     {
         try
@@ -421,34 +437,25 @@ public class RobotService : IRobotService
 
             var response = await _client.PostAsJsonAsync("/api/robot/cancel-request", payload);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
             var result = await response.Content
                 .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(message);
-
             if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
                 throw new Exception(message);
 
-            //var before = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
-
-            //await _loadingTrolleyRepository.UpdateStatusAMR(payload.RequestSendID, message);
-
-            //var after = await _loadingTrolleyRepository.CaptureStatusAMR(payload.RequestSendID, payload.StopPoint);
-
-            //await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
-            //{
-            //    DocumentType = "Robot - Send Request Complete Loading",
-            //    EntityId = payload.RequestSendID + "|" + payload.StopPoint,
-            //    ReferenceId = payload.RequestSendID + "|" + payload.StopPoint,
-            //    Before = before,
-            //    After = after,
-            //    Action = DataLogAction.Update,
-            //    Activity = "Send Request Complete Loading By Robot"
-            //}, "CancelRequest");
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(payload.RequestSendID, payload.TrolleyNo, message);
 
             _logger.LogInformation(
                 "Robot API success for {PickingNo}. Message: {Message}",
@@ -462,11 +469,16 @@ public class RobotService : IRobotService
 
             _logger.LogWarning(ex, "Timeout sending robot request for {PickingNo}", requestNo);
 
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(requestNo, trolleyNo, message);
+
             throw; // tetap retry
         }
         catch (Exception ex)
         {
+            await _manualTrolleyAssignRepository.UpdateStatusAMR(requestNo, trolleyNo, ex.Message);
+
             _logger.LogError(ex, "Error sending robot request for PickingNo {PickingNo}", requestNo);
+
             throw;
         }
     }
@@ -516,6 +528,32 @@ public class RobotService : IRobotService
             Action = DataLogAction.Update,
             Activity = "Send Request Complete Loading By Robot"
         }, "CompleteLoading");
+
+        _logger.LogError(
+            "Robot request failed for {PickingNo}. Message: {Message}",
+            pickingNo,
+            message
+        );
+    }
+
+    private async Task HandleFailureCompleteLoadingSpecial(string pickingNo, string trolleyNo, string message)
+    {
+        var before = await _manualTrolleyAssignRepository.CaptureStatusAMR(pickingNo);
+
+        await _manualTrolleyAssignRepository.UpdateStatusAMR(pickingNo, trolleyNo, message);
+
+        var after = await _manualTrolleyAssignRepository.CaptureStatusAMR(pickingNo);
+
+        await _changeDataLogger.SaveDataLogByRobot(new DataLogDto
+        {
+            DocumentType = "Robot - Send Request Complete Loading Special",
+            EntityId = pickingNo,
+            ReferenceId = pickingNo,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update,
+            Activity = "Send Request Complete Loading By Robot"
+        }, "CompleteLoadingSpecial");
 
         _logger.LogError(
             "Robot request failed for {PickingNo}. Message: {Message}",

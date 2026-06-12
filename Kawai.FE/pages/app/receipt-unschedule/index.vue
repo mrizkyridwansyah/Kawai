@@ -175,15 +175,22 @@
         <tr>
           <td colspan="2" style="padding-top: 5px">
             <div class="d-flex flex-fill">
-              <v-button-add :add="add" cClass="mr-1" />
+              <v-button-add :add="add" cClass="ml-1" />
               <v-button-submit
                 :submit="submit"
-                cClass="mr-1"
+                cClass="ml-1"
+                :is-loading="isLoading"
+              />
+                <v-button
+               :action="remove"
+                label="Delete"
+                icon="trash"
+                cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
               />
               <v-button-print
                 label="Print Label"
-                class="mr-1"
+                class="ml-1"
                 :print="printLabel"
                 :is-loading="isLoading"
               />
@@ -192,7 +199,7 @@
                 :action="printBarcodesUsingJob"
                 label="Print Label PDF"
                 icon="file-pdf"
-                cClass="btn-green"
+                cClass="ml-1 btn-green"
                 :is-loading="isLoading"
               />
             </div>
@@ -445,6 +452,37 @@ export default {
         ? structuredClone(obj)
         : JSON.parse(JSON.stringify(obj));
     },
+
+    remove: function () {
+       
+      if (!this.filter.ReceiptId) {
+        toastDanger("Silahkan pilih Receipt No!");
+        return;
+      }
+
+      confirmRemove(
+        () =>
+          new Promise((resolve, reject) => {
+            this.dsReceipt
+              .remove( this.filter.ReceiptId)
+              .then((dt) => {
+                toastSuccess("Data deleted successfully!");
+                resolve();
+                this.reset();
+              })
+              .catch((err) => {
+                this.errors = err?.Errors;
+                resolve();
+                toastDanger(err?.Message);
+              });
+          }),
+        null,
+        
+        "",
+      );
+    },
+
+
     add: function () {
       let lastNoSeriInGrid = this.items.filter((p) => (p.NoSeri ?? 0) > 0);
       if (lastNoSeriInGrid.length > 0) {

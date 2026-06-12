@@ -1,6 +1,14 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 
-create   procedure [dbo].[sp_Wms_Stock_UpSertStockDetail]
+
+
+
+
+create   procedure [sp_Wms_Stock_UpSertStockDetail]
 	@RefNo			varchar(50),
 	@WarehouseCode	varchar(25),
 	@AreaCode		varchar(25),
@@ -16,13 +24,13 @@ create   procedure [dbo].[sp_Wms_Stock_UpSertStockDetail]
 	@StatusHoldNG	varchar(50) = null
 as
 begin
-	if exists 
-	(
-		select 1 from StockDetail 
-		where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and AddressCode = @AddressCode 
-		and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
-	) 
-	begin
+	--if exists 
+	--(
+	--	select 1 from StockDetail 
+	--	where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and AddressCode = @AddressCode 
+	--	and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
+	--) 
+	--begin
 		update StockDetail 
 		set 
 			Qty = @QtyAfter, InventoryQty = @InventoryQty, Lastupdate = getdate(), LastUser = @UserId, 
@@ -31,8 +39,9 @@ begin
 		where RefNo = @RefNo and WarehouseCode = @WarehouseCode and AreaCode = @AreaCode and AddressCode = @AddressCode 
 		and BarcodeNo = @BarcodeNo and ItemCode = @ItemCode and LotNo = @LotNo
 		--and Qty >= @QtyAfter
-	end
-	else 
+	--end
+	--else 
+	if @@ROWCOUNT = 0
 	begin
 		insert into StockDetail (RefNo, WarehouseCode, AreaCode, AddressCode, BarcodeNo, ItemCode, LotNo, SublotNo, Qty, InventoryQty, StatusReceipt, StatusHoldNG, RegisterDate, RegisterUser)
 		values (@RefNo, @WarehouseCode, @AreaCode, @AddressCode, @BarcodeNo, @ItemCode, @LotNo, @SublotNo, @QtyAfter, @InventoryQty, @StatusReceipt, @StatusHoldNG, getdate(), @UserId)
@@ -48,3 +57,5 @@ begin
 			LastUser = @UserId
 	where BarcodeNo = @BarcodeNo and LotNo = @LotNo and ItemCode = @ItemCode
 end
+
+GO

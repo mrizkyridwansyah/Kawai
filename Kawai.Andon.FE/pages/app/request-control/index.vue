@@ -143,6 +143,7 @@
 <script>
 export default {
   data: () => ({
+    isLoading: false,
     summary: {
       total: 0,
       womin: 0,
@@ -177,12 +178,13 @@ export default {
   },
   methods: {
     search: function () {
-      let filters = [
-        {
-          AreaCode: this.filter.area || "",
-        },
-      ];
-      this.ds.load(this.filter.area);
+      if (this.isLoading) {
+        console.log("masih loading bro!");
+        return;
+      }
+
+      this.isLoading = true;
+
       this.ds
         .load(this.filter.area)
         .then((dt) => {
@@ -204,7 +206,7 @@ export default {
         })
         .catch((err) => {
           console.error("Error loading data:", err);
-        });
+        }).finally(() => (this.isLoading = false));
 
       if (this.filter.area != null) {
         //header-panel change text to "Remaining Item" dan nama area bukan codenya

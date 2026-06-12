@@ -16,6 +16,12 @@ BEGIN
 		return
 	end
 
+	if exists (select 1 From PartMaterialRequestDetail where RefNumber = @RequestID and IsCurrentProcessManual = 1)	
+	begin
+		raiserror('Data Request sedang diproses manual!',16,1)
+		return
+	end
+
 	if exists (select 1 From PartMaterialRequestDetail where RefNumber = @RequestID and isnull(Trolley_No, @TrolleyNo) <> @TrolleyNo)	
 	begin
 		raiserror('Data Request sudah di set dengan Trolley berbeda!',16,1)
@@ -29,6 +35,9 @@ BEGIN
 		raiserror(@msg,16,1)
 		return
 	end
+
+	insert into AMRRequestHistory (RequestNo, FromData, ToData, [Action], SourceAction, StatusAMR, RegisterDate, RegisterUser)
+	values (@RequestID, @TrolleyNo, @TrolleyNo, 'SET TROLLEY BY AMR', 'sp_Wms_Robot_SetTrolley', @Status, GETDATE(), 'Robot')
 
 	update PartMaterialRequestDetail set Trolley_No = @TrolleyNo, LastUpdate = GETDATE(), StatusAMR = @Status --, LastUser = @RobotCode 
 	where RefNumber = @RequestID and Trolley_No IS NULL

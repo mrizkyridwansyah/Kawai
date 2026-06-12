@@ -38,8 +38,8 @@ begin
 		return
 	end
 
-	declare @ReceiptId bigint, @DNNumber varchar(50), @PONumber varchar(100), @ItemCode varchar(25), @factoryCode varchar(25), @SupplierCode varchar(25)
-	select @ReceiptId = pr.ReceiptId, @DNNumber = prh.DNNumber, @PONumber = pr.PONumber, @ItemCode = pr.ItemCode, @factoryCode = prh.CompanyCode, @SupplierCode = prh.SupplierCode
+	declare @ReceiptId bigint, @DNNumber varchar(50), @ReceiptNo varchar(100), @ItemCode varchar(25), @factoryCode varchar(25), @SupplierCode varchar(25)
+	select @ReceiptId = pr.ReceiptId, @DNNumber = prh.DNNumber, @ReceiptNo = prh.ReceiptNo, @ItemCode = pr.ItemCode, @factoryCode = prh.CompanyCode, @SupplierCode = prh.SupplierCode
 	From PartReceiptDetailBarcode pr
 	inner join PartReceiptHeader prh on prh.Id = pr.ReceiptId
 	where BarcodeNo = @BarcodeNo
@@ -58,17 +58,18 @@ begin
 	(
 		select 1 from IQC_SamplingBarcodeDetail dtl
 		inner join IQC_Inspection_Header hd on dtl.InspectionID = hd.InspectionID 
-		where hd.PO_Number = @PONumber 
+		where hd.ReceiptNo = @ReceiptNo 
 		and hd.ItemCode = @ItemCode 
 		and hd.Soruce = 'Material NG' 
 		and hd.StatusQC = 'CONFIRMED'
 	)
 	begin
-		raiserror('Material NG dari PO barcode ini sudah diconfirm!', 16,1)
+		raiserror('Material NG dari DN barcode ini sudah diconfirm!', 16,1)
 		return
 	end
 
-	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Material NG')
+
+	declare @InspectionId bigint = (select InspectionID from IQC_Inspection_Header where ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Material NG')
 
 	declare @transDate date = getdate()
 	declare @prefixFactory varchar(5) = (select PrefixGlobalBarcode from Company_Profile where Company_Code = @factoryCode)
@@ -76,9 +77,21 @@ begin
 	declare @prefixPallet varchar(20) = 'PLT.' + FORMAT(GETDATE(), 'yyyyMMdd') + '.'
 	DECLARE	@NewRefNo varchar(50), @NewBarcodePartialNG varchar(50)
 
+
+	if not exists (select 1 from IQC_SamplingBarcodeDetail where InspectionID = @InspectionId and BarcodeNo = @BarcodeNo)
+	begin
+		if @QtyNG < @Qty
+		begin
+			EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcodePartialNG OUTPUT;
+		end
+
+		EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
+	end
+
+				
 	begin transaction ngTransaction
 	begin try
-		if not exists (select 1 from IQC_Inspection_Header where PO_Number = @PONumber and ItemCode = @ItemCode and Soruce = 'Material NG')
+		if not exists (select 1 from IQC_Inspection_Header where ReceiptNo = @ReceiptNo and ItemCode = @ItemCode and Soruce = 'Material NG')
 		begin
 			insert into IQC_Inspection_Header 
 			(
@@ -123,10 +136,7 @@ begin
 		if not exists (select 1 from IQC_SamplingBarcodeDetail where InspectionID = @InspectionId and BarcodeNo = @BarcodeNo)
 		begin
 			-- PARTIAL NG			if @QtyNG < @Qty
-			begin
-				EXEC dbo.GenerateNumerator @Prefix = @prefixBarcode, @LengthSequence = 4, @Result = @NewBarcodePartialNG OUTPUT;
-				EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
-			
+			begin			
 				insert into ReceiptSupplyHistory 
 				(
 					[Status], ProcessMenu, RefNo, 
@@ -153,7 +163,7 @@ begin
 				values (@warehouse, 'TMP', 'TMP', @NewBarcodePartialNG, @BarcodeNo, @ItemCode, @lotNo, @QtyNG, 0, null, getdate(), @UserId)
 
 				insert into BarcodeNGDetail (ReceiptId, DNNumber, SupplierCode, ItemCode, PONumber, BarcodeOriginal, BarcodeNew, QtyNG)
-				values (@ReceiptId, @DNNumber, @SupplierCode, @ItemCode, @PONumber, @BarcodeNo, @NewBarcodePartialNG, @QtyNG)
+				values (@ReceiptId, @DNNumber, @SupplierCode, @ItemCode, null, @BarcodeNo, @NewBarcodePartialNG, @QtyNG)
 
 				insert into ReceiptSupplyHistory 
 				(
@@ -185,8 +195,6 @@ begin
 					@QtyNG, 'Material NG Process', cast(@InspectionId as varchar), getdate(), @UserId
 				)
 
-				EXEC dbo.GenerateNumerator @Prefix = @prefixPallet, @LengthSequence = 4, @Result = @NewRefNo OUTPUT;	
-				
 				EXEC sp_Wms_Stock_UpSertStockDetail @refNo, @warehouse, @area, @address, @ItemCode, @BarcodeNo, @lotNo, 0, NULL, NULL, @UserId, 'HOLD', 'Process'
 				EXEC sp_Wms_Stock_UpSertStockHeader @transDate, @refNo, @warehouse, @area, @ItemCode, @lotNo, @Qty, NULL, 'S', @UserId
 
