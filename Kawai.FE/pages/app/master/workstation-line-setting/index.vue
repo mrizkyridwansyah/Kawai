@@ -86,7 +86,7 @@
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
-            style="width: 100%"
+              style="table-layout:auto; "
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
           >
@@ -133,7 +133,7 @@
                       v-model="item.StopPointCode"
                        :include-temp="true"
                       :errors="item.errors?.StopPointCode"
-                      style-code="width:150px"
+                      style-code="width:200px"
                       @update:modelValue="
                         (value) => onStopPointChange(value, item)
                       "
@@ -146,7 +146,7 @@
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode2"
-                      style-code="width:150px"
+                      style-code="width:200px"
                       :include-temp="true"
                       :errors="item.errors?.StopPointCode2"
                       @update:modelValue="
@@ -161,7 +161,7 @@
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode3"
-                       style-code="width:150px"
+                       style-code="width:200px"
                       :include-temp="true"
                       :errors="item.errors?.StopPointCode3"
                       @update:modelValue="
