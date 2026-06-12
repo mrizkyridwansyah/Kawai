@@ -9,4 +9,5 @@ public class ProductionQualityJudgementModel
     public DateTime ScheduleDate { get; set; }
     public string ItemCode { get; set; }
     public string ResultType { get; set; }
+    public string BarcodeNo { get; set; }
 }

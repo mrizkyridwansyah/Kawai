@@ -84,8 +84,8 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :default-height="320"
-          :max-height="320"
+        :default-height="120"
+          :max-height="120"
       >
      
         <template #table-content>
@@ -125,15 +125,19 @@
                   <td>{{ item.ItemName }}</td>
                   <td>{{ item.UnitClsDesc }}</td>
                   <td>{{ item.LotNo }}</td>
-                  <td><input-checkbox
-                        v-model="item.Good"
-                        @click="(e) => check(e, item, 'Good')"
-                      />
-                  </td>
                   <td>
-                  <input-checkbox
+                    <input-checkbox
+                      v-model="item.Good"
+                      :disabled="item.SavedGood || item.SavedNG"
+                      @click="check(item, 'Good')"
+                    />
+                  </td>
+
+                  <td>
+                    <input-checkbox
                       v-model="item.NG"
-                      @click="(e) => check(e, item, 'NG')"
+                      :disabled="item.SavedGood || item.SavedNG"
+                      @click="check(item, 'NG')"
                     />
                   </td>
                   <td>{{ item.LastUpdate }}</td>
@@ -240,27 +244,27 @@ export default {
       );
 
       if (new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)) {
-        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
+        toastWarning("The From Period cannot exceed the To Period.");
         return;
       }
 
       if (rangePeriodDays > 30) {
-        toastWarning("Jarak Periode hanya 30 hari.");
+        toastWarning("Period Distance is only 30 days.");
         return;
       }
 
       if(!this.filter.ManufactureCode) {
-        toastWarning("Silahkan pilih process.");
+        toastWarning("Please select process.");
         return;
       }
 
       if(!this.filter.LineCode) {
-        toastWarning("Silahkan pilih line.");
+        toastWarning("Please select line.");
         return;
       }
 
       if(!this.filter.CompleteCls) {
-        toastWarning("Silahkan pilih filter Complete.");
+        toastWarning("Please select Complete.");
         return;
       }
 
@@ -284,46 +288,25 @@ export default {
         },
       ];
       this.ds.setFilter(filters);
-      this.ds.load().then((dt) => {
-        let grouped = {};
 
-        dt.Data.Items.forEach((item) => {
-          let key = [
-            item.ProductionId,
-            item.ScheduleDate,
-            item.ItemCode,
-            item.ItemName,
-            item.UnitClsDesc,
-            item.PlanQty,
-          ].join("|");
+this.ds.load().then((dt) => {
 
-          if (!grouped[key]) {
-            let totalResultQty = dt.Data.Items.filter(
-              (x) => x.ProductionId == item.ProductionId && x.ProdResultId != null
-            ).reduce((a, b) => a + (b.ResultQty || 0), 0);
+  console.log("API Items =", dt.Data.Items.length);
 
-            grouped[key] = {
-              ...item,
-              ResultQty: totalResultQty,
-              RemainingQty: item.PlanQty - totalResultQty,
-              Selected: false,
-              Expanded: true,
-              Details: [],
-            };
-          }
+  this.groupLists = dt.Data.Items.map(item => ({
+    ...item,
 
-          if (item.ProdResultId) {
-            grouped[key].Details.push({
-              ProdResultId: item.ProdResultId,
-              LotNo: item.LotNo,
-              BarcodeNo: item.BarcodeNo,
-              BarcodeQty: item.BarcodeQty, 
-            });
-          }
-        });
+  SavedGood: item.Good,
+  SavedNG: item.NG,
+    Selected: false,
+    Expanded: false,
+    Details: [],
+    ResultQty: item.ResultQty || 0,
+    RemainingQty: item.RemainingQty || 0
+  }));
 
-        this.groupLists = Object.values(grouped);
-      });
+  console.log("Grid Items =", this.groupLists.length);
+});
     },
     reset: function () {
       this.filter.FactoryCode = null;
@@ -358,6 +341,7 @@ export default {
         ProdResultID: p.ProdResultId,
         ResultType: p.Good ? "GOOD" : "NG",
         ItemCode: p.ItemCode,
+        BarcodeNo: p.BarcodeNo,
       }));
 
       try {
@@ -369,25 +353,37 @@ export default {
         );
 
     console.log("SUCCESS:", res.data);
-        toastSuccess("Berhasil disimpan");
+        toastSuccess("Saved successfully");
+        await this.search();
       } catch (err) {
         console.error(err);
-        toastDanger("Gagal simpan");
+        toastDanger("Save failed");
       } finally {
         this.isLoading = false;
       }
     },
 
-    check(e, item, type) {
-    const checked = e.target.checked
-    if (type === "Good") {
-      item.Good = checked
-      if (checked) item.NG = false
-    }
-    if (type === "NG") {
-      item.NG = checked
-      if (checked) item.Good = false
-    }
+   check(item, type) {
+      // hanya lock data yang sudah tersimpan di DB
+      if (item.SavedGood || item.SavedNG) {
+        return;
+      }
+
+      if (type === "Good") {
+        item.Good = !item.Good;
+
+        if (item.Good) {
+          item.NG = false;
+        }
+      }
+
+      if (type === "NG") {
+        item.NG = !item.NG;
+
+        if (item.NG) {
+          item.Good = false;
+        }
+      }
     },
     newRequest: function () {
       let selected = this.groupLists.filter((x) => x.Selected);

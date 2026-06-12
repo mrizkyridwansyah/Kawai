@@ -23,7 +23,7 @@ public class ProductionQualityJudgementRepository : IProductionQualityJudgementR
         var paramPeriodFrom = param.GetParam("PeriodFrom");
         var paramPeriodUntil = param.GetParam("PeriodUntil");
         var paramFactory = param.GetParam("FactoryCode");
-        var paramProcess = param.GetParam("ManufactureCode");
+        var paramProcess = param.GetParam("ProcessCode");
         var paramLine = param.GetParam("LineCode");
         var paramCompleteCls = param.GetParam("CompleteCls");
 
@@ -38,6 +38,7 @@ public class ProductionQualityJudgementRepository : IProductionQualityJudgementR
             LineCode = paramLine,
             CompleteCls = paramCompleteCls == "ALL" ? (bool?)null : paramCompleteCls == "YES"
         })).ToList();
+
     }
 
     public async Task Save(List<ProductionQualityJudgementModel> models, string userId)
@@ -49,6 +50,7 @@ public class ProductionQualityJudgementRepository : IProductionQualityJudgementR
         dt.Columns.Add("ProdResultID", typeof(string));
         dt.Columns.Add("ResultType", typeof(string));
         dt.Columns.Add("ItemCode", typeof(string));
+        dt.Columns.Add("BarcodeNo", typeof(string));
 
         foreach (var item in models)
         {
@@ -56,7 +58,8 @@ public class ProductionQualityJudgementRepository : IProductionQualityJudgementR
                 item.ProductionId,
                 item.ProdResultID,
                 item.ResultType,
-                item.ItemCode
+                item.ItemCode,
+                item.BarcodeNo
             );
         }
 
