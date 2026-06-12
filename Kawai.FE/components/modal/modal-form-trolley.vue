@@ -31,8 +31,8 @@
       </td>
       <td style="padding-top: 5px; padding-left: 15px">
         <filter-cls
-          ddl-width="100px"
-          desc-width="180px"
+          ddl-width="150px"
+          desc-width="150px"
           type-data="Trolley_Cls"
           v-model="model.Trolley_Cls"
         />

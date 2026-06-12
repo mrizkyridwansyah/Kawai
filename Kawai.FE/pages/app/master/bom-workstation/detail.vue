@@ -82,8 +82,8 @@
             type-data="Trolley_Cls"
             v-model="filter.trolley_cls"
             :errors="errors?.trolley_cls"
-            style-code="width: 110px"
-            style-desc="width: 250px"
+            style-code="width: 150px"
+            style-desc="width: 210px"
           />
         </div>
 
