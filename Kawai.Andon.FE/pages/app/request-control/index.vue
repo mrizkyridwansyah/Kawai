@@ -104,9 +104,10 @@
               >
                 <thead>
                   <tr>
-                    <th class="text-center">Request No</th>
-                    <th class="text-center">Production Date</th>
+                   
                     <th class="text-center">Line</th>
+                    <th class="text-center">Production Date</th>
+                     <th class="text-center">Request No</th>
                     <th class="text-center">Item</th>
                     <th class="text-center">Model</th>
                     <th class="text-center">Work Station</th>
@@ -118,9 +119,10 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in ds.data">
-                    <td>{{ item.RequestNo }}</td>
+                   
+                     <td>{{ item.Line }}</td>
                     <td>{{ $func.formatDate(item.ProductionDate) }}</td>
-                    <td>{{ item.Line }}</td>
+                    <td>{{ item.RequestNo }}</td>
                     <td>{{ item.PickingArea }}</td>
                     <td>{{ item.Model }}</td>
                     <td>{{ item.WorkStation }}</td>
