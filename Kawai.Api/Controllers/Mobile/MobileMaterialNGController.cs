@@ -33,7 +33,9 @@ public class MobileMaterialNGController : HahaController
     {
         var message = new StockTransactionMessage<MobileMaterialNG>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "MATERIAL-NG-MOBILE",
             FormatMessage = "Material NG Mobile",

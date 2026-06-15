@@ -84,7 +84,9 @@ public class MobilePickingByScanController : HahaController
 
         var message = new StockTransactionMessage<MobilePickingByScanSubmit>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "PICKING-MOBILE",
             FormatMessage = "Picking Mobile",

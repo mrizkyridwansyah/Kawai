@@ -47,7 +47,9 @@ public class MobileMaterialStorageController : HahaController
     {
         var message = new StockTransactionMessage<MobileMaterialStorage>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "MATERIAL-STORAGE-MOBILE",
             FormatMessage = "Material Storage Mobile",
@@ -79,7 +81,9 @@ public class MobileMaterialStorageController : HahaController
     {
         var message = new StockTransactionMessage<MobileMaterialMergeStorage>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "MATERIAL-MERGE-STORAGE-MOBILE",
             FormatMessage = "Material Merge Storage Mobile",

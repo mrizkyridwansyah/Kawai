@@ -91,7 +91,9 @@ public class MobileSupplyScanRequestController : HahaController
     {
         var message = new StockTransactionMessage<MobilSupplyScanRequestSubmit>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "SUPPLY-REQUEST-MOBILE",
             FormatMessage = "Supply Request Mobile",

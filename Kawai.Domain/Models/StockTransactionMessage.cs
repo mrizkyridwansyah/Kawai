@@ -2,12 +2,14 @@
 
 public class StockTransactionMessage<T>
 {
+    public string Token { get; set; }
     public string AuthUserId { get; set; }
     public long TimeStamp { get; set; }
     public string TransactionType { get; set; }
     public string FormatMessage { get; set; }   
     public T Payload { get; set; }
     public LogContext LogContext { get; set; }
+    public string BroadcastBaseOn { get; set; }
 }
 
 public class LogContext

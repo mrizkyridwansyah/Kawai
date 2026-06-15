@@ -60,7 +60,9 @@ public class MobileLoadingTrolleyController : HahaController
     {
         var message = new StockTransactionMessage<MobileLoadingTrolley>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "LOADING-TROLLEY-MOBILE",
             FormatMessage = "Loading Trolley Mobile",

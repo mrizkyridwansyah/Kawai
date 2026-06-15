@@ -83,7 +83,9 @@ public class MobileLoadingConfirmationController : HahaController
 
         var message = new StockTransactionMessage<MobileLoadingConfirmationSubmit>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "LOADING-CONFIRMATION-MOBILE",
             FormatMessage = "Loading Confirmation Mobile",
@@ -193,7 +195,9 @@ public class MobileLoadingConfirmationController : HahaController
         // =====================================================
         var message = new StockTransactionMessage<MobileLoadingConfirmationEvidenceBeforeQueueSubmit>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "LOADING-CONFIRMATION-EVIDENCE-BEFORE",
             FormatMessage = "Loading Confirmation Evidence Before",
@@ -306,7 +310,9 @@ public class MobileLoadingConfirmationController : HahaController
         // =====================================================
         var message = new StockTransactionMessage<MobileLoadingConfirmationEvidenceAfterQueueSubmit>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "LOADING-CONFIRMATION-EVIDENCE-AFTER",
             FormatMessage = "Loading Confirmation Evidence After",

@@ -57,7 +57,9 @@ public class MobileSupplySubconController : HahaController
     {
         var message = new StockTransactionMessage<MobileSupplySubcon>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "SUPPLY-SUBCON-MOBILE",
             FormatMessage = "Supply Subcon Mobile",

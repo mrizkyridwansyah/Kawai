@@ -11,7 +11,7 @@ public class NotifApprovalHub : Microsoft.AspNetCore.SignalR.Hub
     {
         var httpContext = Context.GetHttpContext();
 
-        var tokenCookie = httpContext.Request.Cookies["__SIDX"];
+        var tokenCookie = httpContext.Request.Cookies["__SIDXTrial"];
         var tokenAuth = httpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var tokenMobile = httpContext.Request.Query["Access_Token_Mobile"];
 
@@ -31,6 +31,14 @@ public class NotifApprovalHub : Microsoft.AspNetCore.SignalR.Hub
                 {
                     if (!_connections.ContainsKey(userId))
                         _connections[userId] = [];
+
+                    if (!String.IsNullOrEmpty(token))
+                    {
+                        if (!_connections.ContainsKey(token))
+                            _connections[token] = [];
+
+                        _connections[token].Add(Context.ConnectionId);
+                    }
 
                     _connections[userId].Add(Context.ConnectionId);
 

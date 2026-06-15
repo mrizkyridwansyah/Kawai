@@ -187,13 +187,27 @@ public class TransactionConsumerAsync : BackgroundService
         {
             await notificationRepository.SaveNotification(notification);
             var notifications = new List<Notification> { notification };
-            await notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification",
-                new
-                {
-                    Count = 1,
-                    Notifications = notifications
-                }
-            );
+
+            if (message.BroadcastBaseOn == "TOKEN" && !String.IsNullOrEmpty(message.Token))
+            {
+                await notificationService.BroadCastOnlyTo([message.Token], "NewNotification",
+                    new
+                    {
+                        Count = 1,
+                        Notifications = notifications
+                    }
+                );
+            }
+            else
+            {
+                await notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification",
+                    new
+                    {
+                        Count = 1,
+                        Notifications = notifications
+                    }
+                );
+            }
         }
     }
 

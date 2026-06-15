@@ -105,7 +105,9 @@ public class MobileReceiptController : HahaController
 
         var message = new StockTransactionMessage<MobileReceipt>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "RECEIPT-VERIFY-MOBILE",
             FormatMessage = "Receipt Check Mobile",

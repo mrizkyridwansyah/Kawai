@@ -75,7 +75,9 @@ public class MobileManualTrolleyAssignController : HahaController
     {
         var message = new StockTransactionMessage<MobileManualTrolleyAssign>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "MANUAL-TROLLEY-ASSIGN-MOBILE",
             FormatMessage = "Manual Trolley Assign Mobile",

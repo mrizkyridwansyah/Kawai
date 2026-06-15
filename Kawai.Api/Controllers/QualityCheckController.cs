@@ -121,7 +121,9 @@ public class QualityCheckController : HahaController
         {
             var message = new StockTransactionMessage<QualityCheckConfirm>
             {
+                Token = Auth.Token,
                 AuthUserId = Auth.User.UserID,
+                BroadcastBaseOn = "TOKEN",
                 TimeStamp = EpochDateTime.Now,
                 TransactionType = "IQC-RESULT-CONFIRM",
                 FormatMessage = "Confirm Quality Check",

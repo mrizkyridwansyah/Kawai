@@ -31,7 +31,9 @@ public class MobileAssignToTrolleyController : HahaController
     {
         var message = new StockTransactionMessage<MobileAssignToTrolley>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "ASSIGN-TO-TROLLEY-BY-BARCODE-MOBILE",
             FormatMessage = "Assign To Trolley By Barcode Mobile",

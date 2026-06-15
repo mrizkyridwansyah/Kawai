@@ -54,7 +54,9 @@ public class MobileAssignStorageController : HahaController
     {
         var message = new StockTransactionMessage<MobileAssignStorage>
         {
+            Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
+            BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
             TransactionType = "ASSIGN-STORAGE-MOBILE",
             FormatMessage = "Assign Storage Mobile",
