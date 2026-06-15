@@ -7,7 +7,12 @@
       </span>
     </div>
     <!--buatkan div untuk filter area-->
-    <div class="filter-area p-3" id="containerfilter">
+    <div
+      class="filter-area p-3"
+      id="containerfilter"
+      v-show="showFilter"
+      @click.stop
+    >
       <!--dropdown area-->
       <div class="row">
         <div class="row mt-1">
@@ -104,10 +109,9 @@
               >
                 <thead>
                   <tr>
-                   
                     <th class="text-center">Line</th>
                     <th class="text-center">Production Date</th>
-                     <th class="text-center">Request No</th>
+                    <th class="text-center">Request No</th>
                     <th class="text-center">Item</th>
                     <th class="text-center">Model</th>
                     <th class="text-center">Work Station</th>
@@ -119,8 +123,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(item, i) in ds.data">
-                   
-                     <td>{{ item.Line }}</td>
+                    <td>{{ item.Line }}</td>
                     <td>{{ $func.formatDate(item.ProductionDate) }}</td>
                     <td>{{ item.RequestNo }}</td>
                     <td>{{ item.PickingArea }}</td>
@@ -146,6 +149,8 @@
 export default {
   data: () => ({
     isLoading: false,
+    intervalLoad: null,
+    showFilter: true,
     summary: {
       total: 0,
       womin: 0,
@@ -173,12 +178,40 @@ export default {
     },
   },
   mounted: async function () {
-    setInterval(() => {
-      this.search();
-    }, 3000);
-
+    document.addEventListener("click", this.handleGlobalClick);
+  },
+  beforeUnmount: function () {
+    // Wajib: bersihkan interval dan listener jika pindah halaman (mencegah memory leak)
+    this.stopInterval();
+    document.removeEventListener("click", this.handleGlobalClick);
   },
   methods: {
+    startInterval: function () {
+      this.stopInterval(); // Pastikan tidak ada interval ganda
+      this.intervalLoad = setInterval(() => {
+        this.search(true); // true = pencarian dipicu otomatis oleh interval
+      }, 3000);
+    },
+    stopInterval: function () {
+      if (this.intervalLoad) {
+        clearInterval(this.intervalLoad);
+        this.intervalLoad = null;
+      }
+    },
+    handleGlobalClick: function (event) {
+      // Jika filter sedang disembunyikan (interval nyala), dan user klik sembarang tempat,
+      // maka munculkan filter dan matikan interval
+      if (!this.showFilter) {
+        this.showFilter = true;
+        this.stopInterval();
+
+        // Kembalikan teks judul panel seperti semula
+        const headerPanel = document.getElementById("header-panel");
+        if (headerPanel) {
+          headerPanel.innerText = "Remaining Item - Material Type (Group)";
+        }
+      }
+    },
     search: function () {
       if (this.isLoading) {
         console.log("masih loading bro!");
@@ -190,7 +223,6 @@ export default {
       this.ds
         .load(this.filter.area)
         .then((dt) => {
-          debugger;
           this.list = dt.Data;
           //total diambil dari countdata datalist
           this.summary.total = this.list.length;
@@ -198,49 +230,26 @@ export default {
             this.list.length > 0 ? this.list[0].PickingProgress : 0;
           this.summary.remaining =
             this.list.length > 0 ? this.list[0].Remaining : 0;
-
           //untuk womin summary semua workstasion yang sama aja
           this.summary.womin = this.list.length > 0 ? this.list[0].Womin : 0;
-          //   index === self.findIndex((t) => (
-          //     t.WorkStation === item.WorkStation
-          //   ))
-          // ).length;
         })
         .catch((err) => {
           console.error("Error loading data:", err);
-        }).finally(() => (this.isLoading = false));
+        })
+        .finally(() => (this.isLoading = false));
 
       if (this.filter.area != null) {
-        //header-panel change text to "Remaining Item" dan nama area bukan codenya
-        const headerPanel = document.getElementById("header-panel");
-        if (headerPanel) {
-          headerPanel.innerText = `Remaining Item - Material Type (${this.filter.areaName})`;
-        }
+        // Gunakan setTimeout kecil untuk mencegah bentrok dengan handleGlobalClick
+        setTimeout(() => {
+          this.showFilter = false; // Sembunyikan area filter
+          this.startInterval(); // Nyalakan interval tiap 3 detik
 
-        //hide filter id="containerfilter" after search
-        const containerFilter = document.getElementById("containerfilter");
-        const panelBody = document.getElementById("panelbody");
-        if (containerFilter && panelBody) {
-
-          /* HIDE TOP NAVBAR
-          const header = document.getElementById("header");
-          const appContent = document.getElementById("app");
-          header.style.display = "none";
-          appContent.style.paddingTop = "0";
-          */
-
-          containerFilter.style.display = "none";
-          panelBody.style.marginTop = "0px";
-        }
-
-        //jika saya klik sembarang tombo maka filter muncul lagi
-        document.addEventListener("click", (event) => {
-          const isClickInside = containerFilter.contains(event.target);
-          if (!isClickInside) {
-            containerFilter.style.display = "block";
-            panelBody.style.marginTop = "20px";
+          // Ubah teks judul panel sesuai area yang difilter
+          const headerPanel = document.getElementById("header-panel");
+          if (headerPanel) {
+            headerPanel.innerText = `Remaining Item - Material Type (${this.filter.areaName})`;
           }
-        });
+        }, 100);
       }
     },
     reset: function () {
