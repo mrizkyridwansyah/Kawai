@@ -1,7 +1,9 @@
 
 export default defineNuxtRouteMiddleware((to, from) => {
+  const config = useRuntimeConfig();
+  const cookieName = config.public.cookieName || '__SIDX';
   
-  if (!getCookie("__SIDX")) {
+  if (!getCookie(cookieName)) {
     location.href = '/auth/sign-in';
   }
   var user = useAuth();

@@ -123,6 +123,9 @@ export default {
     auth: function () {
       return useAuth();
     },
+    cookieName: function () {
+      return useRuntimeConfig().public.cookieName || "__SIDX";
+    },
   },
   mounted: function () {},
   methods: {
@@ -133,7 +136,7 @@ export default {
       this.auth
         .signIn(this.model)
         .then((p) => {
-          setCookie("__SIDX", p.Data.AccessToken, p.Data.ExpiryDate);
+          setCookie(this.cookieName, p.Data.AccessToken, p.Data.ExpiryDate);
           if (p.Data.UserPhoto)
             localStorage.setItem("UserPhoto", p.Data.UserPhoto);
           if (this.$router.currentRoute.query?.continue)

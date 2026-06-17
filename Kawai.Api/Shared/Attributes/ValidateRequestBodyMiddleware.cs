@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Kawai.Api.Shared.Extension;
-using Kawai.Data.SqlConnections;
-using System.Data;
+using Kawai.Api.Services.Logging;
 using Kawai.Api;
 using System.Text;
-using Serilog;
 
 public class ValidateModelAttribute : ActionFilterAttribute
 {
@@ -13,7 +11,6 @@ public class ValidateModelAttribute : ActionFilterAttribute
     {
         var serviceProvider = context.HttpContext.RequestServices;
         var auth = serviceProvider.GetRequiredService<Auth>();
-        var logExecutor = serviceProvider.GetRequiredService<LogExecutor>();
         var allErrors = new Dictionary<string, List<string>>();
 
         foreach (var arg in context.ActionArguments)
@@ -45,29 +42,22 @@ public class ValidateModelAttribute : ActionFilterAttribute
                 requestBody = reader.ReadToEnd();
                 request.Body.Position = 0; // reset supaya bisa dibaca controller
             }
-            var sql = @"
-                    INSERT INTO ErrorLogs
-                    (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
-                    VALUES
-                    (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
-                ";
+            var logBuffer = serviceProvider.GetRequiredService<LogBufferService>();
 
-            var log = new
+            logBuffer.EnqueueErrorLog(new ErrorLogEntry
             {
                 Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
                 Message = "Request data is not valid.",
-                request.Method,
+                Method = request.Method,
                 UserAgent = request.Headers["User-Agent"].ToString(),
                 RemoteAddr = connection.RemoteIpAddress?.ToString(),
                 RequestPath = request.Path.ToString(),
                 RequestBody = requestBody,
-                StackTrace = "", // Stack trace optional kalau ada exception handling
+                StackTrace = "",
                 StatusCode = 400,
                 UserId = auth?.User?.UserID ?? "-",
                 FullName = auth?.User?.FullName ?? "-"
-            };
-
-            logExecutor.Execute(sql, log, commandType: CommandType.Text);
+            });
 
             context.Result = new BadRequestObjectResult(new
             {

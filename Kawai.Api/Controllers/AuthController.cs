@@ -1,4 +1,4 @@
-﻿using Kawai.Domain.Interfaces;
+using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +18,8 @@ public class AuthController : HahaController
     public async Task<IActionResult> SignIn([FromBody] SignIn model)
     {
         var sman = GetService<SessionManager>();
+        var configuration = GetService<Microsoft.Extensions.Configuration.IConfiguration>();
+        var cookieName = configuration?["Security:AuthCookieName"] ?? "__SIDX";
 
         var session = await sman.Authenticate(model.UserName, model.Password);
 
@@ -26,7 +28,7 @@ public class AuthController : HahaController
         if (!session.IsSucceeded)
             return Invalid(message: "Invalid username/password");
 
-        HttpContextAccessor.HttpContext.Response.Cookies.Append("__SIDX", session.Token, new CookieOptions
+        HttpContextAccessor.HttpContext.Response.Cookies.Append(cookieName, session.Token, new CookieOptions
         {
             HttpOnly = false, // Set HttpOnly
             Secure = true,   // Set Secure

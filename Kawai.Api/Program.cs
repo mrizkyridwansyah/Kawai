@@ -6,6 +6,7 @@ using Kawai.Api.Services;
 using Kawai.Api.Shared.Extensions;
 using Kawai.Api.Shared.Handlers;
 using Kawai.Api.Shared.Middleware;
+using Kawai.Api.Services.Logging;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authentication;
@@ -62,6 +63,10 @@ builder.Services.AddSingleton<IConnectionFactory, ConnectionFactory>();
 builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
+
+// Logging buffer: singleton buffer + background flush service
+builder.Services.AddSingleton<LogBufferService>();
+builder.Services.AddHostedService<LogFlushBackgroundService>();
 builder.Services.AddRepositoriesAuto();
 builder.Services.AddScoped<IRobotService, RobotService>();
 builder.Services.AddScoped<IExportService, ExportService>();

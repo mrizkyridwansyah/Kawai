@@ -1,7 +1,5 @@
-import configs from "@/app.config.json";
 import axios from "axios";
-axios.defaults.baseURL = process.env.NODE_ENV == "production" ? configs.baseUrl : configs.baseUrlDev;
-  
+
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -12,16 +10,19 @@ axios.interceptors.response.use(
   }
 )
 
-var baseUrl = () => process.env.NODE_ENV == "production" ? configs.baseUrl : configs.baseUrlDev;
-
 export default defineNuxtPlugin(nuxtApp => {
+  const config = useRuntimeConfig();
+  var baseUrl = () => config.public.apiBase;
+  const cookieName = config.public.cookieName || '__SIDX';
+  axios.defaults.baseURL = baseUrl();
+
   var route = useRoute();
   // Doing something with nuxtApp
   nuxtApp.provide('http', {
     post: function (...args) {
       axios.defaults.baseURL = baseUrl() + '/api';
-      if (getCookie("__SIDX")) {
-        axios.defaults.headers["Authorization"] = "Bearer " + getCookie("__SIDX");
+      if (getCookie(cookieName)) {
+        axios.defaults.headers["Authorization"] = "Bearer " + getCookie(cookieName);
       }
 
       if (route.params?.id)
@@ -41,8 +42,8 @@ export default defineNuxtPlugin(nuxtApp => {
     },
     patch: function (...args) {
       axios.defaults.baseURL = baseUrl() + '/api';
-      if (getCookie("__SIDX")) {
-        axios.defaults.headers["Authorization"] = "Bearer " + getCookie("__SIDX");
+      if (getCookie(cookieName)) {
+        axios.defaults.headers["Authorization"] = "Bearer " + getCookie(cookieName);
       }
 
       if (route.params?.id)
@@ -62,8 +63,8 @@ export default defineNuxtPlugin(nuxtApp => {
     },
     delete: function (...args) {
       axios.defaults.baseURL = baseUrl() + '/api';
-      if (getCookie("__SIDX")) {
-        axios.defaults.headers["Authorization"] = "Bearer " + getCookie("__SIDX");
+      if (getCookie(cookieName)) {
+        axios.defaults.headers["Authorization"] = "Bearer " + getCookie(cookieName);
       }
 
       if (route.params?.id)
@@ -83,8 +84,8 @@ export default defineNuxtPlugin(nuxtApp => {
     },
     get: function (...args) {
       axios.defaults.baseURL = baseUrl() + '/api';
-      if (getCookie("__SIDX")) {
-        axios.defaults.headers["Authorization"] = "Bearer " + getCookie("__SIDX");
+      if (getCookie(cookieName)) {
+        axios.defaults.headers["Authorization"] = "Bearer " + getCookie(cookieName);
       }
 
       if (route.params?.id)
