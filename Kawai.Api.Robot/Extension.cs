@@ -1,4 +1,4 @@
-﻿using Kawai.Data;
+using Kawai.Data;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain;
 using Microsoft.AspNetCore.Diagnostics;
@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Text;
+using Kawai.Api.Robot.Services.Logging;
 
 namespace Kawai.Api.Robot;
 
@@ -57,33 +58,25 @@ public static class Extension
             try
             {
                 var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
-                //var auth = context.RequestServices.GetRequiredService<Auth>();
-                var logExecutor = context.RequestServices.GetRequiredService<LogExecutor>();
-
+                var logBuffer = context.RequestServices.GetRequiredService<LogBufferService>();
                 var user = "Robot";
 
-                var sql = @"
-                    INSERT INTO ErrorLogs
-                    (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
-                    VALUES
-                    (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
-                ";
-
-                var log = new
+                var logEntry = new Kawai.Api.Robot.Services.Logging.ErrorLogEntry
                 {
-                    Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value, // Replace with EpochDateTime.Now if needed
+                    Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
                     Message = exception?.InnerException?.Message ?? exception?.Message,
-                    context.Request.Method,
+                    Method = context.Request.Method,
                     UserAgent = context.Request.Headers.UserAgent.ToString(),
                     RemoteAddr = context.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
                     RequestPath = context.Request.Path.ToString(),
                     RequestBody = requestBody,
                     StackTrace = exception?.InnerException?.StackTrace ?? exception?.StackTrace,
-                    context.Response.StatusCode,
-                    user,
+                    StatusCode = statusCode,
+                    UserId = user,
+                    FullName = user
                 };
 
-                await logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
+                logBuffer.EnqueueErrorLog(logEntry);
             }
             catch { }
 

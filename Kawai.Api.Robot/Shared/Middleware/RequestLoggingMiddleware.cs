@@ -1,7 +1,11 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Kawai.Data.SqlConnections;
 using System.Data;
 using System.Text;
+using Kawai.Api.Robot.Services.Logging;
+using Microsoft.Net.Http.Headers;
+using Microsoft.AspNetCore.WebUtilities;
+using Kawai.Domain.Shared;
 
 namespace Kawai.Api.Robot.Shared.Middleware;
 public class RequestLoggingMiddleware
@@ -15,7 +19,7 @@ public class RequestLoggingMiddleware
         _logger = logger;
     }
 
-    public async Task Invoke(HttpContext context, LogExecutor logExecutor)
+    public async Task Invoke(HttpContext context, LogBufferService logBuffer)
     {
         // Hanya log request yang ke endpoint /api
         if (!context.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase))
@@ -34,45 +38,109 @@ public class RequestLoggingMiddleware
         }
 
         var stopwatch = Stopwatch.StartNew();
-        //var auth = context.RequestServices.GetRequiredService<Auth>();
-        string requestPath = context.Request.Path;
+        var requestPath = context.Request.Path.Value + context.Request.QueryString.Value;
         string token = context.Request.Headers["Authorization"].ToString();
-        string userId = DecodeBasicAuth(token);
+        string userId = DecodeBasicAuth(token) ?? "";
 
         string remoteIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         long timeStamp = EpochDateTime.Now;
-        //string userId = auth?.User?.UserID ?? "";
-        //string fullname = auth?.User?.FullName ?? "";
 
         context.Request.EnableBuffering();
+
+        // Baca request body sebelum pipeline (supaya body masih bisa dibaca controller)
+        string? requestBody = null;
+        try
+        {
+            requestBody = await ReadRequestBody(context.Request);
+        }
+        catch
+        {
+            requestBody = "[Failed to read request body]";
+        }
 
         // Continue pipeline
         await _next(context);
 
         stopwatch.Stop();
 
+        // Fire-and-forget: enqueue ke buffer, TIDAK await INSERT ke DB
+        logBuffer.EnqueueRequestLog(new RequestAMRLogEntry
+        {
+            Method = method,
+            RequestPath = requestPath,
+            Token = token,
+            RemoteAddr = remoteIp,
+            UserID = remoteIp, // Berdasarkan kode lama: UserID = remoteIp
+            FullName = userId, // Berdasarkan kode lama: FullName = userId
+            Timestamp = timeStamp,
+            ElapsedMilliseconds = stopwatch.ElapsedMilliseconds,
+            RequestBody = requestBody
+        });
+    }
+
+    private static async Task<string?> ReadRequestBody(HttpRequest request)
+    {
+        if (request.ContentLength == null || request.ContentLength == 0)
+            return null;
+
+        if (request.ContentType?.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            return await ReadMultipartMetadata(request);
+        }
+
+        // JSON / form-urlencoded / plain text
+        request.Body.Position = 0;
+        using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        request.Body.Position = 0;
+
+        return body;
+    }
+
+    private static async Task<string?> ReadMultipartMetadata(HttpRequest request)
+    {
         try
         {
-            await logExecutor.ExecuteAsync(@"
-                INSERT INTO [dbo].[RequestAMRLogs]
-                ([Method], [Path], [Token], [IP], [UserID], [FullName], [Timestamp], [ElapsedtimeMs])
-                VALUES
-                (@Method, @RequestPath, @Token, @RemoteAddr, @UserID, @FullName, @Date, @ElapsedMilliseconds)", new
+            var boundary = HeaderUtilities.RemoveQuotes(
+                MediaTypeHeaderValue.Parse(request.ContentType).Boundary
+            ).Value;
+
+            if (string.IsNullOrEmpty(boundary))
+                return "[multipart: boundary not found]";
+
+            var reader = new MultipartReader(boundary, request.Body);
+            MultipartSection? section;
+            var fields = new Dictionary<string, string>();
+
+            while ((section = await reader.ReadNextSectionAsync()) != null)
             {
-                Method = method,
-                RequestPath = requestPath,
-                Token = token,
-                RemoteAddr = remoteIp,
-                UserID = remoteIp,
-                FullName = userId,
-                Date = timeStamp,
-                stopwatch.ElapsedMilliseconds
-            }, commandType: CommandType.Text);
+                var contentDisposition = section.GetContentDispositionHeader();
+
+                if (contentDisposition != null && contentDisposition.IsFileDisposition())
+                {
+                    fields[contentDisposition.Name.Value ?? "unknown"] = $"[FILE: {contentDisposition.FileName.Value}] - {FormatSize(section.Body.Length)}";
+                }
+                else if (contentDisposition != null && contentDisposition.IsFormDisposition())
+                {
+                    using var streamReader = new StreamReader(section.Body, Encoding.UTF8);
+                    fields[contentDisposition.Name.Value ?? "unknown"] = await streamReader.ReadToEndAsync();
+                }
+            }
+
+            request.Body.Position = 0;
+            return System.Text.Json.JsonSerializer.Serialize(fields);
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex, "Failed to write request log");
+            return "[multipart: failed to parse]";
         }
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
     }
 
     public string? DecodeBasicAuth(string authorizationHeader)
@@ -96,4 +164,3 @@ public class RequestLoggingMiddleware
         return parts[0];
     }
 }
-

@@ -1,4 +1,4 @@
-﻿using Kawai.Api.Services;
+using Kawai.Api.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Kawai.Api.Hub;
@@ -10,8 +10,11 @@ public class NotifApprovalHub : Microsoft.AspNetCore.SignalR.Hub
     public override async Task OnConnectedAsync()
     {
         var httpContext = Context.GetHttpContext();
+        var configuration = httpContext.RequestServices.GetService<Microsoft.Extensions.Configuration.IConfiguration>();
+        var cookieName = configuration?["Security:AuthCookieName"] ?? "__SIDX";
 
-        var tokenCookie = httpContext.Request.Cookies["__SIDXTrial"];
+        var tokenCookie = httpContext.Request.Cookies[cookieName];
+
         var tokenAuth = httpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var tokenMobile = httpContext.Request.Query["Access_Token_Mobile"];
 

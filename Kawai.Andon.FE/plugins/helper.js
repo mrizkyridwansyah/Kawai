@@ -23,7 +23,8 @@ window.getCookie = function (cname) {
 
 window.clearCookies = function() {
   document.cookie.split(";").forEach(function(c) { 
-    if(c.replace(/^ +/, "").split("=")[0] == "__SIDX") {
+    var cookieName = window.__COOKIE_NAME || "__SIDX";
+    if(c.replace(/^ +/, "").split("=")[0] == cookieName) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
     }
   });
@@ -38,6 +39,10 @@ window.objCopy = function(data) {
 }
 
 export default defineNuxtPlugin(nuxtApp => {
+  const config = useRuntimeConfig();
+  if (process.client) {
+    window.__COOKIE_NAME = config.public.cookieName || '__SIDX';
+  }
   // Doing something with nuxtApp
 })
 

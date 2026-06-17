@@ -1,6 +1,5 @@
 // plugins/signalr.client.js
 import * as signalR from '@microsoft/signalr'
-import configs from '@/app.config.json'
 
 class UnlimitedRetryPolicy {
   nextRetryDelayInMilliseconds(retryContext) {
@@ -15,9 +14,8 @@ class UnlimitedRetryPolicy {
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const baseUrl = process.env.NODE_ENV === 'production'
-    ? configs.baseUrl
-    : configs.baseUrlDev; // fallback jika Dev kosong
+  const config = useRuntimeConfig();
+  const baseUrl = config.public.apiBase;
 
   /**
    * Buat koneksi SignalR ke path tertentu

@@ -7,6 +7,9 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "generate:dev": "nuxt generate --dotenv .env.dev",
+    "generate:trial": "nuxt generate --dotenv .env.trial",
+    "generate:live": "nuxt generate --dotenv .env.production",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },

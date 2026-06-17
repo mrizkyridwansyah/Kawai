@@ -1,4 +1,4 @@
-﻿using Kawai.Domain.Models;
+using Kawai.Domain.Models;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using System.Text;
@@ -6,6 +6,7 @@ using System.Text.Json;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Interfaces;
 using Kawai.Api.Services;
+using Kawai.Api.Services.Logging;
 using Kawai.Api.Hub;
 using Kawai.Api.Shared.Handlers;
 using Kawai.Domain;
@@ -17,6 +18,7 @@ public class TransactionConsumer : BackgroundService
 
     private readonly IServiceScopeFactory _scopeFactory;
     private Dictionary<string, ITransactionHandler> _handlers;
+    private readonly LogBufferService _logBuffer;
 
     private const string ExchangeName = "stock_transaction_exchange";
     private const string QueueName = "stock_transaction_queue";
@@ -27,10 +29,12 @@ public class TransactionConsumer : BackgroundService
 
     public TransactionConsumer
     (
-        IServiceScopeFactory scopeFactory
+        IServiceScopeFactory scopeFactory,
+        LogBufferService logBuffer
     )
     {
         _scopeFactory = scopeFactory;
+        _logBuffer = logBuffer;
         InitRabbitMq();
     }
 
@@ -107,7 +111,20 @@ public class TransactionConsumer : BackgroundService
                 catch (Exception ex)
                 {
                     notification.NotifType = "ERROR";
-                    SaveErrorLogs(json, ex).GetAwaiter().GetResult();
+                    _logBuffer.EnqueueErrorLog(new ErrorLogEntry
+                    {
+                        Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
+                        Message = ex.Message,
+                        Method = "BACKGROUND",
+                        UserAgent = "RabbitMQ/BackgroundWorker",
+                        RemoteAddr = "-",
+                        RequestPath = GetType().Name,
+                        RequestBody = json,
+                        StackTrace = ex?.InnerException?.StackTrace ?? ex?.StackTrace,
+                        StatusCode = 500,
+                        UserId = "",
+                        FullName = ""
+                    });
                     _notificationRepository.SaveNotification(notification).GetAwaiter().GetResult();
                     //_channel.BasicNack(ea.DeliveryTag, false, true);
                 }
@@ -140,36 +157,6 @@ public class TransactionConsumer : BackgroundService
 
 
         //return Task.CompletedTask;
-    }
-
-    private async Task SaveErrorLogs(string payload, Exception ex)
-    {
-        using var scope = _scopeFactory.CreateScope();
-        var _logExecutor = scope.ServiceProvider.GetRequiredService<LogExecutor>();
-
-        var sql = @"
-                    INSERT INTO ErrorLogs
-                    (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
-                    VALUES
-                    (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
-                ";
-
-        var log = new
-        {
-            Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
-            ex.Message,
-            Method = "BACKGROUND",
-            UserAgent = "RabbitMQ/BackgroundWorker",
-            RemoteAddr = "-",
-            RequestPath = GetType().Name,
-            RequestBody = payload,
-            StackTrace = ex?.InnerException?.StackTrace ?? ex?.StackTrace,
-            StatusCode = 500,
-            UserID = "",
-            FullName = ""
-        };
-
-        await _logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
     }
 
     private async Task ProcessMessageAsync(StockTransactionMessage<object> message)

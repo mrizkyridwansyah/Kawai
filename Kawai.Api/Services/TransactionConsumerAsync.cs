@@ -6,6 +6,7 @@ using System.Text.Json;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Interfaces;
 using Kawai.Api.Services;
+using Kawai.Api.Services.Logging;
 using Kawai.Api.Hub;
 using Kawai.Api.Shared.Handlers;
 using System.Diagnostics;
@@ -24,11 +25,13 @@ public class TransactionConsumerAsync : BackgroundService
     private const string DlxRoutingKey = "dead.stock_transaction";
 
     private readonly IConfiguration _configuration;
+    private readonly LogBufferService _logBuffer;
 
-    public TransactionConsumerAsync(IServiceScopeFactory scopeFactory, IConfiguration configuration)
+    public TransactionConsumerAsync(IServiceScopeFactory scopeFactory, IConfiguration configuration, LogBufferService logBuffer)
     {
         _scopeFactory = scopeFactory;
         _configuration = configuration;
+        _logBuffer = logBuffer;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -168,7 +171,17 @@ public class TransactionConsumerAsync : BackgroundService
 
             stopwatch.Stop();
 
-            _ = Task.Run(() => SaveMQLogs(message, stopwatch.ElapsedMilliseconds));
+            _logBuffer.EnqueueMQLog(new MQLogEntry
+            {
+                TimeStamp = message.TimeStamp,
+                TransactionType = message.TransactionType,
+                FormatMessage = message.FormatMessage,
+                Method = "BACKGROUND",
+                RequestPath = GetType().Name + ": url(" + message.LogContext.RequestPath + ")",
+                UserID = message.LogContext.UserID,
+                FullName = message.LogContext.FullName,
+                ElapsedMilliseconds = stopwatch.ElapsedMilliseconds
+            });
 
             notification.Description = "Transaction success!";
             notification.NotifType = "SUCCESS";
@@ -180,7 +193,20 @@ public class TransactionConsumerAsync : BackgroundService
             notification.NotifType = "ERROR";
             notification.Description = "Transaction failed: " + ex.Message;
 
-            _ = Task.Run(() => SaveErrorLogs(json, message?.LogContext, ex));
+            _logBuffer.EnqueueErrorLog(new ErrorLogEntry
+            {
+                Date = new EpochDateTime(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).Value,
+                Message = ex.Message,
+                Method = "BACKGROUND",
+                UserAgent = "RabbitMQ/BackgroundWorker",
+                RemoteAddr = message?.LogContext?.RemoteAddr ?? "-",
+                RequestPath = GetType().Name + ": url(" + (message?.LogContext?.RequestPath ?? "") + ")",
+                RequestBody = json,
+                StackTrace = ex?.InnerException?.StackTrace ?? ex?.StackTrace,
+                StatusCode = 500,
+                UserId = message?.LogContext?.UserID ?? "",
+                FullName = message?.LogContext?.FullName ?? ""
+            });
         }
 
         if (!string.IsNullOrWhiteSpace(notification.Receiver))
@@ -209,65 +235,6 @@ public class TransactionConsumerAsync : BackgroundService
                 );
             }
         }
-    }
-
-    private async Task SaveErrorLogs(string payload, LogContext logContext, Exception ex)
-    {
-        using var scope = _scopeFactory.CreateScope();
-        var _logExecutor = scope.ServiceProvider.GetRequiredService<LogExecutor>();
-
-        var sql = @"
-                    INSERT INTO ErrorLogs
-                    (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
-                    VALUES
-                    (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
-                ";
-
-        var log = new
-        {
-            Date = new EpochDateTime(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).Value,
-            ex.Message,
-            Method = "BACKGROUND",
-            UserAgent = "RabbitMQ/BackgroundWorker",
-            logContext.RemoteAddr,
-            RequestPath = GetType().Name + ": url(" + logContext.RequestPath + ")",
-            RequestBody = payload,
-            StackTrace = ex?.InnerException?.StackTrace ?? ex?.StackTrace,
-            StatusCode = 500,
-            logContext.UserID,
-            logContext.FullName
-        };
-
-        await _logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
-    }
-
-    private async Task SaveMQLogs(StockTransactionMessage<object> message, long elapsedTime)
-    {
-        using var scope = _scopeFactory.CreateScope();
-        var _logExecutor = scope.ServiceProvider.GetRequiredService<LogExecutor>();
-
-        var sql = @"
-                    INSERT INTO [dbo].[MQLogs]
-                    ([TimeStamp], [TransactionType], [FormatMessage], [Method], [Path], [UserID], [FullName], [ElapsedtimeMs])
-                    VALUES
-                    (@TimeStamp, @TransactionType, @FormatMessage, @Method, @RequestPath, @UserID, @FullName, @ElapsedMilliseconds);
-                ";
-
-        long timeStamp = EpochDateTime.Now;
-        var log = new
-        {
-            message.TimeStamp,
-            message.TransactionType,
-            message.FormatMessage,
-            Method = "BACKGROUND",
-            RequestPath = GetType().Name + ": url(" + message.LogContext.RequestPath + ")",
-            message.LogContext.UserID,
-            message.LogContext.FullName,
-            Date = timeStamp,
-            ElapsedMilliseconds = elapsedTime
-        };
-
-        await _logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
     }
 
     private async Task ProcessMessageAsync(StockTransactionMessage<object> message)

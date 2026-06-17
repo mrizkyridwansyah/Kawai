@@ -1,3 +1,4 @@
+using Kawai.Api.Services.Logging;
 using Kawai.Data;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain;
@@ -66,33 +67,24 @@ public static class Extension
             try
             {
                 var auth = context.RequestServices.GetService<Auth>();
-                var logExecutor = context.RequestServices.GetService<LogExecutor>();
+                var logBuffer = context.RequestServices.GetService<LogBufferService>();
 
-                if (logExecutor != null)
+                if (logBuffer != null)
                 {
-                    var sql = @"
-                        INSERT INTO ErrorLogs
-                        (Date, Message, Method, UserAgent, RemoteAddr, RequestPath, RequestBody, StackTrace, UserId, FullName, StatusCode)
-                        VALUES
-                        (@Date, @Message, @Method, @UserAgent, @RemoteAddr, @RequestPath, @RequestBody, @StackTrace, @UserId, @FullName, @StatusCode);
-                    ";
-
-                    var log = new
+                    logBuffer.EnqueueErrorLog(new ErrorLogEntry
                     {
                         Date = new EpochDateTime(DateTime.UtcNow.ToUnixTimeMilliseconds()).Value,
                         Message = exception?.InnerException?.Message ?? exception?.Message,
                         Method = context.Request.Method,
                         UserAgent = context.Request.Headers.UserAgent.ToString(),
                         RemoteAddr = context.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
-                        RequestPath = context.Request.Path.ToString(),
+                        RequestPath = context.Request.Path.ToString() + context.Request.QueryString.ToString(),
                         RequestBody = requestBody,
                         StackTrace = exception?.InnerException?.StackTrace ?? exception?.StackTrace,
                         StatusCode = statusCode,
                         UserId = auth?.User?.UserID,
                         FullName = auth?.User?.FullName
-                    };
-
-                    await logExecutor.ExecuteAsync(sql, log, commandType: System.Data.CommandType.Text);
+                    });
                 }
             }
             catch { }

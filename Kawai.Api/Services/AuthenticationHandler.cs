@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -32,7 +32,8 @@ public class BearerAuthenticationHandler(
         string values = "";
 
         string token = "";
-        var isCookie = Request.Cookies.TryGetValue("__SIDX", out values);
+        var cookieName = Configuration["Security:AuthCookieName"] ?? "__SIDX";
+        var isCookie = Request.Cookies.TryGetValue(cookieName, out values);
         var isBearer = Request.Headers.TryGetValue("Authorization", out Microsoft.Extensions.Primitives.StringValues value);
         var isQueryStringMobile = Request.Query.TryGetValue("Access_Token_Mobile", out var mobileValues);
 

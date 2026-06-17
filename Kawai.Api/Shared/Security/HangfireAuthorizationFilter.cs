@@ -67,8 +67,10 @@ public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 
     private string GetToken(HttpContext httpContext)
     {
+        var configuration = httpContext.RequestServices.GetService<Microsoft.Extensions.Configuration.IConfiguration>();
+        var cookieName = configuration?["Security:AuthCookieName"] ?? "__SIDX";
         var authorizationHeader = httpContext.Request.Headers.Authorization.ToString();
-        var cookies = httpContext.Request.Cookies["__SIDXTrial"];
+        var cookies = httpContext.Request.Cookies[cookieName];
 
         if (!string.IsNullOrWhiteSpace(authorizationHeader))
         {

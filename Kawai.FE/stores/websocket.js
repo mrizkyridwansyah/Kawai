@@ -1,8 +1,5 @@
 var app = useNuxtApp();
 
-import configs from "@/app.config.json";
-const baseUrl = () => process.env.NODE_ENV == "production" ? configs.baseWSUrl : configs.baseWSUrlDev;
-
 export const useWebSocket = defineStore('WebSocket', {
   state: () => ({
     data: [],
@@ -16,6 +13,8 @@ export const useWebSocket = defineStore('WebSocket', {
       
     },
     connect: function(onConnected) {
+      const config = useRuntimeConfig();
+      const baseUrl = () => config.public.apiBase;
       var _this = this;
       app.$http.get('/auth/ws-key')
         .then(({data}) => {

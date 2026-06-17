@@ -31,6 +31,9 @@ builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
 builder.Services.AddScoped<DataLogger>();
 
+builder.Services.AddSingleton<Kawai.Api.Robot.Services.Logging.LogBufferService>();
+builder.Services.AddHostedService<Kawai.Api.Robot.Services.Logging.LogFlushBackgroundService>();
+
 builder.Services.AddApplication(config);
 
 builder.Services.AddRateLimiter(options =>

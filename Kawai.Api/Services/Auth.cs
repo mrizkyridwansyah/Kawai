@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Kawai.Api.Models;
 using Kawai.Data;
 using Kawai.Data.SqlConnections;
@@ -8,11 +8,12 @@ using System.CodeDom.Compiler;
 using System.Data;
 namespace Kawai.Api;
 
-public class Auth(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, DbExecutor db)
+public class Auth(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, DbExecutor db, Microsoft.Extensions.Configuration.IConfiguration configuration)
 {
     private readonly DbExecutor _db = db;
     protected IMemoryCache MemoryCache { get; set; } = memoryCache;
     protected IHttpContextAccessor HttpContextAccessor { get; set; } = httpContextAccessor;
+    protected Microsoft.Extensions.Configuration.IConfiguration Configuration { get; set; } = configuration;
 
     public string Token
     {
@@ -20,7 +21,8 @@ public class Auth(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryC
         {
             var authorizationHeader = HttpContextAccessor.HttpContext.Request.Headers.Authorization.ToString();
 
-            var cookies = HttpContextAccessor.HttpContext.Request.Cookies["__SIDX"];
+            var cookieName = Configuration["Security:AuthCookieName"] ?? "__SIDX";
+            var cookies = HttpContextAccessor.HttpContext.Request.Cookies[cookieName];
 
             if (string.IsNullOrWhiteSpace(authorizationHeader) && string.IsNullOrWhiteSpace(cookies))
                 return default;

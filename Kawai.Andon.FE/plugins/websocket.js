@@ -1,9 +1,7 @@
-import configs from "@/app.config.json";
-
-var baseUrl = () => process.env.NODE_ENV == "production" ? configs.baseWSUrl : configs.baseWSUrlDev;
-
 export default defineNuxtPlugin(nuxtApp => {
-  
+  const config = useRuntimeConfig();
+  const baseUrl = () => config.public.apiBase;
+
   // var key = '';
 
   // nuxtApp.$http.get(`/auth/v1/ws-key`)

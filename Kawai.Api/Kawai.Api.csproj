@@ -16,9 +16,11 @@
 
   <ItemGroup>
     <Compile Remove="CronJobs\StockCalculation.cs" />
+    <Compile Remove="CronJobs\StockMasterRecalculate.cs" />
     <Compile Remove="Services\TransactionConsumer.cs" />
     <Compile Remove="Shared\Extensions\CommandExtension.cs" />
     <Compile Remove="Shared\Middleware\ErrorHandlingMiddleware.cs" />
+    <Compile Remove="Shared\Security\HangfireAuthorizationFilter.cs" />
   </ItemGroup>
 
   <ItemGroup>
