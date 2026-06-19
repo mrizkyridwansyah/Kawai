@@ -6,10 +6,10 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "generate:dev": "nuxt generate --dotenv .env.dev",
-    "generate:trial": "nuxt generate --dotenv .env.trial",
-    "generate:live": "nuxt generate --dotenv .env.production",
+    "generate": "nuxt generate && node scripts/build-info.cjs DEFAULT .env",
+    "generate:dev": "nuxt generate --dotenv .env.dev && node scripts/build-info.cjs DEVELOPMENT .env.dev",
+    "generate:trial": "nuxt generate --dotenv .env.trial && node scripts/build-info.cjs TRIAL .env.trial",
+    "generate:live": "nuxt generate --dotenv .env.production && node scripts/build-info.cjs PRODUCTION .env.production",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
