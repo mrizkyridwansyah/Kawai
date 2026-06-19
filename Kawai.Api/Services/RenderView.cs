@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -13,15 +13,18 @@ public class RazorViewRenderer
     private readonly IServiceProvider _serviceProvider;
     private readonly IRazorViewEngine _viewEngine;
     private readonly ITempDataProvider _tempDataProvider;
+    private readonly PlaywrightBrowserService _browserService;
 
     public RazorViewRenderer(
         IServiceProvider serviceProvider,
         IRazorViewEngine viewEngine,
-        ITempDataProvider tempDataProvider)
+        ITempDataProvider tempDataProvider,
+        PlaywrightBrowserService browserService)
     {
         _serviceProvider = serviceProvider;
         _viewEngine = viewEngine;
         _tempDataProvider = tempDataProvider;
+        _browserService = browserService;
     }
 
     public async Task<string> RenderAsync<TModel>(string viewName, TModel model)
@@ -65,18 +68,27 @@ public class RazorViewRenderer
 
     public async Task<byte[]> GeneratePdfAsync(string html)
     {
-        using var playwright = await Playwright.CreateAsync();
-        await using var browser = await playwright.Chromium.LaunchAsync(
-            new BrowserTypeLaunchOptions { Headless = true });
+        // 1. Ambil Singleton Browser Instance
+        var browser = await _browserService.GetBrowserAsync();
 
+        // 2. Buka Tab / Page baru untuk proses render
         var page = await browser.NewPageAsync();
-        await page.SetContentAsync(html);
 
-        return await page.PdfAsync(new PagePdfOptions
+        try
         {
-            Format = "A4",
-            PrintBackground = true
-        });
+            await page.SetContentAsync(html);
+
+            return await page.PdfAsync(new PagePdfOptions
+            {
+                Format = "A4",
+                PrintBackground = true
+            });
+        }
+        finally
+        {
+            // 3. Wajib tutup tab/page setelah selesai agar memory tidak leak!
+            await page.CloseAsync();
+        }
     }
 
 }

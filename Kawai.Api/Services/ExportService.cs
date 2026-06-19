@@ -130,36 +130,23 @@ public class ExportService : IExportService
     public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId)
     {
         var results = await _receiptRepository.GetListBarcodeDetail(receipt.Id.Value);
-        var renderedLabels = new List<string>();
-
-        foreach (var item in results)
+        var models = results.Select(item => new LabelBarcodeDetailDto
         {
-            var model = new LabelBarcodeDetailDto
-            {
+            BarcodeNo = item.BarcodeNo,
+            ReceiptNo = item.ReceiptNo,
+            FromCompany = item.FromCompany,
+            ToCompany = item.ToCompany,
+            PONumber = item.PONumber,
+            ShippingLot = item.ShippingLot,
+            ItemCode = item.ItemCode,
+            ItemName = item.ItemName,
+            Qty = item.Qty,
+            DeliveryDate = item.DeliveryDate,
+            DNNumber = item.DNNumber,
+            ShippingLabelNo = item.ShippingLabelNo,
+        }).ToList();
 
-                BarcodeNo = item.BarcodeNo,
-                ReceiptNo = item.ReceiptNo,
-                FromCompany = item.FromCompany,
-                ToCompany = item.ToCompany,
-                PONumber = item.PONumber,
-                ShippingLot = item.ShippingLot,
-                ItemCode = item.ItemCode,
-                ItemName = item.ItemName,
-                Qty = item.Qty,
-                DeliveryDate = item.DeliveryDate,
-                DNNumber = item.DNNumber,
-                ShippingLabelNo = item.ShippingLabelNo,
-
-            };
-
-            var html = await _renderer.RenderAsync(
-                "Templates/PrintBarcode.cshtml",
-                model);
-
-            renderedLabels.Add(html);
-        }
-
-        var fullHtml = HtmlTemplateHelper.BuildA4Html(renderedLabels);
+        var fullHtml = await _renderer.RenderAsync("Templates/PrintBarcodesA4.cshtml", models);
         var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
 
         string keyStorage = Guid.NewGuid().ToString();
@@ -285,33 +272,22 @@ public class ExportService : IExportService
 
         if (results == null || !results.Any()) return;
 
-        var renderedLabels = new List<string>();
-
-        foreach (var item in results)
+        var models = results.Select(item => new LabelBarcodeDetailDto
         {
-            var model = new LabelBarcodeDetailDto
-            {
-                BarcodeNo = item.BarcodeNo,
-                FromCompany = item.FromCompany,
-                ToCompany = item.ToCompany,
-                PONumber = item.PONumber,
-                ShippingLot = item.ShippingLot,
-                ItemCode = item.ItemCode,
-                ItemName = item.ItemName,
-                Qty = item.Qty,
-                DeliveryDate = item.DeliveryDate,
-                DNNumber = item.DNNumber,
-                ShippingLabelNo = item.ShippingLabelNo,
-            };
+            BarcodeNo = item.BarcodeNo,
+            FromCompany = item.FromCompany,
+            ToCompany = item.ToCompany,
+            PONumber = item.PONumber,
+            ShippingLot = item.ShippingLot,
+            ItemCode = item.ItemCode,
+            ItemName = item.ItemName,
+            Qty = item.Qty,
+            DeliveryDate = item.DeliveryDate,
+            DNNumber = item.DNNumber,
+            ShippingLabelNo = item.ShippingLabelNo,
+        }).ToList();
 
-            var html = await _renderer.RenderAsync(
-                "Templates/PrintBarcode.cshtml",
-                model);
-
-            renderedLabels.Add(html);
-        }
-
-        var fullHtml = HtmlTemplateHelper.BuildA4Html(renderedLabels);
+        var fullHtml = await _renderer.RenderAsync("Templates/PrintBarcodesA4.cshtml", models);
         var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
 
         _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));

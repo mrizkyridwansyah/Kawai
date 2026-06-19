@@ -6,13 +6,13 @@ export default defineNuxtConfig({
     }
   },
   build: {
-    transpile: ["pdfjs-dist", "vuetify"]
+    transpile: ["pdfjs-dist", "vuetify", "@microsoft/signalr"]
    
   },
 
   vite: {
     optimizeDeps: {
-      include: ["pdfjs-dist/legacy/build/pdf"]
+      include: ["pdfjs-dist/legacy/build/pdf", "@microsoft/signalr"]
     }
   },
 

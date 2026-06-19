@@ -16,9 +16,14 @@ public class NotifApprovalHub : Microsoft.AspNetCore.SignalR.Hub
         var tokenCookie = httpContext.Request.Cookies[cookieName];
 
         var tokenAuth = httpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var tokenSignalR = httpContext.Request.Query["access_token"]; // dari accessTokenFactory di FE
         var tokenMobile = httpContext.Request.Query["Access_Token_Mobile"];
 
-        var token = !String.IsNullOrEmpty(tokenCookie) ? tokenCookie : !String.IsNullOrEmpty(tokenAuth) ? tokenAuth : !String.IsNullOrEmpty(tokenMobile) ? tokenMobile : "";
+        var token = !String.IsNullOrEmpty(tokenCookie) ? tokenCookie
+                  : !String.IsNullOrEmpty(tokenAuth) ? tokenAuth
+                  : !String.IsNullOrEmpty(tokenSignalR) ? tokenSignalR
+                  : !String.IsNullOrEmpty(tokenMobile) ? tokenMobile
+                  : "";
         Console.WriteLine($"Client connected: {token}");
 
         if (!string.IsNullOrEmpty(token))

@@ -283,36 +283,23 @@ public class ReceiptController : HahaController
         });
 
         var results = await _receiptRepository.GetListBarcodeDetail(receiptId);
-        var renderedLabels = new List<string>();
-
-        foreach (var item in results)
+        var models = results.Select(item => new LabelBarcodeDetailDto
         {
-            var model = new LabelBarcodeDetailDto
-            {
+            BarcodeNo = item.BarcodeNo,
+            ReceiptNo = item.ReceiptNo,
+            FromCompany = item.FromCompany,
+            ToCompany = item.ToCompany,
+            PONumber = item.PONumber,
+            ShippingLot = item.ShippingLot,
+            ItemCode = item.ItemCode,
+            ItemName = item.ItemName,
+            Qty = item.Qty,
+            DeliveryDate = item.DeliveryDate,
+            DNNumber = item.DNNumber,
+            ShippingLabelNo = item.ShippingLabelNo,
+        }).ToList();
 
-                BarcodeNo = item.BarcodeNo,
-                ReceiptNo = item.ReceiptNo,
-                FromCompany = item.FromCompany,
-                ToCompany = item.ToCompany,
-                PONumber = item.PONumber,
-                ShippingLot = item.ShippingLot,
-                ItemCode = item.ItemCode,
-                ItemName = item.ItemName,
-                Qty = item.Qty,
-                DeliveryDate = item.DeliveryDate,
-                DNNumber = item.DNNumber,
-                ShippingLabelNo = item.ShippingLabelNo,
-
-            };
-
-            var html = await renderer.RenderAsync(
-                "Templates/PrintBarcode.cshtml",
-                model);
-
-            renderedLabels.Add(html);
-        }
-
-        var fullHtml = HtmlTemplateHelper.BuildA4Html(renderedLabels);
+        var fullHtml = await renderer.RenderAsync("Templates/PrintBarcodesA4.cshtml", models);
         var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
         Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
         return File(pdfBytes, "application/pdf", result.SupplierName + "_" + result.DNNumber);

@@ -62,6 +62,7 @@ builder.Services.AddScoped<RazorViewRenderer>();
 builder.Services.AddSingleton<IConnectionFactory, ConnectionFactory>();
 builder.Services.AddScoped<DbExecutor>();
 builder.Services.AddScoped<LogExecutor>();
+builder.Services.AddSingleton<Kawai.Api.Services.PlaywrightBrowserService>();
 builder.Services.AddScoped<DataLogger>();
 
 // Logging buffer: singleton buffer + background flush service
