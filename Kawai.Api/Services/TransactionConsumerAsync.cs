@@ -3,7 +3,6 @@ using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
-using Kawai.Data.SqlConnections;
 using Kawai.Domain.Interfaces;
 using Kawai.Api.Services;
 using Kawai.Api.Services.Logging;
@@ -17,12 +16,12 @@ public class TransactionConsumerAsync : BackgroundService
     private IModel? _channel;
 
     private readonly IServiceScopeFactory _scopeFactory;
-    private const string ExchangeName = "stock_transaction_exchange";
-    private const string QueueName = "stock_transaction_queue";
-    private const string RoutingKey = "stock_transaction";
-    private const string DlxExchange = "stock_transaction_dlx";
-    private const string DlxQueue = "stock_transaction_dead_letter_queue_v1";
-    private const string DlxRoutingKey = "dead.stock_transaction";
+    private readonly string ExchangeName;
+    private readonly string QueueName;
+    private readonly string RoutingKey;
+    private readonly string DlxExchange;
+    private readonly string DlxQueue;
+    private readonly string DlxRoutingKey;
 
     private readonly IConfiguration _configuration;
     private readonly LogBufferService _logBuffer;
@@ -32,6 +31,15 @@ public class TransactionConsumerAsync : BackgroundService
         _scopeFactory = scopeFactory;
         _configuration = configuration;
         _logBuffer = logBuffer;
+
+        var prefix = _configuration["RabbitMQ:QueuePrefix"] ?? "dev";
+
+        ExchangeName = $"stock_{prefix}_transaction_exchange";
+        QueueName = $"stock_{prefix}_transaction_queue";
+        RoutingKey = $"stock_{prefix}_transaction";
+        DlxExchange = $"stock_{prefix}_transaction_dlx";
+        DlxQueue = $"stock_{prefix}_transaction_dead_letter_queue_v1";
+        DlxRoutingKey = $"dead.stock_{prefix}_transaction";
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -80,15 +88,15 @@ public class TransactionConsumerAsync : BackgroundService
     private void DeclareTopologySafe()
     {
         var dlxQueueArgs = new Dictionary<string, object>
-    {
-        { "x-message-ttl", 2592000000 }
-    };
+        {
+            { "x-message-ttl", 2592000000 }
+        };
 
         var queueArgs = new Dictionary<string, object>
-    {
-        { "x-dead-letter-exchange", DlxExchange },
-        { "x-dead-letter-routing-key", DlxRoutingKey }
-    };
+        {
+            { "x-dead-letter-exchange", DlxExchange },
+            { "x-dead-letter-routing-key", DlxRoutingKey }
+        };
 
         _channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, durable: true);
         _channel.ExchangeDeclare(DlxExchange, ExchangeType.Direct, durable: true);

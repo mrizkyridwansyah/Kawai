@@ -20,27 +20,39 @@ public class TransactionConsumer : BackgroundService
     private Dictionary<string, ITransactionHandler> _handlers;
     private readonly LogBufferService _logBuffer;
 
-    private const string ExchangeName = "stock_transaction_exchange";
-    private const string QueueName = "stock_transaction_queue";
-    private const string RoutingKey = "stock_transaction";
-    private const string DlxExchange = "stock_transaction_dlx";
-    private const string DlxQueue = "stock_transaction_dead_letter_queue";
-    private const string DlxRoutingKey = "dead.stock_transaction";
+    private readonly string _exchangeName;
+    private readonly string _queueName;
+    private readonly string _routingKey;
+    private readonly string _dlxExchange;
+    private readonly string _dlxRoutingKey;
+
+    private readonly IConfiguration _configuration;
 
     public TransactionConsumer
     (
         IServiceScopeFactory scopeFactory,
-        LogBufferService logBuffer
+        LogBufferService logBuffer,
+        IConfiguration configuration
     )
     {
         _scopeFactory = scopeFactory;
         _logBuffer = logBuffer;
+        _configuration = configuration;
         InitRabbitMq();
     }
 
     private void InitRabbitMq()
     {
         Console.WriteLine("InitRabbitMq");
+
+        var prefix = _configuration["RabbitMQ:QueuePrefix"] ?? "dev";
+
+        _exchangeName = $"stock_{prefix}_transaction_exchange";
+        _queueName = $"stock_{prefix}_transaction_queue";
+        _routingKey = $"stock_{prefix}_transaction";
+        _dlxExchange = $"stock_{prefix}_transaction_dlx";
+        _dlxRoutingKey = $"dead.stock_{prefix}_transaction";
+
         var factory = new RabbitMQ.Client.ConnectionFactory() { HostName = "localhost" };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
@@ -131,7 +143,7 @@ public class TransactionConsumer : BackgroundService
 
                 if (!string.IsNullOrWhiteSpace(notification.Receiver))
                 {
-                    var notifications = new List<Notification> { notification }; 
+                    var notifications = new List<Notification> { notification };
                     _notificationService.BroadCastOnlyTo([notification.Receiver], "NewNotification", new
                     {
                         Count = 1,

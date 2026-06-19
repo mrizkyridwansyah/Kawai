@@ -14,11 +14,11 @@ public interface ITransactionProducer
 
 public class TransactionProducer : ITransactionProducer, IDisposable
 {
-    private readonly string _exchangeName = "stock_transaction_exchange";
-    private readonly string _queueName = "stock_transaction_queue";
-    private readonly string _routingKey = "stock_transaction";
-    private readonly string _dlxExchange = "stock_transaction_dlx";
-    private readonly string _dlxRoutingKey = "dead.stock_transaction";
+    private readonly string _exchangeName;
+    private readonly string _queueName;
+    private readonly string _routingKey;
+    private readonly string _dlxExchange;
+    private readonly string _dlxRoutingKey;
 
     private IConnection? _connection;
     private IModel? _channel;
@@ -27,6 +27,14 @@ public class TransactionProducer : ITransactionProducer, IDisposable
 
     public TransactionProducer(IConfiguration configuration)
     {
+        var prefix = configuration["RabbitMQ:QueuePrefix"] ?? "dev";
+
+        _exchangeName = $"stock_{prefix}_transaction_exchange";
+        _queueName = $"stock_{prefix}_transaction_queue";
+        _routingKey = $"stock_{prefix}_transaction";
+        _dlxExchange = $"stock_{prefix}_transaction_dlx";
+        _dlxRoutingKey = $"dead.stock_{prefix}_transaction";
+
         _factory = new ConnectionFactory
         {
             HostName = configuration["RabbitMQ:HostName"] ?? "localhost",
