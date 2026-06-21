@@ -5,6 +5,17 @@
         <div class="d-flex">
           <div class="d-flex flex-fill">
             <v-button-add :add="add" cClass="mr-1" />
+            <v-button-print
+              :print="print"
+              cClass="ml-1"
+              :is-loading="isLoadingPrint"
+            />
+            <v-button-print
+              :print="printall"
+              label="Print All"
+              cClass="ml-1"
+              :is-loading="isLoadingPrint"
+            />
           </div>
         </div>
       </div>
@@ -25,6 +36,7 @@
           >
             <thead>
               <tr>
+                <th class="text-center">Print</th>
                 <th class="text-center">Action</th>
                 <th class="text-center">Stop Point Code</th>
                 <th class="text-center">Description</th>
@@ -36,6 +48,14 @@
             </thead>
             <tbody>
               <tr v-for="(item, idx) in ds.data.Items">
+                <td>
+                  <div style="justify-items: center">
+                    <input-checkbox
+                      :modelValue="isChecked(item.StopPointCode)"
+                      @update:modelValue="(checked) => check(checked, item)"
+                    />
+                  </div>
+                </td>
                 <td class="text-center">
                   <font-awesome-icon
                     class="mr-2 text-success"
@@ -121,6 +141,8 @@ export default {
     idSelected: "",
     title: "",
     modalMode: "",
+    selectedPrint: [],
+    isLoadingPrint: false,
     debounce: null,
   }),
   computed: {
@@ -199,6 +221,70 @@ export default {
           .catch((err) => {
             toastDanger(err?.Message);
             resolve();
+          });
+      });
+    },
+    isChecked: function (code) {
+      return this.selectedPrint.some((p) => p.Key === code);
+    },
+    check: function (checked, item) {
+      const existingIndex = this.selectedPrint.findIndex(
+        (p) => p.Key === item.StopPointCode,
+      );
+      if (checked && existingIndex === -1) {
+        this.selectedPrint.push({
+          Key: item.StopPointCode,
+          Value: item.Description,
+        });
+      } else if (!checked && existingIndex !== -1) {
+        this.selectedPrint.splice(existingIndex, 1);
+      }
+    },
+    print: function () {
+      this.isLoadingPrint = true;
+      if (this.selectedPrint.length === 0) {
+        toastWarning("Please choose stop points");
+        this.isLoadingPrint = false;
+        return;
+      }
+
+      new Promise((resolve, reject) => {
+        this.ds
+          .exportQR(this.selectedPrint)
+          .then((_) => {
+            this.selectedPrint = [];
+            resolve();
+          })
+
+          .catch((err) => {
+            toastDanger(err?.Message);
+            resolve();
+          })
+          .finally(() => {
+            setTimeout(() => {
+              this.isLoadingPrint = false;
+            }, 1000);
+          });
+      });
+    },
+
+    printall: function () {
+      this.isLoadingPrint = true;
+      new Promise((resolve, reject) => {
+        this.ds
+          .exportQRALL()
+          .then((_) => {
+            resolve();
+          })
+
+          .catch((err) => {
+            toastDanger(err?.Message);
+            resolve();
+          })
+          .finally(() => {
+            setTimeout(() => {
+              this.isLoadingPrint = false;
+            }, 500);
           });
       });
     },

@@ -186,5 +186,105 @@ public class StopPointController : HahaController
         return Success(base64File);
     }
 
-  
+    [HttpPost("export/qrcode")]
+    public async Task<IActionResult> ExportQRCode([FromBody] List<Dictionary<string, object>> rows)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 2;
+        int qrSize = 150;
+
+        // Style for value cells
+        var style = workbook.Style;
+        style.Font.Bold = true;
+        style.Font.FontSize = 16;
+        style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+        foreach (var rowMap in rows)
+        {
+            int startRow = rowIdx;
+            var row = ws.Row(rowIdx);
+
+            int colIdx = 2;
+
+            // Insert QR code in cell
+            string key = rowMap.TryGetValue("Key", out var keyVal) ? keyVal?.ToString() ?? "" : "";
+            ExcelHelper.InsertQRCode(ws, rowIdx, colIdx++, key, qrSize);
+
+            // Insert value cell with style
+            string value = rowMap.TryGetValue("Value", out var val) ? val?.ToString() ?? "" : "";
+            var valueCell = row.Cell(colIdx++);
+            valueCell.Value = value;
+            valueCell.Style = style;
+            ws.Column(3).Width = 40;
+
+            // Set outer border for range with QR + value
+            var range = ws.Range(startRow, 2, rowIdx, colIdx - 1);
+            range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            rowIdx += 2;
+        }
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms);
+        var fileBytes = ms.ToArray();
+        var base64File = Convert.ToBase64String(fileBytes);
+
+        return Success(base64File);
+    }
+
+    [HttpPost("export/qrcodeall")]
+    public async Task<IActionResult> ExportQRCodeAll([FromBody] RequestParameter parameter)
+    {
+        var results = await _stoppointRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 2;
+        int qrSize = 150;
+
+        // Style for value cells
+        var style = workbook.Style;
+        style.Font.Bold = true;
+        style.Font.FontSize = 16;
+        style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+        foreach (var rowMap in results)
+        {
+            int startRow = rowIdx;
+            var row = ws.Row(rowIdx);
+
+            int colIdx = 2;
+
+            // Insert QR code in cell
+            string key = rowMap.StopPointCode;
+            ExcelHelper.InsertQRCode(ws, rowIdx, colIdx++, key, qrSize);
+
+            // Insert value cell with style
+            string value = rowMap.Description;
+            var valueCell = row.Cell(colIdx++);
+            valueCell.Value = value;
+            valueCell.Style = style;
+            ws.Column(3).Width = 40;
+
+            // Set outer border for range with QR + value
+            var range = ws.Range(startRow, 2, rowIdx, colIdx - 1);
+            range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            rowIdx += 2;
+        }
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms);
+        var fileBytes = ms.ToArray();
+        var base64File = Convert.ToBase64String(fileBytes);
+
+        return Success(base64File);
+    }
+
 }

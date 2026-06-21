@@ -578,7 +578,7 @@ export default {
         this.ds
           .exportExcel(filters)
           .then((data) => {
-            if(data) toastInfo(data.Message)
+            if (data) toastInfo(data.Message);
             resolve();
           })
           .catch((err) => {

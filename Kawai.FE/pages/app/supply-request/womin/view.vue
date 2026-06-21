@@ -284,13 +284,13 @@ export default {
           const dateA = new Date(a.ScheduleDate);
           const dateB = new Date(b.ScheduleDate);
 
-          if (dateA.getTime() !== dateB.getTime()) {
-            return dateA - dateB;
-          }
+          // if (dateA.getTime() !== dateB.getTime()) {
+          //   return dateA - dateB;
+          // }
 
-          if (a.ParentItemCode !== b.ParentItemCode) {
-            return a.ParentItemCode.localeCompare(b.ParentItemCode);
-          }
+          // if (a.ParentItemCode !== b.ParentItemCode) {
+          //   return a.ParentItemCode.localeCompare(b.ParentItemCode);
+          // }
 
           if (a.WorkStationCode !== b.WorkStationCode) {
             return a.WorkStationCode.localeCompare(b.WorkStationCode);

@@ -59,7 +59,7 @@
               cClass="ml-1"
               :is-loading="isLoadingPrintAll"
             />
-            
+
             <v-button
               :action="setting"
               label="Setting Stop Point"
