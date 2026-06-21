@@ -16,9 +16,9 @@ public class AndonWominRequestController : HahaController
 
 
     [HttpGet("list")]
-    public async Task<IActionResult> List(string Area)
+    public async Task<IActionResult> List(string line, string area)
     {
-        var results = await _andonWominRequest.GetListNSummary(Area);
+        var results = await _andonWominRequest.GetListNSummary(line, area);
         return Success(results);
     }
 }

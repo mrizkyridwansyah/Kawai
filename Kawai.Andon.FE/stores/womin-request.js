@@ -1,7 +1,6 @@
-
 var app = useNuxtApp();
 
-export const useWominRequest = defineStore('WominRequest', {
+export const useWominRequest = defineStore("WominRequest", {
   state: () => ({
     isLoading: false,
     isSigningIn: false,
@@ -17,27 +16,28 @@ export const useWominRequest = defineStore('WominRequest', {
     },
   }),
   actions: {
-    load: function (filterParams = null) {
+    load: function (line = null, area = null) {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.get(`/andon/womin-request/list?area=${filterParams || ""}`)
+        app.$http
+          .get(
+            `/andon/womin-request/list?line=${line || ""}&area=${area || ""}`,
+          )
           .then(({ data }) => {
             this.data = data.Data;
-            //console.log(data);  
+            //console.log(data);
             resolve(data);
           })
-          .catch(err => {
-            if (err.code == 'ERR_NETWORK')
-              this.isNetworkError = true;
+          .catch((err) => {
+            if (err.code == "ERR_NETWORK") this.isNetworkError = true;
 
-            if (err.code == 'ERR_BAD_RESPONSE')
-              this.isServerError = true;
+            if (err.code == "ERR_BAD_RESPONSE") this.isServerError = true;
 
             reject(err);
           })
-          .finally(_ => this.isLoading = false);
-      })
+          .finally((_) => (this.isLoading = false));
+      });
     },
     // loadSummary: function () {
     //   this.isLoading = true;

@@ -46,7 +46,7 @@ public class MobileSupplyScanRequestController : HahaController
     [HttpGet("warehouseline-ddlsearch")]
     public async Task<IActionResult> WarehouseDDL(string keyword, string ids)
     {
-        var results = await _supplyscanrequestRepository.GetWarehouseDDL(keyword);
+        var results = await _supplyscanrequestRepository.GetWarehouseDDL(keyword, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

@@ -17,12 +17,12 @@ public class AndonWominRequestRepository : IAndonWominRequestRepository
         _dbExecutor = dbExecutor;
     }
 
-    public async Task<List<AndonWominRequestDto>> GetListNSummary(string Area)
+    public async Task<List<AndonWominRequestDto>> GetListNSummary(string line, string Area)
     {
         //string sp = "sp_Wms_Andon_WominRequest_GetList";
         //return (await _dbExecutor.QueryListAsync<AndonWominRequestDto>(sp)).ToList();
         string sp = "sp_Wms_Andon_WominRequest_GetList";
-        return (await _dbExecutor.QueryListAsync<AndonWominRequestDto>(sp, new { Area = Area ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<AndonWominRequestDto>(sp, new { Line = line ?? "" , Area = Area ?? "" })).ToList();
     }
 
 

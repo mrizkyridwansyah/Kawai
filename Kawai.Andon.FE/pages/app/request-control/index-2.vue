@@ -128,12 +128,10 @@
                 >
                   <thead>
                     <tr>
-                      <th class="text-center">Line</th>
+                      <th class="text-center">Location</th>
+                      <th class="text-center">Request No & Item</th>
                       <th class="text-center">Production Date</th>
-                      <th class="text-center">Request No</th>
-                      <th class="text-center">Item</th>
                       <th class="text-center">Model</th>
-                      <th class="text-center">Work Station</th>
                       <th class="text-center">Preparation Status</th>
                       <th class="text-center">Trolly Number</th>
                       <th class="text-center">Current Position</th>
@@ -141,14 +139,16 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(item, i) in ds.data">
-                      <td>{{ item.Line }}</td>
+                    <tr v-for="(item, i) in paginatedData">
+                      <td>{{ item.Line }}<br />{{ item.WorkStation }}</td>
+                      <td>{{ item.RequestNo }}<br />{{ item.PickingArea }}</td>
                       <td>{{ $func.formatDate(item.ProductionDate) }}</td>
-                      <td>{{ item.RequestNo }}</td>
-                      <td>{{ item.PickingArea }}</td>
                       <td>{{ item.Model }}</td>
-                      <td>{{ item.WorkStation }}</td>
-                      <td>{{ item.PreparationStatus }}</td>
+                      <td>
+                        <span class="badge-danger">{{
+                          item.PreparationStatus
+                        }}</span>
+                      </td>
                       <td>{{ item.TrollyNumber }}</td>
                       <td>{{ item.CurrentPosition }}</td>
                       <td>{{ item.NextLocation }}</td>
@@ -157,6 +157,73 @@
                 </table>
               </div>
               <v-data-empty class="mt-3" v-if="ds.data.Length == 0" />
+
+              <!-- Pagination Footer -->
+              <div
+                v-if="totalPages > 0"
+                class="d-flex justify-content-between align-items-center mt-3 p-2 px-3"
+                style="
+                  background: #15171c;
+                  border-radius: 4px;
+                  border: 1px solid #2d323f;
+                "
+              >
+                <div class="fw-bold text-white d-flex align-items-center">
+                  <span class="me-3"
+                    >PAGE {{ currentPage }} / {{ totalPages }}</span
+                  >
+                  <span
+                    class="badge bg-dark text-light border border-secondary me-3"
+                    style="font-size: 0.85em; font-weight: normal"
+                  >
+                    Showing {{ startItem }} - {{ endItem }} of
+                    {{ totalItems }} items
+                  </span>
+                  <div
+                    class="d-flex align-items-center"
+                    style="font-size: 0.85em; font-weight: normal"
+                  >
+                    <span class="text-white me-2">Show:</span>
+                    <select
+                      v-model.number="pageSize"
+                      class="form-select form-select-sm bg-dark text-white border-secondary"
+                      style="
+                        width: auto;
+                        padding: 2px 24px 2px 8px;
+                        font-size: 1em;
+                      "
+                    >
+                      <option :value="5">5</option>
+                      <option :value="8">8</option>
+                      <option :value="10">10</option>
+                      <option :value="25">25</option>
+                      <option :value="50">50</option>
+                    </select>
+                  </div>
+                </div>
+                <div
+                  v-if="totalPages > 1"
+                  class="d-flex flex-column align-items-end"
+                  style="width: 200px"
+                >
+                  <div
+                    class="text-white fw-bold mb-1"
+                    style="font-size: 0.85em"
+                  >
+                    AUTO-NEXT IN {{ timeLeft }}s
+                  </div>
+                  <div
+                    class="progress w-100"
+                    style="height: 5px; background-color: #555"
+                  >
+                    <div
+                      class="progress-bar bg-light"
+                      role="progressbar"
+                      :style="{ width: (timeLeft / 10) * 100 + '%' }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -171,6 +238,10 @@ export default {
     isLoading: false,
     intervalLoad: null,
     showFilter: true,
+    currentPage: 1,
+    pageSize: 8,
+    timeLeft: 10,
+    progressInterval: null,
     summary: {
       total: 0,
       totalItem: 0,
@@ -191,11 +262,46 @@ export default {
     ds: function () {
       return useWominRequest();
     },
+    totalPages: function () {
+      const size = parseInt(this.pageSize, 10) || 8;
+      return this.ds.data && Array.isArray(this.ds.data)
+        ? Math.ceil(this.ds.data.length / size)
+        : 0;
+    },
+    paginatedData: function () {
+      if (!this.ds.data || !Array.isArray(this.ds.data)) return [];
+      const size = parseInt(this.pageSize, 10) || 8;
+      const start = (this.currentPage - 1) * size;
+      const end = start + size;
+      return this.ds.data.slice(start, end);
+    },
+    totalItems: function () {
+      return this.ds.data && Array.isArray(this.ds.data)
+        ? this.ds.data.length
+        : 0;
+    },
+    startItem: function () {
+      const size = parseInt(this.pageSize, 10) || 8;
+      return this.totalItems === 0 ? 0 : (this.currentPage - 1) * size + 1;
+    },
+    endItem: function () {
+      const size = parseInt(this.pageSize, 10) || 8;
+      return Math.min(this.currentPage * size, this.totalItems);
+    },
   },
   watch: {
-    // "filter.warehouse": function () {
-    //   this.ds.data.Items = [];
-    // },
+    pageSize: function () {
+      this.currentPage = 1;
+      this.timeLeft = 10;
+    },
+    "ds.data": {
+      handler: function () {
+        if (this.totalPages > 0 && this.currentPage > this.totalPages) {
+          this.currentPage = this.totalPages;
+        }
+      },
+      deep: true,
+    },
     "filter.area": function () {
       this.filter.area;
     },
@@ -206,6 +312,7 @@ export default {
   beforeUnmount: function () {
     // Wajib: bersihkan interval dan listener jika pindah halaman (mencegah memory leak)
     this.stopInterval();
+    this.stopProgress();
     document.removeEventListener("click", this.handleGlobalClick);
   },
   methods: {
@@ -221,12 +328,39 @@ export default {
         this.intervalLoad = null;
       }
     },
+    nextPage: function () {
+      if (this.totalPages <= 1) return;
+      this.currentPage++;
+      if (this.currentPage > this.totalPages) {
+        this.currentPage = 1;
+      }
+      this.timeLeft = 10;
+    },
+    startProgress: function () {
+      this.stopProgress();
+      this.timeLeft = 10;
+      this.progressInterval = setInterval(() => {
+        if (!this.showFilter && this.totalPages > 1) {
+          this.timeLeft--;
+          if (this.timeLeft <= 0) {
+            this.nextPage();
+          }
+        }
+      }, 1000);
+    },
+    stopProgress: function () {
+      if (this.progressInterval) {
+        clearInterval(this.progressInterval);
+        this.progressInterval = null;
+      }
+    },
     handleGlobalClick: function (event) {
       // Jika filter sedang disembunyikan (interval nyala), dan user klik sembarang tempat,
       // maka munculkan filter dan matikan interval
       if (!this.showFilter) {
         this.showFilter = true;
         this.stopInterval();
+        this.stopProgress();
 
         // Kembalikan teks judul panel seperti semula
         const headerPanel = document.getElementById("header-panel");
@@ -235,7 +369,9 @@ export default {
         }
       }
     },
-    search: function () {
+    search: function (isAuto = false) {
+      const isAutoRefresh = isAuto === true;
+
       if (this.isLoading) {
         console.log("masih loading bro!");
         return;
@@ -261,18 +397,17 @@ export default {
         })
         .finally(() => (this.isLoading = false));
 
-      if (this.filter.area != null) {
-        // Gunakan setTimeout kecil untuk mencegah bentrok dengan handleGlobalClick
-        setTimeout(() => {
-          this.showFilter = false; // Sembunyikan area filter
-          this.startInterval(); // Nyalakan interval tiap 3 detik
+      if (this.filter.area != null && !isAutoRefresh) {
+        // Sembunyikan filter langsung saat tombol search diklik
+        this.showFilter = false;
+        this.startInterval(); // Nyalakan interval tiap 3 detik
+        this.startProgress(); // Nyalakan interval progres halaman
 
-          // Ubah teks judul panel sesuai area yang difilter
-          const headerPanel = document.getElementById("header-panel");
-          if (headerPanel) {
-            headerPanel.innerText = `Remaining Item - Material Type (${this.filter.areaName})`;
-          }
-        }, 100);
+        // Ubah teks judul panel sesuai area yang difilter
+        const headerPanel = document.getElementById("header-panel");
+        if (headerPanel) {
+          headerPanel.innerText = `Remaining Item - Material Type (${this.filter.areaName})`;
+        }
       }
     },
     reset: function () {
