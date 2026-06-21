@@ -18,6 +18,7 @@
         :loading="isLoading"
         @search-change="search"
         @open="open"
+        @close="close"
         :select="change"
         :class="cClass || 'input-wrapper'"
         :multiple="multiple !== undefined || false"
@@ -70,6 +71,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
+    isOpen: false,
     list: [],
     tempValue: null,
     debounce: null,
@@ -82,10 +84,8 @@ export default {
       return this.list.find((x) => x.AreaCode === this.tempValue) || null;
     },
     displayLabel() {
-      // Jika dropdown dibuka, pakai description
-      // Kalau ada selected value, pakai CompanyCode
-      console.log("tempValue", this.tempValue); 
-      return this.tempValue ? "AreaCode" : "AreaName";
+      if (this.isOpen) return "DDLDescription";
+      return this.tempValue ? "AreaCode" : "DDLDescription";
     },
   },
   watch: {
@@ -108,7 +108,7 @@ export default {
   methods: {
     change: function (v) {
       if (this.onSelect) this.onSelect(v);
-       const selected = this.list.find(x => x.AreaCode === v) || null;
+      const selected = this.list.find((x) => x.AreaCode === v) || null;
 
       this.$emit("update:modelValue", v);
       this.$emit("update:areaName", selected?.AreaName || "");
@@ -120,7 +120,11 @@ export default {
       this.load(q, null);
     },
     open: function () {
-      this.load("", this.modelValue);
+      this.isOpen = true;
+      this.load("", null);
+    },
+    close: function () {
+      this.isOpen = false;
     },
     load: function (q = "", d = "") {
       this.list = [];
@@ -132,7 +136,7 @@ export default {
           .get(
             `/andon/filter/ddlarea?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouseCode=${this.warehouse || "ALL"}`
+            }&warehouseCode=${this.warehouse || "ALL"}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

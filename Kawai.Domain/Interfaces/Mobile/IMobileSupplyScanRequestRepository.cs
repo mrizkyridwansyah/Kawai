@@ -10,7 +10,7 @@ public interface IMobileSupplyScanRequestRepository
     Task<List<SupplyScanRequestNoDto>> GetRequestNoDDL(string keyword, string factoryCode , string warehouse);
     Task<SupplyScanRequestDto> GetDataBarcode(string barcodeNo, string requestNo, string itemClass);
     Task<List<SupplyScanRequestDto>> GetListDetailMaterial(string requestno, string itemClass);
-    Task<List<WarehouseDto>> GetWarehouseDDL(string keyword);
+    Task<List<WarehouseDto>> GetWarehouseDDL(string keyword, string userId);
     Task<List<ManufactureLineDto>> GetLineDDL(string keyword,string warehousecode);
     Task<List<SupplyScanRequestDetailDto>> GetListDetail(string warehouseCode, string requestNo, string itemCode);
     Task<bool> Save(MobilSupplyScanRequestSubmit payload, string userId);

@@ -103,39 +103,41 @@
               >
             </div>
             <div class="panel-body">
-              <table
-                class="table mb-0 align-middle w-100 v-fixed-table"
-                ref="table"
-              >
-                <thead>
-                  <tr>
-                    <th class="text-center">Line</th>
-                    <th class="text-center">Production Date</th>
-                    <th class="text-center">Request No</th>
-                    <th class="text-center">Item</th>
-                    <th class="text-center">Model</th>
-                    <th class="text-center">Work Station</th>
-                    <th class="text-center">Preparation Status</th>
-                    <th class="text-center">Trolly Number</th>
-                    <th class="text-center">Current Position</th>
-                    <th class="text-center">Next Location</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, i) in ds.data">
-                    <td>{{ item.Line }}</td>
-                    <td>{{ $func.formatDate(item.ProductionDate) }}</td>
-                    <td>{{ item.RequestNo }}</td>
-                    <td>{{ item.PickingArea }}</td>
-                    <td>{{ item.Model }}</td>
-                    <td>{{ item.WorkStation }}</td>
-                    <td>{{ item.PreparationStatus }}</td>
-                    <td>{{ item.TrollyNumber }}</td>
-                    <td>{{ item.CurrentPosition }}</td>
-                    <td>{{ item.NextLocation }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table
+                  class="table mb-0 align-middle w-100 v-fixed-table"
+                  ref="table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">Line</th>
+                      <th class="text-center">Production Date</th>
+                      <th class="text-center">Request No</th>
+                      <th class="text-center">Item</th>
+                      <th class="text-center">Model</th>
+                      <th class="text-center">Work Station</th>
+                      <th class="text-center">Preparation Status</th>
+                      <th class="text-center">Trolly Number</th>
+                      <th class="text-center">Current Position</th>
+                      <th class="text-center">Next Location</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, i) in ds.data">
+                      <td>{{ item.Line }}</td>
+                      <td>{{ $func.formatDate(item.ProductionDate) }}</td>
+                      <td>{{ item.RequestNo }}</td>
+                      <td>{{ item.PickingArea }}</td>
+                      <td>{{ item.Model }}</td>
+                      <td>{{ item.WorkStation }}</td>
+                      <td>{{ item.PreparationStatus }}</td>
+                      <td>{{ item.TrollyNumber }}</td>
+                      <td>{{ item.CurrentPosition }}</td>
+                      <td>{{ item.NextLocation }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <v-data-empty class="mt-3" v-if="ds.data.Length == 0" />
             </div>
           </div>
@@ -153,6 +155,7 @@ export default {
     showFilter: true,
     summary: {
       total: 0,
+      totalItem: 0,
       womin: 0,
       item: 0,
       remaining: 0,

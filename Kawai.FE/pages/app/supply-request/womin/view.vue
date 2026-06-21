@@ -292,8 +292,8 @@ export default {
             return a.ParentItemCode.localeCompare(b.ParentItemCode);
           }
 
-          if (a.WorkStationName !== b.WorkStationName) {
-            return a.WorkStationName.localeCompare(b.WorkStationName);
+          if (a.WorkStationCode !== b.WorkStationCode) {
+            return a.WorkStationCode.localeCompare(b.WorkStationCode);
           }
 
           return Number(a.SetNumber) - Number(b.SetNumber);

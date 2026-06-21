@@ -32,10 +32,10 @@ class MobileSupplyScanRequestRepository : IMobileSupplyScanRequestRepository
         return (await _dbExecutor.QueryListAsync<SupplyScanRequestDto>(sp, new { RequestNo = requestno, ItemClass = itemClass })).ToList();
     }
 
-    public async Task<List<WarehouseDto>> GetWarehouseDDL(string keyword)
+    public async Task<List<WarehouseDto>> GetWarehouseDDL(string keyword, string userId)
     {
         string sp = "sp_Wms_Mobile_SupplyScanRequestNo_WarehouseDDL";
-        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+        return (await _dbExecutor.QueryListAsync<WarehouseDto>(sp, new { Keyword = keyword ?? "", UserId = userId })).ToList();
     }
     public async Task<List<ManufactureLineDto>> GetLineDDL(string keyword, string warehouseCode)
     {
