@@ -24,7 +24,7 @@
           <div class="flex-grow-1">
             <filter-line-factory
               class="form-control w-100"
-              company="ALL"
+              company="11111"
               manufacture="ALL"
               v-model="filter.line"
               :show-option-all="true"

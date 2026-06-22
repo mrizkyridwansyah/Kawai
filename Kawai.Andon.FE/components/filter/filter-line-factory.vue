@@ -140,7 +140,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/workstationsetting/ddl-linecompany-search?keyword=${q || ""}&companycode=${this.company}&manufacture=${this.manufacture}&ids=${d || ""}`,
+            `/andon/filter/ddl-linecompany-search?keyword=${q || ""}&companycode=${this.company}&manufacture=${this.manufacture}&ids=${d || ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

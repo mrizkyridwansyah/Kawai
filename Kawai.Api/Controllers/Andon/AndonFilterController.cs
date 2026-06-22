@@ -1,4 +1,5 @@
-﻿using Kawai.Data.SqlConnections;
+﻿using Kawai.Data.Repositories;
+using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace Kawai.Api.Controllers.Andon;
 public class AndonFilterController : HahaController
 {
     private readonly IAndonFilterRepository _andonFilter;
+    private readonly IWorkStationSettingRepository _workstationsettingRepository;
 
-    public AndonFilterController(IAndonFilterRepository repo)
+    public AndonFilterController(IAndonFilterRepository repo, IWorkStationSettingRepository workstationsettingRepository)
     {
         _andonFilter = repo;
+        _workstationsettingRepository = workstationsettingRepository;   
     }
 
     //get ddl area
@@ -30,6 +33,18 @@ public class AndonFilterController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddl-linecompany-search")]
+    public async Task<IActionResult> DDLLineSearch(string keyword, string companyCode, string manufacture, string ids)
+    {
+        var results = await _workstationsettingRepository.GetLineCompanyDDL(keyword, companyCode, manufacture);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.LineCode)).ToList();
+        }
+
+        return Success(results);
+    }
 
 
 }
