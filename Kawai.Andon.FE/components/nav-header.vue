@@ -55,6 +55,7 @@ export default {
     list: [
       { url: "/receiving", icon: "chart-column", text: "Receiving Andon" },
       { url: "/request-control", icon: "file-lines", text: "Womin Request Control" },
+       { url: "/production-control", icon: "file-lines", text: "Production" },
     ],
     isDragging: false,
     startX: 0,

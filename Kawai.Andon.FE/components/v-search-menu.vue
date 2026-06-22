@@ -43,6 +43,10 @@ export default {
         MenuName: "/request-control",
         MenuDescription: "Womin Request Control",
       },
+      {
+        MenuName: "/production-control",
+        MenuDescription: "Production",
+      },
     ],
   }),
   computed: {
