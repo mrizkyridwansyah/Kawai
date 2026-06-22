@@ -68,13 +68,10 @@
             <label class="form-label">WH Subcon</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-warehouse-privileges
-              class="form-control"
+            <filter-warehouse
               disabled
               :factory-code="filter.FactoryCode"
               v-model="filter.Warehouse"
-              style-code="width: 120px"
-              style-desc="width: 250px"
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">

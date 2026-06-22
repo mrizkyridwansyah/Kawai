@@ -222,80 +222,86 @@ export default {
       this.lists = [];
     },
     search: function () {
-      this.ds.loadDetail().then((dt) => {
-        let grouped = {};
+      this.ds
+        .loadDetail()
+        .then((dt) => {
+          let grouped = {};
 
-        this.lineName = this.ds.newRequest[0].LineCode;
+          this.lineName = this.ds.newRequest[0].LineCode;
 
-        // Isi lineName dari data pertama
-        if (dt.Data.length > 0) {
-          this.lineName = dt.Data[0].LineName;
-        }
-
-        dt.Data.forEach((item) => {
-          // Grouping berdasarkan Parent level (tanpa ChildClassificationPartDesc)
-          let parentKey = [
-            item.RequestId,
-            item.ProductionId,
-            item.ScheduleDate,
-            item.LineCode,
-            item.WorkStationCode,
-            item.ParentItemCode,
-            item.SetNumber,
-            item.Status,
-          ].join("|");
-
-          if (!grouped[parentKey]) {
-            grouped[parentKey] = {
-              ...item,
-              Expanded: true, // default collapsed
-              Classifications: {}, // child groups
-            };
+          // Isi lineName dari data pertama
+          if (dt.Data.length > 0) {
+            this.lineName = dt.Data[0].LineName;
           }
 
-          // Buat group classification di dalam parent
-          if (
-            !grouped[parentKey].Classifications[
-              item.ChildClassificationPartDesc
-            ]
-          ) {
+          dt.Data.forEach((item) => {
+            // Grouping berdasarkan Parent level (tanpa ChildClassificationPartDesc)
+            let parentKey = [
+              item.RequestId,
+              item.ProductionId,
+              item.ScheduleDate,
+              item.LineCode,
+              item.WorkStationCode,
+              item.ParentItemCode,
+              item.SetNumber,
+              item.Status,
+            ].join("|");
+
+            if (!grouped[parentKey]) {
+              grouped[parentKey] = {
+                ...item,
+                Expanded: true, // default collapsed
+                Classifications: {}, // child groups
+              };
+            }
+
+            // Buat group classification di dalam parent
+            if (
+              !grouped[parentKey].Classifications[
+                item.ChildClassificationPartDesc
+              ]
+            ) {
+              grouped[parentKey].Classifications[
+                item.ChildClassificationPartDesc
+              ] = [];
+            }
+
+            // Push detail ke classification
             grouped[parentKey].Classifications[
               item.ChildClassificationPartDesc
-            ] = [];
-          }
-
-          // Push detail ke classification
-          grouped[parentKey].Classifications[
-            item.ChildClassificationPartDesc
-          ].push({
-            ChildItemCode: item.ChildItemCode,
-            ChildItemName: item.ChildItemName,
-            RequirementQty: item.RequirementQty,
-            TotalScan: item.TotalScan,
-            RequestId: item.RequestId, // optional untuk key
+            ].push({
+              ChildItemCode: item.ChildItemCode,
+              ChildItemName: item.ChildItemName,
+              RequirementQty: item.RequirementQty,
+              TotalScan: item.TotalScan,
+              RequestId: item.RequestId, // optional untuk key
+            });
           });
+
+          // Convert ke array dan sorting parent groups
+          this.groupLists = Object.values(grouped).sort((a, b) => {
+            const dateA = new Date(a.ScheduleDate);
+            const dateB = new Date(b.ScheduleDate);
+
+            if (dateA.getTime() !== dateB.getTime()) {
+              return dateA - dateB;
+            }
+
+            if (a.ParentItemCode !== b.ParentItemCode) {
+              return a.ParentItemCode.localeCompare(b.ParentItemCode);
+            }
+
+            if (a.WorkStationName !== b.WorkStationName) {
+              return a.WorkStationName.localeCompare(b.WorkStationName);
+            }
+
+            return Number(a.SetNumber) - Number(b.SetNumber);
+          });
+        })
+        .catch((err) => {
+          this.groupLists = [];
+          toastDanger(err?.response?.data.Message);
         });
-
-        // Convert ke array dan sorting parent groups
-        this.groupLists = Object.values(grouped).sort((a, b) => {
-          const dateA = new Date(a.ScheduleDate);
-          const dateB = new Date(b.ScheduleDate);
-
-          if (dateA.getTime() !== dateB.getTime()) {
-            return dateA - dateB;
-          }
-
-          if (a.ParentItemCode !== b.ParentItemCode) {
-            return a.ParentItemCode.localeCompare(b.ParentItemCode);
-          }
-
-          if (a.WorkStationName !== b.WorkStationName) {
-            return a.WorkStationName.localeCompare(b.WorkStationName);
-          }
-
-          return Number(a.SetNumber) - Number(b.SetNumber);
-        });
-      });
     },
     print: function () {},
     submit: function () {
