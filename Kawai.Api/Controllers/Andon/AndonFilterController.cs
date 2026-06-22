@@ -46,5 +46,33 @@ public class AndonFilterController : HahaController
         return Success(results);
     }
 
+    //get ddl area
+    [HttpGet("ddlline")]
+    public async Task<IActionResult> DDLLine(string keyword, string ids)
+    {
+        var results = await _andonFilter.DDLLine(keyword);
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.LineCode)).ToList();
+        }
+        return Success(results);
+    }
+    //get ddl area
+    [HttpGet("ddlmodel")]
+    public async Task<IActionResult> DDLModel(string keyword, string ids)
+    {
+        var results = await _andonFilter.DDLModel(keyword);
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.ModelCls)).ToList();
+        }
+        return Success(results);
+    }
+
+ 
 
 }
