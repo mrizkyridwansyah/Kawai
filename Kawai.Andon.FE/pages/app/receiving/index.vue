@@ -13,7 +13,9 @@
             class="p-2 header-summary-content"
             style="background-color: #8d56a9"
           >
-            <span class="title-summary">Total Receipt (Unprocessed to storage)</span>
+            <span class="title-summary"
+              >Total Receipt (Unprocessed to storage)</span
+            >
             <br />
             <span class="qty-summary">{{
               $func.formatMoney(this.summary.total)
@@ -35,12 +37,11 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
           <div
             class="p-2 header-summary-content"
-            style="background-color: #18B2E0"
+            style="background-color: #18b2e0"
           >
             <span class="title-summary">Passed QC</span>
             <br />
             <span class="qty-summary">{{
-              
               $func.formatMoney(this.summary.passed)
             }}</span>
           </div>
@@ -67,10 +68,12 @@
                 icon="file-pen"
                 class="text-white icon-title"
               />
-              <span style="font-size: 1.05em" class="ml-3">Pending Receipt Check</span>
+              <span style="font-size: 1.05em" class="ml-3"
+                >Pending Receipt Check</span
+              >
             </div>
             <div class="panel-body">
-              <div class="v-table-wrapper">
+              <div class="v-table-wrapper" @scroll="onScroll($event, 'main')">
                 <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
@@ -78,7 +81,7 @@
                   <thead>
                     <tr>
                       <!-- <th class="text-center">No</th> -->
-                      <th style="width:10px !important;">Date</th>
+                      <th style="width: 10px !important">Date</th>
                       <th class="text-center">Supplier</th>
                       <th class="text-center">DN</th>
                       <th class="text-center">Item</th>
@@ -88,7 +91,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(item, i) in list">
+                    <tr v-for="(item, i) in displayList">
                       <!-- <td class="text-right">{{ i + 1 }}.</td>-->
                       <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
                       <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
@@ -103,9 +106,11 @@
                       </td>
                       <td
                         :class="{
-                          'text-success': item.StatusReceiptName === 'Passed QC',
+                          'text-success':
+                            item.StatusReceiptName === 'Passed QC',
                           'text-danger': item.StatusReceiptName === 'NG QC',
-                          'text-warning': item.StatusReceiptName === 'QC Inprogres',
+                          'text-warning':
+                            item.StatusReceiptName === 'QC Inprogres',
                           'text-primary': item.StatusReceiptName === 'New',
                         }"
                       >
@@ -129,71 +134,85 @@
               <span style="font-size: 1.05em" class="ml-3">QC Inprogress</span>
             </div>
             <div class="panel-body">
-               <div class="v-table-wrapper">
+              <div
+                class="v-table-wrapper"
+                @scroll="onScroll($event, 'pending')"
+              >
                 <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
-                <thead>
-                  <tr>
-                    <!-- <th class="text-center">No</th> -->
-                    <th class="text-center" style="width: fit-content;">Date</th>
-                    <th class="text-center">Supplier</th>
-                    <th class="text-center">DN</th>
-                    <th class="text-center">Item</th>
-                    <th class="text-center">Qty(Unit)</th>
-                    <th class="text-center">Qty(Pack)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, i) in listPending">
-                     <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
-                   <td
+                  <thead>
+                    <tr>
+                      <!-- <th class="text-center">No</th> -->
+                      <th class="text-center" style="width: fit-content">
+                        Date
+                      </th>
+                      <th class="text-center">Supplier</th>
+                      <th class="text-center">DN</th>
+                      <th class="text-center">Item</th>
+                      <th class="text-center">Qty(Unit)</th>
+                      <th class="text-center">Qty(Pack)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, i) in displayListPending">
+                      <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
+                      <td
                         :class="{
                           'bg-danger': item.FlagGrid === 'C',
-                          'bg-warning': item.FlagGrid === 'B'  
+                          'bg-warning': item.FlagGrid === 'B',
                         }"
                       >
-                      {{ $func.formatDate(item.ReceiptDate) }}</td>
-                    <td
+                        {{ $func.formatDate(item.ReceiptDate) }}
+                      </td>
+                      <td
                         :class="{
                           'bg-danger': item.FlagGrid === 'C',
-                          'bg-warning': item.FlagGrid === 'B'  
+                          'bg-warning': item.FlagGrid === 'B',
                         }"
-                      >{{ item.SupplierName }}</td>
-                    <td
+                      >
+                        {{ item.SupplierName }}
+                      </td>
+                      <td
                         :class="{
                           'bg-danger': item.FlagGrid === 'C',
-                          'bg-warning': item.FlagGrid === 'B'  
+                          'bg-warning': item.FlagGrid === 'B',
                         }"
-                      >{{ item.DNNumber }}</td>
-                    <td
+                      >
+                        {{ item.DNNumber }}
+                      </td>
+                      <td
                         :class="{
                           'bg-danger': item.FlagGrid === 'C',
-                          'bg-warning': item.FlagGrid === 'B'  
+                          'bg-warning': item.FlagGrid === 'B',
                         }"
-                      >{{ item.ItemName }}</td>
-                    <td
+                      >
+                        {{ item.ItemName }}
+                      </td>
+                      <td
                         :class="{
                           'bg-danger': item.FlagGrid === 'C',
-                          'bg-warning': item.FlagGrid === 'B'  
+                          'bg-warning': item.FlagGrid === 'B',
                         }"
-                       class="text-right">
-                      {{ $func.formatMoney(item.ReceiptQtyUnit) }}
-                    </td>
-                    <td
+                        class="text-right"
+                      >
+                        {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                      </td>
+                      <td
                         :class="{
                           'bg-danger': item.FlagGrid === 'C',
-                          'bg-warning': item.FlagGrid === 'B'  
+                          'bg-warning': item.FlagGrid === 'B',
                         }"
-                      class="text-right">
-                      {{ $func.formatMoney(item.ReceiptQtyPack) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <v-data-empty class="mt-3" v-if="listPending.length == 0" />
-            </div>
+                        class="text-right"
+                      >
+                        {{ $func.formatMoney(item.ReceiptQtyPack) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <v-data-empty class="mt-3" v-if="listPending.length == 0" />
+              </div>
             </div>
           </div>
         </div>
@@ -207,40 +226,40 @@
               <span style="font-size: 1.05em" class="ml-3">Passed QC</span>
             </div>
             <div class="panel-body">
-              <div class="v-table-wrapper"> 
-               <table
+              <div class="v-table-wrapper" @scroll="onScroll($event, 'passed')">
+                <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
-                <thead>
-                  <tr >
-                    <!-- <th class="text-center">No</th> -->
-                    <th class="text-center">Date</th>
-                    <th class="text-center">Supplier</th>
-                    <th class="text-center">DN</th>
-                    <th class="text-center">Item</th>
-                    <th class="text-center">Qty(Unit)</th>
-                    <th class="text-center">Qty(Pack)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, i) in listPassed">
-                     <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
-                    <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
-                    <td>{{ item.SupplierName }}</td>
-                    <td>{{ item.DNNumber }}</td>
-                    <td>{{ item.ItemName }}</td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.ReceiptQtyUnit) }}
-                    </td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.ReceiptQtyPack) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <v-data-empty class="mt-3" v-if="listPassed.length == 0" />
-            </div>
+                  <thead>
+                    <tr>
+                      <!-- <th class="text-center">No</th> -->
+                      <th class="text-center">Date</th>
+                      <th class="text-center">Supplier</th>
+                      <th class="text-center">DN</th>
+                      <th class="text-center">Item</th>
+                      <th class="text-center">Qty(Unit)</th>
+                      <th class="text-center">Qty(Pack)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, i) in displayListPassed">
+                      <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
+                      <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
+                      <td>{{ item.SupplierName }}</td>
+                      <td>{{ item.DNNumber }}</td>
+                      <td>{{ item.ItemName }}</td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                      </td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(item.ReceiptQtyPack) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <v-data-empty class="mt-3" v-if="listPassed.length == 0" />
+              </div>
             </div>
           </div>
         </div>
@@ -251,40 +270,40 @@
               <span style="font-size: 1.05em" class="ml-3">NG QC</span>
             </div>
             <div class="panel-body">
-              <div class="v-table-wrapper">
-               <table
+              <div class="v-table-wrapper" @scroll="onScroll($event, 'ng')">
+                <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
-                <thead>
-                  <tr class="datatable-color">
-                    <!-- <th class="text-center">No</th> -->
-                    <th class="text-center">Date</th>
-                    <th class="text-center">Supplier</th>
-                    <th class="text-center">DN</th>
-                    <th class="text-center">Item</th>
-                    <th class="text-center">Qty(Unit)</th>
-                    <th class="text-center">Qty(Pack)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, i) in listNG">
-                    <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
-                    <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
-                    <td>{{ item.SupplierName }}</td>
-                    <td>{{ item.DNNumber }}</td>
-                    <td>{{ item.ItemName }}</td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.ReceiptQtyUnit) }}
-                    </td>
-                    <td class="text-right">
-                      {{ $func.formatMoney(item.ReceiptQtyPack) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <v-data-empty class="mt-3" v-if="listNG.length == 0" />
-            </div>
+                  <thead>
+                    <tr class="datatable-color">
+                      <!-- <th class="text-center">No</th> -->
+                      <th class="text-center">Date</th>
+                      <th class="text-center">Supplier</th>
+                      <th class="text-center">DN</th>
+                      <th class="text-center">Item</th>
+                      <th class="text-center">Qty(Unit)</th>
+                      <th class="text-center">Qty(Pack)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, i) in displayListNG">
+                      <!-- <td class="text-center">{{ item.ReceiptNo }}</td> -->
+                      <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
+                      <td>{{ item.SupplierName }}</td>
+                      <td>{{ item.DNNumber }}</td>
+                      <td>{{ item.ItemName }}</td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(item.ReceiptQtyUnit) }}
+                      </td>
+                      <td class="text-right">
+                        {{ $func.formatMoney(item.ReceiptQtyPack) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <v-data-empty class="mt-3" v-if="listNG.length == 0" />
+              </div>
             </div>
           </div>
         </div>
@@ -304,21 +323,61 @@ export default {
     },
     isLoading: false,
     list: [],
-    listPending: [],
-    listPassed: [],
-    listNG: [],
+    pollingId: null,
+    renderLimits: {
+      main: 50,
+      pending: 50,
+      passed: 50,
+      ng: 50,
+    },
   }),
   computed: {
     ds: function () {
       return useReceiptAndon();
     },
+    listPending() {
+      return this.list.filter((p) => p.StatusReceipt === "PENDING");
+    },
+    listPassed() {
+      return this.list.filter((p) => p.StatusReceipt === "OK");
+    },
+    listNG() {
+      return this.list.filter((p) => p.StatusReceipt === "NG");
+    },
+    displayList() {
+      return this.list.slice(0, this.renderLimits.main);
+    },
+    displayListPending() {
+      return this.listPending.slice(0, this.renderLimits.pending);
+    },
+    displayListPassed() {
+      return this.listPassed.slice(0, this.renderLimits.passed);
+    },
+    displayListNG() {
+      return this.listNG.slice(0, this.renderLimits.ng);
+    },
   },
   mounted: async function () {
-    setInterval(() => {
-      this.load();
-    }, 3000);
+    // Eksekusi tarikan data pertama kali saat halaman dibuka
+    this.load();
   },
   methods: {
+    onScroll: function (e, type) {
+      const { scrollTop, scrollHeight, clientHeight } = e.target;
+      // Jika scroll sudah mendekati bawah (sisa 50px jarak dari bawah)
+      if (scrollTop + clientHeight >= scrollHeight - 50) {
+        // Cek batasan max item dari masing-masing array
+        let maxLen = 0;
+        if (type === "main") maxLen = this.list.length;
+        else if (type === "pending") maxLen = this.listPending.length;
+        else if (type === "passed") maxLen = this.listPassed.length;
+        else if (type === "ng") maxLen = this.listNG.length;
+
+        if (this.renderLimits[type] < maxLen) {
+          this.renderLimits[type] += 50;
+        }
+      }
+    },
     load: function () {
       if (this.isLoading) {
         console.log("masih loading bro!");
@@ -330,21 +389,50 @@ export default {
       this.ds
         .load()
         .then((dt) => {
-          console.log(dt);
-          this.list = dt.data.Data;
-          this.listPending = this.list.filter(
-            (p) => p.StatusReceipt === "PENDING"
-          );
-          this.listPassed = this.list.filter((p) => p.StatusReceipt === "OK");
-          this.listNG = this.list.filter((p) => p.StatusReceipt === "NG");
+          let rawData = dt.data.Data || [];
 
+          // Paksa pengurutan (sorting) di Frontend agar posisinya stabil setiap ditarik
+          rawData.sort((a, b) => {
+            let dateA = new Date(a.ReceiptDate).getTime();
+            let dateB = new Date(b.ReceiptDate).getTime();
+            
+            // Urutkan berdasarkan Tanggal (Terlama di atas / ASC)
+            if (dateA !== dateB) return dateA - dateB;
+            
+            // Jika tanggal sama persis, urutkan berdasarkan DNNumber ASC agar posisinya terkunci mati
+            let dnA = a.DNNumber || "";
+            let dnB = b.DNNumber || "";
+            return dnA.localeCompare(dnB);
+          });
+
+          // Freeze array agar tidak dibuatkan reactivity proxy yang berat
+          this.list = Object.freeze(rawData);
+
+          // Hitung summary langsung dari computed properties
           this.summary.total = this.list.length;
           this.summary.pending = this.listPending.length;
           this.summary.passed = this.listPassed.length;
           this.summary.ng = this.listNG.length;
         })
-        .finally(() => (this.isLoading = false));
+        .catch((err) => console.error(err))
+        .finally(() => {
+          // $nextTick memastikan DOM sudah SELESAI dirender sepenuhnya
+          this.$nextTick(() => {
+            this.isLoading = false;
+
+            // Jadwalkan tarikan data berikutnya setelah rendering DOM tuntas
+            this.pollingId = setTimeout(() => {
+              this.load();
+            }, 3000);
+          });
+        });
     },
+  },
+  unmounted() {
+    // BERSIHKAN TIMEOUT SAAT PINDAH HALAMAN / HOT-RELOAD AGAR TIDAK BOCOR & BERTUMPUK
+    if (this.pollingId) {
+      clearTimeout(this.pollingId);
+    }
   },
 };
 </script>
@@ -388,7 +476,6 @@ export default {
   /* border-collapse: separate; */
   /* border-spacing: 0; */
   font-size: 0.9em;
-   
 }
 
 .v-fixed-table th,
@@ -397,7 +484,6 @@ export default {
   padding: 8px 16px;
   border: 1px solid #dee2e6;
   background: #fff;
-  
 }
 
 /* Sticky Header (atas) */
