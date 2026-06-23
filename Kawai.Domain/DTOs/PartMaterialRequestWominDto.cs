@@ -18,10 +18,21 @@ public class PartMaterialRequestWominDto: DataTableDto
     public DateTime? RegisterDate { get; set; }
 }
 
+public class PartMaterialRequestWominEditDto : DataTableDto
+{
+    public long IDSeq { get; set; }
+    public string ChilItemCode { get; set; }
+    public string ChilItemName { get; set; }
+    public decimal? ReqQty { get; set; }
+    public string RegisterUser { get; set; }
+    public DateTime? RegisterDate { get; set; }
+}
+
 public class PartMaterialRequestWominDetilDto : DataTableDto
 {
     public long? RequestId { get; set; }
     public long ProductionId { get; set; }
+    public long IDSeq { get; set; }
     public DateTime ScheduleDate { get; set; }
     public string LineCode { get; set; }
     public string LineName { get; set; }

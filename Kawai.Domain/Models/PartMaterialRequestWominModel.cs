@@ -9,3 +9,12 @@ public class PartMaterialRequestWominModel
     public string ItemCode { get; set; }
     public decimal RequestSetQty { get; set; }
 }
+
+public class PartMaterialRequestWominEditModel
+{
+    public long IDSeq { get; set; }
+    public string ChilItemCode { get; set; }
+    public decimal? ReqQty { get; set; }
+
+    
+}

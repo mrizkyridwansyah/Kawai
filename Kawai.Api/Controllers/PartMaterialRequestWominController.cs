@@ -1,4 +1,5 @@
 ﻿using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Log;
@@ -34,6 +35,33 @@ public class PartMaterialRequestWominController : HahaController
         var results = await _partMaterialRequestWominRepository.GetListHeader(parameter);
         return DataTableResult(parameter, results);
     }
+
+    [HttpGet("getdetail")]
+    public async Task<IActionResult> Get(long id)
+    {
+        var result = await _partMaterialRequestWominRepository.GetData(id);
+        return Success(result);
+    }
+
+    [HttpPatch("updatereqqty")]
+    public async Task<IActionResult> Update([FromBody] PartMaterialRequestWominEditModel model)
+    {
+        var before = await _partMaterialRequestWominRepository.CaptureRequirement(model.IDSeq);
+        await _partMaterialRequestWominRepository.UpdateReq(model, Auth.User.UserID);
+        var after = await _partMaterialRequestWominRepository.CaptureRequirement(model.IDSeq);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Material Request Womin - Edit Requirement",
+            EntityId = model.IDSeq.ToString(),
+            ReferenceId = model.IDSeq.ToString(),
+            Action = DataLogAction.Update,
+            Before = before,
+            After = after
+        });
+        return Success(after);
+    }
+
 
     [HttpPost("list-detail")]
     public async Task<IActionResult> ListDetail([FromBody] List<PartMaterialRequestWominModel> models)

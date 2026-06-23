@@ -165,7 +165,13 @@
                     <!-- Detail Rows -->
                     <tr v-for="dtl in details" :key="dtl.ChildItemCode">
                       <td colspan="9"></td>
-                      <td>{{ dtl.ChildItemCode }}</td>
+                        <td class="text-center">
+                        <a
+                          href="javascript:void(0)"
+                          @click="editStock(dtl.IDSeq)"
+                          >{{ dtl.ChildItemCode }}</a
+                        >
+                      </td>
                       <td>{{ dtl.ChildItemName }}</td>
                       <td class="text-right">
                         {{ $func.formatMoney(dtl.RequirementQty) }}
@@ -197,6 +203,33 @@
       :counter="this.counter"
     />
   </v-modal>
+  <v-modal
+    ref="modalNG"
+    id="shared-request-womin-edit-reqqty"
+    title="Edit Requirement Qty"
+    size="md"
+    @hidden="
+      () => {
+        this.$refs.formWOMIN.resetForm();
+        modalMode = '';
+      }
+    "
+  >
+    <shared-request-womin-edit-reqqty
+       ref="formWOMIN"
+      :item="idSelected"
+      :counter="this.counter"
+      @submitted="close"
+    />
+  </v-modal>
+
+
+   <!-- <v-modal title="Edit Requirement Qty" class="modal-lg" id="modal-edit-reqqty">
+    <shared-request-womin-edit-reqqty
+      :item="this.selectedItem"
+      :counter="this.counter"
+    />
+  </v-modal> -->
 </template>
 
 <script>
@@ -275,7 +308,8 @@ export default {
             ChildItemName: item.ChildItemName,
             RequirementQty: item.RequirementQty,
             TotalScan: item.TotalScan,
-            RequestId: item.RequestId, // optional untuk key
+            RequestId: item.RequestId, 
+            IDSeq: item.IDSeq,// optional untuk key
           });
         });
 
@@ -324,6 +358,10 @@ export default {
         this.ds.newRequest[0].RequestNo,
       );
     },
+    close: function () {
+      this.$bvModal.hide("shared-request-womin-edit-reqqty");
+      this.search();
+    },
     back: function () {
       this.$router.push({
         path: "/app/supply-request/womin",
@@ -337,6 +375,13 @@ export default {
       this.counter++;
       this.$bvModal.show("modal-list-stock");
     },
+
+    editStock: function (item) {
+       this.idSelected = item;
+      this.counter++;
+      this.$bvModal.show("shared-request-womin-edit-reqqty");
+    },
+    
     toggleExpand: function (item) {
       item.Expanded = !item.Expanded;
     },

@@ -3,6 +3,7 @@ using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
+using System.Reflection.Emit;
 
 namespace Kawai.Data.Repositories;
 
@@ -50,6 +51,35 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
     {
         string sp = "sp_Wms_PartMaterialRequest_GetListStock";
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, param.ToQueryObject())).ToList();
+    }
+
+    public async Task<PartMaterialRequestWominEditDto> GetData(long idSeq)
+    {
+        string sp = "sp_Wms_PartMaterialRequestWomin_GetDetail";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<PartMaterialRequestWominEditDto>(sp, new { IDSeq = idSeq });
+    }
+
+    public async Task UpdateReq(PartMaterialRequestWominEditModel model, string userId)
+    {
+        string sql = @"sp_Wms_PartMaterialRequestWomin_Update";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            model.IDSeq,
+            model.ChilItemCode,
+            model.ReqQty,
+            UpdateBy = userId
+        });
+    }
+
+    public async Task<Dictionary<string, object>> CaptureRequirement(long idSeq)
+    {
+        string sp = "sp_Wms_PartMaterialRequestWomin_CaptureRequirement";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { IDSeq = idSeq });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 
     public async Task Save(List<PartMaterialRequestWominModel> models, string userId)
