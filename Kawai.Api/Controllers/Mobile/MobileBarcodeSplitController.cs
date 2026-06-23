@@ -2,43 +2,50 @@
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
 
-[Authorize]
-[Route("api/mobile/assign-to-trolley")]
+//[Authorize]
+[Route("api/barcode-split")]
 [ApiController]
-public class MobileAssignToTrolleyController : HahaController
+public class MobileBarcodeSplitController : HahaController
 {
-    private readonly IMobileAssignToTrolleyRepository _assignToTrolleyByBarcodeRepository;
+    private readonly IMobileBarcodeSplitRepository _barcodeSplitRepository;
     private readonly ITransactionProducer _transactionProducer;
-
-    public MobileAssignToTrolleyController(IMobileAssignToTrolleyRepository assignToTrolleyByBarcodeRepository, ITransactionProducer transactionProducer)
+    public MobileBarcodeSplitController(IMobileBarcodeSplitRepository barcodeSplitRepository, ITransactionProducer transactionProducer)
     {
-        _assignToTrolleyByBarcodeRepository = assignToTrolleyByBarcodeRepository;
+        _barcodeSplitRepository = barcodeSplitRepository;
         _transactionProducer = transactionProducer;
     }
 
-    [HttpGet("data-trolley")]
-    public async Task<IActionResult> GetDataTrolley(string trolleyNo)
+    [HttpGet("data-barcode")]
+    public async Task<IActionResult> GetDataBarcode(string barcodeNo)
     {
-        var result = await _assignToTrolleyByBarcodeRepository.GetDataTrolley(trolleyNo);
+        var result = await _barcodeSplitRepository.GetDataBarcode(barcodeNo);
+        return Success(result);
+    }
+
+    [HttpGet("history-split")]
+    public async Task<IActionResult> GetHistorySplit(string barcodeNo)
+    {
+        var result = await _barcodeSplitRepository.GetHistorySplit(barcodeNo);
         return Success(result);
     }
 
     [HttpPost("save")]
-    public async Task<IActionResult> Save(MobileAssignToTrolley model)
+    public async Task<IActionResult> Save(MobileBarcodeSplit model)
     {
-        var message = new StockTransactionMessage<MobileAssignToTrolley>
+        var message = new StockTransactionMessage<MobileBarcodeSplit>
         {
             Token = Auth.Token,
             AuthUserId = Auth.User.UserID,
             BroadcastBaseOn = "TOKEN",
             TimeStamp = EpochDateTime.Now,
-            TransactionType = "ASSIGN-TO-TROLLEY-BY-BARCODE-MOBILE",
-            FormatMessage = "Assign To Trolley By Barcode Mobile",
+            TransactionType = "BARCODE-SPLIT-MOBILE",
+            FormatMessage = "Barcode Split Mobile",
             Payload = model,
             LogContext = new LogContext
             {
@@ -49,11 +56,11 @@ public class MobileAssignToTrolleyController : HahaController
                 UserID = Auth.User.UserID,
                 FullName = Auth.User.FullName
             }
-        };
+        }; 
 
         try
         {
-            _transactionProducer.Publish<MobileAssignToTrolley>(message);
+            _transactionProducer.Publish<MobileBarcodeSplit>(message);
             return Pending(message);
         }
         catch (Exception ex)

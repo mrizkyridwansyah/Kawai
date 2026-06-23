@@ -2,9 +2,11 @@
 using Kawai.Domain.Models.Mobile;
 using Microsoft.AspNetCore.Mvc;
 using Kawai.Domain.DTOs.Log;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/physical-inventory")]
 [ApiController]
 public class MobilePhysicalInventoryController : HahaController

@@ -5,10 +5,12 @@ using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Models.Robot;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/supplyscanrequest")]
 [ApiController]
 public class MobileSupplyScanRequestController : HahaController

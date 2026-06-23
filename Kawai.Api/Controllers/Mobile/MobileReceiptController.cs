@@ -4,10 +4,12 @@ using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/receipt")]
 [ApiController]
 public class MobileReceiptController : HahaController

@@ -59,23 +59,28 @@ public class RequestLoggingMiddleware
         }
 
         // Continue pipeline
-        await _next(context);
-
-        stopwatch.Stop();
-
-        // Fire-and-forget: enqueue ke buffer, TIDAK await INSERT ke DB
-        logBuffer.EnqueueRequestLog(new RequestAMRLogEntry
+        try
         {
-            Method = method,
-            RequestPath = requestPath,
-            Token = token,
-            RemoteAddr = remoteIp,
-            UserID = remoteIp, // Berdasarkan kode lama: UserID = remoteIp
-            FullName = userId, // Berdasarkan kode lama: FullName = userId
-            Timestamp = timeStamp,
-            ElapsedMilliseconds = stopwatch.ElapsedMilliseconds,
-            RequestBody = requestBody
-        });
+            await _next(context);
+        }
+        finally
+        {
+            stopwatch.Stop();
+
+            // Fire-and-forget: enqueue ke buffer, TIDAK await INSERT ke DB
+            logBuffer.EnqueueRequestLog(new RequestAMRLogEntry
+            {
+                Method = method,
+                RequestPath = requestPath,
+                Token = token,
+                RemoteAddr = remoteIp,
+                UserID = remoteIp, // Berdasarkan kode lama: UserID = remoteIp
+                FullName = userId, // Berdasarkan kode lama: FullName = userId
+                Timestamp = timeStamp,
+                ElapsedMilliseconds = stopwatch.ElapsedMilliseconds,
+                RequestBody = requestBody
+            });
+        }
     }
 
     private static async Task<string?> ReadRequestBody(HttpRequest request)

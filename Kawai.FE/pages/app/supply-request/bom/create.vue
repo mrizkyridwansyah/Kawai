@@ -4,9 +4,9 @@
       <table>
         <tr>
           <td style="padding-top: 5px">
-            <label class="form-label">Supply Request No.</label>
+            <label class="form-label">Request No.</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-text
               v-model="model.RequestNo"
               disabled
@@ -14,16 +14,116 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Request Date</label>
+            <label class="form-label">Req. Date</label>
           </td>
-          <td
-            style="padding-top: 5px; padding-left: 15px; width: 180px"
-            colspan="3"
-          >
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="model.RequestDate"
               :disabled="true"
               style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">PO Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 100px">
+            <input-text
+              v-model="ds.newRequest[0].PONumber"
+              disabled
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">PO Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 100px">
+            <input-date
+              v-model="ds.newRequest[0].PODate"
+              disabled
+              style-date="width: 100px !important"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">DN Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-text
+              v-model="model.DNNumber"
+              :errors="errors?.DNNumber"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">DN Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-date
+              v-model="model.DNDate"
+              :errors="errors?.DNDate"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Police No.</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-text
+              v-model="model.VehicleNo"
+              :errors="errors?.VehicleNo"
+              style="width: 150px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Transport By</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 300px">
+            <filter-cls-2
+              class="form-control"
+              type-data="Transport_Cls"
+              v-model="model.Transport"
+              :errors="errors?.Transport"
+              style-code="width: 150px"
+              style-desc="width: 240px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">BC Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-text
+              v-model="model.BCNumber"
+              :errors="errors?.BCNumber"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">BC Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-date
+              v-model="model.BCDate"
+              :errors="errors?.BCDate"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">BC Type</label>
+          </td>
+          <td
+            style="padding-top: 5px; padding-left: 15px; width: 300px"
+            colspan="3"
+          >
+            <filter-cls-2
+              class="form-control"
+              type-data="BCType_Cls"
+              v-model="model.BCType"
+              :errors="errors?.BCType"
+              style-code="width: 150px"
+              style-desc="width: 240px"
             />
           </td>
         </tr>
@@ -64,7 +164,7 @@
         ref="vtable"
         :use-paging="false"
         :use-header="false"
-        :top-content-height="250"
+        :top-content-height="330"
       >
         <template #table-content>
           <table
@@ -121,7 +221,13 @@
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
-                  <td><a href="javascript:void(0)" @click="() => viewStock(dtl.ChildItemCode)">View Detail</a></td>
+                  <td>
+                    <a
+                      href="javascript:void(0)"
+                      @click="() => viewStock(dtl.ChildItemCode)"
+                      >View Detail</a
+                    >
+                  </td>
                 </tr>
               </template>
             </tbody>
@@ -145,6 +251,13 @@ export default {
     model: {
       RequestNo: "#AUTO",
       RequestDate: new Date(),
+      DNNumber: null,
+      DNDate: new Date(),
+      BCType: null,
+      BCNumber: null,
+      BCDate: new Date(),
+      VehicleNo: null,
+      Transport: null,
     },
     debounce: null,
     lists: [],
@@ -152,6 +265,7 @@ export default {
     isLoading: false,
     selectedItem: null,
     counter: 0,
+    errors: {},
   }),
   computed: {
     ds: function () {
@@ -207,11 +321,21 @@ export default {
         ...new Set(
           this.groupLists
             .filter((x) => x.Details.length > 0)
-            .map((item) => item.PONumber)
+            .map((item) => item.PONumber),
         ),
       ];
+      let payload = {
+        DNNumber: this.model.DNNumber,
+        DNDate: this.model.DNDate,
+        BCNumber: this.model.BCNumber,
+        BCDate: this.model.BCDate,
+        BCType: this.model.BCType,
+        Transport: this.model.Transport,
+        VehicleNo: this.model.VehicleNo,
+        Details: [],
+      };
 
-      let payload = this.ds.newRequest
+      payload.Details = this.ds.newRequest
         .filter((x) => avaiableGroupList.some((y) => y == x.PONumber))
         .map((x) => {
           return {
@@ -244,11 +368,11 @@ export default {
         },
       });
     },
-    viewStock: function(item) {
+    viewStock: function (item) {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
-    }
+    },
   },
 };
 </script>
@@ -290,12 +414,11 @@ export default {
   opacity: 0.85;
 }
 
-
 table thead th {
   position: sticky;
   top: 0;
   z-index: 20; /* harus lebih tinggi dari sticky kiri */
   background: #8ec5fc;
-  vertical-align: middle
+  vertical-align: middle;
 }
 </style>

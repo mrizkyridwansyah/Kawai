@@ -239,13 +239,9 @@
         <tr>
           <td colspan="2" style="padding-top: 5px">
             <div class="d-flex flex-fill">
-              <v-button-submit
-                :submit="submit"
-                
-                :is-loading="isLoading"
-              />
+              <v-button-submit :submit="submit" :is-loading="isLoading" />
               <v-button
-               :action="remove"
+                :action="remove"
                 label="Delete"
                 icon="trash"
                 cClass="ml-1 btn-danger"
@@ -260,7 +256,6 @@
               <v-button-print
                 label="Print Receipt Report"
                 class="ml-1"
-
                 :print="printReport"
                 :is-loading="isLoading"
               />
@@ -498,7 +493,6 @@ export default {
         : JSON.parse(JSON.stringify(obj));
     },
     remove: function () {
-       
       if (!this.filter.ReceiptId) {
         toastDanger("Silahkan pilih Receipt No!");
         return;
@@ -508,7 +502,7 @@ export default {
         () =>
           new Promise((resolve, reject) => {
             this.ds
-              .remove( this.filter.ReceiptId)
+              .remove(this.filter.ReceiptId)
               .then((dt) => {
                 toastSuccess("Data deleted successfully!");
                 resolve();
@@ -521,7 +515,7 @@ export default {
               });
           }),
         null,
-        
+
         "",
       );
     },
@@ -652,8 +646,8 @@ export default {
         .catch((err) => toastDanger(err.Message))
         .finally(() => (this.isLoading = false));
     },
-    import: function(){
-       this.$router.push("/app/receipt-po/import");
+    import: function () {
+      this.$router.push("/app/receipt-po/import");
     },
     printBarcodesUsingJob: function () {
       if (!this.filter.ReceiptId) {
@@ -785,7 +779,10 @@ export default {
               () => (this.isLoading = false),
               modalMessage,
             );
-          } else if (!dt.Data.IsUpdateDetails && dt.Data.TypeConfirmation == 3) {
+          } else if (
+            !dt.Data.IsUpdateDetails &&
+            dt.Data.TypeConfirmation == 3
+          ) {
             let modalMessage = `<div style="font-size: medium">Anda sudah melakukan <strong>SCAN RECEIVING MOBILE</strong>.
                 <br>Perubahan hanya berlaku untuk informasi <strong>Header</strong> saja. 
                 <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
@@ -825,8 +822,6 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
-
- 
   },
 };
 </script>

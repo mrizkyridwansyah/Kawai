@@ -4,9 +4,9 @@
       <table>
         <tr>
           <td style="padding-top: 5px">
-            <label class="form-label">Supply Request No.</label>
+            <label class="form-label">Request No.</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-text
               v-model="ds.newRequest[0].RequestNo"
               disabled
@@ -14,16 +14,117 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Request Date</label>
+            <label class="form-label">Req. Date</label>
           </td>
-          <td
-            style="padding-top: 5px; padding-left: 15px; width: 180px"
-            colspan="3"
-          >
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="ds.newRequest[0].RequestDate"
               :disabled="true"
               style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">PO Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 100px">
+            <input-text
+              v-model="ds.newRequest[0].PONumber"
+              disabled
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">PO Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 100px">
+            <input-date
+              v-model="ds.newRequest[0].PODate"
+              disabled
+              style-date="width: 100px !important"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">DN Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-text
+              v-model="model.DNNumber"
+              :errors="errors?.DNNumber"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">DN Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-date
+              v-model="model.DNDate"
+              :errors="errors?.DNDate"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Police No.</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <input-text
+              v-model="model.VehicleNo"
+              :errors="errors?.VehicleNo"
+              style="width: 150px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Transport By</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 300px">
+            <filter-cls-2
+              class="form-control"
+              type-data="Transport_Cls"
+              v-model="model.Transport"
+              :errors="errors?.Transport"
+              style-code="width: 150px"
+              style-desc="width: 240px"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px">
+            <label class="form-label">BC Number</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-text
+              v-model="model.BCNumber"
+              :errors="errors?.BCNumber"
+              :disabled="model.BCNumber != null && model.BCNumber != ''"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">BC Date</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-date
+              v-model="model.BCDate"
+              :errors="errors?.BCDate"
+              style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">BC Type</label>
+          </td>
+          <td
+            style="padding-top: 5px; padding-left: 15px; width: 300px"
+            colspan="3"
+          >
+            <filter-cls-2
+              class="form-control"
+              type-data="BCType_Cls"
+              v-model="model.BCType"
+              :errors="errors?.BCType"
+              style-code="width: 150px"
+              style-desc="width: 240px"
             />
           </td>
         </tr>
@@ -44,14 +145,14 @@
                 icon="print"
                 cClass="ml-1 btn-blue"
                 :is-loading="isLoading"
+                :disabled="this.groupLists.length == 0"
               />
 
-              <v-button
-                :action="remove"
-                label="Delete"
-                icon="trash"
-                cClass="ml-1 btn-danger"
+              <v-button-submit
+                :submit="submit"
+                cClass="ml-1"
                 :is-loading="isLoading"
+                :disabled="this.groupLists.length == 0"
               />
             </div>
           </td>
@@ -63,7 +164,7 @@
         :ds-data="ds.dataDetails"
         :use-paging="false"
         :use-header="false"
-        :top-content-height="250"
+        :top-content-height="330"
       >
         <template #table-content>
           <table
@@ -78,7 +179,9 @@
                 <th class="text-center">Parent Item Name</th>
                 <th class="text-center">Qty Set</th>
                 <th class="text-center">Child Item Code</th>
-                <th class="text-center" style="width: 100px">Child Item Name</th>
+                <th class="text-center" style="width: 100px">
+                  Child Item Name
+                </th>
                 <th class="text-center">Req. Qty</th>
                 <th class="text-center">Scan Qty</th>
                 <th class="text-center">Crt Qty</th>
@@ -116,14 +219,20 @@
                 >
                   <td colspan="5"></td>
                   <td>{{ dtl.ChildItemCode }}</td>
-                  <td style="white-space: wrap;">{{ dtl.ChildItemName }}</td>
+                  <td style="white-space: wrap">{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.TotalScan) }}
                   </td>
-                  <td><a href="javascript:void(0)" @click="() => viewStock(dtl.ChildItemCode)">View Detail</a></td>
+                  <td>
+                    <a
+                      href="javascript:void(0)"
+                      @click="() => viewStock(dtl.ChildItemCode)"
+                      >View Detail</a
+                    >
+                  </td>
                 </tr>
               </template>
             </tbody>
@@ -147,6 +256,13 @@ export default {
     model: {
       RequestNo: "#AUTO",
       RequestDate: new Date(),
+      DNNumber: null,
+      DNDate: new Date(),
+      BCType: null,
+      BCNumber: null,
+      BCDate: new Date(),
+      VehicleNo: null,
+      Transport: null,
     },
     debounce: null,
     lists: [],
@@ -154,6 +270,7 @@ export default {
     isLoading: false,
     selectedItem: null,
     counter: 0,
+    errors: {},
   }),
   computed: {
     ds: function () {
@@ -200,9 +317,38 @@ export default {
         });
 
         this.groupLists = Object.values(grouped);
+
+        this.ds.loadHeader().then((dt) => (this.model = dt));
       });
     },
     print: function () {},
+    submit: function () {
+      this.isLoading = true;
+
+      let payload = {
+        RequestId: this.model.RequestId,
+        RequestNo: this.model.RequestNo,
+        DNNumber: this.model.DNNumber,
+        DNDate: this.model.DNDate,
+        BCNumber: this.model.BCNumber,
+        BCDate: this.model.BCDate,
+        BCType: this.model.BCType,
+        Transport: this.model.Transport,
+        VehicleNo: this.model.VehicleNo,
+      };
+
+      this.ds
+        .update(payload)
+        .then((dt) => {
+          toastSuccess("Data saved successfully!");
+          this.back();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+    },
     remove: function () {
       confirmRemove(
         () =>
@@ -210,7 +356,7 @@ export default {
             this.ds
               .remove(
                 this.ds.newRequest[0].RequestId,
-                this.ds.newRequest[0].RequestNo
+                this.ds.newRequest[0].RequestNo,
               )
               .then((dt) => {
                 toastSuccess("Data deleted successfully!");
@@ -224,7 +370,7 @@ export default {
               });
           }),
         null,
-        this.ds.newRequest[0].RequestNo
+        this.ds.newRequest[0].RequestNo,
       );
     },
     back: function () {
@@ -235,11 +381,11 @@ export default {
         },
       });
     },
-    viewStock: function(item) {
+    viewStock: function (item) {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
-    }
+    },
   },
 };
 </script>

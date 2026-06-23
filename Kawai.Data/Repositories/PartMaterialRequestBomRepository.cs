@@ -52,13 +52,43 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, param.ToQueryObject())).ToList();
     }
 
-    public async Task Save(List<PartMaterialRequestBomModel> models, string userId)
+    public async Task<PartMaterialRequestBomHeaderDto> GetDataHeader(long requestId, string itemCode)
+    {
+        string sp = "sp_Wms_PartMaterialRequestBom_GetDataHeader";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<PartMaterialRequestBomHeaderDto>(sp, new { RequestId = requestId, ItemCode = itemCode });
+    }
+
+    public async Task Update(PartMaterialRequestBomHeaderModel model, string userId)
+    {
+        string sp = "sp_Wms_PartMaterialRequestBom_Update";
+        await _dbExecutor.ExecuteNonTransactionAsync(sp, new
+        {
+            model.RequestId,
+            model.DNNumber,
+            model.DNDate,
+            model.BCNumber,
+            model.BCType,
+            model.BCDate,
+            model.VehicleNo,
+            model.Transport,
+            UserId = userId
+        });
+    }
+
+    public async Task Save(PartMaterialRequestBomHeaderModel model, string userId)
     {
         string sp = "sp_Wms_PartMaterialRequestBom_Save";
         await _dbExecutor.ExecuteNonTransactionAsync(sp, new
         {
-            models[0].WarehouseCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["WarehouseCode"]),
+            model.Details[0].WarehouseCode,
+            model.DNNumber,
+            model.DNDate,
+            model.BCNumber,
+            model.BCType,
+            model.BCDate,
+            model.VehicleNo,
+            model.Transport,
+            NewRequest = DataTableHelper.ToDataTable(model.Details, ["WarehouseCode"]),
             UserId = userId
         });
     }

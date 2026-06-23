@@ -21,6 +21,13 @@ public class PartMaterialRequestBomController : HahaController
         _logger = logger;
     }
 
+    [HttpGet("data-header")]
+    public async Task<IActionResult> GetDataHeader(long requestId, string itemCode)
+    {
+        var result = await _partMaterialRequestBomRepository.GetDataHeader(requestId, itemCode);
+        return Success(result);
+    }
+
     [HttpPost("list-header")]
     public async Task<IActionResult> ListHeader([FromBody] RequestParameter parameter)
     {
@@ -43,11 +50,14 @@ public class PartMaterialRequestBomController : HahaController
     }
 
     [HttpPost("save")]
-    public async Task<IActionResult> Save([FromBody] List<PartMaterialRequestBomModel> models)
+    public async Task<IActionResult> Save([FromBody] PartMaterialRequestBomHeaderModel model)
     {
         var logs = new List<DataLogDto>();
 
-        foreach (var item in models)
+        if (model.Details == null || !model.Details.Any())
+            return Invalid("Detail Request Invalid");
+
+        foreach (var item in model.Details)
         {
             var before = await _partMaterialRequestBomRepository.Capture(item.PONumber);
             logs.Add(new DataLogDto
@@ -62,7 +72,7 @@ public class PartMaterialRequestBomController : HahaController
             });
         }
 
-        await _partMaterialRequestBomRepository.Save(models, Auth.User.UserID);
+        await _partMaterialRequestBomRepository.Save(model, Auth.User.UserID);
 
         foreach (var log in logs)
         {
@@ -71,6 +81,31 @@ public class PartMaterialRequestBomController : HahaController
 
             await _logger.SaveDataLog(log);
         }
+
+        return Success();
+    }
+
+    [HttpPatch("update")]
+    public async Task<IActionResult> Update([FromBody] PartMaterialRequestBomHeaderModel model)
+    {
+        if (!model.RequestId.HasValue) return Invalid("Request Data Invalid");
+
+        var before = await _partMaterialRequestBomRepository.CaptureRequest(model.RequestId.Value);
+
+        await _partMaterialRequestBomRepository.Update(model, Auth.User.UserID);
+
+        var after = await _partMaterialRequestBomRepository.CaptureRequest(model.RequestId.Value);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Material Request Bom",
+            EntityId = model.RequestNo,
+            ReferenceId = model.RequestNo,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update,
+            Activity = "Update Part Material Request Bom"
+        });
 
         return Success();
     }

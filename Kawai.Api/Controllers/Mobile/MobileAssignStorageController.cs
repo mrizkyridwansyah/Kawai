@@ -3,9 +3,11 @@ using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/assign-storage")]
 [ApiController]
 public class MobileAssignStorageController : HahaController

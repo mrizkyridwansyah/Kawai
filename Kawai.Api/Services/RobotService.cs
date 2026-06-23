@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.EMMA;
 using Hangfire;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
@@ -9,9 +9,16 @@ using System.Text.Json;
 namespace Kawai.Api.Services;
 public interface IRobotService
 {
+    [AutomaticRetry(Attempts = 6, DelaysInSeconds = new int[] { 5, 5, 5, 5, 5, 5 }, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
     Task CompletePicking(string requestNo);
+
+    [AutomaticRetry(Attempts = 6, DelaysInSeconds = new int[] { 5, 5, 5, 5, 5, 5 }, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
     Task CompleteLoading(CompleteStatusRequest payload);
+
+    [AutomaticRetry(Attempts = 6, DelaysInSeconds = new int[] { 5, 5, 5, 5, 5, 5 }, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
     Task CompleteLoadingSpecial(CompleteStatusRequest payload);
+
+    [AutomaticRetry(Attempts = 6, DelaysInSeconds = new int[] { 5, 5, 5, 5, 5, 5 }, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
     Task CancelRequest(string requestNo, string trolleyNo);
 }
 
@@ -45,11 +52,6 @@ public class RobotService : IRobotService
         _changeDataLogger = changeDataLogger;
     }
 
-    [AutomaticRetry(
-        Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
-        OnAttemptsExceeded = AttemptsExceededAction.Fail
-    )]
     public async Task CompletePicking(string requestNo)
     {
         try
@@ -191,11 +193,6 @@ public class RobotService : IRobotService
     }
 
 
-    [AutomaticRetry(
-        Attempts = 6,
-        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
-        OnAttemptsExceeded = AttemptsExceededAction.Fail
-    )]
     public async Task CompleteLoading(CompleteStatusRequest payload)
     {
         try
@@ -304,12 +301,6 @@ public class RobotService : IRobotService
     }
 
 
-    [AutomaticRetry(
-        Attempts = 6,
-
-        DelaysInSeconds = new int[] { 15, 15, 15, 15, 15, 15 },
-        OnAttemptsExceeded = AttemptsExceededAction.Fail
-    )]
     public async Task CompleteLoadingSpecial(CompleteStatusRequest payload)
     {
         try
@@ -429,6 +420,10 @@ public class RobotService : IRobotService
             };
 
             _logger.LogInformation("Sending robot request for {PickingNo}", payload.RequestSendID);
+
+            var results = await _robotRepository.GetListData(payload.RequestSendID);
+
+            if (results == null || !results.Any()) return;
 
             var options = new JsonSerializerOptions
             {

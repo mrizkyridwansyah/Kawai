@@ -40,3 +40,24 @@ public class PartMaterialRequestBomDetilDto : DataTableDto
     public string Status { get; set; }
     public decimal? TotalScan { get; set; }
 }
+
+public class PartMaterialRequestBomHeaderDto
+{
+    public long RequestId { get; set; }
+    public string RequestNo { get; set; }
+    public string PONo { get; set; }
+    public DateTime PODate { get; set; }
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
+    public string SupplierAbbr { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string DNNumber { get; set; }
+    public DateTime DNDate { get; set; }
+    public string BCNumber { get; set; }
+    public string BCType { get; set; }
+    public DateTime BCDate { get; set; }
+    public string VehicleNo { get; set; }
+    public string Transport { get; set; }
+
+}

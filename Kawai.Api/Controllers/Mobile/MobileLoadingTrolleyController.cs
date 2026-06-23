@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Kawai.Domain.DTOs.Log;
 using Hangfire;
 using Kawai.Domain.Models.Robot;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/loading-trolley")]
 [ApiController]
 public class MobileLoadingTrolleyController : HahaController

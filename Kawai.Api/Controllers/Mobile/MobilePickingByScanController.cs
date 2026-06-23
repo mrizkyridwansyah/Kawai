@@ -1,13 +1,13 @@
-﻿using Hangfire;
-using Kawai.Api.Services;
+﻿using Kawai.Api.Services;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
-using Kawai.Domain.Models.Robot;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/pickingbyscan")]
 [ApiController]
 public class MobilePickingByScanController : HahaController

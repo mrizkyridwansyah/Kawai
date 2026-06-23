@@ -3,10 +3,12 @@ using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
 
+[Authorize]
 [Route("api/mobile/loading-confirmation")]
 [ApiController]
 public class MobileLoadingConfirmationController : HahaController
