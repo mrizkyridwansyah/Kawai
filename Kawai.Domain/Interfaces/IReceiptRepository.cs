@@ -39,6 +39,7 @@ public interface IReceiptRepository
 
     #region ANDON
     Task<List<ReceiptAndonDto>> GetListNSummary();
+    Task<List<ReceiptAndonDto>> GetListNSummarybySupplier(string supplier);
     #endregion
 
     Task<List<ReceiptDto>> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string userId);

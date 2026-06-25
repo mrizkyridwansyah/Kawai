@@ -11,5 +11,8 @@ public class AndonFilterDto: DataTableDto
 
     public string ModelCls { get; set; }
     public string ModelDescs { get; set; }
+
+    public string SupplierCode { get; set; }
+    public string SupplierName { get; set; }
 }
 
