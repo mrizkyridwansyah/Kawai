@@ -126,3 +126,10 @@ public class ReceiptConfirmationCheckIsDetailsUpdateDto
     public int TypeConfirmation { get; set; }
     public string TypeConfirmationDesc { get; set; }
 }
+
+public class ReceiptBreakdownDto
+{
+    public long ReceiptEZRId { get; set; }
+    public decimal Qty { get; set; }
+    public int NoSeri { get; set; }
+}

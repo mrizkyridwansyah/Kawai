@@ -78,8 +78,29 @@ public class ReceiptDetail
     public int? NoSeri { get; set; }
 }
 
+public class ReceiptBreakdown
+{
+    [Required]
+    public long? ReceiptId { get; set; }
 
- 
+    [Required]
+    public long? ReceiptDetailId { get; set; }
+
+    [Required]
+    public List<ReceiptBreakdownDetail> BreakdownDetails { get; set; }
+}
+
+public class ReceiptBreakdownDetail
+{
+    [Required]
+    [NumberGreaterThan(0)]
+    public decimal? ReceiptQty { get; set; }
+
+    [Required]
+    [NumberGreaterThan(0)]
+    public int? NoSeri { get; set; }
+}
+
 public class ReceiptImport
 {
     public ReceiptHeaderImport Header { get; set; }
