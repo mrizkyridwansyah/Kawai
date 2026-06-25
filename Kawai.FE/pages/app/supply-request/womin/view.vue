@@ -177,7 +177,11 @@
                         {{ $func.formatMoney(dtl.RequirementQty) }}
                       </td>
                       <td class="text-right">
-                        {{ $func.formatMoney(dtl.TotalScan) }}
+                         <a
+                          href="javascript:void(0)"
+                          @click="viewScan(dtl.IDSeq)"
+                          > {{ $func.formatMoney(dtl.TotalScan) }}</a
+                        >
                       </td>
                       <td class="text-center">
                         <a
@@ -199,6 +203,13 @@
 
   <v-modal title="Detail Stock" class="modal-lg" id="modal-list-stock">
     <shared-request-womin-list-stock
+      :item="this.selectedItem"
+      :counter="this.counter"
+    />
+  </v-modal>
+
+    <v-modal title="Detail Scan Supply" class="modal-lg" id="modal-list-scan">
+    <shared-request-womin-list-scan
       :item="this.selectedItem"
       :counter="this.counter"
     />
@@ -374,6 +385,13 @@ export default {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
+    },
+
+     viewScan: function (item) {
+      debugger;
+      this.selectedItem = item;
+      this.counter++;
+      this.$bvModal.show("modal-list-scan");
     },
 
     editStock: function (item) {

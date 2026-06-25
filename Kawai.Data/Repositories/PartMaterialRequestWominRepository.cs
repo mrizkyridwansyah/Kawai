@@ -57,6 +57,12 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, param.ToQueryObject())).ToList();
     }
 
+    public async Task<List<StockScanDto>> GetListScan(RequestParameter param)
+    {
+        string sp = "sp_Wms_PartMaterialRequest_GetListScan";
+        return (await _dbExecutor.QueryListAsync<StockScanDto>(sp, param.ToQueryObject())).ToList();
+    }
+
     public async Task<PartMaterialRequestWominEditDto> GetData(long idSeq)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_GetDetail";

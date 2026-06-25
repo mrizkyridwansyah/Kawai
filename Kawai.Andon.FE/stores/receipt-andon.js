@@ -38,6 +38,31 @@ export const useReceiptAndon = defineStore('ReceiptAndon', {
           .finally(_ => this.isLoading = false);
       })
     },
+
+     loadbysupplier: function (supplier = null,) {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+      return new Promise((resolve, reject) => {
+             app.$http.get(
+            `/andon/receipt/listbysupplier?supplier=${supplier || ""}`,
+          )
+        
+          .then(v => {
+            this.data = v?.Data;
+            resolve(v);
+          })
+          .catch(err => {
+            if (err.code == 'ERR_NETWORK')
+              this.isNetworkError = true;
+
+            if (err.code == 'ERR_BAD_RESPONSE')
+              this.isServerError = true;
+
+            reject(err);
+          })
+          .finally(_ => this.isLoading = false);
+      })
+    },
   },
 });
 

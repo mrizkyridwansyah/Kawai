@@ -1,4 +1,7 @@
-﻿namespace Kawai.Domain.DTOs;
+﻿using Kawai.Domain.Models;
+using System;
+
+namespace Kawai.Domain.DTOs;
 
 public class StockDto: DataTableDto
 {
@@ -30,6 +33,18 @@ public class StockDto: DataTableDto
     public string StatusSO { get; set; }
 }
 
+
+public class StockScanDto : DataTableDto
+{
+
+    public string BarcodeNo { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public decimal Qty { get; set; }
+    public string UserScan { get; set; }
+    public DateTime TimeScan { get; set; }
+}
+           
 public class StockMasterDto: DataTableDto
 {
     public string RefNo { get; set; }

@@ -48,6 +48,20 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       Sorts: {},
     },
 
+     dataListScan: {
+      Items: [],
+      Total: 0,
+      Filtered: 0,
+      Page: 1,
+      Length: 10,
+    },
+    filterListScan: {
+      Page: 1,
+      Length: 10,
+      Filters: [],
+      Sorts: {},
+    },
+
     newRequest: [],
   }),
   actions: {
@@ -90,7 +104,7 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .finally((_) => (this.isLoadingDetail = false));
       });
     },
-    loadListStock: function () {
+     loadListStock: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
 
@@ -99,6 +113,29 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .post(`/supply-request/womin/list-stock`, this.filterListStock)
           .then(({ data }) => {
             this.dataListStock = data.Data;
+
+            resolve(data);
+          })
+          .catch((err) => {
+            if (err.code == "ERR_NETWORK") this.isNetworkError = true;
+
+            if (err.code == "ERR_BAD_RESPONSE") this.isServerError = true;
+
+            reject(err);
+          })
+          .finally((_) => (this.isLoading = false));
+      });
+    },
+
+     loadListScan: function () {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+
+      return new Promise((resolve, reject) => {
+        app.$http
+          .post(`/supply-request/womin/list-scan`, this.filterListScan)
+          .then(({ data }) => {
+            this.dataListScan = data.Data;
 
             resolve(data);
           })
@@ -148,6 +185,24 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       this.filterListStock.Length = v;
       this.loadListStock();
     },
+
+     setFilterListScan: function (v) {
+      this.filterListScan.Filters = v;
+      this.filterListScan.Page = 1;
+    },
+    setSortListScan: function (v) {
+      this.filterListScan.Sorts = v;
+    },
+    setPageListScan: function (v) {
+      this.filterListScan.Page = v;
+      this.loadListScan();
+    },
+    setLengthListScan: function (v) {
+      this.filterListScan.Page = 1;
+      this.filterListScan.Length = v;
+      this.loadListScan();
+    },
+
     save: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {

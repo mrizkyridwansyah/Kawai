@@ -9,6 +9,7 @@ public interface IPartMaterialRequestWominRepository
     Task<List<PartMaterialRequestWominDto>> GetListHeader(RequestParameter parameter);
     Task<List<PartMaterialRequestWominDetilDto>> GetListDetail(List<PartMaterialRequestWominModel> parameter);
     Task<List<StockDto>> GetListStock(RequestParameter parameter);
+    Task<List<StockScanDto>> GetListScan(RequestParameter parameter);
     Task Save(List<PartMaterialRequestWominModel> model, string userId);
     Task Remove(long requestId, string userId);
     

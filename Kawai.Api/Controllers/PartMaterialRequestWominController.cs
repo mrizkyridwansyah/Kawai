@@ -77,6 +77,13 @@ public class PartMaterialRequestWominController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("list-scan")]
+    public async Task<IActionResult> ListScan([FromBody] RequestParameter parameter)
+    {
+        var results = await _partMaterialRequestWominRepository.GetListScan(parameter);
+        return DataTableResult(parameter, results);
+    }
+
     [HttpPost("save")]
     public async Task<IActionResult> Save([FromBody] List<PartMaterialRequestWominModel> models)
     {

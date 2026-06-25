@@ -8,7 +8,7 @@
         :clear-on-select="false"
         :preserve-search="true"
         open-direction="bottom"
-        :placeholder="placeholder || `Search Area`"
+        :placeholder="placeholder || ` `"
         :searchable="true"
         :label="displayLabel"
         track-by="AreaCode"
@@ -53,7 +53,7 @@ export default {
     prop: "modelValue",
     event: "update",
   },
-  emits: ["update:modelValue", "update:areaName"],
+  emits: ["update:modelValue"],
   props: [
     "modelValue",
     "type",
@@ -68,6 +68,10 @@ export default {
     "class",
     "warehouse",
     "includeTemp",
+    "styleCode",
+    "styleDesc",
+    "showOptionAll",
+    "defaultOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -111,8 +115,7 @@ export default {
       const selected = this.list.find((x) => x.AreaCode === v) || null;
 
       this.$emit("update:modelValue", v);
-      this.$emit("update:areaName", selected?.AreaName || "");
-
+    
       // console.log("Selected AreaCode:", v);
       // console.log("Selected AreaName:", selected?.AreaName || "");
     },
@@ -131,6 +134,9 @@ export default {
       this.isLoading = true;
       if (this.debounce != null) clearTimeout(this.debounce);
 
+       if ((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
+        d = "";
+      }
       this.debounce = setTimeout(() => {
         this.$http
           .get(
@@ -142,7 +148,27 @@ export default {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.AreaCode;
             }
-            this.list = p.data.Data;
+             if (
+              (this.defaultOptionAll || "") == "ALL" &&
+              (this.tempValue || "") == ""
+            ) {
+              this.tempValue = "ALL";
+              this.$emit("update:modelValue", "ALL");
+            }
+
+            this.list =
+              (this.showOptionAll || false) &&
+              (q || "") == "" &&
+              p.data.Data.length > 0
+                ? [
+                    {
+                      AreaCode: "ALL",
+                      AreaName: "ALL",
+                      DDLDescription: "ALL",
+                    },
+                    ...p.data.Data,
+                  ]
+                : p.data.Data;
           })
           .finally(() => (this.isLoading = false));
 

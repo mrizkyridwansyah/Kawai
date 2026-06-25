@@ -2,10 +2,48 @@
   <div class="panel panel-inverse">
     <div class="panel-heading ui-sortable-handle">
       <font-awesome-icon icon="chart-column" style="font-size: 1.25em" />
-      <span style="font-size: 1.25em" class="ml-3">
+       
+      <span  id="header-panel"  style="font-size: 1.25em" class="ml-3">
         Receiving Andon (Temporary Area)
       </span>
     </div>
+
+    <div
+      class="filter-area p-3"
+      id="containerfilter"
+      v-show="showFilter"
+      @click.stop
+    >
+      <!--dropdown area-->
+      <!--dropdown area-->
+      <div class="row align-items-center mt-1">
+        <!-- Line Filter -->
+        <div class="col-12 col-md-5 col-lg-5 d-flex align-items-center">
+          <label class="form-label mb-0 me-2" style="min-width: 40px"
+            >Supplier</label
+          >
+          <div class="flex-grow-1">
+            <filter-supplier
+              class="form-control w-100"
+              v-model="filter.supplier"
+                 :show-option-all="true"
+              default-option-all="ALL"
+              v-model:supplier-name="filter.SupplierName"
+              
+            />
+            
+          </div>
+        </div>
+
+        
+
+        <!-- Search Button -->
+        <div class="col-12 col-md-2 col-lg-auto d-flex align-items-center">
+          <v-button-search :search="search" />
+        </div>
+      </div>
+    </div>
+
     <div class="panel-body">
       <div class="row">
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
@@ -321,6 +359,12 @@ export default {
       passed: 0,
       ng: 0,
     },
+     intervalLoad: null,
+     showFilter: true,
+    filter:{
+      supplier: "",
+       SupplierName: ""
+    },
     isLoading: false,
     list: [],
     pollingId: null,
@@ -358,10 +402,47 @@ export default {
     },
   },
   mounted: async function () {
+     document.addEventListener("click", this.handleGlobalClick);
     // Eksekusi tarikan data pertama kali saat halaman dibuka
-    this.load();
+     
   },
+ 
+  beforeUnmount: function () {
+    // Wajib: bersihkan interval dan listener jika pindah halaman (mencegah memory leak)
+     this.stopInterval();
+    document.removeEventListener("click", this.handleGlobalClick);
+  },
+
   methods: {
+
+     startInterval: function () {
+      this.stopInterval(); // Pastikan tidak ada interval ganda
+      this.intervalLoad = setInterval(() => {
+        this.search(true); // true = pencarian dipicu otomatis oleh interval
+      }, 3000);
+    },
+    stopInterval: function () {
+      if (this.intervalLoad) {
+        clearInterval(this.intervalLoad);
+        this.intervalLoad = null;
+      }
+    },
+    handleGlobalClick: function (event) {
+      // Jika filter sedang disembunyikan (interval nyala), dan user klik sembarang tempat,
+      // maka munculkan filter dan matikan interval
+      if (!this.showFilter) {
+        this.showFilter = true;
+         this.stopInterval();
+        
+          // Kembalikan teks judul panel seperti semula
+        const headerPanel = document.getElementById("header-panel");
+        if (headerPanel) {
+          headerPanel.innerText = "Receiving Andon (Temporary Area)";
+        }
+
+      }
+    },
+
     onScroll: function (e, type) {
       const { scrollTop, scrollHeight, clientHeight } = e.target;
       // Jika scroll sudah mendekati bawah (sisa 50px jarak dari bawah)
@@ -378,16 +459,17 @@ export default {
         }
       }
     },
-    load: function () {
+
+   search: function () {
       if (this.isLoading) {
         console.log("masih loading bro!");
         return;
       }
+         debugger;
+         this.isLoading = true;
 
-      this.isLoading = true;
-
-      this.ds
-        .load()
+         this.ds
+        .loadbysupplier(this.filter.supplier)
         .then((dt) => {
           let rawData = dt.data.Data || [];
 
@@ -415,25 +497,78 @@ export default {
           this.summary.ng = this.listNG.length;
         })
         .catch((err) => console.error(err))
-        .finally(() => {
-          // $nextTick memastikan DOM sudah SELESAI dirender sepenuhnya
-          this.$nextTick(() => {
-            this.isLoading = false;
+        .finally(() => (this.isLoading = false));
+      if (this.filter.supplier != null) {
 
-            // Jadwalkan tarikan data berikutnya setelah rendering DOM tuntas
-            this.pollingId = setTimeout(() => {
-              this.load();
-            }, 3000);
-          });
-        });
+        // Ubah teks judul panel sesuai area yang difilter
+          const headerPanel = document.getElementById("header-panel");
+          if (headerPanel) {
+            headerPanel.innerText = `Receiving Andon (Temporary Area)`;
+          }
+
+        // Gunakan setTimeout kecil untuk mencegah bentrok dengan handleGlobalClick
+        setTimeout(() => {
+          this.showFilter = false; // Sembunyikan area filter
+           this.startInterval(); // Nyalakan interval tiap 3 detik
+        }, 100);
+      }
     },
+
+    // load: function () {
+    //   if (this.isLoading) {
+    //     console.log("masih loading bro!");
+    //     return;
+    //   }
+
+    //   this.isLoading = true;
+
+    //   this.ds
+    //     .load()
+    //     .then((dt) => {
+    //       let rawData = dt.data.Data || [];
+
+    //       // Paksa pengurutan (sorting) di Frontend agar posisinya stabil setiap ditarik
+    //       rawData.sort((a, b) => {
+    //         let dateA = new Date(a.ReceiptDate).getTime();
+    //         let dateB = new Date(b.ReceiptDate).getTime();
+            
+    //         // Urutkan berdasarkan Tanggal (Terlama di atas / ASC)
+    //         if (dateA !== dateB) return dateA - dateB;
+            
+    //         // Jika tanggal sama persis, urutkan berdasarkan DNNumber ASC agar posisinya terkunci mati
+    //         let dnA = a.DNNumber || "";
+    //         let dnB = b.DNNumber || "";
+    //         return dnA.localeCompare(dnB);
+    //       });
+
+    //       // Freeze array agar tidak dibuatkan reactivity proxy yang berat
+    //       this.list = Object.freeze(rawData);
+
+    //       // Hitung summary langsung dari computed properties
+    //       this.summary.total = this.list.length;
+    //       this.summary.pending = this.listPending.length;
+    //       this.summary.passed = this.listPassed.length;
+    //       this.summary.ng = this.listNG.length;
+    //     })
+    //     .catch((err) => console.error(err))
+    //     .finally(() => {
+    //       // $nextTick memastikan DOM sudah SELESAI dirender sepenuhnya
+    //       this.$nextTick(() => {
+    //         this.isLoading = false;
+
+    //         // Jadwalkan tarikan data berikutnya setelah rendering DOM tuntas
+    //         this.pollingId = setTimeout(() => {
+    //           this.load();
+    //         }, 3000);
+    //       });
+    //     });
+    // },
   },
-  unmounted() {
-    // BERSIHKAN TIMEOUT SAAT PINDAH HALAMAN / HOT-RELOAD AGAR TIDAK BOCOR & BERTUMPUK
-    if (this.pollingId) {
-      clearTimeout(this.pollingId);
-    }
-  },
+
+  
+
+
+  
 };
 </script>
 
