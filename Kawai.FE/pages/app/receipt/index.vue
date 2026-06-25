@@ -57,17 +57,17 @@
               :period-until="filter.PeriodUntil"
               :show-option-all="true"
               v-model="filter.ReceiptId"
-              style="width: 300px"
+              style="width: 290px"
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Complete Status</label>
+            <label class="form-label">Complete Status Scan</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
             <filter-yes-no-all
               class="form-control"
               v-model="filter.CompleteStatus"
-              style="width: 110px"
+              style="width: 100px"
             />
           </td>
         </tr>
