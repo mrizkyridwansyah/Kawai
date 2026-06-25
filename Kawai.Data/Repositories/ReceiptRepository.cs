@@ -361,6 +361,14 @@ public class ReceiptRepository : IReceiptRepository
         return (await _dbExecutor.QueryListAsync<ReceiptAndonDto>(sp)).ToList();
     }
 
+    public async Task<List<ReceiptAndonDto>> GetListNSummarybySupplier(string supplier)
+    {
+        string sp = "sp_Wms_Andon_ReceiptGetListBySupplier";
+        return (await _dbExecutor.QueryListAsync<ReceiptAndonDto>(sp, new { Supplier = supplier ?? "ALL"})).ToList();
+    }
+
+
+
     public async Task<Dictionary<string, object>> Capture(long id)
     {
         var result = await _dbExecutor.QueryMultipleAsync(

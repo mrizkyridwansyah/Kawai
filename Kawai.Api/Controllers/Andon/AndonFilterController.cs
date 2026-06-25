@@ -73,6 +73,20 @@ public class AndonFilterController : HahaController
         return Success(results);
     }
 
- 
+    //get ddl area
+    [HttpGet("ddlsupplier")]
+    public async Task<IActionResult> DDLSupplier(string keyword, string ids)
+    {
+        var results = await _andonFilter.DDLSupplier(keyword);
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.SupplierCode)).ToList();
+        }
+        return Success(results);
+    }
+
+
 
 }

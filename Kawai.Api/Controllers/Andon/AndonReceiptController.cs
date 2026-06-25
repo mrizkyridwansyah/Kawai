@@ -20,4 +20,11 @@ public class AndonReceiptController : HahaController
         var results = await _receiptRepository.GetListNSummary();
         return Success(results);
     }
+
+    [HttpGet("listbysupplier")]
+    public async Task<IActionResult> ListbySupplier(string supplier)
+    {
+        var results = await _receiptRepository.GetListNSummarybySupplier(supplier);
+        return Success(results);
+    }
 }
