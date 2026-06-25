@@ -28,6 +28,7 @@ public class SupplyScanRequestDetailDto
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
     public string LotNo { get; set; }
+    public string StatusReceipt { get; set; }
 
 }
 
