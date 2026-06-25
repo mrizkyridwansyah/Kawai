@@ -1,4 +1,5 @@
 ﻿using Kawai.Domain.Interfaces;
+using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Andon;
@@ -20,5 +21,12 @@ public class AndonWominRequestController : HahaController
     {
         var results = await _andonWominRequest.GetListNSummary(line, area);
         return Success(results);
+    }
+
+    [HttpPost("list-womindetail")]
+    public async Task<IActionResult> ListStock([FromBody] RequestParameter parameter)
+    {
+        var results = await _andonWominRequest.GetListWomin(parameter);
+        return DataTableResult(parameter, results);
     }
 }

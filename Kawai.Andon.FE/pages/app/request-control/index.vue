@@ -38,12 +38,14 @@
         <!-- Area Filter -->
         <div class="col-12 col-md-5 col-lg-5 d-flex align-items-center">
           <label class="form-label mb-0 me-2" style="min-width: 40px"
-            >Area</label
+            >Grouping Class Part</label
           >
           <div class="flex-grow-1">
             <filter-area
               class="form-control w-100"
               v-model="filter.area"
+                 :show-option-all="true"
+              default-option-all="ALL"
               v-model:area-name="filter.areaName"
               warehouse=""
             />
@@ -120,8 +122,8 @@
                 >Remaining Item - Material Type (Group)</span
               >
             </div>
-            <div class="panel-body">
-              <div class="table-responsive">
+               <div class="panel-body">
+              <div class="v-table-wrapper" @scroll="onScroll($event, 'main')">
                 <table
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
@@ -131,6 +133,7 @@
                       <th class="text-center">Line</th>
                       <th class="text-center">Production Date</th>
                       <th class="text-center">Request No</th>
+                      <th class="text-center">Grouping Part Class</th>
                       <th class="text-center">Item</th>
                       <th class="text-center">Model</th>
                       <th class="text-center">Work Station</th>
@@ -138,13 +141,20 @@
                       <th class="text-center">Trolly Number</th>
                       <th class="text-center">Current Position</th>
                       <th class="text-center">Next Location</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(item, i) in ds.data">
+                  <tr v-for="(item, i) in ds.data">
                       <td>{{ item.Line }}</td>
                       <td>{{ $func.formatDate(item.ProductionDate) }}</td>
-                      <td>{{ item.RequestNo }}</td>
+                       <td>
+                          <a
+                          href="javascript:void(0)"
+                          @click="viewWomin(item.RequestNo,item.GroupingPart)"
+                          > {{item.RequestNo }}</a>
+                       </td>
+                      <td>{{ item.GroupingPart }}</td>
                       <td>{{ item.PickingArea }}</td>
                       <td>{{ item.Model }}</td>
                       <td>{{ item.WorkStation }}</td>
@@ -152,17 +162,26 @@
                       <td>{{ item.TrollyNumber }}</td>
                       <td>{{ item.CurrentPosition }}</td>
                       <td>{{ item.NextLocation }}</td>
+                          
+                      
                     </tr>
                   </tbody>
                 </table>
+                <v-data-empty class="mt-3" v-if="!ds.isLoading && ds.data.Length == 0" />
               </div>
-              <v-data-empty class="mt-3" v-if="ds.data.Length == 0" />
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+   <v-modal title="Detail Womin" class="modal-lg" id="modal-list-detailwomin">
+    <shared-request-womin-list
+      :refno="this.selectedRefNo"
+      :groupclass="this.selectedGroupClass"
+      :counter="this.counter"
+    />
+   </v-modal>
 </template>
 
 <script>
@@ -171,6 +190,10 @@ export default {
     isLoading: false,
     intervalLoad: null,
     showFilter: true,
+    selectedRefNo: null,
+    selectedGroupClass: null,
+    list: [],
+     counter: 0,
     summary: {
       total: 0,
       totalItem: 0,
@@ -186,6 +209,11 @@ export default {
       line: null,
       lineName: "",
     },
+
+     renderLimits: {
+      main: 50 
+      
+    },
   }),
   computed: {
     ds: function () {
@@ -193,9 +221,7 @@ export default {
     },
   },
   watch: {
-    // "filter.warehouse": function () {
-    //   this.ds.data.Items = [];
-    // },
+ 
     "filter.area": function () {
       this.filter.area;
     },
@@ -209,6 +235,21 @@ export default {
     document.removeEventListener("click", this.handleGlobalClick);
   },
   methods: {
+        onScroll: function (e, type) {
+      const { scrollTop, scrollHeight, clientHeight } = e.target;
+      // Jika scroll sudah mendekati bawah (sisa 50px jarak dari bawah)
+      if (scrollTop + clientHeight >= scrollHeight - 50) {
+        // Cek batasan max item dari masing-masing array
+        let maxLen = 0;
+        if (type === "main") maxLen = this.ds.data.length;
+        
+        else if (type === "ng") maxLen = this.ds.data.length;
+
+        if (this.renderLimits[type] < maxLen) {
+          this.renderLimits[type] += 50;
+        }
+      }
+    },
     startInterval: function () {
       this.stopInterval(); // Pastikan tidak ada interval ganda
       this.intervalLoad = setInterval(() => {
@@ -280,15 +321,15 @@ export default {
       this.search();
     },
 
-    //load: function () {
-    //   this.ds.load().then((dt) => (this.listRemaining = dt.Data));
-    // this.ds.loadSummary().then((dt) => {
-    //   this.summary.total = dt.Data.Total;
-    //   this.summary.womin = dt.Data.Womin;
-    //   this.summary.item = dt.Data.Item;
-    //   this.summary.remaining = dt.Data.Remaining;
-    // });
-    //},
+    viewWomin: function (refno , groupclass) {
+      debugger;
+      this.selectedRefNo = refno;
+      this.selectedGroupClass = groupclass;
+      this.counter++;
+      this.$bvModal.show("modal-list-detailwomin");
+    },
+
+ 
   },
 };
 </script>
@@ -299,6 +340,12 @@ export default {
   text-align: center;
 }
 
+.v-table-wrapper {
+  overflow: auto;
+  max-height: 500px;
+  /* border: 1px solid #ddd; */
+  position: relative;
+}
 .title-summary {
   color: white;
   font-size: 1.4em;
