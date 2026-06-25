@@ -16,6 +16,7 @@ public class IQCInspectionDto
     public string InspectorName { get; set; }
     public string Remarks { get; set; }
     public string Source { get; set; }
+    public decimal TotalQtyReceipt { get; set; }
     public decimal TotalQtySample { get; set; }
 }
 

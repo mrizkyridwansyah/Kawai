@@ -44,7 +44,11 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
         {
             models[0].LineCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"])
+            models[0].RequestId,
+            models[0].ProductionId,
+            models[0].ScheduleDate,
+            models[0].ItemCode,
+            models[0].RequestSetQty
         })).ToList();
     }
     public async Task<List<StockDto>> GetListStock(RequestParameter param)

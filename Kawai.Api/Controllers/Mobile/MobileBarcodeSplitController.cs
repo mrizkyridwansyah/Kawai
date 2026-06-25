@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kawai.Api.Controllers.Mobile;
 
-//[Authorize]
-[Route("api/barcode-split")]
+[Authorize]
+[Route("api/mobile/barcode-split")]
 [ApiController]
 public class MobileBarcodeSplitController : HahaController
 {

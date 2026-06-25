@@ -311,6 +311,7 @@ export default {
             ChildItemName: item.ChildItemName,
             Qty: item.Qty,
             RequirementQty: item.RequirementQty,
+            TotalScan: item.TotalScan,
             RegisterUser: item.RegisterUser,
             RegisterDate: item.RegisterDate,
           });

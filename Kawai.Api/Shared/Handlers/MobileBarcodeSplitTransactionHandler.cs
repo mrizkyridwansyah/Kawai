@@ -24,15 +24,22 @@ public class MobileBarcodeSplitTransactionHandler : ITransactionHandler
         var json = JsonSerializer.Serialize(payload);
         var model = JsonSerializer.Deserialize<MobileBarcodeSplit>(json);
 
-        var before = await _barcodeSplitRepository.Capture(model.BarcodeNo);
-
         await _barcodeSplitRepository.Save(model, userId);
-
-        var after = await _barcodeSplitRepository.Capture(model.BarcodeNo);
 
         if(!String.IsNullOrEmpty(model.BarcodeNoNew))
         {
-            var after2 = await _barcodeSplitRepository.Capture(model.BarcodeNoNew);
+            var after = await _barcodeSplitRepository.Capture(model.BarcodeNoNew);
+
+            await _logger.SaveDataLog(new DataLogDto
+            {
+                DocumentType = "Mobile Barcode Split",
+                EntityId = model.BarcodeNoNew,
+                ReferenceId = model.BarcodeNoNew,
+                After = after,
+                Activity = "Save Mobile Barcode Split",
+                Action = DataLogAction.Create
+            }, logContext);
+
             await _logger.SaveDataLog(new DataLogDto
             {
                 DocumentType = "Mobile Barcode Split",
@@ -43,16 +50,5 @@ public class MobileBarcodeSplitTransactionHandler : ITransactionHandler
                 Action = DataLogAction.Create
             }, logContext);
         }
-
-        await _logger.SaveDataLog(new DataLogDto
-        {
-            DocumentType = "Mobile Barcode Split",
-            EntityId = model.BarcodeNo,
-            ReferenceId = model.BarcodeNo,
-            Before = before,
-            After = after,
-            Activity = "Save Mobile Barcode Split",
-            Action = DataLogAction.Update
-        }, logContext);
     }
 }

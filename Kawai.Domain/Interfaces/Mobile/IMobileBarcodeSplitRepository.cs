@@ -9,5 +9,6 @@ public interface IMobileBarcodeSplitRepository
     Task<List<BarcodeSplitHistoryDto>> GetHistorySplit(string barcodeNo);
     Task Save(MobileBarcodeSplit payload, string userId);
     Task<Dictionary<string, object>> Capture(string barcodeNo);
+    Task<Dictionary<string, object>> CaptureStock(string barcodeNo);
 
 }

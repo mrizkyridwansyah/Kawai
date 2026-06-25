@@ -1,4 +1,5 @@
 ﻿using Kawai.Data.SqlConnections;
+using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Mobile;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models.Mobile;
@@ -50,5 +51,16 @@ public class MobileBarcodeSplitRepository: IMobileBarcodeSplitRepository
 
         return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
 
+    }
+    
+    public async Task<Dictionary<string, object>> CaptureStock(string barcodeNo)
+    {
+        string sp = "sp_Wms_Mobile_BarcodeSplit_CaptureStock";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { BarcodeNo = barcodeNo });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 }
