@@ -7,7 +7,7 @@
           <td style="padding-left: 15px">
             <filter-cls-2
               class="form-control"
-              type-data="ClasificationPart_Cls"
+              type-data="Grouping_Class_Part"
               v-model="filter.category"
               style-code="width: 150px"
               style-desc="width: 300px"

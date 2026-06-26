@@ -1,4 +1,5 @@
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Hangfire;
 using Kawai.Api.Hub;
@@ -68,6 +69,38 @@ public class ReceiptController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpGet("list-breakdown-detail")]
+    public async Task<IActionResult> GetListBreakdownDetail(long receiptId, long detailId)
+    {
+        var results = await _receiptRepository.GetListBreakdownReceipt(receiptId, detailId);
+        return Success(results);
+    }
+
+    [HttpPost("save-breakdown")]
+    public async Task<IActionResult> SaveBreakdown([FromBody] ReceiptBreakdown payload)
+    {
+        if(payload.BreakdownDetails == null || !payload.BreakdownDetails.Any())
+            return Invalid("Detail Breakdown is required");
+
+        var before = await _receiptRepository.CaptureBreakdown(payload.ReceiptDetailId.Value);
+
+        await _receiptRepository.SaveBreakdownReceipt(payload, Auth.User.UserID);
+
+        var after = await _receiptRepository.CaptureBreakdown(payload.ReceiptDetailId.Value);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Receipt Breakdown",
+            EntityId = payload.ReceiptDetailId.Value.ToString(),
+            ReferenceId = payload.ReceiptDetailId.Value.ToString(),
+            Before = before,
+            After = after,
+            Activity = "Save Breakdown Receipt",
+            Action = DataLogAction.Update
+        });
+
+        return Success(after);
+    }
 
 
     [HttpPost("create")]

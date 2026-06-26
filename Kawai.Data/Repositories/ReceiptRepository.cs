@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Kawai.Api.Models;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
@@ -155,6 +156,12 @@ public class ReceiptRepository : IReceiptRepository
         return (await _dbExecutor.QueryListAsync<ReceiptDetailBarcodeDto>(sp, new { ReceiptId = receiptId })).ToList();
     }
 
+    public async Task<List<ReceiptBreakdownDto>> GetListBreakdownReceipt(long receiptId, long receiptDetailId)
+    {
+        string sp = "sp_Wms_Receipt_GetListBreakdownDetail";
+        return (await _dbExecutor.QueryListAsync<ReceiptBreakdownDto>(sp, new { ReceiptId = receiptId, ReceiptDetailId = receiptDetailId })).ToList();
+    }
+
     public async Task<ReceiptDetailBarcodeDto> GetDataBarcode(string barcodeNo, string userId)
     {
         string sp = "sp_Wms_Receipt_DataBarcode";
@@ -252,6 +259,18 @@ public class ReceiptRepository : IReceiptRepository
             receipt.Id,
             receipt.SupplierCode,
             Details = DataTableHelper.ToDataTable(receipt.Details)
+        });
+    }
+
+    public async Task SaveBreakdownReceipt(ReceiptBreakdown payload, string userId)
+    {
+        string sp = "sp_Wms_Receipt_SaveBreakdownDetail";
+        await _dbExecutor.ExecuteAsync(sp, new
+        {
+            payload.ReceiptId,
+            payload.ReceiptDetailId,
+            Details = DataTableHelper.ToDataTable(payload.BreakdownDetails),
+            UserId = userId,
         });
     }
 
@@ -406,6 +425,17 @@ public class ReceiptRepository : IReceiptRepository
         {
             { "Receipt Header", result.header },
             { "Receipt Detail", result.details }
+        };
+    }
+
+    public async Task<Dictionary<string, object>> CaptureBreakdown(long detailId)
+    {
+        string sp = "sp_Wms_Receipt_CaptureBreakdown";
+        var logs = (await _dbExecutor.QueryListAsync<dynamic>(sp, new { DetailId = detailId })).ToList();
+
+        return new Dictionary<string, object>
+        {
+            { "Detail Breakdown", logs },
         };
     }
 

@@ -336,11 +336,22 @@
                       {{ $func.formatMoney(item.RemainingQty) }}
                     </td>
                     <td>
-                      <input-money-small
-                        v-model="item.ReceiptQty"
-                        :errors="errors?.[`Details[${idx}].ReceiptQty`]"
-                        style="width: 100px"
-                      />
+                      <div class="d-flex align-items-center">
+                        <input-money-small
+                          v-model="item.ReceiptQty"
+                          :errors="errors?.[`Details[${idx}].ReceiptQty`]"
+                          style="width: 100px"
+                        />
+                        <button
+                          class="btn btn-sm btn-blue ml-1"
+                          style="height: 28px"
+                          title="Breakdown Receipt"
+                          :disabled="isNew"
+                          @click="openBreakdown(item, idx)"
+                        >
+                          <font-awesome-icon icon="list" />
+                        </button>
+                      </div>
                     </td>
                     <td class="text-right">
                       {{ $func.formatMoney(item.TotalPacking) }}
@@ -374,6 +385,99 @@
           :errors="errors?.Remarks"
         />
       </div>
+
+      <v-modal id="modal-breakdown" title="Breakdown Receipt" class="modal-md">
+        <div v-if="breakdownItem">
+          <div class="mb-3">
+            <table>
+              <tr>
+                <td class="pr-2"><strong>PO Number </strong></td>
+                <td class="px-2"><strong>:</strong></td>
+                <td>
+                  {{ breakdownItem.PONumber }}
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-2"><strong>Item </strong></td>
+                <td class="px-2"><strong>:</strong></td>
+                <td>
+                  {{ breakdownItem.ItemCode }} - {{ breakdownItem.ItemName }}
+                </td>
+              </tr>
+              <tr>
+                <td class="pr-2"><strong>Qty DN </strong></td>
+                <td class="px-2"><strong>:</strong></td>
+                <td>
+                  {{ $func.formatMoney(breakdownItem.ReceiptQty) }}
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <table class="table table-bordered mb-2 align-middle">
+            <thead>
+              <tr>
+                <th class="text-center">Qty Receipt</th>
+                <th class="text-center">No. Seri</th>
+                <th style="width: 50px" class="text-center">Act</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rIdx) in breakdownRows" :key="rIdx">
+                <td>
+                  <input-money-small
+                    v-model="row.Qty"
+                    :errors="
+                      errorsBreakdown?.[
+                        'BreakdownDetails[' + rIdx + '].ReceiptQty'
+                      ]
+                    "
+                    style="width: 100%"
+                  />
+                </td>
+                <td>
+                  <input-money-small
+                    v-model="row.NoSeri"
+                    :errors="
+                      errorsBreakdown?.['BreakdownDetails[' + rIdx + '].NoSeri']
+                    "
+                    style="width: 100%"
+                  />
+                </td>
+                <td class="text-center">
+                  <button
+                    class="btn btn-sm btn-danger"
+                    @click="removeBreakdownRow(rIdx)"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <button class="btn btn-sm btn-primary mb-3" @click="addBreakdownRow">
+            <font-awesome-icon icon="plus" /> Add Row
+          </button>
+
+          <div class="d-flex justify-content-end mt-3 border-top pt-3">
+            <button
+              class="btn btn-secondary mr-2"
+              :disabled="isLoading"
+              @click="closeBreakdown"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-success"
+              :disabled="isLoading"
+              @click="saveBreakdown"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </v-modal>
     </template>
   </v-frame>
 </template>
@@ -383,6 +487,9 @@ export default {
   data: () => ({
     isNew: true,
     noSeri: 0,
+    breakdownItem: null,
+    breakdownIdx: null,
+    breakdownRows: [],
     filter: {
       FactoryCode: null,
       SupplierCode: null,
@@ -415,6 +522,7 @@ export default {
     isLoading: false,
     prevRegisterNo: "",
     errors: {},
+    errorsBreakdown: {},
   }),
   computed: {
     ds: function () {
@@ -487,6 +595,87 @@ export default {
     }
   },
   methods: {
+    openBreakdown: function (item, idx) {
+      console.log(this.filter.ReceiptId, item.ReceiptDetailId);
+      this.ds
+        .listBreakdown(this.filter.ReceiptId, item.ReceiptDetailId)
+        .then((dt) => {
+          this.breakdownItem = item;
+          this.breakdownItem.Breakdowns = dt;
+          this.breakdownIdx = idx;
+
+          if (
+            !this.breakdownItem.Breakdowns ||
+            this.breakdownItem.Breakdowns.length === 0
+          ) {
+            this.breakdownRows = [];
+            for (let i = 0; i < 3; i++) {
+              this.breakdownRows.push({
+                NoSeri: "",
+                Qty: 0,
+                ReceiptEZRId: null,
+              });
+            }
+          } else {
+            this.breakdownRows = this.breakdownItem.Breakdowns;
+          }
+
+          this.$bvModal.show("modal-breakdown");
+        });
+    },
+    addBreakdownRow: function () {
+      let nextNoSeri = 1;
+      if (this.breakdownRows && this.breakdownRows.length > 0) {
+        const validRows = this.breakdownRows.filter(
+          (p) => Number(p.NoSeri) > 0,
+        );
+        if (validRows.length > 0) {
+          nextNoSeri = Math.max(...validRows.map((p) => Number(p.NoSeri))) + 1;
+        }
+      }
+      this.breakdownRows.push({
+        NoSeri: nextNoSeri,
+        Qty: 0,
+        ReceiptEZRId: null,
+      });
+    },
+    removeBreakdownRow: function (idx) {
+      this.breakdownRows.splice(idx, 1);
+    },
+    saveBreakdown: function () {
+      this.errorsBreakdown = {};
+      this.breakdownItem.Breakdowns = this.breakdownRows;
+      console.log(this.breakdownItem.Breakdowns);
+      let payload = {
+        ReceiptId: this.filter.ReceiptId,
+        ReceiptDetailId: this.breakdownItem.ReceiptDetailId,
+        BreakdownDetails: this.breakdownItem.Breakdowns.map((x) => {
+          return {
+            ReceiptQty: x.Qty,
+            NoSeri: x.NoSeri,
+          };
+        }),
+      };
+
+      this.isLoading = true;
+
+      this.ds
+        .saveBreakdown(payload)
+        .then((dt) => {
+          toastSuccess("Data saved breakdown successfully!");
+          this.getReceipt();
+          this.$bvModal.hide("modal-breakdown");
+        })
+        .catch((err) => {
+          this.errorsBreakdown = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+    },
+    closeBreakdown: function () {
+      this.errorsBreakdown = {};
+      this.$bvModal.hide("modal-breakdown");
+    },
     deepClone: function (obj) {
       return typeof structuredClone === "function"
         ? structuredClone(obj)
@@ -767,7 +956,7 @@ export default {
         .then((dt) => {
           if (dt.Data.IsUpdateDetails) {
             let modalMessage = `<div style="font-size: medium">Anda mengubah <strong>${dt.Data.TypeConfirmationDesc}</strong>.
-                <br><strong>Barcode Label Saat ini</strong> akan menjadi <strong class="text-danger">TIDAK VALID</strong> 
+                <br><strong>Barcode Label Saat ini</strong> akan menjadi <strong class="text-danger">TIDAK VALID</strong>
                 <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
 
             confirmSubmit(
@@ -784,7 +973,7 @@ export default {
             dt.Data.TypeConfirmation == 3
           ) {
             let modalMessage = `<div style="font-size: medium">Anda sudah melakukan <strong>SCAN RECEIVING MOBILE</strong>.
-                <br>Perubahan hanya berlaku untuk informasi <strong>Header</strong> saja. 
+                <br>Perubahan hanya berlaku untuk informasi <strong>Header</strong> saja.
                 <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
 
             confirmSubmit(
@@ -814,6 +1003,7 @@ export default {
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
           this.prevRegisterNo = this.model.RegisterNo;
+          this.getReceipt();
           // this.reset();
         })
         .catch((err) => {

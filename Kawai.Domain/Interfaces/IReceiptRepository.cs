@@ -19,6 +19,9 @@ public interface IReceiptRepository
     Task<ReceiptConfirmationCheckIsDetailsUpdateDto> CheckIsDetailsUpdate(Receipt receipt);
     Task Update(Receipt receipt, string userId);
 
+    Task<List<ReceiptBreakdownDto>> GetListBreakdownReceipt(long receiptId, long receiptDetailId);
+    Task SaveBreakdownReceipt(ReceiptBreakdown payload, string userId);
+
     Task CreateClaim(Receipt receipt, string userId);
     Task UpdateClaim(Receipt receipt, string userId);
     Task Remove(long id);
@@ -66,4 +69,5 @@ public interface IReceiptRepository
 
     Task<Dictionary<string, object>> Capture(long id);
     Task<Dictionary<string, object>> CaptureDataGrouping(string refNo);
+    Task<Dictionary<string, object>> CaptureBreakdown(long receiptDetailId);
 }
