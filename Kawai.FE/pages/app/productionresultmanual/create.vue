@@ -39,6 +39,7 @@
               <v-button-submit
                 :submit="submit"
                 cClass="ml-1"
+                :disabled="this.ds.newRequest[0].ProcessCode=== 'DP'"
                 :is-loading="isLoading"
               />
             </div>
@@ -188,12 +189,14 @@ export default {
     selectedItem: null,
     productionid: null,
     counter: 0,
+    processCode:"",
     lineName: "",
     ItemName: "",
     ProdID: "",
   }),
   computed: {
     ds: function () {
+      
       return useProductionManual();
     },
   },
@@ -207,9 +210,9 @@ export default {
     search: function () {
       this.ds.loadDetail().then((dt) => {
         let grouped = {};
-        debugger;
+    
         if (dt.Data.length > 0) {
-          debugger;
+      
           this.lineName = dt.Data[0].LineName;
           this.ItemName = dt.Data[0].ParentItemName;
           this.ProdID = dt.Data[0].ProductionId;
@@ -250,8 +253,8 @@ export default {
     },
     submit: function () {
       /* ===============================
-     VALIDASI MATERIAL MERAH
-  =============================== */
+        VALIDASI MATERIAL MERAH
+      =============================== */
       let hasRed = this.groupLists.some((parent) =>
         (parent.details || []).some((dtl) => dtl.Status == 0),
       );
@@ -282,8 +285,8 @@ export default {
       ];
 
       /* ===============================
-     PAYLOAD
-  =============================== */
+        PAYLOAD
+      =============================== */
       let payload = this.ds.newRequest
         .filter((x) => avaiableGroupList.includes(x.ProductionId))
         .map((x) => {
@@ -298,8 +301,8 @@ export default {
         });
 
       /* ===============================
-     SAVE
-  =============================== */
+        SAVE
+      =============================== */
       this.ds
         .save(payload)
         .then(() => {

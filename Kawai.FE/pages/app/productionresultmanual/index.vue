@@ -379,6 +379,7 @@ export default {
 
       let newRequestPayload = selected.map((x) => {
         return {
+          ProcessCode: this.filter.ManufactureCode,
           LineCode: this.filter.LineCode,
           ProdResultId: null,
           ProductionId: x.ProductionId,
