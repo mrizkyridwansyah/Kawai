@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Kawai.Data.SqlConnections;
 using Kawai.Domain.Models;
+using Kawai.Api.Models;
 
 namespace Kawai.Data.Repositories.Mobile;
 
@@ -42,6 +43,52 @@ public class MobileMovingTrolleyRepository: IMobileMovingTrolleyRepository
             payload.TrolleyNo,
             payload.StopPoint,
             UserId = userId
+        });
+    }
+
+    public async Task SendRequestUnbindRackAMR(string requestNo, string trolleyNo, string userId)
+    {
+        string sql = "sp_Wms_MovingTrolley_SendRequestUnbindRackAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            RequestNo = requestNo,
+            TrolleyNo = trolleyNo,
+            UserId = userId
+        });
+    }
+
+    public async Task UpdateStatusUnbindRackAMR(string requestNo, string trolleyNo, string lastStatus)
+    {
+        string sql = "sp_Wms_MovingTrolley_UpdateStatusUnbindRackAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            RequestNo = requestNo,
+            TrolleyNo = trolleyNo,
+            LastStatus = lastStatus
+        });
+    }
+
+    public async Task SendRequestSubLineAMR(string requestNo, string trolleyNo, string stopPoint, string userId)
+    {
+        string sql = "sp_Wms_MovingTrolley_SendRequestSubLineAMR";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            RequestNo = requestNo,
+            TrolleyNo = trolleyNo,
+            StopPoint = stopPoint,
+            UserId = userId
+        });
+    }
+
+    public async Task UpdateStatusAMRSendRequestSubLine(string requestNo, string trolleyNo, string stopPoint, string lastStatus)
+    {
+        string sql = "sp_Wms_MovingTrolley_UpdateStatusAMRSendRequestSubLine";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            RequestNo = requestNo,
+            TrolleyNo = trolleyNo,
+            StopPoint = stopPoint,
+            LastStatus = lastStatus
         });
     }
 

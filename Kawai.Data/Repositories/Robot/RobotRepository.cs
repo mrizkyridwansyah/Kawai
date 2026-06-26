@@ -1,7 +1,9 @@
 ﻿using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
+using Kawai.Domain.DTOs.Mobile;
 using Kawai.Domain.DTOs.Robot;
 using Kawai.Domain.Interfaces.Robot;
+using Kawai.Domain.Models;
 using Kawai.Domain.Models.Robot;
 using System.Data;
 
@@ -27,6 +29,18 @@ public class RobotRepository : IRobotRepository
     {
         string sp = "sp_Wms_Robot_GetRequestData";
         return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyRequestCompleteDto>(sp, new { RequestSendID = reqId, StopPoint = stopPoint });
+    }
+
+    public async Task<SupplyScanRequestInfoAMRCls> GetSupplyScanRequestInfo(string requestNo)
+    {
+        string sp = "sp_Wms_Robot_GetSupplyScanRequestInfo";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestInfoAMRCls>(sp, new { RequestNo = requestNo });
+    }
+
+    public async Task<SupplyScanRequestSubLineDto> GetDataToSendRequestSubLine(string requestNo, string trolleyNo, string stopPoint)
+    {
+        string sp = "sp_Wms_Robot_GetDataToSendRequestSubLine";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<SupplyScanRequestSubLineDto>(sp, new { RequestNo = requestNo, TrolleyNo = trolleyNo, StopPoint = stopPoint });
     }
 
     public async Task SetTrolleyAsync(SetTrolleyRequest payload)

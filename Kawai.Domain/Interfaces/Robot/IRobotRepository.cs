@@ -21,5 +21,8 @@ namespace Kawai.Domain.Interfaces.Robot
 
         Task<List<SupplyRequestDto>> GetListData(string reqId);
         Task<SupplyRequestCompleteDto> GetRequestData(string reqId, string stopPoint);
+
+        Task<SupplyScanRequestInfoAMRCls> GetSupplyScanRequestInfo(string requestNo);
+        Task<SupplyScanRequestSubLineDto> GetDataToSendRequestSubLine(string requestNo, string trolleyNo, string stopPoint);
     }
 }
