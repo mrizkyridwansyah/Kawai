@@ -29,4 +29,11 @@ public class AndonWominRequestController : HahaController
         var results = await _andonWominRequest.GetListWomin(parameter);
         return DataTableResult(parameter, results);
     }
+
+    [HttpPost("list-womindetailbyline")]
+    public async Task<IActionResult> ListStockbyline([FromBody] RequestParameter parameter)
+    {
+        var results = await _andonWominRequest.GetListWominByLine(parameter);
+        return DataTableResult(parameter, results);
+    }
 }

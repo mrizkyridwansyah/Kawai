@@ -6,6 +6,7 @@ public class AndonWominRequestDto: DataTableDto
     public string RequestNo { get; set; }
     public DateTime ProductionDate { get; set; }
     public string Line { get; set; }
+    public string LineCode { get; set; }
     public string WorkStation { get; set; }
     public string PickingArea { get; set; }
     public string GroupingPart { get; set; }
