@@ -41,3 +41,22 @@ public class SupplyScanRequestAMRDto
     public DateTime? LastRequestDate { get; set; }
     public bool ValidToSendRequest { get; set; }
 }
+
+public class SupplyScanRequestInfoAMRCls
+{
+    public string RequestNo { get; set; }
+    public string LineAMRCls { get; set; }
+    public string WSAMRCls { get; set; }
+}
+
+public class SupplyScanRequestSubLineDto
+{
+    public string RequestSendID { get; set; }
+    public string LineCode { get; set; }
+    public string WorkStationCode { get; set; }
+    public DateTime ProductionDate { get; set; }
+    public string Model { get; set; }
+    public string TrolleyNo { get; set; }
+    public DateTime PickupDatetime { get; set; }
+    public string StopPoint { get; set; }
+}

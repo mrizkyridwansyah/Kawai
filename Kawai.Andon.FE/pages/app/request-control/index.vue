@@ -146,7 +146,12 @@
                   </thead>
                   <tbody>
                   <tr v-for="(item, i) in ds.data">
-                      <td>{{ item.Line }}</td>
+                      <td>
+                         <a
+                          href="javascript:void(0)"
+                          @click="viewWominByLine(item.LineCode,item.ProductionDate)"
+                          >  {{ item.Line }}</a>
+                         </td>
                       <td>{{ $func.formatDate(item.ProductionDate) }}</td>
                        <td>
                           <a
@@ -175,10 +180,18 @@
       </div>
     </div>
   </div>
-   <v-modal title="Detail Womin" class="modal-lg" id="modal-list-detailwomin">
+   <v-modal title="Detail Status Womin" class="modal-lg" id="modal-list-detailwomin">
     <shared-request-womin-list
       :refno="this.selectedRefNo"
       :groupclass="this.selectedGroupClass"
+      :counter="this.counter"
+    />
+   </v-modal>
+
+   <v-modal title="Detail Status Womin By Line" class="modal-lg" id="modal-list-detailwominbyline">
+    <shared-request-wominbyline-list
+      :linecode="this.selectedLineCode"
+      :scheduledate="this.selectedScheduleDate"
       :counter="this.counter"
     />
    </v-modal>
@@ -192,6 +205,8 @@ export default {
     showFilter: true,
     selectedRefNo: null,
     selectedGroupClass: null,
+    selectedLineCode: null,
+    selectedScheduleDate: null,
     list: [],
      counter: 0,
     summary: {
@@ -327,6 +342,14 @@ export default {
       this.selectedGroupClass = groupclass;
       this.counter++;
       this.$bvModal.show("modal-list-detailwomin");
+    },
+
+     viewWominByLine: function (linecode , scheduledate) {
+      debugger;
+      this.selectedLineCode = linecode;
+      this.selectedScheduleDate = scheduledate;
+      this.counter++;
+      this.$bvModal.show("modal-list-detailwominbyline");
     },
 
  

@@ -1,5 +1,7 @@
-﻿using Kawai.Api.Services;
+﻿using Hangfire;
+using Kawai.Api.Services;
 using Kawai.Domain.Interfaces.Mobile;
+using Kawai.Domain.Interfaces.Robot;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +15,13 @@ namespace Kawai.Api.Controllers.Mobile;
 public class MobileMovingTrolleyController : HahaController
 {
     private readonly IMobileMovingTrolleyRepository _movingTrolleyRepository;
+    private readonly IRobotRepository _robotRepository;
     private readonly ITransactionProducer _transactionProducer;
 
-    public MobileMovingTrolleyController(IMobileMovingTrolleyRepository MovingTrolleyRepository, ITransactionProducer transactionProducer)
+    public MobileMovingTrolleyController(IMobileMovingTrolleyRepository MovingTrolleyRepository, IRobotRepository robotRepository, ITransactionProducer transactionProducer)
     {
         _movingTrolleyRepository = MovingTrolleyRepository;
+        _robotRepository = robotRepository;
         _transactionProducer = transactionProducer;
     }
 
@@ -53,6 +57,19 @@ public class MobileMovingTrolleyController : HahaController
     {
         var result = await _movingTrolleyRepository.GetDataStopPoint(stopPoint);
         return Success(result);
+    }
+
+    [HttpPost("testing-amr-moving")]
+    public async Task<IActionResult> TestingAMRMoving(MobileMovingTrolley model)
+    {
+        var scanInfo = await _robotRepository.GetSupplyScanRequestInfo(model.RequestNo);
+
+        if (scanInfo != null && scanInfo.LineAMRCls == "1" && scanInfo.WSAMRCls == "0")
+        {
+            BackgroundJob.Enqueue<IRobotService>(service => service.SendRequestSubLine(model.RequestNo, model.TrolleyNo, model.StopPoint, Auth.User.UserID));
+        }
+
+        return Success();
     }
 
     [HttpPost("submit")]

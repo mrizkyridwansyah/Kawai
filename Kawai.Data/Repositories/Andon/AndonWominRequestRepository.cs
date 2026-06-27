@@ -31,6 +31,12 @@ public class AndonWominRequestRepository : IAndonWominRequestRepository
         return (await _dbExecutor.QueryListAsync<AndonWominRequestDetailDto>(sp, param.ToQueryObject())).ToList();
     }
 
+    public async Task<List<AndonWominRequestDetailDto>> GetListWominByLine(RequestParameter param)
+    {
+        string sp = "sp_Wms_Andon_WominRequest_GetListDetailByArea";
+        return (await _dbExecutor.QueryListAsync<AndonWominRequestDetailDto>(sp, param.ToQueryObject())).ToList();
+    }
+
 
 
 }

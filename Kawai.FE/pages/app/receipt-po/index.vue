@@ -880,10 +880,32 @@ export default {
         };
       });
 
-      if (this.isNew) {
-        this.createReceipt();
+      let totalBarcodePrint = details.reduce(
+        (total, item) => total + Math.ceil(item.ReceiptQty / item.QtyPacking),
+        0,
+      );
+      if (totalBarcodePrint >= 100) {
+        let modalMessage = `<div style="font-size: medium">Total barcode yang akan dicetak sebanyak <strong>${this.$func.formatMoney(Math.ceil(totalBarcodePrint))} Barcode</strong>.
+            <br>Anda yakin akan <strong>MELANJUTKAN</strong>?</div>`;
+        confirmSubmit(
+          () =>
+            new Promise((resolve) => {
+              if (this.isNew) {
+                this.createReceipt();
+              } else {
+                this.updateReceipt();
+              }
+              resolve();
+            }),
+          () => (this.isLoading = false),
+          modalMessage,
+        );
       } else {
-        this.updateReceipt();
+        if (this.isNew) {
+          this.createReceipt();
+        } else {
+          this.updateReceipt();
+        }
       }
     },
     getReceipt: function () {

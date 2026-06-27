@@ -15,6 +15,8 @@ public interface IPartMaterialRequestWominRepository
     
     Task<PartMaterialRequestWominEditDto> GetData(long IDSeq);
     Task UpdateReq(PartMaterialRequestWominEditModel editwomin, string userId);
+    
+    Task<List<PartMaterialRequestWominReportDto>> WominReport(long requestId);
 
     Task<Dictionary<string, object>> Capture(long productionId);
     Task<Dictionary<string, object>> CaptureRequirement(long IDSeq);

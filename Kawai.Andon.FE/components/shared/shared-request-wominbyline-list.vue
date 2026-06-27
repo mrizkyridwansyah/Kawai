@@ -15,8 +15,8 @@
         <thead>
           <tr>
             <th class="text-center">#</th>
-                <th class="text-center">Child Item Code</th>		
-                <th class="text-center">Child Item Name</th>			
+            
+                <th class="text-center">Grouping Class Part</th>			
                 <th class="text-center">Requirement Qty</th>			
                 <th class="text-center">Total Scan</th>		
                 <th class="text-center">Status</th>	
@@ -25,9 +25,9 @@
         </thead>
         <tbody>
           <tr v-for="(item, idx) in ds.dataListScan.Items">
-             <td class="text-center">{{ idx + 1 }}.</td>	
-                <td>{{ item.ChildItemCode}}</td>		
-                <td>{{ item.ChildItemName}}</td>				
+             <td class="text-center">{{ idx + 1 }}.</td>
+                 		
+                <td>{{ item.ChildClassificationPartDesc}}</td>			
                 <td class="text-right">{{ item.RequirementQty}}</td>				
                 <td class="text-right">{{ item.TotalScan}}</td>		
                 <td>{{ item.Status}}</td>	
@@ -40,42 +40,35 @@
 
 <script>
 export default {
-  props: ["refno","groupclass", "counter"],
+  props: ["linecode","scheduledate", "counter"],
   data: () => ({
     filter: {
       keyword: null,
       sorts: {
-        ChildItemCode: "asc",
-        ChildItemName: "asc" 
+        ChildClassificationPartDesc: "asc" 
+        
       },
       sortItems: [
         {
-          label: "Child Item Code",
-          value: "ChildItemCode",
+          label: "Grouping Class Part",
+          value: "ChildClassificationPartDesc",
           selected: true,
           direction: "asc",
         },
-        {
-          label: "Child Item Name",
-          value: "ChildItemName",
-          selected: true,
-          direction: "asc",
-        },
-         
          
       ],
     },
   }),
   computed: {
     ds: function () {
-      return useSupplyRequestWomin();
+      return useSupplyRequestWominByLine();
     },
   },
   watch: {
-    refno: function () {
+    linecode: function () {
       this.search();
     },
-    groupclass: function () {
+    scheduledate: function () {
       this.search();
     },
     counter: function () {
@@ -97,8 +90,8 @@ export default {
       let filters = [
         {
           Keyword: this.filter.keyword || "",
-          RefNo: this.refno || "",
-          GroupClass: this.groupclass || "",
+          Line: this.linecode || "",
+          ScheduleDate: this.scheduledate || "",
         },
       ];
 
@@ -106,7 +99,8 @@ export default {
       this.$nextTick(() => this.ds.loadListScan());
     },
     reset: function () {
-      this.item = null;
+      this.linecode = null;
+     this.scheduledate = null;
       this.search();
     },
   },

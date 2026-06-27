@@ -181,8 +181,8 @@
                 cClass="ml-1"
                 :is-loading="isLoading"
               />
-                <v-button
-               :action="remove"
+              <v-button
+                :action="remove"
                 label="Delete"
                 icon="trash"
                 cClass="ml-1 btn-danger"
@@ -454,7 +454,6 @@ export default {
     },
 
     remove: function () {
-       
       if (!this.filter.ReceiptId) {
         toastDanger("Silahkan pilih Receipt No!");
         return;
@@ -464,7 +463,7 @@ export default {
         () =>
           new Promise((resolve, reject) => {
             this.dsReceipt
-              .remove( this.filter.ReceiptId)
+              .remove(this.filter.ReceiptId)
               .then((dt) => {
                 toastSuccess("Data deleted successfully!");
                 resolve();
@@ -477,11 +476,10 @@ export default {
               });
           }),
         null,
-        
+
         "",
       );
     },
-
 
     add: function () {
       let lastNoSeriInGrid = this.items.filter((p) => (p.NoSeri ?? 0) > 0);
@@ -669,10 +667,32 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = this.items;
 
-      if (this.isNew) {
-        this.createReceipt();
+      let totalBarcodePrint = this.items.reduce(
+        (total, item) => total + Math.ceil(item.ReceiptQty / item.QtyPacking),
+        0,
+      );
+      if (totalBarcodePrint >= 100) {
+        let modalMessage = `<div style="font-size: medium">Total barcode yang akan dicetak sebanyak <strong>${this.$func.formatMoney(Math.ceil(totalBarcodePrint))} Barcode</strong>.
+            <br>Anda yakin akan <strong>MELANJUTKAN</strong>?</div>`;
+        confirmSubmit(
+          () =>
+            new Promise((resolve) => {
+              if (this.isNew) {
+                this.createReceipt();
+              } else {
+                this.updateReceipt();
+              }
+              resolve();
+            }),
+          () => (this.isLoading = false),
+          modalMessage,
+        );
       } else {
-        this.checkIsDetailUpdate();
+        if (this.isNew) {
+          this.createReceipt();
+        } else {
+          this.checkIsDetailUpdate();
+        }
       }
     },
     search: function () {

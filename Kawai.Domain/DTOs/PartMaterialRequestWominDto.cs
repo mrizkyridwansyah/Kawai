@@ -1,4 +1,6 @@
-﻿namespace Kawai.Domain.DTOs;
+﻿using System.Security.Cryptography;
+
+namespace Kawai.Domain.DTOs;
 
 public class PartMaterialRequestWominDto: DataTableDto
 {
@@ -16,6 +18,25 @@ public class PartMaterialRequestWominDto: DataTableDto
     public decimal? RemainingQty { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
+}
+
+public class PartMaterialRequestWominReportDto : DataTableDto
+{
+    public DateTime ProductionDate { get; set; }
+    public string LineCode { get; set; }
+    public string LineName { get; set; }
+    public string ParentItemCode { get; set; }
+    public string ParentItemName { get; set; }
+    public decimal? RequestSetQty { get; set; }
+    public string WorkStationCode { get; set; }
+    public string Area { get; set; }
+    public string RefNumber { get; set; }
+    public string ChildItemCode { get; set; }
+    public string ChildItemName { get; set; }
+    public decimal? ChildRequirementQty { get; set; }
+    public decimal? ChildScanQty { get; set; }
+
+   
 }
 
 public class PartMaterialRequestWominEditDto : DataTableDto

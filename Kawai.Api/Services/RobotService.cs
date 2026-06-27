@@ -20,6 +20,12 @@ public interface IRobotService
 
     [AutomaticRetry(Attempts = 6, DelaysInSeconds = new int[] { 5, 5, 5, 5, 5, 5 }, OnAttemptsExceeded = AttemptsExceededAction.Fail)]
     Task CancelRequest(string requestNo, string trolleyNo);
+
+    [AutomaticRetry(Attempts = 0)]
+    Task UnbindRack(string requestNo, string trolleyNo);
+
+    [AutomaticRetry(Attempts = 0)]
+    Task SendRequestSubLine(string requestNo, string trolleyNo, string stopPoint, string userId);
 }
 
 public class RobotService : IRobotService
@@ -30,6 +36,7 @@ public class RobotService : IRobotService
     private readonly IMobileLoadingTrolleyRepository _loadingTrolleyRepository;
     private readonly IMobileSupplyScanRequestRepository _supplyScanRequestRepository;
     private readonly IMobileManualTrolleyAssignRepository _manualTrolleyAssignRepository;
+    private readonly IMobileMovingTrolleyRepository _movingTrolleyRepository;
     private readonly IRobotRepository _robotRepository;
 
     public RobotService
@@ -38,6 +45,7 @@ public class RobotService : IRobotService
         IMobileLoadingTrolleyRepository loadingTrolleyRepository,
         IMobileSupplyScanRequestRepository supplyScanRequestRepository,
         IMobileManualTrolleyAssignRepository manualTrolleyAssignRepository,
+        IMobileMovingTrolleyRepository movingTrolleyRepository,
         IRobotRepository robotRepository,
         ILogger<RobotService> logger,
         DataLogger changeDataLogger
@@ -47,6 +55,7 @@ public class RobotService : IRobotService
         _loadingTrolleyRepository = loadingTrolleyRepository;
         _supplyScanRequestRepository = supplyScanRequestRepository;
         _manualTrolleyAssignRepository = manualTrolleyAssignRepository;
+        _movingTrolleyRepository = movingTrolleyRepository;
         _robotRepository = robotRepository;
         _logger = logger;
         _changeDataLogger = changeDataLogger;
@@ -478,6 +487,162 @@ public class RobotService : IRobotService
         }
     }
 
+    public async Task UnbindRack(string requestNo, string trolleyNo)
+    {
+        try
+        {
+            _logger.LogInformation(
+                "Sending robot request for Unbind {TrolleyNo}",
+                trolleyNo
+            );
+
+            var payload = new
+            {
+                TrolleyNo = trolleyNo
+            };
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null
+            };
+
+            var response = await _client.PostAsJsonAsync(
+                "/api/robot/unbind-rack-v2",
+                payload,
+                options
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
+            var result = await response.Content
+                .ReadFromJsonAsync<RobotApiResponse>();
+
+            var message = result?.Message
+                ?? $"Robot API returned {response.StatusCode}";
+
+            if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
+                throw new Exception(message);
+
+            await _movingTrolleyRepository.UpdateStatusUnbindRackAMR(requestNo, trolleyNo, message);
+        }
+        catch (TaskCanceledException ex)
+        {
+            const string message = "Timeout sending robot request";
+
+            _logger.LogWarning(
+                ex,
+                "Timeout sending robot request for {RequestNoCode}",
+                trolleyNo
+            );
+
+            await _movingTrolleyRepository.UpdateStatusUnbindRackAMR(requestNo, trolleyNo, message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Error sending robot request for {RequestNoCode}",
+                trolleyNo
+            );
+
+            await _movingTrolleyRepository.UpdateStatusUnbindRackAMR(requestNo, trolleyNo, ex.Message);
+
+            throw;
+        }
+    }
+
+    public async Task SendRequestSubLine(string requestNo, string trolleyNo, string stopPoint, string userId)
+    {
+        try
+        {
+            await _movingTrolleyRepository.SendRequestUnbindRackAMR(requestNo, trolleyNo, userId);
+            await UnbindRack(requestNo, trolleyNo);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "UnbindRack failed for {TrolleyNo} in SendRequestSubLine, but continuing.", trolleyNo);
+        }
+
+        try
+        {
+            _logger.LogInformation(
+                "Sending robot request for SubLine {TrolleyNo}",
+                trolleyNo
+            );
+
+            var payloadSubLine = await _robotRepository.GetDataToSendRequestSubLine(requestNo, trolleyNo, stopPoint);
+
+            if (payloadSubLine == null) return;
+
+            await _movingTrolleyRepository.SendRequestSubLineAMR(requestNo, trolleyNo, stopPoint, userId);
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null
+            };
+
+            var response = await _client.PostAsJsonAsync(
+                "/api/robot/send-request-subline-v2",
+                payloadSubLine,
+                options
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
+                );
+            }
+
+            var result = await response.Content
+                .ReadFromJsonAsync<RobotApiResponse>();
+
+            var message = result?.Message
+                ?? $"Robot API returned {response.StatusCode}";
+
+            if (!string.Equals(result?.Status, "success", StringComparison.OrdinalIgnoreCase))
+                throw new Exception(message);
+
+            await _movingTrolleyRepository.UpdateStatusAMRSendRequestSubLine(requestNo, trolleyNo, stopPoint, message);
+        }
+        catch (TaskCanceledException ex)
+        {
+            const string message = "Timeout sending robot request";
+
+            _logger.LogWarning(
+                ex,
+                "Timeout sending robot request for {RequestNoCode}",
+                trolleyNo
+            );
+
+            await _movingTrolleyRepository.UpdateStatusAMRSendRequestSubLine(requestNo, trolleyNo, stopPoint, message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Error sending robot request for {RequestNoCode}",
+                trolleyNo
+            );
+
+            await _movingTrolleyRepository.UpdateStatusAMRSendRequestSubLine(requestNo, trolleyNo, stopPoint, ex.Message);
+
+            throw;
+        }
+    }
 
     private async Task HandleFailureCompletePicking(string requestNoCode, string message)
     {
