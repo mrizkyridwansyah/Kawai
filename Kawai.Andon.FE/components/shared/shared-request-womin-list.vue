@@ -15,18 +15,8 @@
         <thead>
           <tr>
             <th class="text-center">#</th>
-            <th class="text-center">Schedule Date</th>
-                <th class="text-center">Line Code</th>	
-                <th class="text-center">Line Name</th>	
-                <th class="text-center">Picking No</th>		
-                <th class="text-center">WorkStation Code</th>		
-                <th class="text-center">WorkStation Name</th>		
-                <th class="text-center">Parent Item Code</th>		
-                <th class="text-center">Parent Item Name</th>		
                 <th class="text-center">Child Item Code</th>		
-                <th class="text-center">Child Item Name</th>		
-                <th class="text-center">Grouping Class Part</th>		
-                <th class="text-center">Qty Set</th>		
+                <th class="text-center">Child Item Name</th>			
                 <th class="text-center">Requirement Qty</th>			
                 <th class="text-center">Total Scan</th>		
                 <th class="text-center">Status</th>	
@@ -35,19 +25,9 @@
         </thead>
         <tbody>
           <tr v-for="(item, idx) in ds.dataListScan.Items">
-             <td class="text-center">{{ idx + 1 }}.</td>
-                <td>{{ item.ScheduleDate}}</td>
-                <td>{{ item.LineCode}}</td>	
-                <td>{{ item.LineName}}</td>		
-                <td>{{ item.PickingNo}}</td>
-                <td>{{ item.WorkStationCode}}</td>		
-                <td>{{ item.WorkStationName}}</td>		
-                <td>{{ item.ParentItemCode}}</td>		
-                <td>{{ item.ParentItemName}}</td>		
+             <td class="text-center">{{ idx + 1 }}.</td>	
                 <td>{{ item.ChildItemCode}}</td>		
-                <td>{{ item.ChildItemName}}</td>		
-                <td>{{ item.ChildClassificationPartDesc}}</td>		
-                <td class="text-right">{{ item.QtySet}}</td>		
+                <td>{{ item.ChildItemName}}</td>				
                 <td class="text-right">{{ item.RequirementQty}}</td>				
                 <td class="text-right">{{ item.TotalScan}}</td>		
                 <td>{{ item.Status}}</td>	

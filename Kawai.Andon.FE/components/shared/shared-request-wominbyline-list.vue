@@ -15,9 +15,7 @@
         <thead>
           <tr>
             <th class="text-center">#</th>
-            <th class="text-center">Schedule Date</th>
-                <th class="text-center">Line Code</th>	
-                <th class="text-center">Line Name</th>	
+            
                 <th class="text-center">Grouping Class Part</th>			
                 <th class="text-center">Requirement Qty</th>			
                 <th class="text-center">Total Scan</th>		
@@ -28,9 +26,7 @@
         <tbody>
           <tr v-for="(item, idx) in ds.dataListScan.Items">
              <td class="text-center">{{ idx + 1 }}.</td>
-                <td>{{ item.ScheduleDate}}</td>
-                <td>{{ item.LineCode}}</td>	
-                <td>{{ item.LineName}}</td>			
+                 		
                 <td>{{ item.ChildClassificationPartDesc}}</td>			
                 <td class="text-right">{{ item.RequirementQty}}</td>				
                 <td class="text-right">{{ item.TotalScan}}</td>		
