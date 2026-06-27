@@ -53,7 +53,7 @@ public class SupplyScanRequestSubLineDto
 {
     public string RequestSendID { get; set; }
     public string LineCode { get; set; }
-    public string WorkstationCode { get; set; }
+    public string WorkStationCode { get; set; }
     public DateTime ProductionDate { get; set; }
     public string Model { get; set; }
     public string TrolleyNo { get; set; }
