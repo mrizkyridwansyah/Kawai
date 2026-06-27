@@ -667,11 +667,11 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = this.items;
 
-      if (this.items.some((x) => x.ReceiptQty / x.QtyPacking > 100)) {
-        let totalBarcodePrint = this.items.reduce(
-          (total, item) => total + item.ReceiptQty / item.QtyPacking,
-          0,
-        );
+      let totalBarcodePrint = this.items.reduce(
+        (total, item) => total + Math.ceil(item.ReceiptQty / item.QtyPacking),
+        0,
+      );
+      if (totalBarcodePrint >= 100) {
         let modalMessage = `<div style="font-size: medium">Total barcode yang akan dicetak sebanyak <strong>${this.$func.formatMoney(Math.ceil(totalBarcodePrint))} Barcode</strong>.
             <br>Anda yakin akan <strong>MELANJUTKAN</strong>?</div>`;
         confirmSubmit(
