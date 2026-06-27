@@ -39,8 +39,9 @@
               <v-button-submit
                 :submit="submit"
                 cClass="ml-1"
-                :disabled="this.ds.newRequest[0].ProcessCode=== 'DP'"
+                :disabled="this.ds.newRequest[0].ProcessCode=== 'DP' || !menuPrivAllowUpdate "
                 :is-loading="isLoading"
+                
               />
             </div>
           </td>
@@ -187,6 +188,7 @@ export default {
     groupLists: [],
     isLoading: false,
     selectedItem: null,
+    menuPrivAllowUpdate: false,
     productionid: null,
     counter: 0,
     processCode:"",
@@ -199,8 +201,16 @@ export default {
       
       return useProductionManual();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "P01",
+      )[0].AllowUpdate;
+    });
     this.search();
   },
   methods: {

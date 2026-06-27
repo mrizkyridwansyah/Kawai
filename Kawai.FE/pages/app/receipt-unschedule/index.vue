@@ -175,11 +175,13 @@
         <tr>
           <td colspan="2" style="padding-top: 5px">
             <div class="d-flex flex-fill">
-              <v-button-add :add="add" cClass="ml-1" />
+              <v-button-add :add="add" cClass="ml-1" 
+              :disabled="!menuPrivAllowUpdate"/>
               <v-button-submit
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
               <v-button
                 :action="remove"
@@ -187,12 +189,14 @@
                 icon="trash"
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
               <v-button-print
                 label="Print Label"
                 class="ml-1"
                 :print="printLabel"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
 
               <v-button
@@ -201,6 +205,7 @@
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
             </div>
           </td>
@@ -358,6 +363,7 @@ export default {
   data: () => ({
     noSeri: 0,
     isNew: true,
+     menuPrivAllowUpdate: false,
     filter: {
       FactoryCode: null,
       SupplierCode: null,
@@ -399,6 +405,9 @@ export default {
     notif: function () {
       return useNotification();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
   },
   watch: {
     "filter.FactoryCode": function () {
@@ -436,6 +445,12 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E06",
+      )[0].AllowUpdate;
+    });
+
     if (this.$route.query.id) {
       this.filter.ReceiptId = this.$route.query.id;
       this.isNew = false;

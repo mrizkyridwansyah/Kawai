@@ -235,17 +235,20 @@
                 :submit="submit"
                 cClass="mr-1"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               <v-button-print
                 label="Print Label"
                 class="mr-1"
                 :print="printLabel"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               <v-button-print
                 label="Print Receipt Report"
                 :print="printReport"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               <v-button
                 :action="printBarcodesUsingJob"
@@ -253,6 +256,7 @@
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               <v-button
                 :action="back"
@@ -335,6 +339,7 @@
                           style="height: 28px"
                           title="Breakdown Receipt"
                           @click="openBreakdown(item, idx)"
+                           :disabled="!menuPrivAllowUpdate"
                         >
                           <font-awesome-icon icon="list" />
                         </button>
@@ -477,6 +482,7 @@ export default {
     breakdownItem: null,
     breakdownIdx: null,
     breakdownRows: [],
+     menuPrivAllowUpdate: false,
     filter: {
       FactoryCode: null,
       SupplierCode: null,
@@ -520,6 +526,9 @@ export default {
     },
     notif: function () {
       return useNotification();
+    },
+    dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -569,6 +578,11 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E05",
+      )[0].AllowUpdate;
+    });
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;

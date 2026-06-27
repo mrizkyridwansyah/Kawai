@@ -48,6 +48,7 @@
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
             </div>
           </td>
@@ -194,6 +195,7 @@ export default {
     isLoading: false,
     selectedItem: null,
     productionid: null,
+     menuPrivAllowUpdate: false,
     counter: 0,
     lineName: "",
     ItemName: "",
@@ -203,8 +205,16 @@ export default {
     ds: function () {
       return useProductionManual();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "P01",
+      )[0].AllowUpdate;
+    });
     this.search();
   },
   methods: {

@@ -165,17 +165,20 @@
         <tr>
           <td colspan="2" style="padding-top: 5px">
             <div class="d-flex flex-fill">
-              <v-button-add :add="add" cClass="mr-1" />
+              <v-button-add :add="add" cClass="mr-1"
+               :disabled="!menuPrivAllowUpdate" />
               <v-button-submit
                 :submit="submit"
                 cClass="mr-1"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               <v-button-print
                 label="Print Label"
                 class="mr-1"
                 :print="printLabel"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               <v-button
                 :action="printBarcodesUsingJob"
@@ -183,6 +186,7 @@
                 icon="file-pdf"
                 class="btn-green"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
 
               <v-button
@@ -348,6 +352,7 @@ export default {
   data: () => ({
     noSeri: 0,
     isNew: true,
+      menuPrivAllowUpdate: false,
     filter: {
       FactoryCode: null,
       SupplierCode: null,
@@ -389,6 +394,9 @@ export default {
     notif: function () {
       return useNotification();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
   },
   watch: {
     "filter.FactoryCode": function () {
@@ -426,6 +434,12 @@ export default {
     },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E06",
+      )[0].AllowUpdate;
+    });
+
     if (this.$route.query.id) {
       this.filter.ReceiptId = this.$route.query.id;
       this.isNew = false;

@@ -50,6 +50,7 @@
                 icon="trash"
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
+                 :disabled="!menuPrivAllowUpdate"
               />
               
                <v-button
@@ -58,6 +59,7 @@
                 icon="file-excel"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoadingPrint"
+                 :disabled="!menuPrivAllowUpdate"
               />
 
              
@@ -265,6 +267,7 @@ export default {
     lists: [],
     groupLists: [],
     isLoading: false,
+   menuPrivAllowUpdate: false,
     isLoadingPrint: false,
     selectedItem: null,
     counter: 0,
@@ -274,8 +277,16 @@ export default {
     ds: function () {
       return useSupplyRequestWomin();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E11",
+      )[0].AllowUpdate;
+    });
     this.search();
   },
   methods: {
