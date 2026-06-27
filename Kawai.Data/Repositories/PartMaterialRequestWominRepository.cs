@@ -3,6 +3,7 @@ using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 
 namespace Kawai.Data.Repositories;
@@ -56,6 +57,13 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         string sp = "sp_Wms_PartMaterialRequest_GetListStock";
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, param.ToQueryObject())).ToList();
     }
+
+    public async Task<List<PartMaterialRequestWominReportDto>> WominReport(long requestId)
+    {
+        string sp = "sp_Wms_Andon_WominRequest_Report";
+        return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominReportDto>(sp, new { RequestID = requestId })).ToList();
+    }
+
 
     public async Task<List<StockScanDto>> GetListScan(RequestParameter param)
     {

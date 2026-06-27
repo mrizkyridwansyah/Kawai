@@ -215,6 +215,21 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .finally((_) => (this.isCreating = false));
       });
     },
+
+     printWominUsingJob: function (id) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http
+          .post(`/supply-request/womin/print-womin-using-job?requestId=${id}`)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally((_) => (this.isLoading = false));
+      });
+    },
+
+
     remove: function (id, reqNo) {
       this.isRemoving = true;
       return new Promise((resolve, reject) => {

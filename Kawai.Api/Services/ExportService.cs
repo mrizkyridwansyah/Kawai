@@ -7,6 +7,7 @@ using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using System.Data;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Kawai.Api.Services;
@@ -20,6 +21,7 @@ public interface IExportService
     Task ExportExcelReceiptInquiry(RequestParameter param, string userId, string key);
     Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId);
     Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key);
+    Task ExportWomin(long requestId, string userId, string key);
     Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userId, string key);
 }
 
@@ -28,6 +30,7 @@ public class ExportService : IExportService
     private readonly RazorViewRenderer _renderer;
     private readonly IFileStorage _fileStorage;
     private readonly IItemRepository _itemRepository;
+    private readonly IPartMaterialRequestWominRepository _wominRepository;
     private readonly IReceiptRepository _receiptRepository;
     private readonly IReprintRepository _reprintRepository;
     private readonly NotificationService<NotifApprovalHub> _notificationService;
@@ -39,6 +42,7 @@ public class ExportService : IExportService
         IItemRepository itemRepository,
         IReceiptRepository receiptRepository,
         IReprintRepository reprintRepository,
+        IPartMaterialRequestWominRepository wominRepository,
         NotificationService<NotifApprovalHub> notificationService,
         RazorViewRenderer renderer,
         DbExecutor dbExecutor
@@ -48,6 +52,7 @@ public class ExportService : IExportService
         _itemRepository = itemRepository;
         _receiptRepository = receiptRepository;
         _reprintRepository = reprintRepository;
+        _wominRepository = wominRepository;
         _notificationService = notificationService;
         _renderer = renderer;
         _dbExecutor = dbExecutor;
@@ -125,6 +130,64 @@ public class ExportService : IExportService
 
         await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Master Item" });
     }
+
+    [AutomaticRetry(Attempts = 0)]
+    public async Task ExportWomin(long requestId, string userId, string key)
+    {
+        var results = await _wominRepository.WominReport(requestId);
+        //if (results == null || !results.Any()) return NoContent();
+
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 1;
+
+        List<string> headers =
+        [
+            "Production Date","Line Code","Line Name","Parent Item Code","Parent Item Name","Request Qty","WorkStation Code","Area","Ref Number","Child Item Code","Child Item Name","Child Requirement Qty","Child Scan Qty"
+        ];
+
+        ExcelHelper.SetHeader(ws, rowIdx, headers);
+
+        ws.Cell(2, 1).InsertData(results.Select(r => new
+        {
+            r.ProductionDate, 
+            r.LineCode,
+            r.LineName,
+            r.ParentItemCode,
+            r.ParentItemName,
+            r.RequestSetQty,
+            r.WorkStationCode,
+            r.Area,
+            r.RefNumber,
+            r.ChildItemCode,
+            r.ChildItemName,
+            r.ChildRequirementQty,
+            r.ChildScanQty
+ 
+        }));
+
+        var range = ws.Range(1, 1, rowIdx, headers.Count);
+        ExcelHelper.SetBorders(range);
+        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms, false);
+        ms.Position = 0;
+
+        _fileStorage.SaveToExports(key, ms);
+
+        int defaultTTLMinute = 0;// simpen file fisik nya selama 5 menit
+
+        // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
+
+        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Data Womin" });
+    }
+
+
 
     [AutomaticRetry(Attempts = 0)]
     public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId)

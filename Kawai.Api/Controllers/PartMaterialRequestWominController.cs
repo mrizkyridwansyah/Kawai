@@ -1,4 +1,5 @@
-﻿using Kawai.Api.Services;
+﻿using Hangfire;
+using Kawai.Api.Services;
 using Kawai.Data.Repositories;
 using Kawai.Domain;
 using Kawai.Domain.DTOs;
@@ -143,5 +144,13 @@ public class PartMaterialRequestWominController : HahaController
         return Success();
     }
 
+    [HttpPost("print-womin-using-job")]
+    public async Task<IActionResult> PrintBarcodeUsingJob(long requestId)
+    {
+        string key = Guid.NewGuid().ToString();
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportWomin(requestId,  Auth.User.UserID, key));
+        return Pending(message: "Data Export sedang diproses!");
+    }
 
-     }
+
+}

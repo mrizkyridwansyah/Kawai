@@ -51,6 +51,17 @@
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
               />
+              
+               <v-button
+                :action="printWominUsingJob"
+                label="Print"
+                icon="file-excel"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoadingPrint"
+              />
+
+             
+
             </div>
           </td>
         </tr>
@@ -254,6 +265,7 @@ export default {
     lists: [],
     groupLists: [],
     isLoading: false,
+    isLoadingPrint: false,
     selectedItem: null,
     counter: 0,
     lineName: "",
@@ -345,6 +357,18 @@ export default {
         });
       });
     },
+      printWominUsingJob: function () {
+      this.isLoading = true;
+      this.ds
+        .printWominUsingJob(this.ds.newRequest[0].RequestId)
+        .then((data) => {
+          if (data.Message != "-") toastInfo(data.Message);
+        })
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => (this.isLoading = false));
+    },
+
+    
     remove: function () {
       confirmRemove(
         () =>
