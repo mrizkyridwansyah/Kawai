@@ -22,7 +22,7 @@
                 <th class="text-center">Action</th>
                 <th class="text-center">Model Cls</th>
                 <th class="text-center">Description</th>
-                <th class="text-center">Qty</th>
+                <th class="text-center">Cycle Time (menit/PCS)</th>
                 <th class="text-center">Last Update</th>
                 <th class="text-center">Last User</th>
               </tr>
