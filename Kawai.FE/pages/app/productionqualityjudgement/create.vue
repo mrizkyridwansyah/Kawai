@@ -48,7 +48,7 @@
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
-                 :disabled="!menuPrivAllowUpdate"
+                :disabled="!menuPrivAllowUpdate"
               />
             </div>
           </td>
@@ -212,7 +212,7 @@ export default {
   mounted: function () {
      this.dsMenu.privileges().then((dt) => {
       this.menuPrivAllowUpdate = dt.Data.filter(
-        (a) => a.MenuID == "P01",
+        (a) => a.MenuID == "P02",
       )[0].AllowUpdate;
     });
     this.search();

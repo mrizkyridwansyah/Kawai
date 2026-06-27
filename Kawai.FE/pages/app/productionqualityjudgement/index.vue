@@ -75,7 +75,7 @@
         <div class="d-flex flex-fill">
           <v-button-search-reset :search="search" :reset="reset" />
         </div>
-          <v-button-submit :submit="submit" />
+          <v-button-submit :submit="submit" :disabled="!menuPrivAllowUpdate" />
             </div>
             <hr>
       <v-table
@@ -170,6 +170,7 @@ export default {
     ManufactureCode: null,
     PeriodFrom: null,
     PeriodUntil: null,
+     menuPrivAllowUpdate: false,
     LineCode: null,
     RemainingCls: null,
     CompleteCls: null,
@@ -194,6 +195,9 @@ export default {
     ds: function () {
       return useProductionqualityjudgement();
     },
+      dsMenu: function () {
+      return useMenu();
+    },
   },
   watch: {
     "filter.FactoryCode": function () {
@@ -216,6 +220,12 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "P02",
+      )[0].AllowUpdate;
+    });
+    
     const f = this.ds.filter.Filters?.[0];
 
     if (this.$route.query.back && f) {
