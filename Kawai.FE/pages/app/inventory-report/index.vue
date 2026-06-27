@@ -20,6 +20,7 @@
             <filter-area-privileges
               class="form-control"
               v-model="filter.area"
+               :show-option-all="true"
               :warehouse="filter.warehouse"
               style-code="width: 150px;"
               style-desc="width: 250px;"
@@ -48,7 +49,7 @@
         :ds="ds"
         :data-items="ds.data.Items"
         :export-excel="true"
-        :frozen-column-left="3"
+        :frozen-column-left="4"
         :export-excel-action="exportExcel"
         :top-content-height="255"
         ref="vtable"
@@ -62,6 +63,7 @@
             <thead>
               <tr>
                 <th class="text-center">Warehouse</th>
+                <th class="text-center">Area</th>
                 <th class="text-center">Product Code</th>
                 <th class="text-center">Product Name</th>
                 <th class="text-center">Lot No</th>
@@ -79,6 +81,7 @@
             <tbody>
               <tr v-for="(item, i) in ds.data.Items" :key="i">
                 <td>{{ item.Warehouse }}</td>
+                <td>{{ item.AreaCode }}</td>
                 <td>{{ item.ProductCode }}</td>
                 <td>{{ item.ProductName }}</td>
                 <td>{{ item.LotNo }}</td>
@@ -110,6 +113,7 @@ export default {
       keywordKeys: [
         { Id: "ProductCode", Name: "Product Code" },
         { Id: "ProductName", Name: "Product Name" },
+        { Id: "AreaCode", Name: "Area" },
         { Id: "Warehouse", Name: "Warehouse" },
         { Id: "LotNo", Name: "Lot No" },
       ],
