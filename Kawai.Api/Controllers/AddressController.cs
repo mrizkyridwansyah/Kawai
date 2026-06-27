@@ -57,9 +57,21 @@ public class AddressController : HahaController
     }
 
     [HttpGet("ddl-address-search-by-stock")]
-    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string area, string item, string statusReceipt, string statusHoldNG, string ids)
+    public async Task<IActionResult> DDLSearchByStock(string keyword, string warehouse, string area, string item, string statusReceipt, string statusHoldNG, string ids, bool includeTemp = false)
     {
         var results = await _addressRepository.DDLSearchByStock(keyword, warehouse, area, item, statusReceipt, statusHoldNG);
+        if (includeTemp)
+        {
+            results.Add(new AddressDto
+            {
+                AreaCode = "TMP",
+                AreaName = "Temporary",
+                AddressCode = "TMP",
+                AddressName = "Temporary",
+                DDLDescription = "TMP | Temporary",
+            });
+        }
+
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

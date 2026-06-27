@@ -104,6 +104,29 @@ public class AreaController : HahaController
         return Success(results);
     }
 
+    [HttpGet("ddlsearch-areaws")]
+    public async Task<IActionResult> DDLSearchAreaWS(string keyword, string warehouseCode, string ids, bool includeTemp = false)
+    {
+        var results = await _areaRepository.DDLSearchAreaWS(keyword, warehouseCode, Auth.User.UserID);
+        if (includeTemp)
+        {
+            results.Add(new AreaDto
+            {
+                AreaCode = "TMP",
+                AreaName = "Temporary",
+                DDLDescription = "TMP | Temporary",
+            });
+        }
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.AreaCode)).ToList();
+        }
+
+        return Success(results);
+    }
+
     [HttpGet("ddl-area-search-by-stock-privileges")]
     public async Task<IActionResult> DDLPrivilegesSearchByStock(string keyword, string warehouse, string item, string statusReceipt, string statusHoldNG, string ids)
     {

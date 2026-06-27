@@ -1,49 +1,51 @@
 <template>
-  <div class="row">
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-      <input-multiselect
-        v-model="tempValue"
-        :options="list"
-        :close-on-select="true"
-        :clear-on-select="false"
-        :preserve-search="true"
-        open-direction="bottom"
-        :placeholder="placeholder || ` `"
-        :searchable="true"
-        :label="displayLabel"
-        track-by="AddressCode"
-        trackBy="AddressCode"
-        :hide-selected="true"
-        :internal-search="false"
-        :loading="isLoading"
-        @search-change="search"
-        @open="open"
-        @close="close"
-        :select="change"
-        :class="cClass || 'input-wrapper'"
-        :multiple="multiple !== undefined || false"
-        :disabled="
-          (disabled !== undefined || disabled === true) && disabled !== false
-        "
-        select-label=""
-        deselect-label=""
-      />
-      <div class="invalid-feedback d-block" v-if="errors">
-        {{ errors[0] }}
-      </div>
-      <small class="form-text text-muted" v-if="description">{{
-        description
-      }}</small>
-    </div>
-    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-6">
-      <input
-        type="text"
-        disabled
-        :value="selectedItem?.AddressName || ''"
-        class="w-100 form-control"
-      />
-    </div>
-  </div>
+  <table>
+    <tr>
+      <td :style="this.styleCode">
+        <input-multiselect
+          v-model="tempValue"
+          :options="list"
+          :close-on-select="true"
+          :clear-on-select="false"
+          :preserve-search="true"
+          open-direction="bottom"
+          :placeholder="placeholder || ` `"
+          :searchable="true"
+          :label="displayLabel"
+          track-by="AreaCode"
+          trackBy="AreaCode"
+          :hide-selected="true"
+          :internal-search="false"
+          :loading="isLoading"
+          @search-change="search"
+          @open="open"
+          @close="close"
+          :select="change"
+          :class="cClass || 'input-wrapper'"
+          :multiple="multiple !== undefined || false"
+          :disabled="
+            (disabled !== undefined || disabled === true) && disabled !== false
+          "
+          select-label=""
+          deselect-label=""
+        />
+        <div class="invalid-feedback d-block" v-if="errors">
+          {{ errors[0] }}
+        </div>
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
+      </td>
+      <td :style="this.styleDesc" style="padding-left: 5px">
+        <input
+          type="text"
+          disabled
+          :value="selectedItem?.AreaName || ''"
+          class="w-100 form-control"
+        />
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -65,13 +67,11 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "warehouseCode",
-    "areaCode",
-    "itemCode",
-    "statusReceipt",
-    "statusHoldNg",
-    "showOptionAll",
+    "warehouse",
     "includeTemp",
+    "styleCode",
+    "styleDesc",
+    "showOptionAll",
   ],
   data: () => ({
     isLoading: false,
@@ -87,17 +87,18 @@ export default {
     selectedItem: function () {
       if (this.tempValue === "ALL") {
         return {
-          AddressCode: "ALL",
-          AddressName: "ALL",
+          AreaCode: "ALL",
+          AreaName: "ALL",
           DDLDescription: "ALL",
         };
       }
 
-      return this.list.find((x) => x.AddressCode === this.tempValue) || null;
+      return this.list.find((x) => x.AreaCode === this.tempValue) || null;
     },
+
     displayLabel() {
       if (this.isOpen) return "DDLDescription";
-      return this.tempValue ? "AddressCode" : "DDLDescription";
+      return this.tempValue ? "AreaCode" : "DDLDescription";
     },
   },
   watch: {
@@ -106,23 +107,7 @@ export default {
 
       this.load("", after);
     },
-    warehouseCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    locationCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    itemCode: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    statusReceipt: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    statusHoldNg: function (after) {
+    warehouse: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
@@ -157,30 +142,30 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/address/ddl-address-search-by-stock?keyword=${q || ""}&ids=${
+            `/area/ddlsearch-areaws?keyword=${q || ""}&ids=${
               d || ""
-            }&warehouse=${this.warehouseCode}&area=${this.areaCode}&item=${this.itemCode}&statusReceipt=${this.statusReceipt || ""}&statusHoldNG=${this.statusHoldNg || ""}${
+            }&warehouseCode=${this.warehouse || "ALL"}${
               this.includeTemp ? "&includeTemp=true" : "&includeTemp=false"
             }`,
           )
           .then((p) => {
-            if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.AddressCode;
-            }
-
             this.list =
               (this.showOptionAll || false) &&
               (q || "") == "" &&
               p.data.Data.length > 0
                 ? [
                     {
-                      AddressCode: "ALL",
-                      AddressName: "ALL",
+                      AreaCode: "ALL",
+                      AreaName: "ALL",
                       DDLDescription: "ALL",
                     },
                     ...p.data.Data,
                   ]
                 : p.data.Data;
+
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.AreaCode;
+            }
           })
           .finally(() => (this.isLoading = false));
 

@@ -72,6 +72,12 @@ public class AreaRepository : IAreaRepository
         })).ToList();
     }
 
+    public async Task<List<AreaDto>> DDLSearchAreaWS(string keyword, string warehouseCode, string userId)
+    {
+        string sp = "sp_Wms_AreaWS_DDL";
+        return (await _dbExecutor.QueryListAsync<AreaDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode, UserId = userId })).ToList();
+    }
+
     public async Task Create(Area area, string userId)
     {
         //area.AreaCode = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Area_GenerateCode", new { area.WarehouseCode });

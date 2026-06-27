@@ -7,17 +7,21 @@
             <label class="form-label">Period</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-month v-model="filter.period" style="width: 215px" />
+            <input-month
+              v-model="filter.period"
+              style="width: 215px"
+              disabled
+            />
           </td>
 
           <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Item</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-             <filter-item-by-stock
+            <filter-item-by-stock
               class="form-control"
               v-model="filter.item"
-              :warehouse= "filter.warehouse"
+              :warehouse="filter.warehouse"
               :area="filter.area"
               :address="filter.address"
               category="ALL"
@@ -25,7 +29,6 @@
               style-code="width: 170px"
               style-desc="width: 250px"
             />
-             
           </td>
 
           <td width="50px"></td>
@@ -42,10 +45,11 @@
             <label class="form-label">Warehouse</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-warehouse-privileges
+            <filter-warehouse-by-stock
               class="form-control"
               v-model="filter.warehouse"
               factory-code="ALL"
+              item-code="ALL"
               style-code="width: 170px;"
               style-desc="width: 250px;"
             />
@@ -55,7 +59,7 @@
             <label class="form-label">Lot No</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-lot-no
+            <filter-lot-by-stock
               class="form-control"
               v-model="filter.lotNo"
               :warehouse="filter.warehouse"
@@ -63,6 +67,7 @@
               :address="filter.address"
               :show-option-all="true"
               :item="filter.item"
+              category="ALL"
               style="width: 170px"
             />
           </td>
@@ -81,10 +86,11 @@
             <label class="form-label">Area</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-area-privileges
+            <filter-area-by-stock
               class="form-control"
               v-model="filter.area"
               :warehouse="filter.warehouse"
+              item="ALL"
               :include-temp="true"
               style-code="width: 170px"
               style-desc="width: 250px"
@@ -116,12 +122,14 @@
             <label class="form-label">Address</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-address-privileges
+            <filter-address-by-stock
               class="form-control"
               v-model="filter.address"
-              :warehouse="filter.warehouse"
-              :area="filter.area"
+              :warehouse-code="filter.warehouse"
+              :area-code="filter.area"
+              item-code="ALL"
               :include-temp="true"
+              :show-option-all="true"
               style-code="width: 170px"
               style-desc="width: 250px"
             />
@@ -365,7 +373,7 @@ export default {
       this.listUpdate = [];
     },
     reset: function () {
-      this.filter.period = null;
+      // this.filter.period = null;
       this.filter.warehouse = null;
       this.filter.area = null;
       this.filter.address = null;
@@ -433,6 +441,8 @@ export default {
       }
     },
     async submit() {
+      console.log(JSON.stringify(this.listUpdate));
+      return;
       try {
         if (this.listUpdate.length === 0) {
           toastInfo("No data to submit.");

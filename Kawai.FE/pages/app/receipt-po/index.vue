@@ -239,25 +239,32 @@
         <tr>
           <td colspan="2" style="padding-top: 5px">
             <div class="d-flex flex-fill">
-              <v-button-submit :submit="submit" :is-loading="isLoading" />
+              <v-button-submit
+                :submit="submit"
+                :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
+              />
               <v-button
                 :action="remove"
                 label="Delete"
                 icon="trash"
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
               <v-button-print
                 label="Print Label"
                 class="ml-1"
                 :print="printLabel"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
               <v-button-print
                 label="Print Receipt Report"
                 class="ml-1"
                 :print="printReport"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
               <v-button
                 :action="printBarcodesUsingJob"
@@ -265,6 +272,7 @@
                 icon="file-pdf"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
               <v-button
                 :action="import"
@@ -272,6 +280,7 @@
                 icon="file-excel"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
             </div>
           </td>
@@ -523,6 +532,7 @@ export default {
     prevRegisterNo: "",
     errors: {},
     errorsBreakdown: {},
+    menuPrivAllowUpdate: false,
   }),
   computed: {
     ds: function () {
@@ -533,6 +543,9 @@ export default {
     },
     notif: function () {
       return useNotification();
+    },
+    dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -582,6 +595,12 @@ export default {
     },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E05",
+      )[0].AllowUpdate;
+    });
+
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
