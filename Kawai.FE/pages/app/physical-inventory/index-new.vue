@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="Physical Inventory Update" icon="receipt">
+  <v-frame title="Physical Inventory Update (New)" icon="receipt">
     <template #frame-content>
       <table>
         <tr>
@@ -247,9 +247,9 @@ export default {
     breadcrumbs: [
       { title: "Stock Control", active: false, to: "" },
       {
-        title: "Physical Inventory Update",
+        title: "Physical Inventory Update (New)",
         active: true,
-        to: "/physical-inventory",
+        to: "/physical-inventory/index-new",
       },
     ],
     filter: {
@@ -276,7 +276,7 @@ export default {
     },
     pagination: {
       page: 1,
-      length: 25,
+      length: 10,
     },
     debounce: null,
     lists: [],
@@ -334,7 +334,7 @@ export default {
     resetGrid: function () {
       this.ds.setFilter([]);
       this.ds.setPage(1);
-      this.ds.setLength(25);
+      this.ds.setLength(10);
       this.ds.data.Items = [];
       this.lists = [];
       this.listUpdate = [];
@@ -381,7 +381,7 @@ export default {
           DifferentQty: this.filter.diffQty ? "true" : "false",
         },
       ];
-      // this.ds.setLength(100000);
+      this.ds.setLength(100000);
 
       this.ds.setFilter(filters);
 
@@ -413,7 +413,7 @@ export default {
       if (status === "DIFFERENT") return "bg-different";
       return "";
     },
-    submit: function () {
+    submit: async function () {
       let dataChanges = this.lists
         .filter((x) => x.Inventory !== x.CurrentInventory)
         .map((x) => {

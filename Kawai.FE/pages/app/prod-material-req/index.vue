@@ -177,13 +177,16 @@
         </tr>
       </table>
       <hr />
-      <v-table
+      <v-table-new
         :ds="ds"
+        :ds-data="dsDataMaterials"
         ref="vtable"
-        :use-paging="false"
+        :use-paging="true"
         :use-header="false"
-        :data-items="calculation.Materials"
+        :data-items="displayedMaterials"
         :top-content-height="405"
+        @page-change="onPageChange"
+        @length-change="onLengthChange"
       >
         <template #table-content>
           <table
@@ -208,8 +211,8 @@
             </thead>
             <tbody>
               <template
-                v-for="(item, idx) in calculation.Materials || []"
-                :key="idx"
+                v-for="(item, idx) in displayedMaterials"
+                :key="item.ChildItemCode || idx"
               >
                 <tr>
                   <td>{{ item.ChildItemCode }}</td>
@@ -231,12 +234,12 @@
                   <td>
                     <div style="text-align: center">
                       <span
-                        v-if="item.Details.length > 0"
+                        v-if="item.Details && item.Details.length > 0"
                         :class="[
                           'toggle-button',
                           item.Expanded ? 'collapse' : 'expand',
                         ]"
-                        @click="() => (item.Expanded = !item.Expanded)"
+                        @click="toggleExpand(item)"
                       >
                         {{ item.Expanded ? "-" : "+" }}
                       </span>
@@ -246,26 +249,27 @@
                   <td></td>
                   <td></td>
                 </tr>
-                <tr
-                  v-if="item.Expanded"
-                  v-for="(dtl, idxx) in item.Details || []"
-                  :key="dtl.ProductionId"
-                >
-                  <td colspan="6"></td>
-                  <td>{{ dtl.LineName }}</td>
-                  <td>
-                    {{ $func.formatDate(dtl.ScheduleDate) }}
-                  </td>
-                  <td>{{ dtl.ParentItemName }}</td>
-                  <td class="text-right">
-                    {{ $func.formatMoney(dtl.FinalReqQty) }}
-                  </td>
-                </tr>
+                <template v-if="item.Expanded">
+                  <tr
+                    v-for="(dtl, idxx) in item.Details || []"
+                    :key="dtl.ProductionId || idxx"
+                  >
+                    <td colspan="6"></td>
+                    <td>{{ dtl.LineName }}</td>
+                    <td>
+                      {{ $func.formatDate(dtl.ScheduleDate) }}
+                    </td>
+                    <td>{{ dtl.ParentItemName }}</td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(dtl.FinalReqQty) }}
+                    </td>
+                  </tr>
+                </template>
               </template>
             </tbody>
           </table>
         </template>
-      </v-table>
+      </v-table-new>
     </template>
   </v-frame>
 </template>
@@ -281,6 +285,10 @@ export default {
       Line: null,
       Model: null,
     },
+    pagination: {
+      page: 1,
+      length: 25,
+    },
     debounce: null,
     calculation: {
       Header: {},
@@ -292,6 +300,22 @@ export default {
   computed: {
     ds: function () {
       return useProdMaterialRequirement();
+    },
+    dsDataMaterials: function () {
+      const items = this.calculation?.Materials || [];
+      return {
+        Items: items,
+        Page: this.pagination.page,
+        Length: this.pagination.length,
+        Filtered: items.length,
+        Total: items.length,
+      };
+    },
+    displayedMaterials: function () {
+      const items = this.calculation?.Materials || [];
+      const start = (this.pagination.page - 1) * this.pagination.length;
+      const end = start + this.pagination.length;
+      return items.slice(start, end);
     },
   },
   mounted: function () {
@@ -308,10 +332,23 @@ export default {
     );
   },
   methods: {
+    onPageChange: function (page) {
+      this.pagination.page = page;
+    },
+    onLengthChange: function (length) {
+      this.pagination.length = length;
+      this.pagination.page = 1;
+    },
+    toggleExpand: function (item) {
+      item.Expanded = !item.Expanded;
+    },
     search: function () {
       this.ds.getCalculation(this.model.Factory).then((dt) => {
         this.calculation = dt.Data;
-        this.calculation.Materials.map((x) => (x.Expanded = false));
+        if (this.calculation && this.calculation.Materials) {
+          this.calculation.Materials.forEach((x) => (x.Expanded = false));
+        }
+        this.pagination.page = 1;
       });
     },
     exportExcel: function () {

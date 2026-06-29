@@ -144,14 +144,14 @@
                 icon="print"
                 cClass="ml-1 btn-blue"
                 :is-loading="isLoading"
-                :disabled="this.groupLists.length == 0"
+                :disabled="this.groupLists.length == 0 || !menuPrivAllowUpdate"
               />
 
               <v-button-submit
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
-                :disabled="this.groupLists.length == 0"
+                :disabled="this.groupLists.length == 0 || !menuPrivAllowUpdate"
               />
             </div>
           </td>
@@ -266,13 +266,23 @@ export default {
     selectedItem: null,
     counter: 0,
     errors: {},
+    menuPrivAllowUpdate: false,
   }),
   computed: {
     ds: function () {
       return useSupplyRequestBOM();
     },
+    dsMenu: function () {
+      return useMenu();
+    },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E12",
+      )[0].AllowUpdate;
+    });
+
     this.search();
   },
   methods: {

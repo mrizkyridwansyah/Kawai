@@ -1,6 +1,6 @@
 var app = useNuxtApp();
 
-export const usePhysicalInventory = defineStore('PhysicalInventory', {
+export const usePhysicalInventory = defineStore("PhysicalInventory", {
   state: () => ({
     isLoading: false,
     isEditing: false,
@@ -17,9 +17,7 @@ export const usePhysicalInventory = defineStore('PhysicalInventory', {
     filter: {
       Page: 1,
       Length: 25,
-      Filters: [
-
-      ],
+      Filters: [],
       Sorts: {},
     },
   }),
@@ -30,23 +28,22 @@ export const usePhysicalInventory = defineStore('PhysicalInventory', {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/physical-inventory/list`, this.filter)
+        app.$http
+          .post(`/physical-inventory/list`, this.filter)
           .then(({ data }) => {
             this.data = data.Data;
 
             resolve(data);
           })
-          .catch(err => {
-            if (err.code == 'ERR_NETWORK')
-              this.isNetworkError = true;
+          .catch((err) => {
+            if (err.code == "ERR_NETWORK") this.isNetworkError = true;
 
-            if (err.code == 'ERR_BAD_RESPONSE')
-              this.isServerError = true;
+            if (err.code == "ERR_BAD_RESPONSE") this.isServerError = true;
 
             reject(err);
           })
-          .finally(_ => this.isLoading = false);
-      })
+          .finally((_) => (this.isLoading = false));
+      });
     },
     setFilter: function (v) {
       this.filter.Filters = v;
@@ -65,28 +62,25 @@ export const usePhysicalInventory = defineStore('PhysicalInventory', {
       this.load();
     },
     update(payload) {
-        this.isEditing = true;
-        this.isNetworkError = this.isServerError = false;
+      this.isEditing = true;
+      this.isNetworkError = this.isServerError = false;
+      return new Promise((resolve, reject) => {
+        app.$http
+          .patch("/physical-inventory/update", payload)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => {
+            if (err.code === "ERR_NETWORK") this.isNetworkError = true;
 
-        return new Promise((resolve, reject) => {
-            app.$http
-            .patch('/physical-inventory/update', payload)
-            .then(({ data }) => {
-                resolve(data);
-            })
-            .catch(err => {
-                if (err.code === 'ERR_NETWORK')
-                this.isNetworkError = true;
+            if (err.code === "ERR_BAD_RESPONSE") this.isServerError = true;
 
-                if (err.code === 'ERR_BAD_RESPONSE')
-                this.isServerError = true;
-
-                reject(err);
-            })
-            .finally(() => {
-                this.isEditing = false;
-            });
-        });
+            reject(err);
+          })
+          .finally(() => {
+            this.isEditing = false;
+          });
+      });
     },
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {
@@ -97,21 +91,24 @@ export const usePhysicalInventory = defineStore('PhysicalInventory', {
           Sorts: {},
         };
 
-        app.$http.post(`/physical-inventory/export/excel`, filterExport)
+        app.$http
+          .post(`/physical-inventory/export/excel`, filterExport)
           .then(({ data }) => {
             if (data.Data) {
               const byteCharacters = atob(data.Data); // decode base64
-              const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+              const byteNumbers = new Array(byteCharacters.length)
+                .fill(0)
+                .map((_, i) => byteCharacters.charCodeAt(i));
               const byteArray = new Uint8Array(byteNumbers);
 
               const blob = new Blob([byteArray], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               });
 
               const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
+              const link = document.createElement("a");
               link.href = url;
-              link.setAttribute('download', 'List_Physical_Inventory.xlsx');
+              link.setAttribute("download", "List_Physical_Inventory.xlsx");
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -128,11 +125,13 @@ export const usePhysicalInventory = defineStore('PhysicalInventory', {
           .finally(() => {
             this.isLoading = false;
           });
-      })
+      });
     },
   },
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(usePhysicalInventory, import.meta.hot));
+  import.meta.hot.accept(
+    acceptHMRUpdate(usePhysicalInventory, import.meta.hot),
+  );
 }

@@ -16,14 +16,18 @@
       <div class="button-section">
         <div class="d-flex mt-3">
           <div class="d-flex flex-fill">
-            <v-button-add :add="add" cClass="mr-1":disabled="!menuPrivAllowUpdate" />
-           
+            <v-button-add
+              :add="add"
+              cClass="mr-1"
+              :disabled="!menuPrivAllowUpdate"
+            />
+
             <v-button-search-reset
               class="ml-1"
               :search="search"
               :reset="reset"
             />
-             <v-button-print
+            <v-button-print
               :print="print"
               cClass="ml-1"
               :is-loading="isLoadingPrint"
@@ -75,12 +79,12 @@
                   <font-awesome-icon
                     class="mr-2 text-success"
                     icon="pencil"
-                    @click="menuPrivAllowUpdate && edit(item)" 
+                    @click="menuPrivAllowUpdate && edit(item)"
                   />
                   <font-awesome-icon
                     class="ml-2 text-danger"
                     icon="trash"
-                    @click="menuPrivAllowUpdate && remove(item)" 
+                    @click="menuPrivAllowUpdate && remove(item)"
                   />
                 </td>
                 <td>{{ item.WarehouseCode }}</td>
@@ -189,14 +193,14 @@ export default {
     modalMode: "",
     debounce: null,
     selectedPrint: [],
-      menuPrivAllowUpdate: false,
+    menuPrivAllowUpdate: false,
     isLoadingPrint: false,
   }),
   computed: {
     ds: function () {
       return useWarehouse();
     },
-      dsMenu: function () {
+    dsMenu: function () {
       return useMenu();
     },
   },

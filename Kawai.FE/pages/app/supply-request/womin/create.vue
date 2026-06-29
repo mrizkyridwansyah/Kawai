@@ -57,7 +57,7 @@
                 :submit="submit"
                 cClass="ml-1"
                 :is-loading="isLoading"
-                :disabled="this.groupLists.length == 0 || !menuPrivAllowUpdate "
+                :disabled="this.groupLists.length == 0 || !menuPrivAllowUpdate"
               />
             </div>
           </td>
@@ -203,7 +203,7 @@ export default {
     },
     debounce: null,
     lists: [],
-     menuPrivAllowUpdate: false,
+    menuPrivAllowUpdate: false,
     groupLists: [],
     isLoading: false,
     selectedItem: null,
@@ -214,12 +214,12 @@ export default {
     ds: function () {
       return useSupplyRequestWomin();
     },
-     dsMenu: function () {
+    dsMenu: function () {
       return useMenu();
     },
   },
   mounted: function () {
-     this.dsMenu.privileges().then((dt) => {
+    this.dsMenu.privileges().then((dt) => {
       this.menuPrivAllowUpdate = dt.Data.filter(
         (a) => a.MenuID == "E11",
       )[0].AllowUpdate;

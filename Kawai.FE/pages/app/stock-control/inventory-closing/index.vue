@@ -22,7 +22,7 @@
               <div class="col-auto">
                 <button
                   class="btn btn-primary"
-                  :disabled="isProcessing"
+                  :disabled="isProcessing || !menuPrivAllowUpdate"
                   @click="process"
                 >
                   Process
@@ -53,6 +53,7 @@ export default {
     return {
       progress: 0,
       isProcessing: false,
+      menuPrivAllowUpdate: false,
     };
   },
 
@@ -60,6 +61,9 @@ export default {
     // inject store (Nuxt auto-import)
     ds: function () {
       return useInventoryClosing();
+    },
+    dsMenu: function () {
+      return useMenu();
     },
 
     // period dari fungsi store
@@ -76,6 +80,11 @@ export default {
   },
 
   mounted() {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate =
+        dt.Data.filter((a) => a.MenuID == "E09")[0]?.AllowUpdate || false;
+    });
+
     // load sekali saja
     if (!this.ds.isLoaded) {
       this.ds.load();

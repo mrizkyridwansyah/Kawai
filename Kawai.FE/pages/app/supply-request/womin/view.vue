@@ -50,20 +50,17 @@
                 icon="trash"
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
-                 :disabled="!menuPrivAllowUpdate"
+                :disabled="!menuPrivAllowUpdate"
               />
-              
-               <v-button
+
+              <v-button
                 :action="printWominUsingJob"
                 label="Print"
                 icon="file-excel"
                 cClass="ml-1 btn-green"
                 :is-loading="isLoadingPrint"
-                 :disabled="!menuPrivAllowUpdate"
+                :disabled="!menuPrivAllowUpdate"
               />
-
-             
-
             </div>
           </td>
         </tr>
@@ -178,22 +175,25 @@
                     <!-- Detail Rows -->
                     <tr v-for="dtl in details" :key="dtl.ChildItemCode">
                       <td colspan="9"></td>
-                        <td class="text-center">
+                      <td class="text-left">
                         <a
+                          v-if="menuPrivAllowUpdate"
                           href="javascript:void(0)"
                           @click="editStock(dtl.IDSeq)"
                           >{{ dtl.ChildItemCode }}</a
                         >
+                        <span v-else>{{ dtl.ChildItemCode }}</span>
                       </td>
                       <td>{{ dtl.ChildItemName }}</td>
                       <td class="text-right">
                         {{ $func.formatMoney(dtl.RequirementQty) }}
                       </td>
                       <td class="text-right">
-                         <a
+                        <a
                           href="javascript:void(0)"
                           @click="viewScan(dtl.IDSeq)"
-                          > {{ $func.formatMoney(dtl.TotalScan) }}</a
+                        >
+                          {{ $func.formatMoney(dtl.TotalScan) }}</a
                         >
                       </td>
                       <td class="text-center">
@@ -221,7 +221,7 @@
     />
   </v-modal>
 
-    <v-modal title="Detail Scan Supply" class="modal-lg" id="modal-list-scan">
+  <v-modal title="Detail Scan Supply" class="modal-lg" id="modal-list-scan">
     <shared-request-womin-list-scan
       :item="this.selectedItem"
       :counter="this.counter"
@@ -240,15 +240,14 @@
     "
   >
     <shared-request-womin-edit-reqqty
-       ref="formWOMIN"
+      ref="formWOMIN"
       :item="idSelected"
       :counter="this.counter"
       @submitted="close"
     />
   </v-modal>
 
-
-   <!-- <v-modal title="Edit Requirement Qty" class="modal-lg" id="modal-edit-reqqty">
+  <!-- <v-modal title="Edit Requirement Qty" class="modal-lg" id="modal-edit-reqqty">
     <shared-request-womin-edit-reqqty
       :item="this.selectedItem"
       :counter="this.counter"
@@ -267,7 +266,7 @@ export default {
     lists: [],
     groupLists: [],
     isLoading: false,
-   menuPrivAllowUpdate: false,
+    menuPrivAllowUpdate: false,
     isLoadingPrint: false,
     selectedItem: null,
     counter: 0,
@@ -277,7 +276,7 @@ export default {
     ds: function () {
       return useSupplyRequestWomin();
     },
-     dsMenu: function () {
+    dsMenu: function () {
       return useMenu();
     },
   },
@@ -342,8 +341,8 @@ export default {
             ChildItemName: item.ChildItemName,
             RequirementQty: item.RequirementQty,
             TotalScan: item.TotalScan,
-            RequestId: item.RequestId, 
-            IDSeq: item.IDSeq,// optional untuk key
+            RequestId: item.RequestId,
+            IDSeq: item.IDSeq, // optional untuk key
           });
         });
 
@@ -368,7 +367,7 @@ export default {
         });
       });
     },
-      printWominUsingJob: function () {
+    printWominUsingJob: function () {
       this.isLoading = true;
       this.ds
         .printWominUsingJob(this.ds.newRequest[0].RequestId)
@@ -379,7 +378,6 @@ export default {
         .finally(() => (this.isLoading = false));
     },
 
-    
     remove: function () {
       confirmRemove(
         () =>
@@ -422,7 +420,7 @@ export default {
       this.$bvModal.show("modal-list-stock");
     },
 
-     viewScan: function (item) {
+    viewScan: function (item) {
       debugger;
       this.selectedItem = item;
       this.counter++;
@@ -430,11 +428,11 @@ export default {
     },
 
     editStock: function (item) {
-       this.idSelected = item;
+      this.idSelected = item;
       this.counter++;
       this.$bvModal.show("shared-request-womin-edit-reqqty");
     },
-    
+
     toggleExpand: function (item) {
       item.Expanded = !item.Expanded;
     },
