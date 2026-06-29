@@ -71,7 +71,9 @@
                 <th class="text-center">Receipt</th>
                 <th class="text-center">Supply</th>
                 <th class="text-center">Loss / Reject</th>
-                <th class="text-center">Current</th>
+                <th class="text-center">Current (A)</th>
+                <th class="text-center">Allocation (B)</th>
+                <th class="text-center">Ready Stock (C = A-B)</th>
                 <th class="text-center">Inventory</th>
                 <th class="text-center">Remarks</th>
                 <th class="text-center">User</th>
@@ -92,6 +94,8 @@
                   {{ $func.formatMoney(item.LossReject) }}
                 </td>
                 <td class="text-end">{{ $func.formatMoney(item.Current) }}</td>
+                <td class="text-end">{{ $func.formatMoney(item.Allocation) }}</td>
+                <td class="text-end">{{ $func.formatMoney(item.Ready) }}</td>
                 <td class="text-end">
                   {{ $func.formatMoney(item.Inventory) }}
                 </td>

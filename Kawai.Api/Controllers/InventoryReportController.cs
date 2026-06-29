@@ -42,7 +42,7 @@ public class InventoryReportController : HahaController
         int rowIdx = 1;
 
         List<string> headers = ["Warehouse", "Product Code", "Product Name", "Lot No",
-                "Pre Month", "Receipt", "Supply", "Loss / Reject","Current","Inventory","Remarks","User"];
+                "Pre Month", "Receipt", "Supply", "Loss / Reject","Current (A)","Allocation (B)","Ready Stock (C = A-B)","Inventory","Remarks","User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
         foreach (var result in results)
@@ -68,6 +68,10 @@ public class InventoryReportController : HahaController
             ExcelHelper.SetCell(row, colIdx, result.LossReject);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Current);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Allocation);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Ready);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Inventory);
             colIdx++;

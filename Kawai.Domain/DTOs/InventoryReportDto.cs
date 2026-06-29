@@ -12,6 +12,8 @@ public class InventoryReportDto : DataTableDto
     public decimal Supply { get; set; }
     public decimal LossReject { get; set; }
     public decimal Current { get; set; }
+    public decimal Allocation { get; set; }
+    public decimal Ready { get; set; }
     public decimal Inventory { get; set; }
     public string Remarks { get; set; }
     public string LastUser { get; set; }
