@@ -428,8 +428,8 @@ public class ReceiptController : HahaController
         if (string.IsNullOrWhiteSpace(result.Header.BCType))
             headerErrors.Add("BC Type wajib diisi");
 
-        if (string.IsNullOrWhiteSpace(result.Header.BCNumber))
-            headerErrors.Add("BC Number wajib diisi");
+        //if (string.IsNullOrWhiteSpace(result.Header.BCNumber))
+        //    headerErrors.Add("BC Number wajib diisi");
 
         if (!DateTime.TryParse(receiptDateText, out var receiptDate))
             headerErrors.Add("Receipt Date tidak valid");
@@ -451,8 +451,8 @@ public class ReceiptController : HahaController
         if (!string.IsNullOrWhiteSpace(bctype) && bctype.Length > 15)
             headerErrors.Add("BCType maksimal 15 karakter.");
 
-        if (!string.IsNullOrWhiteSpace(bcno) && bcno.Length > 50)
-            headerErrors.Add("BCNo maksimal 50 karakter.");
+        //if (!string.IsNullOrWhiteSpace(bcno) && bcno.Length > 50)
+        //    headerErrors.Add("BCNo maksimal 50 karakter.");
 
 
 
