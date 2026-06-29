@@ -1,7 +1,7 @@
 <template>
   <v-frame title="Work Station Master" icon="database">
     <template #frame-content>
-      <v-button-add :add="add" cClass="mr-1" />
+      <v-button-add :add="add" cClass="mr-1"  :disabled="!menuPrivAllowUpdate" />
       <hr />
       <v-table
         :filter="filter"
@@ -34,12 +34,12 @@
                   <font-awesome-icon
                     class="mr-2 text-success"
                     icon="pencil"
-                    @click="edit(item)"
+                    @click="menuPrivAllowUpdate && edit(item)"
                   />
                   <font-awesome-icon
                     class="ml-2 text-danger"
                     icon="trash"
-                    @click="remove(item)"
+                    @click="menuPrivAllowUpdate && remove(item)"
                   />
                 </td>
                 <td>{{ item.WorkStationCode }}</td>
@@ -115,11 +115,16 @@ export default {
     title: "",
     modalMode: "",
     debounce: null,
+    menuPrivAllowUpdate: false,
   }),
   computed: {
     ds: function () {
       return useWorkStation();
     },
+    dsMenu: function () {
+      return useMenu();
+    },
+
   },
   watch: {
     filter: {
@@ -141,6 +146,11 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A13",
+      )[0].AllowUpdate;
+    });
     this.ds.setSort(this.filter.sorts);
     this.ds.setFilter([]);
     this.ds.load();

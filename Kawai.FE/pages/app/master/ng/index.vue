@@ -1,7 +1,7 @@
 <template>
   <v-frame title="NG Master" icon="database">
     <template #frame-content>
-      <v-button-add :add="add" cClass="mr-1" />
+      <v-button-add :add="add" cClass="mr-1" :disabled="!menuPrivAllowUpdate" />
       <hr />
       <v-table
         :filter="filter"
@@ -33,12 +33,12 @@
                   <font-awesome-icon
                     class="mr-2 text-success"
                     icon="pencil"
-                    @click="edit(item)"
+                    @click="menuPrivAllowUpdate &&  edit(item)"
                   />
                   <font-awesome-icon
                     class="ml-2 text-danger"
                     icon="trash"
-                    @click="remove(item)"
+                    @click="menuPrivAllowUpdate &&  remove(item)"
                   />
                 </td>
                 <td>{{ item.NGCode }}</td>
@@ -117,12 +117,16 @@ export default {
     },
     idSelected: "",
     title: "",
+     menuPrivAllowUpdate: false,
     modalMode: "",
     debounce: null,
   }),
   computed: {
     ds: function () {
       return useNG();
+    },
+     dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -145,6 +149,11 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A11",
+      )[0].AllowUpdate;
+    });
     this.ds.setSort(this.filter.sorts);
     this.ds.setFilter([]);
     this.ds.load();

@@ -42,7 +42,7 @@
       <div class="button-section">
         <div class="d-flex mt-3">
           <div class="d-flex flex-fill">
-            <v-button-add :add="add" cClass="mr-1" />
+            <v-button-add :add="add" cClass="mr-1" :disabled="!menuPrivAllowUpdate" />
             <v-button-search-reset
               class="ml-1"
               :search="search"
@@ -52,12 +52,14 @@
               :print="print"
               cClass="ml-1"
               :is-loading="isLoadingPrint"
+              :disabled="!menuPrivAllowUpdate"
             />
             <v-button-print
               :print="printall"
               label="Print All"
               cClass="ml-1"
               :is-loading="isLoadingPrintAll"
+              :disabled="!menuPrivAllowUpdate"
             />
 
             <v-button
@@ -65,6 +67,7 @@
               label="Setting Stop Point"
               icon="file-pdf"
               cClass="ml-1 btn-green"
+              :disabled="!menuPrivAllowUpdate"
             />
           </div>
         </div>
@@ -116,12 +119,14 @@
                   <font-awesome-icon
                     class="mr-2 text-success"
                     icon="pencil"
-                    @click="edit(item)"
+                    @click="menuPrivAllowUpdate && edit(item)"
+                    
                   />
                   <font-awesome-icon
                     class="ml-2 text-danger"
                     icon="trash"
-                    @click="remove(item)"
+                    @click="menuPrivAllowUpdate &&  remove(item)"
+                    
                   />
                 </td>
                 <td>
@@ -242,6 +247,7 @@ export default {
     debounce: null,
     title: "",
     modalMode: "",
+       menuPrivAllowUpdate: false,
     selectedPrint: [],
     selectedSet: [],
     isLoadingPrint: false,
@@ -250,6 +256,9 @@ export default {
   computed: {
     ds: function () {
       return useAddress();
+    },
+    dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -270,6 +279,11 @@ export default {
     },
   },
   mounted: function () {
+      this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A04",
+      )[0].AllowUpdate;
+    });
     this.search();
   },
   methods: {

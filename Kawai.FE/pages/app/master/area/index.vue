@@ -30,7 +30,7 @@
       <div class="button-section">
         <div class="d-flex mt-3">
           <div class="d-flex flex-fill">
-            <v-button-add :add="add" cClass="mr-1" />
+            <v-button-add :add="add" cClass="mr-1" :disabled="!menuPrivAllowUpdate"  />
             
             <v-button-search-reset
               class="ml-1"
@@ -89,12 +89,12 @@
                   <font-awesome-icon
                     class="mr-2 text-success"
                     icon="pencil"
-                    @click="edit(item)"
+                    @click="menuPrivAllowUpdate && edit(item)"
                   />
                   <font-awesome-icon
                     class="ml-2 text-danger"
                     icon="trash"
-                    @click="remove(item)"
+                    @click="menuPrivAllowUpdate && remove(item)"
                   />
                 </td>
                 <td>{{ item.WarehouseCode }}</td>
@@ -180,11 +180,15 @@ export default {
     title: "",
     modalMode: "",
     selectedPrint: [],
+   menuPrivAllowUpdate: false,
     isLoadingPrint: false,
   }),
   computed: {
     ds: function () {
       return useArea();
+    },
+     dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -204,6 +208,12 @@ export default {
     },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A03",
+      )[0].AllowUpdate;
+    });
+    
     this.search();
   },
   methods: {

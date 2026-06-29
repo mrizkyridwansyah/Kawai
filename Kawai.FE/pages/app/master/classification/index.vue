@@ -26,7 +26,7 @@
 
           <v-loading-2 class="m-5 p-5" v-if="ds.isLoading" />
           <div v-else>
-            <v-button-add :add="add" cClass="mb-1" />
+            <v-button-add :add="add" cClass="mb-1"  :disabled="!menuPrivAllowUpdate"  />
             <div class="table-wrapper">
               <table class="table table-grid">
                 <thead>
@@ -45,12 +45,12 @@
                       <font-awesome-icon
                         class="mr-2 text-success"
                         icon="pencil"
-                        @click="edit(row, detailItems?.TableName)"
+                        @click="menuPrivAllowUpdate &&  edit(row, detailItems?.TableName)"
                       />
                       <font-awesome-icon
                         class="ml-2 text-danger"
                         icon="trash"
-                        @click="remove(row, detailItems?.TableName)"
+                        @click="menuPrivAllowUpdate &&  remove(row, detailItems?.TableName)"
                       />
                     </td>
                     <td>{{ row.Code }}</td>
@@ -100,12 +100,16 @@ export default {
     modalMode: "",
     idSelected: null,
     tableNameSelected: null,
+     menuPrivAllowUpdate: false,
     activeTableName: "", // 🔥 SIMPAN TABLENAME AKTIF
   }),
 
   computed: {
     ds() {
       return useClassification();
+    },
+     dsMenu: function () {
+      return useMenu();
     },
 
     activeTitle() {
@@ -124,6 +128,13 @@ export default {
   },
 
   mounted() {
+
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A20",
+      )[0].AllowUpdate;
+    });
+    
     // LOAD TAB HEADER SEKALI
     this.ds.load().then(() => {
       this.tabs = (this.ds.data?.Items || []).map((x) => ({

@@ -42,6 +42,7 @@
             :submit="submit"
             cClass="mr-1"
             :is-loading="isLoading"
+              :disabled="!menuPrivAllowUpdate" 
           />
 
           <button
@@ -196,10 +197,15 @@ export default {
     debounce: null,
     isLoading: false,
     errors: {},
+    menuPrivAllowUpdate: false,
+    
   }),
   computed: {
     ds: function () {
       return usePeriodSetting();
+    },
+     dsMenu: function () {
+      return useMenu();
     },
     currentYear() {
       return new Date().getFullYear();
@@ -217,7 +223,13 @@ export default {
       this.listPeriodSettingDetail = [];
     },
   },
-  mounted: function () {},
+  mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A17",
+      )[0].AllowUpdate;
+    });
+  },
   methods: {
     isRowDisabled(item) {
       // jika bukan tahun sekarang → disable semua

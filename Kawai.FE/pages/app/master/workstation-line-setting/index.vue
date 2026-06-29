@@ -48,8 +48,8 @@
             <button
               class="btn btn-sm btn-primary btn-elevate"
               @click="submit"
-              :disabled="isLoading"
-            >
+              :disabled="isLoading || !menuPrivAllowUpdate"
+             >
               <div
                 class="spinner-border spinner-border-sm text-light"
                 role="status"
@@ -226,10 +226,14 @@ export default {
     selectedPrint: [],
     isLoading: false,
     isLoadingPrint: false,
+      menuPrivAllowUpdate: false,
   }),
   computed: {
     ds: function () {
       return useWorkStationSetting();
+    },
+    dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -241,6 +245,11 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A14",
+      )[0].AllowUpdate;
+    });
     this.ds.resetList();
   },
   methods: {

@@ -74,6 +74,7 @@
               label="Copy Bom WorkStation"
               icon="copy"
               cClass="ml-1 btn-green"
+               :disabled="!menuPrivAllowUpdate" 
             />
           </div>
         </div>
@@ -215,6 +216,7 @@ export default {
     },
     debounce: null,
     title: "",
+    menuPrivAllowUpdate: false,
     modalMode: "",
     isLoading: false,
      // penting: supaya watch tidak jalan saat restore query
@@ -223,6 +225,9 @@ export default {
   computed: {
     ds: function () {
       return useBOMWorkstation();
+    },
+     dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -246,6 +251,11 @@ export default {
     },
   },
   mounted() {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A15",
+      )[0].AllowUpdate;
+    });
     const q = this.$route.query;
 
     this.ds.resetList();

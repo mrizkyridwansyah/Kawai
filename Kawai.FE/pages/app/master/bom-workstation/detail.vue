@@ -103,7 +103,8 @@
             <button
               class="btn btn-sm btn-primary btn-elevate mt-2"
               @click="submit"
-              :disabled="isLoading"
+              :disabled="isLoading || !menuPrivAllowUpdate"
+              
             >
               <div
                 class="spinner-border spinner-border-sm text-light"
@@ -238,6 +239,7 @@ export default {
   data: () => ({
     errors: {},
     headerTrolley: null,
+      menuPrivAllowUpdate: false,
     filter: {
       factory: null,
       process: null,
@@ -260,6 +262,9 @@ export default {
     dsBOMSetting() {
       return useBOMWorkstationDetail();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
 
     filteredBomSetting() {
       if (!this.filter.keyword) {
@@ -277,6 +282,11 @@ export default {
     },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A15",
+      )[0].AllowUpdate;
+    });
     this.filter.factory = this.$route.query.factory;
     this.filter.supplier = this.$route.query.process;
     this.filter.linecode = this.$route.query.line;

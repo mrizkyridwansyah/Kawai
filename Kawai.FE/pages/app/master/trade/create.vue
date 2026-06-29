@@ -675,14 +675,14 @@
         </div>
       </div>
 
-      <v-button-submit :submit="submit" cClass="mr-1" :is-loading="isLoading" />
+      <v-button-submit :submit="submit" cClass="mr-1" :is-loading="isLoading"  :disabled="!menuPrivAllowUpdate" />
       <v-button
         :action="remove"
         label="Delete"
         icon="trash"
         cClass="btn-danger mr-1"
         :is-loading="isLoading"
-        :disabled="mode === 'add'"
+        :disabled="mode === 'add' || !menuPrivAllowUpdate""
       />
       <v-button
         :action="reset"
@@ -716,6 +716,7 @@ export default {
   data: () => ({
     isInvoiceToChecked: false,
     isTradeCodeDisabled: false,
+      menuPrivAllowUpdate: false,
     isLoading: false,
     items: [],
     dataItem: null,
@@ -785,8 +786,16 @@ export default {
     dsTrade: function () {
       return useTrade();
     },
+       dsMenu: function () {
+      return useMenu();
+    },
   },
   mounted() {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A16",
+      )[0].AllowUpdate;
+    });
     const trade_code = this.$route.query.tradecode;
     if (trade_code) {
       this.model.Trade_Code = trade_code;

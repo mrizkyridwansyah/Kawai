@@ -44,6 +44,7 @@
               label="Submit"
               cClass="btn-primary mr-1"
               :is-loading="isLoading"
+              :disabled="!menuPrivAllowUpdate" 
             />
             <v-button
               :action="remove"
@@ -51,7 +52,7 @@
               icon="trash"
               cClass="btn-danger mr-1"
               :is-loading="isLoading"
-              :disabled="mode === 'add'"
+              :disabled="mode === 'add' || !menuPrivAllowUpdate"
             />
             <v-button
               :action="clear"
@@ -1309,6 +1310,7 @@ export default {
     errors: {},
     debounce: null,
     refreshItemList: 0,
+   menuPrivAllowUpdate: false,
   }),
   computed: {
     ds: function () {
@@ -1317,8 +1319,17 @@ export default {
     dsItem: function () {
       return useItem();
     },
+     dsMenu: function () {
+      return useMenu();
+    },
   },
   mounted: function () {
+        this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "A08",
+      )[0].AllowUpdate;
+    });
+
     // document.body.style.overflow = "auto";
   },
   methods: {
