@@ -129,7 +129,7 @@
               :area-code="filter.area"
               item-code="ALL"
               :include-temp="true"
-              :show-option-all="false"
+              :show-option-all="true"
               style-code="width: 170px"
               style-desc="width: 250px"
             />
