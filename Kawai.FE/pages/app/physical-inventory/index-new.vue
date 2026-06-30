@@ -381,7 +381,8 @@ export default {
           DifferentQty: this.filter.diffQty ? "true" : "false",
         },
       ];
-      this.ds.setLength(100000);
+
+      this.ds.filter.Length = 100000;
 
       this.ds.setFilter(filters);
 
