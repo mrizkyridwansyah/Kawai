@@ -121,8 +121,7 @@
                 <th class="text-center">SubLotNo</th>
                 <th class="text-center">Qty</th>
                 <th class="text-center">Source</th>
-                <th class="text-center">Print User</th>
-                <th class="text-center">Print Date</th>
+               
               </tr>
             </thead>
             <tbody>
@@ -146,8 +145,7 @@
                 <td>{{ item.SubLotNo }}</td>
                 <td>{{ item.Qty }}</td>
                 <td>{{ item.Source }}</td>
-                <td>{{ item.PrintUser }}</td>
-                <td>{{ $func.formatDateTime(item.PrintDate) }}</td>
+                 
               </tr>
             </tbody>
           </table>

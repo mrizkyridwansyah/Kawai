@@ -348,15 +348,22 @@ public class ExportService : IExportService
             DeliveryDate = item.DeliveryDate,
             DNNumber = item.DNNumber,
             ShippingLabelNo = item.ShippingLabelNo,
+            BarcodeLabelTitle = item.BarcodeLabelTitle, 
+            BarcodeLabelFrom = item.BarcodeLabelFrom, 
+            BarcodeLabelTo = item.BarcodeLabelTo, 
+            BarcodeLabelShippingLot = item.BarcodeLabelShippingLot, 
+            BarcodeLabelDeliveryDate = item.BarcodeLabelDeliveryDate, 
+            BarcodeLabelPONumber = item.BarcodeLabelPONumber, 
+            BarcodeLabelDNNumber = item.BarcodeLabelDNNumber,
         }).ToList();
 
-        var fullHtml = await _renderer.RenderAsync("Templates/PrintBarcodesA4.cshtml", models);
+        var fullHtml = await _renderer.RenderAsync("Templates/PrintBarcodesReprint.cshtml", models);
         var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
 
         _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
 
         string keyStorage = Guid.NewGuid().ToString();
-        int defaultTTLMinute = 5; // simpan file fisik selama 5 menit
+        int defaultTTLMinute = 0; // simpan file fisik selama 5 menit
 
         await _dbExecutor.ExecuteAsync(@"
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
