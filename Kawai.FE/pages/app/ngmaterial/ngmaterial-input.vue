@@ -140,6 +140,7 @@
             :submit="submit"
             cClass="mr-1"
             :is-loading="isLoading"
+              :disabled="!menuPrivAllowUpdate"
           />
           
           <button
@@ -163,6 +164,7 @@
             icon="print"
             :print="printSuratJalan"
             :is-loading="isLoading"
+              :disabled="!menuPrivAllowUpdate"
           />
         </div>
       </div>
@@ -185,8 +187,7 @@
                   <th class="text-center">
                     <input-checkbox @click="(e) => checkAll(e)" />
                   </th>
-                  <th class="text-center">PO Number</th>
-                  <th class="text-center">Receipt Number</th>
+                    <th class="text-center">Receipt Number</th>
                   <th class="text-center">Receipt Date</th>
                   <th class="text-center">Item Code</th>
                   <th class="text-center">Item Name</th>
@@ -206,7 +207,6 @@
                       @click="(e) => check(e, item)"
                     />
                   </td>
-                  <td>{{ item.PONumber }}</td>
                   <td>{{ item.ReceiptNumber }}</td>
                   <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                   <td>{{ item.ItemCode }}</td>
@@ -240,6 +240,7 @@
 export default {
   data: () => ({
     isNew: true,
+    menuPrivAllowUpdate: false,
     filter: {
       SupplierCode: null,
       PeriodFrom: null,
@@ -267,6 +268,9 @@ export default {
   computed: {
     ds: function () {
       return useNGClaim();
+    },
+     dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -300,9 +304,16 @@ export default {
     },
   },
   mounted: function () {
+    this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "F01",
+      )[0].AllowUpdate;
+    });
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
+     this.model.BCDate = today;
+      this.model.DNDate = today;
   },
   methods: {
     deepClone: function (obj) {
@@ -369,7 +380,7 @@ export default {
       let details = this.listPODetail.filter((x) => x.Selected);
       if (details.length == 0) {
         this.isLoading = false;
-        toastDanger("Silahkan pilih PO!");
+        toastDanger("Please Choose Receipt No!");
         return;
       }
 
@@ -377,7 +388,7 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = details.map((p) => {
         return {
-          PONumber: p.PONumber,
+          PONumber: p.ReceiptNumber,
           ReceiptNumber: p.ReceiptNumber,
           ItemCode: p.ItemCode,
           NGCode: p.NGCode,
@@ -402,7 +413,7 @@ export default {
     },
     searchPoDetail: function () {
       if (!this.filter.SupplierCode) {
-        toastDanger("Silahkan pilih Supplier!");
+        toastDanger("Please Select Supplier!");
         return;
       }
 

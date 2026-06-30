@@ -143,8 +143,8 @@
           </button>
           <v-button-submit
             :submit="submit"
-            :disabled="model.Status == 'APPROVED'"
-            label="Approved"
+            :disabled="model.Status == 'APPROVED' || !menuPrivAllowUpdate"
+             label="Approved"
             icon="check"
             cClass="mr-1"
             :is-loading="isLoading"
@@ -189,8 +189,7 @@
                       :disabled="true"
                     />
                   </th>
-                  <th class="text-center">PO Number</th>
-                  <th class="text-center">Receipt Number</th>
+                   <th class="text-center">Receipt Number</th>
                   <th class="text-center">Receipt Date</th>
                   <th class="text-center">Item Code</th>
                   <th class="text-center">Item Name</th>
@@ -211,8 +210,7 @@
                       :disabled="true"
                     />
                   </td>
-                  <td>{{ item.PONumber }}</td>
-                  <td>{{ item.ReceiptNumber }}</td>
+                   <td>{{ item.ReceiptNumber }}</td>
                   <td>{{ $func.formatDate(item.ReceiptDate) }}</td>
                   <td>{{ item.ItemCode }}</td>
                   <td>{{ item.ItemName }}</td>
@@ -245,6 +243,7 @@
 export default {
   data: () => ({
     isNew: true,
+     menuPrivAllowUpdate: false,
     filter: {
       SupplierCode: null,
       PeriodFrom: null,
@@ -272,6 +271,9 @@ export default {
   computed: {
     ds: function () {
       return useNGClaim();
+    },
+      dsMenu: function () {
+      return useMenu();
     },
   },
   watch: {
@@ -305,6 +307,11 @@ export default {
     },
   },
   mounted: function () {
+     this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "F02",
+      )[0].AllowUpdate;
+    });
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
@@ -362,7 +369,7 @@ export default {
       let details = this.listNGClaimDetail.filter((x) => x.Selected);
       if (details.length == 0) {
         this.isLoading = false;
-        toastDanger("Silahkan pilih PO!");
+        toastDanger("Please Choose Data!");
         return;
       }
 
@@ -370,7 +377,7 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = details.map((p) => {
         return {
-          PONumber: p.PONumber,
+          PONumber: p.ReceiptNumber,
           ReceiptNumber: p.ReceiptNumber,
           ItemCode: p.ItemCode,
           NGCode: p.NGCode,
