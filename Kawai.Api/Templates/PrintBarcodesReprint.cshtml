@@ -262,7 +262,7 @@
 
                 <!-- SHIPPING LOT -->
                 <div class="shipping-lot">
-                    <div class="shipping-lot-header">Shipping Lot</div>
+                        <div class="shipping-lot-header">@item.BarcodeLabelShippingLot</div>
                     <div class="shipping-lot-number">@item.ShippingLot</div>
                 </div>
 
@@ -270,21 +270,21 @@
 
                     <!-- HEADER -->
                     <tr class="header">
-                        <td class="header-title">SHIPPING LABEL</td>
+                            <td class="header-title">@item.BarcodeLabelTitle</td>
                         <td class="header-page">@item.ShippingLabelNo</td>
                     </tr>
 
                     <!-- FROM / TO (50% : 50%) -->
                     <tr class="fromto">
                         <td>
-                            <div class="small">FROM :</div>
+                            <div class="small">@item.BarcodeLabelFrom</div>
                             <div class="big">
                                 @FromCompany1 <br />
                                 @FromCompany2
                             </div>
                         </td>
                         <td>
-                            <div class="small">TO :</div>
+                                <div class="small">@item.BarcodeLabelTo</div>
                             <div class="big">
                                 @ToCompany1 <br />
                                 @ToCompany2
@@ -316,7 +316,7 @@
                                                 <td>@item.Qty</td>
                                             </tr>
                                             <tr>
-                                                <td class="lbl">Delivery Date</td>
+                                                    <td class="lbl">@item.BarcodeLabelDeliveryDate</td>
                                                 <td class="colon">:</td>
                                                 <td>@item.DeliveryDate</td>
                                             </tr>
@@ -341,11 +341,11 @@
                     <!-- FOOTER -->
                     <tr class="footer">
                         <td>
-                            <div class="footer-title">D/N No. :</div>
+                                <div class="footer-title">@item.BarcodeLabelDNNumber</div>
                             <div class="footer-value">@item.DNNumber</div>
                         </td>
                         <td>
-                            <div class="footer-title">PO No. :</div>
+                                <div class="footer-title">@item.BarcodeLabelPONumber</div>
                             <div class="footer-value">@item.PONumber</div>
                         </td>
                     </tr>

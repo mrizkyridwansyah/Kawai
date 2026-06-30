@@ -74,4 +74,12 @@ public class LabelBarcodeDetailDto : DataTableDto
     public string DNNumber { get; set; }
     public string ShippingLabelNo { get; set; }
 
+    public string BarcodeLabelTitle { get; set; }
+    public string BarcodeLabelFrom { get; set; }
+    public string BarcodeLabelTo { get; set; }
+    public string BarcodeLabelShippingLot { get; set; }
+    public string BarcodeLabelDeliveryDate { get; set; }
+    public string BarcodeLabelPONumber { get; set; }
+    public string BarcodeLabelDNNumber { get; set; }
+
 }

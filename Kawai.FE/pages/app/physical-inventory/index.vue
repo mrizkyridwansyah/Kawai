@@ -90,6 +90,7 @@
               class="form-control"
               v-model="filter.area"
               :warehouse="filter.warehouse"
+               :show-option-all="true"
               item="ALL"
               :include-temp="true"
               style-code="width: 170px"
@@ -151,6 +152,14 @@
                 label="Submit"
                 :submit="submit"
                 :disabled="isLoading || !menuPrivAllowUpdate"
+              />
+               <v-button
+                :action="exportExcel"
+                label="Print"
+                icon="file-excel"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+                
               />
             </div>
           </td>
