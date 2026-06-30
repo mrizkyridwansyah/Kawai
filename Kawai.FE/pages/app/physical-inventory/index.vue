@@ -447,6 +447,23 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
+    exportExcel: function () {
+      const filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
+          WarehouseCode: this.filter.warehouse || "",
+          AreaCode: this.filter.area || "",
+          AddressCode: this.filter.address || "",
+          ItemCode: this.filter.item || "",
+          LotNo: this.filter.lotNo || "",
+          ScanStatus: this.filter.scanStatus || "",
+          DifferentQty: this.filter.diffQty ? "true" : "false",
+        },
+      ];
+
+      return this.ds.exportExcel(filters);
+    },
   },
 };
 </script>
