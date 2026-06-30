@@ -35,6 +35,7 @@
               v-model="filter.area"
               :warehouse="filter.warehouse"
               :include-temp="true"
+              :show-option-all="true"
               style-code="width: 160px"
               style-desc="width: 300px"
             />
@@ -261,81 +262,108 @@ export default {
       this.filter.period = null;
       this.search();
     },
-    buildTree: function (data, level = 0) {
-      const grouped = {};
+    buildTree: function (data) {
+      // 1. Group by AreaCode
+      const areaGroups = {};
       data.forEach((item) => {
-        const lotNo = item.LotNo;
-
-        if (!grouped[lotNo]) {
-          grouped[lotNo] = {
-            LotNo: lotNo,
-            PreMonth: this.$func.formatNumber(
-              data.filter((x) => x.LotNo == lotNo)[0].PreMonth,
-            ),
-            Receipt: this.$func.formatNumber(
-              data
-                .filter((x) => x.LotNo == lotNo)
-                .reduce((a, b) => a + parseFloat(b.Receipt), 0),
-            ),
-            Supply: this.$func.formatNumber(
-              data
-                .filter((x) => x.LotNo == lotNo)
-                .reduce((a, b) => a + parseFloat(b.Supply), 0),
-            ),
-            Reject: this.$func.formatNumber(
-              data
-                .filter((x) => x.LotNo == lotNo)
-                .reduce((a, b) => a + parseFloat(b.Reject), 0),
-            ),
-            Current: this.$func.formatNumber(
-              data.filter((x) => x.LotNo == lotNo)[0].Current,
-            ),
-            children: [],
-          };
+        const areaName = item.AreaCode || "N/A";
+        if (!areaGroups[areaName]) {
+          areaGroups[areaName] = [];
         }
-
-        const childItem = { ...item };
-        delete childItem.LotNo;
-        delete childItem.PreMonth;
-        // delete childItem.Receipt;
-        // delete childItem.Supply;
-        // delete childItem.Reject;
-        delete childItem.Current;
-
-        childItem.TransactionDate = this.$func.formatDateTime(
-          childItem.TransactionDate,
-        );
-        childItem.Receipt = this.$func.formatNumber(childItem.Receipt);
-        childItem.Supply = this.$func.formatNumber(childItem.Supply);
-        childItem.Reject = this.$func.formatNumber(childItem.Reject);
-
-        grouped[lotNo].children.push(childItem);
+        areaGroups[areaName].push(item);
       });
 
-      const treeChildren = Object.values(grouped);
-      console.log(treeChildren);
-      let totalPreMonth = treeChildren.reduce(
-        (a, b) => a + parseFloat(String(b.PreMonth).replace(/,/g, "")),
-        0,
-      );
-      let totalReceipt = treeChildren.reduce(
-        (a, b) => a + parseFloat(String(b.Receipt).replace(/,/g, "")),
-        0,
-      );
-      let totalSupply = treeChildren.reduce(
-        (a, b) => a + parseFloat(String(b.Supply).replace(/,/g, "")),
-        0,
-      );
-      let totalReject = treeChildren.reduce(
-        (a, b) => a + parseFloat(String(b.Reject).replace(/,/g, "")),
-        0,
-      );
-      let totalCurrent = treeChildren.reduce(
-        (a, b) => a + parseFloat(String(b.Current).replace(/,/g, "")),
-        0,
-      );
+      const level2Nodes = [];
+      let totalPreMonth = 0;
+      let totalReceipt = 0;
+      let totalSupply = 0;
+      let totalReject = 0;
+      let totalCurrent = 0;
 
-      // Tambahkan 1 parent global summary di atas semua LotNo
+      for (const [areaName, areaItems] of Object.entries(areaGroups)) {
+        // 2. Group areaItems by LotNo
+        const lotGroups = {};
+        areaItems.forEach((item) => {
+          const lotNo = item.LotNo || "N/A";
+          if (!lotGroups[lotNo]) {
+            lotGroups[lotNo] = [];
+          }
+          lotGroups[lotNo].push(item);
+        });
+
+        const level3Nodes = [];
+        let areaPreMonth = 0;
+        let areaReceipt = 0;
+        let areaSupply = 0;
+        let areaReject = 0;
+        let areaCurrent = 0;
+
+        for (const [lotNo, lotItems] of Object.entries(lotGroups)) {
+          const lotReceipt = lotItems.reduce(
+            (sum, x) => sum + parseFloat(x.Receipt || 0),
+            0,
+          );
+          const lotSupply = lotItems.reduce(
+            (sum, x) => sum + parseFloat(x.Supply || 0),
+            0,
+          );
+          const lotReject = lotItems.reduce(
+            (sum, x) => sum + parseFloat(x.Reject || 0),
+            0,
+          );
+
+          const lotPreMonth = parseFloat(lotItems[0].PreMonth || 0);
+          const lotCurrent = parseFloat(lotItems[0].Current || 0);
+
+          areaPreMonth += lotPreMonth;
+          areaReceipt += lotReceipt;
+          areaSupply += lotSupply;
+          areaReject += lotReject;
+          areaCurrent += lotCurrent;
+
+          const childItems = lotItems.map((item) => {
+            const child = { ...item };
+            delete child.LotNo;
+            delete child.PreMonth;
+            delete child.Current;
+
+            child.TransactionDate = this.$func.formatDateTime(
+              child.TransactionDate,
+            );
+            child.Receipt = this.$func.formatNumber(child.Receipt);
+            child.Supply = this.$func.formatNumber(child.Supply);
+            child.Reject = this.$func.formatNumber(child.Reject);
+            return child;
+          });
+
+          level3Nodes.push({
+            LotNo: lotNo,
+            PreMonth: this.$func.formatNumber(lotPreMonth),
+            Receipt: this.$func.formatNumber(lotReceipt),
+            Supply: this.$func.formatNumber(lotSupply),
+            Reject: this.$func.formatNumber(lotReject),
+            Current: this.$func.formatNumber(lotCurrent),
+            children: childItems,
+          });
+        }
+
+        totalPreMonth += areaPreMonth;
+        totalReceipt += areaReceipt;
+        totalSupply += areaSupply;
+        totalReject += areaReject;
+        totalCurrent += areaCurrent;
+
+        level2Nodes.push({
+          LotNo: areaName,
+          PreMonth: this.$func.formatNumber(areaPreMonth),
+          Receipt: this.$func.formatNumber(areaReceipt),
+          Supply: this.$func.formatNumber(areaSupply),
+          Reject: this.$func.formatNumber(areaReject),
+          Current: this.$func.formatNumber(areaCurrent),
+          children: level3Nodes,
+        });
+      }
+
       const parentSummary = {
         LotNo: "SUMMARY",
         PreMonth: this.$func.formatNumber(totalPreMonth),
@@ -343,7 +371,7 @@ export default {
         Supply: this.$func.formatNumber(totalSupply),
         Reject: this.$func.formatNumber(totalReject),
         Current: this.$func.formatNumber(totalCurrent),
-        children: treeChildren,
+        children: level2Nodes,
       };
 
       return [parentSummary];

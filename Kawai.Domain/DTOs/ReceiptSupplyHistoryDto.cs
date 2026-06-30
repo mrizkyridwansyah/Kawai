@@ -4,6 +4,7 @@ public class ReceiptSupplyHistoryDto: DataTableDto
 {
     public string ProcessMenu { get; set; }
     public string WarehouseCode { get; set; }
+    public string AreaCode { get; set; }
     public string WarehouseName { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
