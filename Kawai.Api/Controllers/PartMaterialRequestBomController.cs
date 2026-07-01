@@ -1,4 +1,5 @@
-﻿using Kawai.Domain.DTOs.Log;
+﻿using Kawai.Api.Services;
+using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
@@ -47,6 +48,21 @@ public class PartMaterialRequestBomController : HahaController
     {
         var results = await _partMaterialRequestBomRepository.GetListStock(parameter);
         return DataTableResult(parameter, results);
+    }
+
+    [HttpPost("report-surat-jalan")]
+    public async Task<IActionResult> ExportExcel(string requestno , [FromServices] RazorViewRenderer renderer)
+    {
+        var results = await _partMaterialRequestBomRepository.GetListReport(requestno);
+        if (results == null || !results.Any()) return Invalid("No Data");
+
+        var fullHtml = await renderer.RenderAsync(
+            "Templates/SuratJalan.cshtml",
+            results);
+
+        var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
+        Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+        return File(pdfBytes, "application/pdf", "SuratJalan_" + results[0].CustPONo);
     }
 
     [HttpPost("save")]

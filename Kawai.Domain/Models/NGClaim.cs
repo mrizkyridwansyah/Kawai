@@ -21,9 +21,11 @@ public class NGClaim
     [Required(ErrorMessage = "DN Date tidak boleh kosong")]
     public DateTime? DNDate { get; set; }
 
- 
+
+    [RequiredIfEqual(nameof(BCType), "BC 2.7", ErrorMessage = "BC Number tidak boleh kosong")]
     [MaxLength(50, ErrorMessage = "BC Number tidak boleh lebih dari 50 karakter")]
     public string BCNumber { get; set; }
+ 
 
     [Required(ErrorMessage = "BC Type tidak boleh kosong")]
     [MaxLength(15, ErrorMessage = "BC Type tidak boleh lebih dari 15 karakter")]

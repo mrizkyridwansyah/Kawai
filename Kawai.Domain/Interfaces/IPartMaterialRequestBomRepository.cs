@@ -9,6 +9,7 @@ public interface IPartMaterialRequestBomRepository
     Task<List<PartMaterialRequestBomDto>> GetListHeader(RequestParameter parameter);
     Task<List<PartMaterialRequestBomDetilDto>> GetListDetail(List<PartMaterialRequestBomModel> parameter);
     Task<List<StockDto>> GetListStock(RequestParameter parameter);
+    Task<List<NGClaimReportDto>> GetListReport(string requestno);
     Task<PartMaterialRequestBomHeaderDto> GetDataHeader(long requestId, string itemCode);
     Task Save(PartMaterialRequestBomHeaderModel model, string userId);
     Task Update(PartMaterialRequestBomHeaderModel model, string userId);

@@ -52,6 +52,16 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, param.ToQueryObject())).ToList();
     }
 
+    public async Task<List<NGClaimReportDto>> GetListReport(string requestno)
+    {
+        string sp = "sp_Wms_PartMaterialRequest_Report";
+
+        return (await _dbExecutor.QueryListAsync<NGClaimReportDto>(sp, new
+        {
+            RequestNo = requestno 
+        })).ToList();
+    }
+
     public async Task<PartMaterialRequestBomHeaderDto> GetDataHeader(long requestId, string itemCode)
     {
         string sp = "sp_Wms_PartMaterialRequestBom_GetDataHeader";

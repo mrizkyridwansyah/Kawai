@@ -87,7 +87,7 @@
           <input-text
             v-model="model.BCNumber"
             maxlength="50"
-            :errors="errors?.BCNumber"
+           :errors="errors?.BCNumber"
             style="width: 420px"
           />
         </div>
@@ -194,7 +194,6 @@
                   <th class="text-center">Unit</th>
                   <th class="text-center">Qty</th>
                   <th class="text-center">NG Code</th>
-                  <th class="text-center">NG Description</th>
                   <th class="text-center">Last Update</th>
                   <th class="text-center">Last User</th>
                 </tr>
@@ -213,8 +212,16 @@
                   <td>{{ item.ItemName }}</td>
                   <td>{{ item.UnitClsName }}</td>
                   <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
-                  <td>{{ item.NGCode }}</td>
-                  <td>{{ item.NGDescs }}</td>
+                 
+                 <td style="width: max-content !important">
+                  <div style="justify-items: center; display: grid">
+                    <input-ng
+                        v-model="item.NGCode"
+                      :include-temp="true"
+                       style-code="width:200px"
+                    />
+                  </div>
+                </td>
                   <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                   <td>{{ item.LastUser }}</td>
                 </tr>

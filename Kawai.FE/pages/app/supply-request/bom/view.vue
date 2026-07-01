@@ -332,7 +332,21 @@ export default {
         this.ds.loadHeader().then((dt) => (this.model = dt));
       });
     },
-    print: function () {},
+    
+      print: function () {
+      this.ds
+        .PrintSuratJalan(this.model.RequestNo)
+        .then((dt) => {
+          toastSuccess("Download successfully!");
+          this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          //toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+    },
+
     submit: function () {
       this.isLoading = true;
 
