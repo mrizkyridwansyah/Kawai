@@ -15,7 +15,7 @@
                   type="month"
                   class="form-control"
                   v-model="period"
-                  :disabled="isProcessing"
+                  disabled
                 />
               </div>
 
