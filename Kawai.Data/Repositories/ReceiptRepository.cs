@@ -300,11 +300,12 @@ public class ReceiptRepository : IReceiptRepository
 
     public async Task CreateClaim(Receipt receipt, string userId)
     {
-        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode", new { receipt.FactoryCode, ReceiptDate = DateTime.Today });
+        receipt.ReceiptNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Receipt_GenerateCode", new { receipt.FactoryCode, receipt.ReceiptDate });
         string sqlHeader = "sp_Wms_ReceiptClaim_Create";
         long newId = await _dbExecutor.QuerySingleOrDefaultAsync<long>(sqlHeader, new
         {
             receipt.ReceiptNo,
+            receipt.ReceiptDate,
             receipt.DNNumber,
             receipt.FactoryCode,
             receipt.SupplierCode,
@@ -318,15 +319,17 @@ public class ReceiptRepository : IReceiptRepository
             Details = DataTableHelper.ToDataTable(receipt.Details),
             RegisterBy = userId
         });
-        receipt.Id = newId;
+        
     }
 
     public async Task UpdateClaim(Receipt receipt, string userId)
     {
+
         string sqlHeader = "sp_Wms_ReceiptClaim_Update";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
             receipt.Id,
+            receipt.ReceiptDate,
             receipt.DNNumber,
             receipt.FactoryCode,
             receipt.SupplierCode,
@@ -341,6 +344,7 @@ public class ReceiptRepository : IReceiptRepository
             Details = DataTableHelper.ToDataTable(receipt.Details),
             UpdateBy = userId
         });
+
     }
 
 

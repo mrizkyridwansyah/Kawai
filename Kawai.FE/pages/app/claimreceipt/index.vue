@@ -4,7 +4,7 @@
       <div class="filter-wrapper">
         <!-- 1 -->
         <div class="filter-item">
-          <label class="form-label">Factory</label>
+          <label class="form-label">Factory</label>					   
           <filter-factory-privileges
             class="form-control"
             v-model="filter.FactoryCode"
@@ -14,8 +14,8 @@
           />
         </div>
 
-        <div class="filter-item">
-          <label class="form-label">Supplier</label>
+        <div class="filter-item">						 
+          <label class="form-label">Supplier</label>													 
           <filter-trade-2
             class="form-control"
             v-model="filter.SupplierCode"
@@ -36,17 +36,17 @@
             class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
             >Until Date</label
           >
-          <div>
+          <div> 
             <input-date v-model="filter.PeriodUntil" />
           </div>
         </div>
 
         <div class="filter-item">
-          <label class="form-label">Claim No</label>
+          <label class="form-label">Claim No</label>											 
           <input-claim
             class="form-control"
-            status="APPROVED"
-            :supplier-code="filter.SupplierCode"
+            status="APPROVED"			  
+            :supplier-code="filter.SupplierCode"				
             :period-from="filter.PeriodFrom"
             :period-until="filter.PeriodUntil"
             v-model="filter.PONumber"
@@ -55,7 +55,7 @@
           />
         </div>
 
-        <div class="filter-item">
+        <div class="filter-item">			 
           <label class="form-label">Receipt No</label>
           <input-receipt
             class="form-control"
@@ -68,7 +68,7 @@
             :errors="errors?.ReceiptId"
             style="width: 375px"
           />
-          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">						 
             <input-checkbox
               label="New"
               v-model="isNew"
@@ -77,8 +77,8 @@
           </div>
         </div>
 
-        <div class="filter-item">
-          <label class="form-label">DN Number</label>
+        <div class="filter-item">					 
+          <label class="form-label">DN Number</label>												 
           <input-text
             v-model="model.DNNumber"
             maxlength="50"
@@ -87,8 +87,8 @@
           />
         </div>
 
-        <div class="filter-item">
-          <label class="form-label">BC Number</label>
+        <div class="filter-item"> 
+          <label class="form-label">BC Number</label>							   
           <input-text
             v-model="model.BCNumber"
             maxlength="50"
@@ -97,8 +97,8 @@
           />
         </div>
 
-        <div class="filter-item">
-          <label class="form-label">BC Type</label>
+        <div class="filter-item">					 
+          <label class="form-label">BC Type</label>													 
           <filter-cls-2
             class="form-control"
             type-data="BCType_Cls"
@@ -109,21 +109,22 @@
           />
         </div>
 
-        <div class="filter-item">
+        <div class="filter-item">				 
           <label class="form-label">BC Date</label>
-          <div>
+          <div>				 
             <input-date v-model="model.BCDate" :errors="errors?.BCDate" />
           </div>
           <label
             class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
             >DN Date</label
           >
-          <div>
+          <div>				 
             <input-date v-model="model.DNDate" :errors="errors?.DNDate" />
           </div>
+            
         </div>
-        <div class="filter-item">
-          <label class="form-label">Police No</label>
+        <div class="filter-item">					 
+          <label class="form-label">Police No</label>												 
           <input-text
             v-model="model.VehicleNo"
             :errors="errors?.VehicleNo"
@@ -131,8 +132,8 @@
             maxlength="15"
           />
         </div>
-        <div class="filter-item">
-          <label class="form-label">Transport By</label>
+        <div class="filter-item">					 
+          <label class="form-label">Transport By</label>											 
           <filter-cls-2
             class="form-control"
             type-data="Transport_Cls"
@@ -142,8 +143,17 @@
             style-desc="width: 300px"
           />
         </div>
-        <div class="filter-item">
-          <label class="form-label">Register No</label>
+		
+	     <div class="filter-item">								 
+          <label class="form-label">Receipt Date</label>
+           <input-date
+                    v-model="model.ReceiptDate"
+                    style-date="width: 115px"
+                    :errors="errors?.ReceiptDate"
+                  />
+        </div>						 
+        <div class="filter-item">	 
+          <label class="form-label">Register No</label>											 
           <input-text
             v-model="model.RegisterNo"
             :errors="errors?.RegisterNo"
@@ -169,22 +179,26 @@
             </div>
             <font-awesome-icon v-else icon="search" />
             <span class="ml-2">Search</span>
-          </button>
+          </button>		  
           <v-button-submit
             :submit="submit"
             cClass="mr-1"
             :is-loading="isLoading"
+												
           />
           <v-button-print
             label="Print Label"
             class="mr-1"
             :print="printLabel"
             :is-loading="isLoading"
+												
           />
           <v-button-print
             label="Print Receipt Report"
+							
             :print="printReport"
             :is-loading="isLoading"
+												
           />
           <v-button
             :action="print"
@@ -192,15 +206,16 @@
             icon="file-pdf"
             cClass="ml-1 btn-green"
             :is-loading="isLoading"
+												
           />
-        </div>
+        </div>										
       </div>
       <hr />
 
       <v-table-input
         :data-items="listClaimDetail"
-        ref="vtable"
-        :top-content-height="525"
+        ref="vtable"				 
+        :top-content-height="425"
       >
         <template #table-content>
           <div class="detail-content" style="width: 100%">
@@ -252,11 +267,13 @@
                     {{ $func.formatMoney(item.RemainingQty) }}
                   </td>
                   <td>
+															 
                     <input-money-small
                       v-model="item.ReceiptQty"
                       :errors="errors?.[`Details[${idx}].ReceiptQty`]"
                       style="width: 100px"
                     />
+
                   </td>
                   <td class="text-right">
                     {{ $func.formatMoney(item.TotalPacking) }}
@@ -264,7 +281,18 @@
                   <td class="text-right">
                     {{ $func.formatMoney(item.QtyPacking) }}
                   </td>
-                  <td>{{ item.NoSeri }}</td>
+						
+										
+                  <td>
+                      <input-money-small
+                        v-model="item.NoSeri"
+                        :errors="errors?.[`Details[${idx}].NoSeri`]"
+                        style="width: 100px"
+                      />
+                    </td>												
+											
+						
+						 
                   <td>{{ $func.formatDate(item.ProductionDate) }}</td>
                   <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                   <td>{{ item.LastUser }}</td>
@@ -274,8 +302,10 @@
           </div>
         </template>
       </v-table-input>
+			
 
-      <label class="form-label">Remarks</label>
+		   
+      <label class="form-label">Remarks</label>				 
       <input-text multiline v-model="model.Remarks" :errors="errors?.Remarks" />
     </template>
   </v-frame>
@@ -284,7 +314,11 @@
 <script>
 export default {
   data: () => ({
-    isNew: true,
+     isNew: true,
+	 noSeri: 0,		  
+	 menuPrivAllowUpdate: false,					
+					   
+					  
     filter: {
       FactoryCode: null,
       SupplierCode: null,
@@ -304,6 +338,7 @@ export default {
       BCNumber: "",
       BCType: "",
       BCDate: null,
+	  ReceiptDate: null,				
       VehicleNo: "",
       Transport: null,
       RegisterNo: null,
@@ -316,11 +351,19 @@ export default {
     isLoading: false,
     prevRegisterNo: "",
     errors: {},
+						
+							   
   }),
   computed: {
     ds: function () {
       return useReceipt();
     },
+    notif: function () {
+      return useNotification();
+    },
+    dsMenu: function () {
+      return useMenu();
+    },		 
   },
 
   watch: {
@@ -357,6 +400,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: today,
+		  ReceiptDate: today,					 
           VehicleNo: "",
           Transport: null,
           RegisterNo: null,
@@ -369,9 +413,15 @@ export default {
     },
   },
   mounted: function () {
+	this.dsMenu.privileges().then((dt) => {
+      this.menuPrivAllowUpdate = dt.Data.filter(
+        (a) => a.MenuID == "E05",
+      )[0].AllowUpdate;
+    });
     let today = new Date();
     this.filter.PeriodFrom = new Date(today.getFullYear(), today.getMonth(), 1);
     this.filter.PeriodUntil = today;
+	this.model.ReceiptDate = today;							   
     this.model.BCDate = today;
     this.model.DNDate = today;
   },
@@ -402,6 +452,7 @@ export default {
         BCNumber: "",
         BCType: "",
         BCDate: null,
+	    ReceiptDate: null,				  
         VehicleNo: "",
         Transport: null,
         RegisterNo: null,
@@ -434,6 +485,7 @@ export default {
           BCNumber: "",
           BCType: "",
           BCDate: null,
+		  ReceiptDate: null,					
           VehicleNo: "",
           Transport: null,
           RegisterNo: null,
@@ -454,8 +506,27 @@ export default {
     check: function (e, item) {
       item.Selected = e.target.checked;
       item.ReceiptQty = e.target.checked ? item.RemainingQty : 0;
+	 if (item.Selected) {
+        let lastNoSeriInGrid = this.listClaimDetail.filter(
+          (p) => (p.NoSeri ?? 0) > 0,
+        );
+        if (lastNoSeriInGrid.length > 0) {
+          const maxNoSeri = Math.max(
+            ...lastNoSeriInGrid.map((p) => p.NoSeri ?? 0),
+          );
+
+          this.noSeri = maxNoSeri + 1;
+        } else {
+          this.noSeri = 1;
+        }
+
+        item.NoSeri = this.noSeri;
+      } else {
+        item.NoSeri = 0;
+      }
     },
     printLabel: function () {
+	  this.isLoading = true;						
       this.ds
         .printLabel(this.filter.ReceiptId)
         .then((dt) => {
@@ -476,13 +547,17 @@ export default {
         toastDanger("Silahkan pilih Receipt No!");
         return;
       }
+
+	   this.isLoading = true;						
       this.ds
         .print(this.filter.ReceiptId)
         .then((data) => {
           toastSuccess(data || "Print Label berhasil!");
         })
         .catch((err) => toastDanger(err.Message));
+												 
     },
+						 
     printReport: function () {},
     submit: function () {
       this.isLoading = true;
@@ -506,13 +581,36 @@ export default {
           ExpectedQty: p.RemainingQty,
           TotalPacking: p.TotalPacking,
           ReceiptQty: p.ReceiptQty,
+		  NoSeri: p.NoSeri,				   
         };
       });
 
-      if (this.isNew) {
-        this.createReceipt();
+   let totalBarcodePrint = details.reduce(
+        (total, item) => total + Math.ceil(item.ReceiptQty / item.QtyPacking),
+        0,
+      );
+      if (totalBarcodePrint >= 100) {
+        let modalMessage = `<div style="font-size: medium">Total barcode yang akan dicetak sebanyak <strong>${this.$func.formatMoney(Math.ceil(totalBarcodePrint))} Barcode</strong>.
+            <br>Anda yakin akan <strong>MELANJUTKAN</strong>?</div>`;
+        confirmSubmit(
+          () =>
+            new Promise((resolve) => {
+              if (this.isNew) {
+                this.createReceipt();
+              } else {
+                this.updateReceipt();
+              }
+              resolve();
+            }),
+          () => (this.isLoading = false),
+          modalMessage,
+        );
       } else {
-        this.updateReceipt();
+        if (this.isNew) {
+          this.createReceipt();
+        } else {
+          this.updateReceipt();
+        }
       }
     },
     getReceipt: function () {
@@ -569,15 +667,60 @@ export default {
         confirmSubmit(
           () =>
             new Promise((resolve) => {
-              this.update();
+            this.checkIsDetailUpdate();
               resolve();
             }),
           () => (this.isLoading = false),
           `You change the <strong>Register No</strong>. Are you sure to <strong>CONTINUE</strong> changes?`,
         );
       } else {
-        this.update();
+       this.checkIsDetailUpdate();
       }
+    },
+    checkIsDetailUpdate: function () {
+      this.ds
+        .checkIsDetailUpdate(this.model)
+        .then((dt) => {
+          if (dt.Data.IsUpdateDetails) {
+            let modalMessage = `<div style="font-size: medium">Anda mengubah <strong>${dt.Data.TypeConfirmationDesc}</strong>.
+                <br><strong>Barcode Label Saat ini</strong> akan menjadi <strong class="text-danger">TIDAK VALID</strong>
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
+
+            confirmSubmit(
+              () =>
+                new Promise((resolve) => {
+                  this.update();
+                  resolve();
+                }),
+              () => (this.isLoading = false),
+              modalMessage,
+            );
+          } else if (
+            !dt.Data.IsUpdateDetails &&
+            dt.Data.TypeConfirmation == 3
+          ) {
+            let modalMessage = `<div style="font-size: medium">Anda sudah melakukan <strong>SCAN RECEIVING MOBILE</strong>.
+                <br>Perubahan hanya berlaku untuk informasi <strong>Header</strong> saja.
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> perubahan?</div>`;
+
+            confirmSubmit(
+              () =>
+                new Promise((resolve) => {
+                  this.update();
+                  resolve();
+                }),
+              () => (this.isLoading = false),
+              modalMessage,
+            );
+          } else {
+            this.update();
+          }
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
     },
     update: function () {
       this.ds
@@ -587,6 +730,7 @@ export default {
           this.isNew = false;
           this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
           this.prevRegisterNo = this.model.RegisterNo;
+							
           // this.reset();
         })
         .catch((err) => {
@@ -625,8 +769,20 @@ thead {
   align-items: center;
 }
 
-.filter-wrapper:has(.filter-item:nth-child(12)) {
-  grid-template-rows: repeat(6, auto);
+.filter-wrapper:has(.filter-item:nth-child(14)) {
+  grid-template-rows: repeat(9, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(13)):not(
+    :has(.filter-item:nth-child(14))
+  ) {
+  grid-template-rows: repeat(8, auto);
+}
+
+.filter-wrapper:has(.filter-item:nth-child(12)):not(
+    :has(.filter-item:nth-child(13))
+  ) {
+  grid-template-rows: repeat(7, auto);
 }
 
 .filter-wrapper:has(.filter-item:nth-child(11)):not(
