@@ -154,7 +154,7 @@
               </tr>
                   </tbody>
                 </table>
-                <v-data-empty class="mt-3" v-if="!ds.isLoading && filterGrid.length === 0"/>
+                <v-data-empty class="mt-3" v-if="!ds.isLoadingPrint && filterGrid.length === 0"/>
               </div>
             </div>
     </template>
@@ -263,7 +263,7 @@ export default {
       this.ds.data.Items = [];
     },
     "filter.sorts": function () {
-      this.search();
+     // this.search();
     },
   },
   mounted: function () {
@@ -355,10 +355,8 @@ export default {
             resolve();
           })
           .finally(() => {
-            setTimeout(() => {
-              this.isLoadingPrint = false;
-            }, 1000);
-          });
+          this.isLoadingPrint = false;
+        });
       });
     },
 
