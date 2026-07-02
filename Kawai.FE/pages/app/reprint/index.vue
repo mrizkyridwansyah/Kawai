@@ -111,8 +111,7 @@
                 <th class="text-center">Area</th>
                 <th class="text-center">Address</th>
                 <th class="text-center">Lot No</th>
-                <th class="text-center">SubLotNo</th>
-                <th class="text-center">Qty</th>
+                 <th class="text-center">Qty</th>
                 <th class="text-center">Source</th>
               </tr>
             </thead>
@@ -134,8 +133,7 @@
                 <td>{{ item.Area }}</td>
                 <td>{{ item.Address }}</td>
                 <td>{{ item.LotNo }}</td>
-                <td>{{ item.SubLotNo }}</td>
-                <td>{{ item.Qty }}</td>
+                 <td>{{ item.Qty }}</td>
                 <td>{{ item.Source }}</td>
               </tr>
             </tbody>
