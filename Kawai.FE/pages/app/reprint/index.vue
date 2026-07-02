@@ -86,29 +86,34 @@
         />
       </div>
       <hr />
-      <v-table
-        :filter="filter"
-        :use-paging="false"
-        :ds="ds"
-        :data-items="ds.data.Items"
-        :frozen-column-left="2"
-        :top-content-height="280"
-        ref="vtable"
-      >
-        <template #table-content>
-          <table
-            class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
-            v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
-            ref="table"
-          >
-            <thead>
-              <tr>
-                <th class="text-center">
+       <div
+              class="d-flex align-items-center mb-2 p-2"
+              style="gap: 10px; background: #2f2f2f; border-radius: 6px"
+            >
+              <!-- SORT BUTTON -->
+
+              <!-- SEARCH INPUT -->
+              <div style="flex: 1">
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  v-model="filter.keyword"
+                  placeholder="Search..."
+                  style="background: #f1f1f1"
+                />
+              </div>
+            </div>
+          <div class="panel-body">
+              <div class="v-table-wrapper" @scroll="onScroll($event, 'main')">
+                <table
+                  class="table mb-0 align-middle w-100 v-fixed-table"
+                  ref="table"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">
                   <div style="justify-items: center">
-                    <input-checkbox
-                      :modelValue="isAllChecked"
-                      @update:modelValue="checkAll"
-                    />
+                     
                   </div>
                 </th>
                 <th class="text-center">Barcode No</th>
@@ -121,11 +126,11 @@
                 <th class="text-center">SubLotNo</th>
                 <th class="text-center">Qty</th>
                 <th class="text-center">Source</th>
-               
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in ds.data.Items">
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, idx) in filterGrid" :key="item.BarcodeNo">
                 <td>
                   <div style="justify-items: center">
                     <input-checkbox
@@ -147,10 +152,11 @@
                 <td>{{ item.Source }}</td>
                  
               </tr>
-            </tbody>
-          </table>
-        </template>
-      </v-table>
+                  </tbody>
+                </table>
+                <v-data-empty class="mt-3" v-if="!ds.isLoading && filterGrid.length === 0"/>
+              </div>
+            </div>
     </template>
   </v-frame>
 </template>
@@ -215,6 +221,29 @@ export default {
         this.selectedPrint.some((p) => p.Key === item.BarcodeNo),
       );
     },
+
+  filterGrid() {
+    const keyword = (this.filter.keyword || "").toLowerCase().trim();
+    if (!keyword) {
+      return this.ds.data.Items || [];
+    }
+
+    return (this.ds.data.Items || []).filter((item) => {
+      return (
+        String(item.BarcodeNo || "").toLowerCase().includes(keyword) ||
+        String(item.ItemCode || "").toLowerCase().includes(keyword) ||
+        String(item.ItemName || "").toLowerCase().includes(keyword) ||
+        String(item.Warehouse || "").toLowerCase().includes(keyword) ||
+        String(item.Area || "").toLowerCase().includes(keyword) ||
+        String(item.Address || "").toLowerCase().includes(keyword) ||
+        String(item.LotNo || "").toLowerCase().includes(keyword) ||
+        String(item.SubLotNo || "").toLowerCase().includes(keyword) ||
+        String(item.Source || "").toLowerCase().includes(keyword) ||
+        String(item.Qty || "").toLowerCase().includes(keyword)
+      );
+    });
+  },
+
   },
   watch: {
     "filter.factory": function () {
@@ -233,9 +262,6 @@ export default {
       this.selectedPrint = [];
       this.ds.data.Items = [];
     },
-    "filter.keyword": function () {
-      this.search();
-    },
     "filter.sorts": function () {
       this.search();
     },
@@ -244,6 +270,21 @@ export default {
     this.search();
   },
   methods: {
+    onScroll: function (e, type) {
+      const { scrollTop, scrollHeight, clientHeight } = e.target;
+      // Jika scroll sudah mendekati bawah (sisa 50px jarak dari bawah)
+      if (scrollTop + clientHeight >= scrollHeight - 50) {
+        // Cek batasan max item dari masing-masing array
+        let maxLen = 0;
+        if (type === "main") maxLen = this.ds.data.length;
+        
+        else if (type === "ng") maxLen = this.ds.data.length;
+
+        if (this.renderLimits[type] < maxLen) {
+          this.renderLimits[type] += 50;
+        }
+      }
+    },
     search: function () {
       this.ds.setSort(this.filter.sorts);
       let filters = [
@@ -352,5 +393,36 @@ export default {
 <style scoped>
 thead {
   white-space: nowrap;
+}
+
+.v-table-wrapper {
+  overflow: auto;
+  max-height: 500px;
+  /* border: 1px solid #ddd; */
+  position: relative;
+}
+/* Bikin table bisa scroll horizontal juga */
+.v-fixed-table {
+  width: max-content; /* agar scroll horizontal muncul */
+  min-width: 100%;
+  border: 1px solid gainsboro !important;
+  /* border-collapse: separate; */
+  /* border-spacing: 0; */
+}
+
+.v-fixed-table th,
+.v-fixed-table td {
+  white-space: nowrap;
+  padding: 8px 16px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+}
+
+/* Sticky Header (atas) */
+.v-fixed-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20; /* harus lebih tinggi dari sticky kiri */
+  background: lightblue !important;
 }
 </style>
