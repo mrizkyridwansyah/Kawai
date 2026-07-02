@@ -9,4 +9,5 @@ public interface IShippingInstructionRepository
     Task<List<ShippingInstructionGridRowDto>> GetList(string poNo, bool isNew);
     Task Submit(List<ShippingInstructionRequest> requests, string userId);
     Task UpdatePicking(List<ShippingPickingRequest> requests, string userId);
+    Task<List<NGClaimReportDto>> GetListReport(string sino);
 }

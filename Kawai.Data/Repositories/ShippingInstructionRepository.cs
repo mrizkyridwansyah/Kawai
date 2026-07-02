@@ -120,6 +120,17 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         );
     }
 
+    public async Task<List<NGClaimReportDto>> GetListReport(string sino)
+    {
+        string sp = "sp_Wms_ShippingInstruction_Report";
+
+        return (await _dbExecutor.QueryListAsync<NGClaimReportDto>(sp, new
+        {
+            SINo = sino
+        })).ToList();
+    }
+
+
     public async Task UpdatePicking(List<ShippingPickingRequest> requests, string userId)
     {
         var validRequests = (requests ?? [])

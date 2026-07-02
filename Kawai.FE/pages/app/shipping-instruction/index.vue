@@ -87,7 +87,7 @@
                 />
                 
                 <v-button-print
-                  label="Print"
+                  label="Print Surat Jalan"
                   class="mr-1"
                   :print="print"
                   :is-loading="isLoading"
@@ -467,8 +467,76 @@ export default {
       }
     },
     print() {
-      toastSuccess('Print Shipping Instruction berhasil.');
+         PrintSuratJalan(this.filter.shippingInstructionNo)
+        .then((dt) => {
+          toastSuccess("Download successfully!");
+          this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          //toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+
+       
     },
+
+      PrintSuratJalan: function (sino) {
+      this.isLoading = true;
+      return app.$http.post(
+        `/shipping-instruction/report-surat-jalan?sino=${sino}`,
+        null,
+        { responseType: 'blob' }
+      )
+        .then(res => {
+          const blob = res.data instanceof Blob
+            ? res.data
+            : new Blob([res.data], { type: 'application/pdf' });
+
+          const url = window.URL.createObjectURL(blob);
+
+          let fileName = 'Surat_Jalan.pdf';
+          const contentDisposition = res.headers['content-disposition'];
+          if (contentDisposition) {
+            const match = contentDisposition.match(/filename\*?=(?:UTF-8''|")?([^;"\n]+)/i);
+            if (match && match[1]) {
+              fileName = decodeURIComponent(match[1].trim());
+            }
+          }
+
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(async err => {
+          if (err.response) {
+            // server ngirim response, tapi error
+            const blob = err.response.data;
+            try {
+              const text = await blob.text();
+              const json = JSON.parse(text);
+              throw { message: json.Message || 'Server returned an error', isServerError: true};
+            } catch (e) {
+              console.log('Server Error, but not JSON', e);
+              throw { message: e.message || 'Server returned an error', isServerError: true};
+            }
+          }
+
+          if (err?.code === 'ERR_NETWORK') this.isNetworkError = true;
+          if (err?.code === 'ERR_BAD_RESPONSE') this.isServerError = true;
+
+          throw err;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
+
     openDetail(item) {
       this.selectedRow = item;
       this.$bvModal.show('modal-shipping-detail');

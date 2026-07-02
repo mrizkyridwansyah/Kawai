@@ -1,3 +1,4 @@
+using Kawai.Api.Services;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -75,4 +76,20 @@ public class ShippingInstructionController : HahaController
         await _shippingInstructionRepository.UpdatePicking(requests, Auth.User.UserID);
         return Success(message: "Picking serial berhasil.");
     }
+
+    [HttpPost("report-surat-jalan")]
+    public async Task<IActionResult> ExportExcel(string sino, [FromServices] RazorViewRenderer renderer)
+    {
+        var results = await _shippingInstructionRepository.GetListReport(sino);
+        if (results == null || !results.Any()) return Invalid("No Data");
+
+        var fullHtml = await renderer.RenderAsync(
+            "Templates/SuratJalan.cshtml",
+            results);
+
+        var pdfBytes = await renderer.GeneratePdfAsync(fullHtml);
+        Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+        return File(pdfBytes, "application/pdf", "SuratJalan_" + results[0].CustPONo);
+    }
+
 }
