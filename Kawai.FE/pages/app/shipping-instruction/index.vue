@@ -467,7 +467,8 @@ export default {
       }
     },
     print() {
-         PrintSuratJalan(this.filter.shippingInstructionNo)
+    debugger;
+         this.PrintSuratJalan(this.filter.shippingInstructionNo)
         .then((dt) => {
           toastSuccess("Download successfully!");
           this.reset();
@@ -481,9 +482,9 @@ export default {
        
     },
 
-      PrintSuratJalan: function (sino) {
+    PrintSuratJalan: function (sino) {
       this.isLoading = true;
-      return app.$http.post(
+      return this.$http.post(
         `/shipping-instruction/report-surat-jalan?sino=${sino}`,
         null,
         { responseType: 'blob' }
