@@ -1,4 +1,3 @@
-using Hangfire;
 using Kawai.Api.Services;
 using Kawai.Data;
 using Kawai.Domain.Interfaces;
@@ -22,16 +21,14 @@ public class MobileMovingTrolleyController : HahaController
     private readonly IMobileMovingTrolleyRepository _movingTrolleyRepository;
     private readonly IRobotRepository _robotRepository;
     private readonly ITransactionProducer _transactionProducer;
-    private readonly IRobotService _robotService;
     private readonly ITrolleyRepository _trolleyRepository;
 
-    public MobileMovingTrolleyController(IMobileMovingTrolleyRepository MovingTrolleyRepository, IRobotRepository robotRepository, ITransactionProducer transactionProducer, IRobotService robotService, HttpClient client, ITrolleyRepository trolleyRepository, IHttpClientFactory factory)
+    public MobileMovingTrolleyController(IMobileMovingTrolleyRepository MovingTrolleyRepository, IRobotRepository robotRepository, ITransactionProducer transactionProducer, HttpClient client, ITrolleyRepository trolleyRepository, IHttpClientFactory factory)
     {
         _factory = factory;
         _movingTrolleyRepository = MovingTrolleyRepository;
         _robotRepository = robotRepository;
         _transactionProducer = transactionProducer;
-        _robotService = robotService;
         _client = factory.CreateClient("robot-sync");
         _trolleyRepository = trolleyRepository;
     }
@@ -75,12 +72,12 @@ public class MobileMovingTrolleyController : HahaController
     {
         await _movingTrolleyRepository.CheckValidation(model);
 
-        //var scanInfo = await _robotRepository.GetSupplyScanRequestInfo(model.RequestNo);
+        var scanInfo = await _robotRepository.GetSupplyScanRequestInfo(model.RequestNo);
 
-        //if (scanInfo != null && scanInfo.LineAMRCls == "1" && scanInfo.WSAMRCls == "0")
-        //{
-        await SendRequestSubLine(model.RequestNo, model.TrolleyNo, model.StopPoint, Auth.User.UserID);
-        //}
+        if (scanInfo != null && scanInfo.LineAMRCls == "1" && scanInfo.WSAMRCls == "0")
+        {
+            await SendRequestSubLine(model.RequestNo, model.TrolleyNo, model.StopPoint, Auth.User.UserID);
+        }
 
         return Success();
     }
@@ -236,7 +233,7 @@ public class MobileMovingTrolleyController : HahaController
                 dataRequest.RequestSendID,
                 dataRequest.LineCode,
                 dataRequest.WorkStationCode,
-                dataRequest.ProductionDate,
+                ProductionDate = dataRequest.ProductionDate.ToString("yyyy-MM-dd"),
                 dataRequest.Model,
                 dataRequest.TrolleyNo,
                 dataRequest.PickupDatetime,
@@ -295,7 +292,7 @@ public class MobileMovingTrolleyController : HahaController
                     {
                         string errorMessage = $"Trolley type mismatch. Extracted trolley type: '{extractedTrolley?.Trolley_Cls ?? "UNKNOWN"}' ({extractedTrolleyNo}), but parameter trolley type: '{dataRequest.TrolleyCls ?? "UNKNOWN"}' ({trolleyNo}).";
                         await _movingTrolleyRepository.UpdateStatusAMRSendRequestSubLine(requestNo, trolleyNo, stopPoint, errorMessage);
-                        throw new HttpCustomException(400, $"Trolley type mismatch.");
+                        throw new HttpCustomException(400, $"Lokasi sudah ada Troli dengan Tipe BERBEDA! Silahkan Move ke area lain!");
                     }
                 }
 
