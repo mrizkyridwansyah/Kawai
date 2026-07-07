@@ -175,6 +175,19 @@ builder.Services.AddHttpClient("robot", c =>
     c.DefaultRequestHeaders.Authorization =
         new AuthenticationHeaderValue("Basic", authToken);
 });
+
+builder.Services.AddHttpClient("robot-sync", c =>
+{
+    c.BaseAddress = new Uri(robotUriString);
+    c.Timeout = TimeSpan.FromSeconds(60); // Timeout lebih panjang untuk request synchronous
+
+    var authToken = Convert.ToBase64String(
+        Encoding.ASCII.GetBytes($"{username}:{password}")
+    );
+
+    c.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Basic", authToken);
+});
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.PropertyNamingPolicy = null;
