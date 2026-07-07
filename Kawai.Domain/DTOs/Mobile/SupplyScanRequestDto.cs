@@ -57,6 +57,7 @@ public class SupplyScanRequestSubLineDto
     public DateTime ProductionDate { get; set; }
     public string Model { get; set; }
     public string TrolleyNo { get; set; }
+    public string TrolleyCls { get; set; }
     public DateTime PickupDatetime { get; set; }
     public string StopPoint { get; set; }
 }

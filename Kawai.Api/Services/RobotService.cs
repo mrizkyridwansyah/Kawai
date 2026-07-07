@@ -1,10 +1,11 @@
-using DocumentFormat.OpenXml.EMMA;
 using Hangfire;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Interfaces.Robot;
 using Kawai.Domain.Models.Robot;
 using System.Text.Json;
+using Kawai.Domain.Interfaces;
+using Kawai.Data;
 
 namespace Kawai.Api.Services;
 public interface IRobotService
@@ -38,6 +39,7 @@ public class RobotService : IRobotService
     private readonly IMobileManualTrolleyAssignRepository _manualTrolleyAssignRepository;
     private readonly IMobileMovingTrolleyRepository _movingTrolleyRepository;
     private readonly IRobotRepository _robotRepository;
+    private readonly ITrolleyRepository _trolleyRepository;
 
     public RobotService
     (
@@ -47,6 +49,7 @@ public class RobotService : IRobotService
         IMobileManualTrolleyAssignRepository manualTrolleyAssignRepository,
         IMobileMovingTrolleyRepository movingTrolleyRepository,
         IRobotRepository robotRepository,
+        ITrolleyRepository trolleyRepository,
         ILogger<RobotService> logger,
         DataLogger changeDataLogger
     )
@@ -57,6 +60,7 @@ public class RobotService : IRobotService
         _manualTrolleyAssignRepository = manualTrolleyAssignRepository;
         _movingTrolleyRepository = movingTrolleyRepository;
         _robotRepository = robotRepository;
+        _trolleyRepository = trolleyRepository;
         _logger = logger;
         _changeDataLogger = changeDataLogger;
     }
@@ -562,6 +566,11 @@ public class RobotService : IRobotService
 
     public async Task SendRequestSubLine(string requestNo, string trolleyNo, string stopPoint, string userId)
     {
+        await SendRequestSubLineInternal(requestNo, trolleyNo, stopPoint, userId, false);
+    }
+
+    private async Task SendRequestSubLineInternal(string requestNo, string trolleyNo, string stopPoint, string userId, bool isRetry)
+    {
         try
         {
             await _movingTrolleyRepository.SendRequestUnbindRackAMR(requestNo, trolleyNo, userId);
@@ -579,9 +588,21 @@ public class RobotService : IRobotService
                 trolleyNo
             );
 
-            var payloadSubLine = await _robotRepository.GetDataToSendRequestSubLine(requestNo, trolleyNo, stopPoint);
+            var dataRequest = await _robotRepository.GetDataToSendRequestSubLine(requestNo, trolleyNo, stopPoint);
 
-            if (payloadSubLine == null) return;
+            if (dataRequest == null) return;
+
+            var payloadSubLine = new
+            {
+                dataRequest.RequestSendID,
+                dataRequest.LineCode,
+                dataRequest.WorkStationCode,
+                dataRequest.ProductionDate,
+                dataRequest.Model,
+                dataRequest.TrolleyNo,
+                dataRequest.PickupDatetime,
+                dataRequest.StopPoint
+            };
 
             await _movingTrolleyRepository.SendRequestSubLineAMR(requestNo, trolleyNo, stopPoint, userId);
 
@@ -596,17 +617,53 @@ public class RobotService : IRobotService
                 options
             );
 
+            var body = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<RobotApiResponse>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync();
+                string? extractedTrolleyNo = null;
+                try
+                {
+                    using (var doc = JsonDocument.Parse(body))
+                    {
+                        if (doc.RootElement.TryGetProperty("Data", out var dataProp) && dataProp.ValueKind == JsonValueKind.Object)
+                        {
+                            if (dataProp.TryGetProperty("TrolleyNo", out var trolleyProp))
+                            {
+                                extractedTrolleyNo = trolleyProp.GetString();
+                            }
+                        }
+                    }
+                }
+                catch (Exception parseEx)
+                {
+                    _logger.LogWarning(parseEx, "Failed to parse error response body for TrolleyNo.");
+                }
+
+                if (!isRetry && !string.IsNullOrEmpty(extractedTrolleyNo))
+                {
+                    var extractedTrolley = await _trolleyRepository.GetData(extractedTrolleyNo);
+
+                    if (extractedTrolley != null && extractedTrolley.Trolley_Cls == dataRequest.TrolleyCls)
+                    {
+                        _logger.LogWarning("SendRequestSubLine failed. Unbinding rack for TrolleyNo: {ExtractedTrolleyNo} and retrying.", extractedTrolleyNo);
+                        await UnbindRack(requestNo, extractedTrolleyNo);
+                        await SendRequestSubLineInternal(requestNo, trolleyNo, stopPoint, userId, true);
+                        return;
+                    }
+                    else
+                    {
+                        string errorMessage = $"Trolley type mismatch. Extracted trolley type: '{extractedTrolley?.Trolley_Cls ?? "UNKNOWN"}' ({extractedTrolleyNo}), but parameter trolley type: '{dataRequest.TrolleyCls ?? "UNKNOWN"}' ({trolleyNo}).";
+                        await _movingTrolleyRepository.UpdateStatusAMRSendRequestSubLine(requestNo, trolleyNo, stopPoint, errorMessage);
+                        throw new HttpCustomException(400, $"Trolley type mismatch.");
+                    }
+                }
 
                 throw new Exception(
                     $"Robot API returned {(int)response.StatusCode} ({response.StatusCode}). Response: {body}"
                 );
             }
-
-            var result = await response.Content
-                .ReadFromJsonAsync<RobotApiResponse>();
 
             var message = result?.Message
                 ?? $"Robot API returned {response.StatusCode}";

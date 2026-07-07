@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Kawai.Api.Services;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Interfaces.Robot;
@@ -17,12 +17,14 @@ public class MobileMovingTrolleyController : HahaController
     private readonly IMobileMovingTrolleyRepository _movingTrolleyRepository;
     private readonly IRobotRepository _robotRepository;
     private readonly ITransactionProducer _transactionProducer;
+    private readonly IRobotService _robotService;
 
-    public MobileMovingTrolleyController(IMobileMovingTrolleyRepository MovingTrolleyRepository, IRobotRepository robotRepository, ITransactionProducer transactionProducer)
+    public MobileMovingTrolleyController(IMobileMovingTrolleyRepository MovingTrolleyRepository, IRobotRepository robotRepository, ITransactionProducer transactionProducer, IRobotService robotService)
     {
         _movingTrolleyRepository = MovingTrolleyRepository;
         _robotRepository = robotRepository;
         _transactionProducer = transactionProducer;
+        _robotService = robotService;
     }
 
     [HttpGet("data-trolley")]
@@ -62,11 +64,13 @@ public class MobileMovingTrolleyController : HahaController
     [HttpPost("testing-amr-moving")]
     public async Task<IActionResult> TestingAMRMoving(MobileMovingTrolley model)
     {
+        await _movingTrolleyRepository.CheckValidation(model);
+
         var scanInfo = await _robotRepository.GetSupplyScanRequestInfo(model.RequestNo);
 
         if (scanInfo != null && scanInfo.LineAMRCls == "1" && scanInfo.WSAMRCls == "0")
         {
-            BackgroundJob.Enqueue<IRobotService>(service => service.SendRequestSubLine(model.RequestNo, model.TrolleyNo, model.StopPoint, Auth.User.UserID));
+            await _robotService.SendRequestSubLine(model.RequestNo, model.TrolleyNo, model.StopPoint, Auth.User.UserID);
         }
 
         return Success();
@@ -75,6 +79,17 @@ public class MobileMovingTrolleyController : HahaController
     [HttpPost("submit")]
     public async Task<IActionResult> Submit(MobileMovingTrolley model)
     {
+        await _movingTrolleyRepository.CheckValidation(model);
+
+        var scanInfo = await _robotRepository.GetSupplyScanRequestInfo(model.RequestNo);
+        /*
+         * Kalo Flag AMR Cls di Manufacture_Line = 1 tapi Flag AMR Cls di WorkstationLineSetting = 0 maka saat loading trolley harus kirim ke AMR.
+         */
+        if (scanInfo != null && scanInfo.LineAMRCls == "1" && scanInfo.WSAMRCls == "0")
+        {
+            await _robotService.SendRequestSubLine(model.RequestNo, model.TrolleyNo, model.StopPoint, Auth.User.UserID);
+        }
+
         var message = new StockTransactionMessage<MobileMovingTrolley>
         {
             Token = Auth.Token,

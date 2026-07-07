@@ -9,6 +9,7 @@ public interface IMobileMovingTrolleyRepository
 {
     Task<List<MovingTrolleyDto>> GetDataTrolley(string trolleyNo);
     Task<StopPointDto> GetDataStopPoint(string stopPoint);
+    Task CheckValidation(MobileMovingTrolley payload);
     Task Save(MobileMovingTrolley payload, string userId);
     Task<Dictionary<string, object>> Capture(string trolleyNo);
     Task SendRequestUnbindRackAMR(string requestNo, string trolleyNo, string userId);

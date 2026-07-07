@@ -34,6 +34,17 @@ public class MobileMovingTrolleyRepository: IMobileMovingTrolleyRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<StopPointDto>(sp, new { StopPoint = stopPoint });
     }
 
+    public async Task CheckValidation(MobileMovingTrolley payload)
+    {
+        string sql = "sp_Wms_MovingTrolley_CheckValidation";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            payload.RequestNo,
+            payload.TrolleyNo,
+            payload.StopPoint
+        });
+    }
+
     public async Task Save(MobileMovingTrolley payload, string userId)
     {
         string sql = "sp_Wms_MovingTrolley_Submit";
