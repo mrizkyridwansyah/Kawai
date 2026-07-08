@@ -1,4 +1,5 @@
 ﻿using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -145,5 +146,38 @@ public class PartMaterialRequestBomController : HahaController
         });
 
         return Success();
+    }
+
+    [HttpGet("getdetail")]
+    public async Task<IActionResult> Get(long id)
+    {
+        var result = await _partMaterialRequestBomRepository.GetData(id);
+        return Success(result);
+    }
+
+    [HttpPost("list-scan")]
+    public async Task<IActionResult> ListScan([FromBody] RequestParameter parameter)
+    {
+        var results = await _partMaterialRequestBomRepository.GetListScan(parameter);
+        return DataTableResult(parameter, results);
+    }
+
+    [HttpPatch("updatereqqty")]
+    public async Task<IActionResult> Update([FromBody] PartMaterialRequestBomDetailModel model)
+    {
+        var before = await _partMaterialRequestBomRepository.CaptureRequirement(model.IDSeq);
+        await _partMaterialRequestBomRepository.UpdateReq(model, Auth.User.UserID);
+        var after = await _partMaterialRequestBomRepository.CaptureRequirement(model.IDSeq);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Material Request Bom - Edit Requirement",
+            EntityId = model.IDSeq.ToString(),
+            ReferenceId = model.IDSeq.ToString(),
+            Action = DataLogAction.Update,
+            Before = before,
+            After = after
+        });
+        return Success(after);
     }
 }

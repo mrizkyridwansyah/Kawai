@@ -140,6 +140,15 @@
               />
 
               <v-button
+                :action="remove"
+                label="Delete"
+                icon="trash"
+                cClass="ml-1 btn-danger"
+                :is-loading="isLoading"
+                :disabled="this.groupLists.length == 0 || !menuPrivAllowUpdate"
+              />
+
+              <v-button
                 :action="print"
                 label="Print"
                 icon="print"
@@ -218,13 +227,23 @@
                   :key="dtl.RequestId"
                 >
                   <td colspan="5"></td>
-                  <td>{{ dtl.ChildItemCode }}</td>
+                  <td>
+                    <a
+                      v-if="menuPrivAllowUpdate"
+                      href="javascript:void(0)"
+                      @click="editStock(dtl.IDSeq)"
+                      >{{ dtl.ChildItemCode }}</a
+                    >
+                    <span v-else>{{ dtl.ChildItemCode }}</span>
+                  </td>
                   <td style="white-space: wrap">{{ dtl.ChildItemName }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.RequirementQty) }}
                   </td>
                   <td class="text-right">
-                    {{ $func.formatMoney(dtl.TotalScan) }}
+                    <a href="javascript:void(0)" @click="viewScan(dtl.IDSeq)">
+                      {{ $func.formatMoney(dtl.TotalScan) }}
+                    </a>
                   </td>
                   <td>
                     <a
@@ -243,9 +262,35 @@
   </v-frame>
 
   <v-modal title="Detail Stock" class="modal-lg" id="modal-list-stock">
-    <shared-request-womin-list-stock
+    <shared-request-subcon-list-stock
       :item="this.selectedItem"
       :counter="this.counter"
+    />
+  </v-modal>
+
+  <v-modal title="Detail Scan Supply" class="modal-lg" id="modal-list-scan">
+    <shared-request-subcon-list-scan
+      :item="this.selectedItem"
+      :counter="this.counter"
+    />
+  </v-modal>
+  <v-modal
+    ref="modal-edit-reqqty"
+    id="shared-request-subcon-edit-reqqty"
+    title="Edit Requirement Qty"
+    size="md"
+    @hidden="
+      () => {
+        this.$refs.formSubcon.resetForm();
+        modalMode = '';
+      }
+    "
+  >
+    <shared-request-subcon-edit-reqqty
+      ref="formSubcon"
+      :item="idSelected"
+      :counter="this.counter"
+      @submitted="close"
     />
   </v-modal>
 </template>
@@ -317,6 +362,7 @@ export default {
           }
 
           grouped[key].Details.push({
+            IDSeq: item.IDSeq,
             ChildItemCode: item.ChildItemCode,
             ChildItemName: item.ChildItemName,
             Qty: item.Qty,
@@ -332,8 +378,8 @@ export default {
         this.ds.loadHeader().then((dt) => (this.model = dt));
       });
     },
-    
-      print: function () {
+
+    print: function () {
       this.ds
         .PrintSuratJalan(this.model.RequestNo)
         .then((dt) => {
@@ -410,6 +456,22 @@ export default {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-stock");
+    },
+    close: function () {
+      this.$bvModal.hide("shared-request-subcon-edit-reqqty");
+      this.search();
+    },
+    viewScan: function (item) {
+      console.log(item);
+      this.selectedItem = item;
+      this.counter++;
+      this.$bvModal.show("modal-list-scan");
+    },
+
+    editStock: function (item) {
+      this.idSelected = item;
+      this.counter++;
+      this.$bvModal.show("shared-request-subcon-edit-reqqty");
     },
   },
 };

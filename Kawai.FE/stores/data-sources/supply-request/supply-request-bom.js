@@ -48,6 +48,20 @@ export const useSupplyRequestBOM = defineStore("SupplyRequestBOM", {
       Sorts: {},
     },
 
+    dataListScan: {
+      Items: [],
+      Total: 0,
+      Filtered: 0,
+      Page: 1,
+      Length: 10,
+    },
+    filterListScan: {
+      Page: 1,
+      Length: 10,
+      Filters: [],
+      Sorts: {},
+    },
+
     newRequest: [],
   }),
   actions: {
@@ -134,6 +148,28 @@ export const useSupplyRequestBOM = defineStore("SupplyRequestBOM", {
           .finally((_) => (this.isLoading = false));
       });
     },
+    loadListScan: function () {
+      this.isLoading = true;
+      this.isNetworkError = this.isServerError = false;
+
+      return new Promise((resolve, reject) => {
+        app.$http
+          .post(`/supply-request/bom/list-scan`, this.filterListScan)
+          .then(({ data }) => {
+            this.dataListScan = data.Data;
+
+            resolve(data);
+          })
+          .catch((err) => {
+            if (err.code == "ERR_NETWORK") this.isNetworkError = true;
+
+            if (err.code == "ERR_BAD_RESPONSE") this.isServerError = true;
+
+            reject(err);
+          })
+          .finally((_) => (this.isLoading = false));
+      });
+    },
     setRequest: function (req) {
       this.newRequest = req;
     },
@@ -168,6 +204,24 @@ export const useSupplyRequestBOM = defineStore("SupplyRequestBOM", {
       this.filterListStock.Length = v;
       this.loadListStock();
     },
+
+    setFilterListScan: function (v) {
+      this.filterListScan.Filters = v;
+      this.filterListScan.Page = 1;
+    },
+    setSortListScan: function (v) {
+      this.filterListScan.Sorts = v;
+    },
+    setPageListScan: function (v) {
+      this.filterListScan.Page = v;
+      this.loadListScan();
+    },
+    setLengthListScan: function (v) {
+      this.filterListScan.Page = 1;
+      this.filterListScan.Length = v;
+      this.loadListScan();
+    },
+
     save: function (data) {
       this.isCreating = true;
       return new Promise((resolve, reject) => {
@@ -207,30 +261,34 @@ export const useSupplyRequestBOM = defineStore("SupplyRequestBOM", {
       });
     },
 
-     PrintSuratJalan: function (requestno) {
+    PrintSuratJalan: function (requestno) {
       this.isLoading = true;
-      return app.$http.post(
-        `/supply-request/bom/report-surat-jalan?requestno=${requestno}`,
-        null,
-        { responseType: 'blob' }
-      )
-        .then(res => {
-          const blob = res.data instanceof Blob
-            ? res.data
-            : new Blob([res.data], { type: 'application/pdf' });
+      return app.$http
+        .post(
+          `/supply-request/bom/report-surat-jalan?requestno=${requestno}`,
+          null,
+          { responseType: "blob" },
+        )
+        .then((res) => {
+          const blob =
+            res.data instanceof Blob
+              ? res.data
+              : new Blob([res.data], { type: "application/pdf" });
 
           const url = window.URL.createObjectURL(blob);
 
-          let fileName = 'Surat_Jalan.pdf';
-          const contentDisposition = res.headers['content-disposition'];
+          let fileName = "Surat_Jalan.pdf";
+          const contentDisposition = res.headers["content-disposition"];
           if (contentDisposition) {
-            const match = contentDisposition.match(/filename\*?=(?:UTF-8''|")?([^;"\n]+)/i);
+            const match = contentDisposition.match(
+              /filename\*?=(?:UTF-8''|")?([^;"\n]+)/i,
+            );
             if (match && match[1]) {
               fileName = decodeURIComponent(match[1].trim());
             }
           }
 
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
           link.download = fileName;
           document.body.appendChild(link);
@@ -239,22 +297,28 @@ export const useSupplyRequestBOM = defineStore("SupplyRequestBOM", {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
         })
-        .catch(async err => {
+        .catch(async (err) => {
           if (err.response) {
             // server ngirim response, tapi error
             const blob = err.response.data;
             try {
               const text = await blob.text();
               const json = JSON.parse(text);
-              throw { message: json.Message || 'Server returned an error', isServerError: true};
+              throw {
+                message: json.Message || "Server returned an error",
+                isServerError: true,
+              };
             } catch (e) {
-              console.log('Server Error, but not JSON', e);
-              throw { message: e.message || 'Server returned an error', isServerError: true};
+              console.log("Server Error, but not JSON", e);
+              throw {
+                message: e.message || "Server returned an error",
+                isServerError: true,
+              };
             }
           }
 
-          if (err?.code === 'ERR_NETWORK') this.isNetworkError = true;
-          if (err?.code === 'ERR_BAD_RESPONSE') this.isServerError = true;
+          if (err?.code === "ERR_NETWORK") this.isNetworkError = true;
+          if (err?.code === "ERR_BAD_RESPONSE") this.isServerError = true;
 
           throw err;
         })
@@ -262,7 +326,6 @@ export const useSupplyRequestBOM = defineStore("SupplyRequestBOM", {
           this.isLoading = false;
         });
     },
-
   },
 });
 

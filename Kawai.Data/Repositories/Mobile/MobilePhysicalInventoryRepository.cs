@@ -24,6 +24,18 @@ public class MobilePhysicalInventoryRepository : IMobilePhysicalInventoryReposit
         return (await _dbExecutor.QueryListAsync<StockDto>(sp, new { AddressCode = addressCode, UserId = userId })).ToList();
     }
 
+    public async Task<List<PhysicalInventorySummaryStockDto>> GetListStockSummary(string addressCode)
+    {
+        string sp = "sp_Wms_Mobile_PhysicalInventory_GetListStockSummary";
+        return (await _dbExecutor.QueryListAsync<PhysicalInventorySummaryStockDto>(sp, new { AddressCode = addressCode })).ToList();
+    }
+
+    public async Task<List<StockDto>> GetListStockDetail(string addressCode, string itemCode)
+    {
+        string sp = "sp_Wms_Mobile_PhysicalInventory_GetListStock";
+        return (await _dbExecutor.QueryListAsync<StockDto>(sp, new { AddressCode = addressCode, ItemCode = itemCode })).ToList();
+    }
+
     public async Task<StockDto> GetDataBarcode(string addressCode, string barcodeNo)
     {
         string sp = "sp_Wms_Mobile_PhysicalInventory_GetDataBarcode";

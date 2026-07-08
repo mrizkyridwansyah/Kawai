@@ -74,7 +74,7 @@ export default {
   }),
   computed: {
     ds: function () {
-      return useSupplyRequestWomin();
+      return useSupplyRequestBOM();
     },
   },
   watch: {

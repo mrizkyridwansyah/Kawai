@@ -43,7 +43,11 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         return (await _dbExecutor.QueryListAsync<PartMaterialRequestBomDetilDto>(sp, new
         {
             models[0].WarehouseCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["WarehouseCode"])
+            models[0].RequestId,
+            models[0].PONumber,
+            models[0].PODate,
+            models[0].ItemCode,
+            models[0].RequestSetQty
         })).ToList();
     }
     public async Task<List<StockDto>> GetListStock(RequestParameter param)
@@ -161,5 +165,40 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
             { "Part Material Request Bom Details", result.details },
             { "Part Material Request Bom Detail Items", result.detailItems },
         };
+    }
+
+    public async Task<List<StockScanDto>> GetListScan(RequestParameter param)
+    {
+        string sp = "sp_Wms_PartMaterialRequestBom_GetListScan";
+        return (await _dbExecutor.QueryListAsync<StockScanDto>(sp, param.ToQueryObject())).ToList();
+    }
+
+    public async Task<PartMaterialRequestBomDetilItemDto> GetData(long idSeq)
+    {
+        string sp = "sp_Wms_PartMaterialRequestBom_GetDetail";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<PartMaterialRequestBomDetilItemDto>(sp, new { IDSeq = idSeq });
+    }
+
+    public async Task UpdateReq(PartMaterialRequestBomDetailModel payload, string userId)
+    {
+        string sql = @"sp_Wms_PartMaterialRequestBom_UpdateRequirement";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            payload.IDSeq,
+            payload.ChilItemCode,
+            payload.ReqQty,
+            UpdateBy = userId
+        });
+    }
+
+    public async Task<Dictionary<string, object>> CaptureRequirement(long idSeq)
+    {
+        string sp = "sp_Wms_PartMaterialRequestBom_CaptureRequirement";
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new { IDSeq = idSeq });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 }

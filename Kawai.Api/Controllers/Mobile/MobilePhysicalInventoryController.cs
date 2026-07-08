@@ -46,6 +46,20 @@ public class MobilePhysicalInventoryController : HahaController
         return Success(grouped);
     }
 
+    [HttpGet("list-stock-summary")]
+    public async Task<IActionResult> GetListStockSummary(string addressCode)
+    {
+        var results = await _mobilePhysicalInventoryRepository.GetListStockSummary(addressCode);
+        return Success(results);
+    }
+
+    [HttpGet("list-stock-detail")]
+    public async Task<IActionResult> GetListStockDetail(string addressCode, string itemCode)
+    {
+        var results = await _mobilePhysicalInventoryRepository.GetListStockDetail(addressCode, itemCode);
+        return Success(results);
+    }
+
     [HttpGet("data-barcode")]
     public async Task<IActionResult> GetDataBarcode(string addressCode, string barcodeNo)
     {

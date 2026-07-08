@@ -45,3 +45,12 @@ public class PartMaterialRequestBomHeaderModel
 
     public List<PartMaterialRequestBomModel> Details { get; set; }
 }
+
+public class PartMaterialRequestBomDetailModel
+{
+    public long IDSeq { get; set; }
+    public string ChilItemCode { get; set; }
+    public decimal? ReqQty { get; set; }
+
+
+}

@@ -14,6 +14,12 @@ public interface IPartMaterialRequestBomRepository
     Task Save(PartMaterialRequestBomHeaderModel model, string userId);
     Task Update(PartMaterialRequestBomHeaderModel model, string userId);
     Task Remove(long requestId, string userId);
+
+    Task<List<StockScanDto>> GetListScan(RequestParameter parameter);
+    Task<PartMaterialRequestBomDetilItemDto> GetData(long idSeq);
+    Task UpdateReq(PartMaterialRequestBomDetailModel payload, string userId);
+
     Task<Dictionary<string, object>> Capture(string poNumber);
     Task<Dictionary<string, object>> CaptureRequest(long requestId);
+    Task<Dictionary<string, object>> CaptureRequirement(long idSeq);
 }

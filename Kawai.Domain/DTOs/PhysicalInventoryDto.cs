@@ -52,3 +52,15 @@ public class PhysicalInventoryCaptureDto
     public int? InventoryQty { get; set; }
     public string StatusScan { get; set; }
 }
+
+public class PhysicalInventorySummaryStockDto
+{
+    public string AddressCode { get; set; }
+    public string AddressName { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public int TotalBarcode { get; set; }
+    public int TotalBarcodeSO { get; set; }
+    public decimal CurrentQty { get; set; }
+    public decimal? InventoryQty { get; set; }
+}

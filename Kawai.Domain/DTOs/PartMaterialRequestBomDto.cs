@@ -21,6 +21,7 @@ public class PartMaterialRequestBomDto: DataTableDto
 public class PartMaterialRequestBomDetilDto : DataTableDto
 {
     public long? RequestId { get; set; }
+    public long IDSeq { get; set; }
     public DateTime PODate { get; set; }
     public string PONumber { get; set; }
     public string WarehouseCode { get; set; }
@@ -60,4 +61,12 @@ public class PartMaterialRequestBomHeaderDto
     public string VehicleNo { get; set; }
     public string Transport { get; set; }
 
+}
+
+public class PartMaterialRequestBomDetilItemDto
+{
+    public long IDSeq { get; set; }
+    public string ChilItemCode { get; set; }
+    public string ChilItemName { get; set; }
+    public decimal? ReqQty { get; set; }
 }
