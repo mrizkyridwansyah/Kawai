@@ -18,6 +18,8 @@
             <th class="text-center">Barcode No</th>
             <th class="text-center">Item Code</th>
             <th class="text-center">Item Name</th>
+            <th class="text-center">Warehouse</th>
+            <th class="text-center">Area</th>
             <th class="text-center">Qty</th>
             <th class="text-center">User Scan</th>
             <th class="text-center">Time Scan</th>
@@ -29,6 +31,8 @@
             <td>{{ item.BarcodeNo }}</td>
             <td>{{ item.ItemCode }}</td>
             <td>{{ item.ItemName }}</td>
+            <td>{{ item.WarehouseCode }}</td>
+            <td>{{ item.AreaCode }}</td>
             <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
             <td>{{ item.UserScan }}</td>
             <td>{{ $func.formatDateTime(item.TimeScan) }}</td>

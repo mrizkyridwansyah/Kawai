@@ -40,6 +40,8 @@ public class StockScanDto : DataTableDto
     public string BarcodeNo { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
+    public string WarehouseCode { get; set; }
+    public string AreaCode { get; set; }
     public decimal Qty { get; set; }
     public string UserScan { get; set; }
     public DateTime TimeScan { get; set; }

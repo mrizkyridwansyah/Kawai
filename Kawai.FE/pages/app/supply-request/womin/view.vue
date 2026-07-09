@@ -221,7 +221,7 @@
     />
   </v-modal>
 
-  <v-modal title="Detail Scan Supply" class="modal-lg" id="modal-list-scan">
+  <v-modal title="Detail Scan Supply" class="modal-xl" id="modal-list-scan">
     <shared-request-womin-list-scan
       :item="this.selectedItem"
       :counter="this.counter"

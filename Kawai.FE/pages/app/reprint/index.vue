@@ -21,7 +21,7 @@
                   <label class="form-label">Warehouse</label>
                 </td>
                 <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                  <filter-warehouse-privileges
+                  <filter-warehouse-line-privileges
                     class="form-control"
                     v-model="filter.warehouse"
                     :factory-code="filter.factory"
@@ -37,7 +37,7 @@
               <tr>
                 <td><label class="form-label">Area</label></td>
                 <td style="padding-left: 15px" colspan="3">
-                  <filter-area-privileges
+                  <filter-area-ws
                     class="form-control"
                     v-model="filter.area"
                     :warehouse="filter.warehouse"
@@ -111,7 +111,7 @@
                 <th class="text-center">Area</th>
                 <th class="text-center">Address</th>
                 <th class="text-center">Lot No</th>
-                 <th class="text-center">Qty</th>
+                <th class="text-center">Qty</th>
                 <th class="text-center">Source</th>
               </tr>
             </thead>
@@ -133,7 +133,7 @@
                 <td>{{ item.Area }}</td>
                 <td>{{ item.Address }}</td>
                 <td>{{ item.LotNo }}</td>
-                 <td>{{ item.Qty }}</td>
+                <td>{{ item.Qty }}</td>
                 <td>{{ item.Source }}</td>
               </tr>
             </tbody>
