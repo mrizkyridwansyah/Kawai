@@ -21,7 +21,7 @@
                   <label class="form-label">Warehouse</label>
                 </td>
                 <td style="padding-left: 15px; padding-top: 5px" colspan="3">
-                  <filter-warehouse-line-privileges
+                  <filter-warehouse-privileges
                     class="form-control"
                     v-model="filter.warehouse"
                     :factory-code="filter.factory"
@@ -37,7 +37,7 @@
               <tr>
                 <td><label class="form-label">Area</label></td>
                 <td style="padding-left: 15px" colspan="3">
-                  <filter-area-ws
+                  <filter-area-privileges
                     class="form-control"
                     v-model="filter.area"
                     :warehouse="filter.warehouse"
