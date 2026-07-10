@@ -79,8 +79,6 @@ public class NGClaimDetailDto : DataTableDto
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
     public decimal Qty { get; set; }
-    public string NGCode { get; set; }
-    public string NGDescs { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
 }

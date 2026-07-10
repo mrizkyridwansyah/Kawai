@@ -195,8 +195,6 @@
                   <th class="text-center">Item Name</th>
                   <th class="text-center">Unit</th>
                   <th class="text-center">Qty</th>
-                  <th class="text-center">NG Code</th>
-                  <th class="text-center">NG Description</th>
                   <th class="text-center">Last Update</th>
                   <th class="text-center">Last User</th>
                 </tr>
@@ -216,9 +214,7 @@
                   <td>{{ item.ItemName }}</td>
                   <td>{{ item.UnitClsName }}</td>
                   <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
-                  <td>{{ item.NGCode }}</td>
-                  <td>{{ item.NGDescs }}</td>
-                  <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
+                   <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                   <td>{{ item.LastUser }}</td>
                 </tr>
               </tbody>
@@ -380,7 +376,6 @@ export default {
           PONumber: p.ReceiptNumber,
           ReceiptNumber: p.ReceiptNumber,
           ItemCode: p.ItemCode,
-          NGCode: p.NGCode,
           Qty: p.Qty,
         };
       });

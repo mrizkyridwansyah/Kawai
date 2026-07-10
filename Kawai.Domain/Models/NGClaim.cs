@@ -62,7 +62,7 @@ public class NGClaimDetail
     public string ItemCode { get; set; }
 
     public decimal Qty { get; set; }
-    public string NGCode { get; set; }
+   
 
 
   
