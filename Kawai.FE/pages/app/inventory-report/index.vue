@@ -5,7 +5,7 @@
         <tr>
           <td><label class="form-label">Warehouse</label></td>
           <td style="padding-left: 15px" colspan="3">
-            <filter-warehouse-privileges
+            <filter-warehouse-line-privileges
               class="form-control"
               v-model="filter.warehouse"
               factory-code="ALL"
@@ -17,7 +17,7 @@
             <label class="form-label">Area</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <filter-area-privileges
+            <filter-area-ws
               class="form-control"
               v-model="filter.area"
                :show-option-all="true"
