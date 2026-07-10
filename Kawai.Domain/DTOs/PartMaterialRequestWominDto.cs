@@ -16,6 +16,7 @@ public class PartMaterialRequestWominDto: DataTableDto
     public DateTime? RequestDate { get; set; }
     public decimal? RequestSetQty { get; set; }
     public decimal? RemainingQty { get; set; }
+    public string Model { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
 }

@@ -4,6 +4,7 @@ using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection.Emit;
 
 namespace Kawai.Data.Repositories;
@@ -25,7 +26,8 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         var paramFactory = param.GetParam("FactoryCode");
         var paramProcess = param.GetParam("ManufactureCode");
         var paramLine = param.GetParam("LineCode");
-        var paramRemainingFuckingCls = param.GetParam("RemainingCls");
+        var paramModel = param.GetParam("Model");
+        var paramRemainingCls = param.GetParam("RemainingCls");
 
         string sp = "sp_Wms_PartMaterialRequestWomin_GetListHeader";
         return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDto>(sp, new
@@ -35,23 +37,37 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
             FactoryCode = paramFactory,
             ProcessCode = paramProcess,
             LineCode = paramLine,
-            RemainingCls = paramRemainingFuckingCls == "ALL" ? (bool?)null : paramRemainingFuckingCls == "YES"
+            Model = paramModel,
+            RemainingCls = paramRemainingCls == "ALL" ? (bool?)null : paramRemainingCls == "YES"
         })).ToList();
     }
 
     public async Task<List<PartMaterialRequestWominDetilDto>> GetListDetail(List<PartMaterialRequestWominModel> models)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_GetListDetail";
-        return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+        if(models[0].RequestId.HasValue)
         {
-            models[0].LineCode,
-            models[0].RequestId,
-            models[0].ProductionId,
-            models[0].ScheduleDate,
-            models[0].ItemCode,
-            models[0].RequestSetQty
-        })).ToList();
+            return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+            {
+                models[0].LineCode,
+                models[0].RequestId,
+                models[0].ProductionId,
+                models[0].ScheduleDate,
+                models[0].ItemCode,
+                models[0].RequestSetQty
+            })).ToList();
+        }
+        else
+        {
+            sp = "sp_Wms_PartMaterialRequestWomin_GenerateListDetail";
+            return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+            {
+                models[0].LineCode,
+                NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+            })).ToList();
+        }
     }
+
     public async Task<List<StockDto>> GetListStock(RequestParameter param)
     {
         string sp = "sp_Wms_PartMaterialRequest_GetListStock";
@@ -71,7 +87,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         return (await _dbExecutor.QueryListAsync<StockScanDto>(sp, param.ToQueryObject())).ToList();
     }
 
-    public async Task<PartMaterialRequestWominEditDto> GetData(long idSeq)
+    public async Task<PartMaterialRequestWominEditDto> GetDataRequirement(long idSeq)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_GetDetail";
         return await _dbExecutor.QueryFirstOrDefaultAsync<PartMaterialRequestWominEditDto>(sp, new { IDSeq = idSeq });

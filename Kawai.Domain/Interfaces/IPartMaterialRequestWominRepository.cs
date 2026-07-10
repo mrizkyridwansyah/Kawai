@@ -13,7 +13,7 @@ public interface IPartMaterialRequestWominRepository
     Task Save(List<PartMaterialRequestWominModel> model, string userId);
     Task Remove(long requestId, string userId);
     
-    Task<PartMaterialRequestWominEditDto> GetData(long IDSeq);
+    Task<PartMaterialRequestWominEditDto> GetDataRequirement(long IDSeq);
     Task UpdateReq(PartMaterialRequestWominEditModel editwomin, string userId);
     
     Task<List<PartMaterialRequestWominReportDto>> WominReport(long requestId);

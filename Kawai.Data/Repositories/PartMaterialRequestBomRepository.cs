@@ -23,7 +23,7 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
         var paramFactory = param.GetParam("FactoryCode");
         var paramSupplier = param.GetParam("SupplierCode");
         var paramPONumber = param.GetParam("PONumber");
-        var paramRemainingFuckingCls = param.GetParam("RemainingCls");
+        var paramRemainingCls = param.GetParam("RemainingCls");
 
         string sp = "sp_Wms_PartMaterialRequestBom_GetListHeader";
         return (await _dbExecutor.QueryListAsync<PartMaterialRequestBomDto>(sp, new
@@ -33,7 +33,7 @@ public class PartMaterialRequestBomRepository : IPartMaterialRequestBomRepositor
             FactoryCode = paramFactory,
             SupplierCode = paramSupplier,
             PONumber = paramPONumber,
-            RemainingCls = paramRemainingFuckingCls == "ALL" ? (bool?)null : paramRemainingFuckingCls == "YES"
+            RemainingCls = paramRemainingCls == "ALL" ? (bool?)null : paramRemainingCls == "YES"
         })).ToList();
     }
 

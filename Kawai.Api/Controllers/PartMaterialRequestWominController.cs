@@ -38,9 +38,9 @@ public class PartMaterialRequestWominController : HahaController
     }
 
     [HttpGet("getdetail")]
-    public async Task<IActionResult> Get(long id)
+    public async Task<IActionResult> GetDataRequirement(long id)
     {
-        var result = await _partMaterialRequestWominRepository.GetData(id);
+        var result = await _partMaterialRequestWominRepository.GetDataRequirement(id);
         return Success(result);
     }
 
@@ -67,6 +67,9 @@ public class PartMaterialRequestWominController : HahaController
     [HttpPost("list-detail")]
     public async Task<IActionResult> ListDetail([FromBody] List<PartMaterialRequestWominModel> models)
     {
+        if(models == null || !models.Any())
+            return Invalid("Invalid Request Data. Please Choose Schedule!");
+
         var results = await _partMaterialRequestWominRepository.GetListDetail(models);
         return Success(results);
     }
