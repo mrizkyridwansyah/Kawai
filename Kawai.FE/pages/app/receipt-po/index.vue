@@ -259,13 +259,13 @@
                 :is-loading="isLoading"
                 :disabled="!menuPrivAllowUpdate"
               />
-              <v-button-print
+              <!-- <v-button-print
                 label="Print Receipt Report"
                 class="ml-1"
                 :print="printReport"
                 :is-loading="isLoading"
                 :disabled="!menuPrivAllowUpdate"
-              />
+              /> -->
               <v-button
                 :action="printBarcodesUsingJob"
                 label="Print Label PDF"
@@ -282,6 +282,13 @@
                 :is-loading="isLoading"
                 :disabled="!menuPrivAllowUpdate"
               />
+              <table class="ml-9">
+                <tr>
+                  <td>  <label class="form-label" style="font-size: medium;" >Total Qty DN</label></td>
+                   <td> <label class="ml-2" style="font-size: medium;" > : </label></td>
+                  <td>  <label id="TotalQtyDN"  class="ml-2" style="font-size: medium;"> {{ $func.formatMoney(model.QtyDN) }}</label></td>
+                </tr>
+              </table>
             </div>
           </td>
         </tr>
@@ -517,6 +524,7 @@ export default {
       DNDate: null,
       BCNumber: "",
       BCType: "",
+      QtyDN: "",
       BCDate: null,
       ReceiptDate: null,
       VehicleNo: "",
@@ -823,20 +831,31 @@ export default {
       }
     },
     printLabel: function () {
-      this.isLoading = true;
-      this.ds
-        .printLabel(this.filter.ReceiptId)
-        .then((dt) => {
-          toastSuccess("Data saved successfully!");
-          this.isNew = false;
-          this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
-          // this.reset();
-        })
-        .catch((err) => {
-          this.errors = err?.Errors;
-          toastDanger(err?.Message);
-        })
-        .finally(() => (this.isLoading = false));
+      let modalMessage = `<div style="font-size: medium"><strong>Anda akan melakukan print label barcode pada device printer</strong>.
+                <br>Anda yakin akan <strong>MELANJUTKAN</strong> proses ini?</div>`;
+
+      confirmSubmit(
+        () =>
+          new Promise((resolve) => {
+            this.isLoading = true;
+            this.ds
+              //.printLabel(this.filter.ReceiptId)
+              .then((dt) => {
+                toastSuccess("Data saved successfully!");
+                this.isNew = false;
+                this.filter.ReceiptId = dt.Data["Receipt Header"].Id;
+                // this.reset();
+              })
+              .catch((err) => {
+                this.errors = err?.Errors;
+                toastDanger(err?.Message);
+              })
+              .finally(() => (this.isLoading = false));
+            resolve();
+          }),
+        () => (this.isLoading = false),
+        modalMessage,
+      );
     },
 
     print: function () {

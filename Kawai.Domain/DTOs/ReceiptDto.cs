@@ -15,6 +15,7 @@ public class ReceiptDto: DataTableDto
     public string BCNumber { get; set; }
     public string BCType { get; set; }
     public DateTime BCDate { get; set; }
+    public decimal? QtyDN { get; set; }
     public string VehicleNo { get; set; }
     public string Transport { get; set; }
     public string ReferenceNo { get; set; }
