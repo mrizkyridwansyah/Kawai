@@ -64,10 +64,20 @@ public class PartMaterialRequestWominController : HahaController
     }
 
 
+    [HttpPost("check-valid")]
+    public async Task<IActionResult> CheckValidation([FromBody] List<PartMaterialRequestWominModel> models)
+    {
+        if (models == null || !models.Any())
+            return Invalid("Invalid Request Data. Please Choose Schedule!");
+
+        await _partMaterialRequestWominRepository.CheckValidGenerateDetail(models);
+        return Success();
+    }
+
     [HttpPost("list-detail")]
     public async Task<IActionResult> ListDetail([FromBody] List<PartMaterialRequestWominModel> models)
     {
-        if(models == null || !models.Any())
+        if (models == null || !models.Any())
             return Invalid("Invalid Request Data. Please Choose Schedule!");
 
         var results = await _partMaterialRequestWominRepository.GetListDetail(models);
@@ -91,40 +101,40 @@ public class PartMaterialRequestWominController : HahaController
     [HttpPost("save")]
     public async Task<IActionResult> Save([FromBody] List<PartMaterialRequestWominModel> models)
     {
-        var logs = new List<DataLogDto>();
-
         if (models == null || !models.Any())
             return Invalid("Invalid Request Data");
 
-        foreach (var item in models)
+        var newRequest = await _partMaterialRequestWominRepository.Save(models, Auth.User.UserID);
+
+        long newRequestId = 0;
+        string newRequestNo = string.Empty;
+
+        if (newRequest.TryGetValue("RequestId", out var idVal) && idVal != null)
+            newRequestId = Convert.ToInt64(idVal);
+
+        if (newRequest.TryGetValue("RequestNo", out var noVal) && noVal != null)
+            newRequestNo = noVal.ToString();
+
+        if(newRequestId != 0 && !string.IsNullOrEmpty(newRequestNo))
         {
-            var before = await _partMaterialRequestWominRepository.Capture(item.ProductionId);
-            logs.Add(new DataLogDto
+            var after = await _partMaterialRequestWominRepository.CaptureRequest(newRequestId);
+
+            await _logger.SaveDataLog(new DataLogDto
             {
                 DocumentType = "Part Material Request Womin",
-                EntityId = item.ProductionId.ToString(),
-                ReferenceId = item.ProductionId.ToString(),
-                Before = before,
-                After = null,
-                Action = DataLogAction.Update,
+                EntityId = newRequestId.ToString(),
+                ReferenceId = newRequestNo,
+                Before = null,
+                After = after,
+                Action = DataLogAction.Create,
                 Activity = "Save Part Material Request Womin"
             });
-        }
-
-        await _partMaterialRequestWominRepository.Save(models, Auth.User.UserID);
-
-        foreach (var log in logs)
-        {
-            var after = await _partMaterialRequestWominRepository.Capture(log.EntityId.ToInt32());
-            log.After = after;
-
-            await _logger.SaveDataLog(log);
         }
 
         return Success();
     }
 
-    
+
 
     [HttpDelete("remove")]
     public async Task<IActionResult> Remove(long requestId, string requestNo)
@@ -151,7 +161,7 @@ public class PartMaterialRequestWominController : HahaController
     public async Task<IActionResult> PrintBarcodeUsingJob(long requestId)
     {
         string key = Guid.NewGuid().ToString();
-        BackgroundJob.Enqueue<ExportService>(service => service.ExportWomin(requestId,  Auth.User.UserID, key));
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportWomin(requestId, Auth.User.UserID, key));
         return Pending(message: "Data Export sedang diproses!");
     }
 
