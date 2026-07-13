@@ -49,9 +49,7 @@ public class NGClaim
 
 public class NGClaimDetail
 {
-    [Required(ErrorMessage = "PO Number tidak boleh kosong")]
-    [MaxLength(50, ErrorMessage = "PO Number tidak boleh lebih dari 50 karakter")]
-    public string PONumber { get; set; }
+   
 
     [Required(ErrorMessage = "Receipt Number tidak boleh kosong")]
     [MaxLength(50, ErrorMessage = "Receipt Number tidak boleh lebih dari 50 karakter")]
@@ -61,9 +59,10 @@ public class NGClaimDetail
     [MaxLength(25, ErrorMessage = "Item Code tidak boleh lebih dari 25 karakter")]
     public string ItemCode { get; set; }
 
-    public decimal Qty { get; set; }
-   
+    public decimal RemainingClaimQty { get; set; }
+    public decimal ClaimReceiptQty { get; set; }
 
 
-  
+
+
 }

@@ -71,14 +71,15 @@ public class NGClaimDetailDto : DataTableDto
 {
     public long DetailID { get; set; }
     public long ClaimID { get; set; }
-    public string PONumber { get; set; }
-    public string ReceiptNumber { get; set; }
+   public string ReceiptNumber { get; set; }
     public DateTime? ReceiptDate { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
     public string UnitClsCode { get; set; }
     public string UnitClsName { get; set; }
-    public decimal Qty { get; set; }
+    public decimal ClaimReceiptQty { get; set; }
+    public decimal TotalClaimQty { get; set; }
+    public decimal RemainingClaimQty { get; set; }
     public DateTime? LastUpdate { get; set; }
     public string LastUser { get; set; }
 }

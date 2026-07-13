@@ -192,8 +192,9 @@
                   <th class="text-center">Item Code</th>
                   <th class="text-center">Item Name</th>
                   <th class="text-center">Unit</th>
-                  <th class="text-center">Qty</th>
-                  
+                 
+                  <th class="text-center">Remaining Claim Qty</th>
+                  <th class="text-center">Qty Claim</th>
                   <th class="text-center">Last Update</th>
                   <th class="text-center">Last User</th>
                 </tr>
@@ -211,10 +212,14 @@
                   <td>{{ item.ItemCode }}</td>
                   <td>{{ item.ItemName }}</td>
                   <td>{{ item.UnitClsName }}</td>
-                  <td class="text-right">
+                     
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.RemainingClaimQty) }}
+                    </td>
+                    <td class="text-right">
                      <input-money-small
-                          v-model="item.Qty"
-                          :errors="errors?.[`Details[${idx}].Qty`]"
+                          v-model="item.ClaimReceiptQty"
+                          :errors="errors?.[`Details[${idx}].ClaimReceiptQty`]"
                           style="width: 100px"
                         />
                        </td>
@@ -392,10 +397,10 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = details.map((p) => {
         return {
-          PONumber: p.ReceiptNumber,
           ReceiptNumber: p.ReceiptNumber,
           ItemCode: p.ItemCode,
-          Qty: p.Qty,
+          RemainingClaimQty: p.RemainingClaimQty,
+          ClaimReceiptQty: p.ClaimReceiptQty,
         };
       });
 

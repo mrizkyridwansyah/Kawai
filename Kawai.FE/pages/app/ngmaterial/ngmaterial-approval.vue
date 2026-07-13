@@ -213,9 +213,9 @@
                   <td>{{ item.ItemCode }}</td>
                   <td>{{ item.ItemName }}</td>
                   <td>{{ item.UnitClsName }}</td>
-                  <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
+                  <td class="text-right">{{ $func.formatMoney(item.ClaimReceiptQty) }}</td>
                    <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-                  <td>{{ item.LastUser }}</td>
+                  <td>{{ item.LastUser }}</td> 
                 </tr>
               </tbody>
             </table>
@@ -373,10 +373,10 @@ export default {
       this.model.SupplierCode = this.filter.SupplierCode;
       this.model.Details = details.map((p) => {
         return {
-          PONumber: p.ReceiptNumber,
           ReceiptNumber: p.ReceiptNumber,
           ItemCode: p.ItemCode,
-          Qty: p.Qty,
+          RemainingClaimQty: p.RemainingClaimQty,
+          ClaimReceiptQty: p.ClaimReceiptQty,
         };
       });
 
