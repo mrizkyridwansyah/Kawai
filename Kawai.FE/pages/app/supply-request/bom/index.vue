@@ -351,7 +351,10 @@ export default {
 
           if (!grouped[key]) {
             let totalRequestQty = dt.Data.Items.filter(
-              (x) => x.PONumber == item.PONumber && x.RequestId != null,
+              (x) =>
+                x.PONumber == item.PONumber &&
+                x.ItemCode == item.ItemCode &&
+                x.RequestId != null,
             ).reduce((a, b) => a + (b.RequestSetQty || 0), 0);
 
             grouped[key] = {
