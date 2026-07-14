@@ -62,6 +62,7 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public string WorkStationName { get; set; }
     public string ParentItemCode { get; set; }
     public string ParentItemName { get; set; }
+    public string Model { get; set; }
     public string ChildItemCode { get; set; }
     public string ChildItemName { get; set; }
     public string ChildClassificationPart { get; set; }
