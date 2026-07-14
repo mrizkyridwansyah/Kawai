@@ -41,7 +41,7 @@ public class InventoryReportController : HahaController
 
         int rowIdx = 1;
 
-        List<string> headers = ["Warehouse", "Product Code", "Product Name", "Lot No",
+        List<string> headers = ["Warehouse", "Product Code", "Product Name",
                 "Pre Month", "Receipt", "Supply", "Loss / Reject","Current (A)","Allocation (B)","Ready Stock (C = A-B)","Inventory","Remarks","User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
@@ -57,8 +57,8 @@ public class InventoryReportController : HahaController
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.ProductName);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LotNo);
-            colIdx++;
+            //ExcelHelper.SetCell(row, colIdx, result.LotNo); //14-07-2026 request summary data tanpa area & lotno
+            //colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.PreMonth);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Receipt);

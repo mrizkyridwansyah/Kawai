@@ -2,11 +2,11 @@
 
 public class InventoryReportDto : DataTableDto
 {
-    public string AreaCode { get; set; }
+    //public string AreaCode { get; set; } //14-07-26 request summary tanpa area & lot
     public string Warehouse { get; set; }
     public string ProductCode { get; set; }
     public string ProductName { get; set; }
-    public string LotNo { get; set; }
+    //public string LotNo { get; set; } //14-07-26 request summary tanpa area & lot
     public decimal PreMonth { get; set; }
     public decimal Receipt { get; set; }
     public decimal Supply { get; set; }

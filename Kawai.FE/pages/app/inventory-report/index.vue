@@ -13,7 +13,7 @@
               style-desc="width: 250px;"
             />
           </td>
-          <td style="padding-top: 5px; padding-left: 15px">
+          <!-- <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Area</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="3">
@@ -25,7 +25,7 @@
               style-code="width: 150px;"
               style-desc="width: 250px;"
             />
-          </td>
+          </td> -->
         </tr>
         <tr>
           <td style="padding-top: 5px">
@@ -63,10 +63,10 @@
             <thead>
               <tr>
                 <th class="text-center">Warehouse</th>
-                <th class="text-center">Area</th>
+                <!-- <th class="text-center">Area</th> -->
                 <th class="text-center">Product Code</th>
                 <th class="text-center">Product Name</th>
-                <th class="text-center">Lot No</th>
+                <!-- <th class="text-center">Lot No</th> -->
                 <th class="text-center">Pre Month</th>
                 <th class="text-center">Receipt</th>
                 <th class="text-center">Supply</th>
@@ -83,10 +83,10 @@
             <tbody>
               <tr v-for="(item, i) in ds.data.Items" :key="i">
                 <td>{{ item.Warehouse }}</td>
-                <td>{{ item.AreaCode }}</td>
+                <!-- <td>{{ item.AreaCode }}</td> -->
                 <td>{{ item.ProductCode }}</td>
                 <td>{{ item.ProductName }}</td>
-                <td>{{ item.LotNo }}</td>
+                <!-- <td>{{ item.LotNo }}</td> -->
                 <td class="text-end">{{ $func.formatMoney(item.PreMonth) }}</td>
                 <td class="text-end">{{ $func.formatMoney(item.Receipt) }}</td>
                 <td class="text-end">{{ $func.formatMoney(item.Supply) }}</td>
@@ -117,9 +117,9 @@ export default {
       keywordKeys: [
         { Id: "ProductCode", Name: "Product Code" },
         { Id: "ProductName", Name: "Product Name" },
-        { Id: "AreaCode", Name: "Area" },
+        //{ Id: "AreaCode", Name: "Area" },
         { Id: "Warehouse", Name: "Warehouse" },
-        { Id: "LotNo", Name: "Lot No" },
+        //{ Id: "LotNo", Name: "Lot No" },
       ],
 
       filter: {
@@ -183,7 +183,7 @@ export default {
       const filters = [
         {
           WarehouseCode: this.filter.warehouse || "",
-          AreaCode: this.filter.area || "",
+          //AreaCode: this.filter.area || "",
           Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
           Keyword: this.filter.keyword || "",
         },
@@ -196,7 +196,7 @@ export default {
 
     reset() {
       this.filter.warehouse = null;
-      this.filter.area = null;
+      //this.filter.area = null;
       this.filter.keyword = null;
       this.filter.sorts = {};
       this.search();
@@ -206,7 +206,7 @@ export default {
       const filters = [
         {
           WarehouseCode: this.filter.warehouse || "",
-          AreaCode: this.filter.area || "",
+         // AreaCode: this.filter.area || "",
           Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
           Keyword: this.filter.keyword || "",
         },
