@@ -88,6 +88,7 @@
             <thead>
               <tr>
                 <th class="text-center"></th>
+                <th class="text-center">Status Womin</th>
                 <th class="text-center">Schedule Date</th>
                 <th class="text-center">Item Code</th>
                 <th class="text-center">Item Name</th>
@@ -112,6 +113,7 @@
                       @click="(e) => check(e, item)"
                     />
                   </td>
+                  <td>{{ item.StatusWomin }}</td>
                   <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
                   <td>
                     <div style="display: flex; justify-content: space-between">
@@ -150,7 +152,7 @@
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.ProdResultID"
                 >
-                  <td colspan="9"></td>
+                  <td colspan="10"></td>
                   <td>{{ dtl.BarcodeNo }}</td>
                   <td class="text-right">
                     {{ $func.formatMoney(dtl.BarcodeQty) }}

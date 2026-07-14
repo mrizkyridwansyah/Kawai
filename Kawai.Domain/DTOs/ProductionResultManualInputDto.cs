@@ -17,6 +17,7 @@ public class ProductionResultManualInputDto : DataTableDto
     public decimal? BarcodeQty { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
+    public string StatusWomin { get; set; }
 }
 
 public class ProductionResultManualInputDetailDto : DataTableDto
