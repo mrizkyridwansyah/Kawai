@@ -400,9 +400,9 @@ export default {
     },
     check: function (e, item) {
       const isChecked = e.target.checked;
-      this.groupLists.forEach((x) => {
-        x.Selected = false;
-      });
+      // this.groupLists.forEach((x) => {
+      //   x.Selected = false;
+      // });
       item.Selected = isChecked;
     },
     newRequest: function () {

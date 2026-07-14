@@ -97,7 +97,7 @@
             <input-text
               v-model="model.BCNumber"
               :errors="errors?.BCNumber"
-              :disabled="model.BCNumber != null && model.BCNumber != ''"
+              :disabled="disallowEditBC"
               style-date="width: 100px !important"
             />
           </td>
@@ -317,6 +317,7 @@ export default {
     counter: 0,
     errors: {},
     menuPrivAllowUpdate: false,
+    disallowEditBC: false,
   }),
   computed: {
     ds: function () {
@@ -375,7 +376,11 @@ export default {
 
         this.groupLists = Object.values(grouped);
 
-        this.ds.loadHeader().then((dt) => (this.model = dt));
+        this.ds.loadHeader().then((dt) => {
+          this.model = dt;
+          this.disallowEditBC =
+            this.model.BCNumber != null && this.model.BCNumber != "";
+        });
       });
     },
 
