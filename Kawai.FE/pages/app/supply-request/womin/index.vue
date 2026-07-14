@@ -6,18 +6,12 @@
           <td style="padding-top: 5px">
             <label class="form-label">Schedule Date</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+          <td
+            style="padding-top: 5px; padding-left: 15px; width: 180px"
+            colspan="3"
+          >
             <input-date
               v-model="filter.PeriodFrom"
-              style-date="width: 100px !important"
-            />
-          </td>
-          <td style="padding-top: 5px">
-            <label class="form-label">To</label>
-          </td>
-          <td style="padding-top: 5px; padding-left: 15px">
-            <input-date
-              v-model="filter.PeriodUntil"
               style-date="width: 100px !important"
             />
           </td>
@@ -218,7 +212,6 @@ export default {
       FactoryCode: null,
       ManufactureCode: null,
       PeriodFrom: null,
-      PeriodUntil: null,
       LineCode: null,
       Model: null,
       RemainingCls: null,
@@ -255,9 +248,6 @@ export default {
     "filter.PeriodFrom": function () {
       this.resetGrid();
     },
-    "filter.PeriodUntil": function () {
-      this.resetGrid();
-    },
   },
   mounted: function () {
     const f = this.ds.filter.Filters?.[0];
@@ -269,7 +259,6 @@ export default {
       this.filter.Model = f.Model;
       this.filter.RemainingCls = f.RemainingCls;
       this.filter.PeriodFrom = f.PeriodFrom ? new Date(f.PeriodFrom) : null;
-      this.filter.PeriodUntil = f.PeriodUntil ? new Date(f.PeriodUntil) : null;
 
       // OPTIONAL: auto load
       this.search();
@@ -282,23 +271,6 @@ export default {
       this.groupLists = [];
     },
     search: function () {
-      let rangePeriodDays = this.$func.dateDiffInDays(
-        this.filter.PeriodFrom,
-        this.filter.PeriodUntil,
-      );
-
-      if (
-        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
-      ) {
-        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
-        return;
-      }
-
-      if (rangePeriodDays > 30) {
-        toastWarning("Jarak Periode hanya 30 hari.");
-        return;
-      }
-
       if (!this.filter.ManufactureCode) {
         toastWarning("Silahkan pilih process.");
         return;
@@ -335,7 +307,7 @@ export default {
             new Date(this.filter.PeriodFrom),
           ),
           PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodUntil),
+            new Date(this.filter.PeriodFrom),
           ),
         },
       ];
@@ -391,12 +363,7 @@ export default {
       this.filter.RemainingCls = null;
 
       let today = new Date();
-      this.filter.PeriodFrom = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1,
-      );
-      this.filter.PeriodUntil = today;
+      this.filter.PeriodFrom = today;
       this.search();
     },
     check: function (e, item) {
@@ -470,12 +437,7 @@ export default {
 
     setDefaultFilter: function () {
       let today = new Date();
-      this.filter.PeriodFrom = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1,
-      );
-      this.filter.PeriodUntil = today;
+      this.filter.PeriodFrom = today;
       this.filter.Model = "ALL";
       this.filter.RemainingCls = "ALL";
     },
