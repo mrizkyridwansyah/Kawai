@@ -33,6 +33,12 @@ public class ReprintController : HahaController
         var results = await _reprintRepository.GetAll(parameter);
         return DataTableResult(parameter, results);
     }
+    [HttpPost("list-sourcedata")]
+    public async Task<IActionResult> ListSourceData([FromBody] RequestParameter parameter)
+    {
+        var results = await _reprintRepository.GetAllSourceData(parameter);
+        return DataTableResult(parameter, results);
+    }
 
     [HttpPost("printupdate")]
     public async Task<IActionResult> Printupdate([FromBody] List<Dictionary<string, object>> rows)

@@ -47,6 +47,15 @@
                     style-desc="width: 250px"
                   />
                 </td>
+                <td style="padding-left: 30px"><label class="form-label">Source Data</label></td>
+                <td style="padding-left: 15px" colspan="3">
+                  <filter-source-barcode
+                    class="form-control"
+                    v-model="filter.sourcedata"
+                    style="width: 250px"
+                  />
+                  
+                </td>
               </tr>
               <tr>
                 <td style="padding-top: 5px">
@@ -63,10 +72,20 @@
                     style-code="width: 110px"
                     style-desc="width: 250px"
                   />
+
+                </td>
+                 <td style="padding-left: 30px ;padding-top: 5px">
+                  <label class="form-label"> </label>
+                </td>
+                <td style="padding-left: 15px; padding-top: 5px" colspan="3">
+                  <label class="form-label"> </label>
+                  
                 </td>
               </tr>
             </table>
           </td>
+         
+          
         </tr>
       </table>
       <div class="d-flex flex-fill mt-1">
@@ -163,6 +182,7 @@ export default {
       warehouse: null,
       area: null,
       address: null,
+      sourcedata:null,
       sorts: {
         ItemCode: "asc",
         ItemName: "asc",
@@ -221,6 +241,10 @@ export default {
       this.selectedPrint = [];
       this.ds.data.Items = [];
     },
+     "filter.sourcedata": function () {
+      this.selectedPrint = [];
+      this.ds.data.Items = [];
+    },
     "filter.keyword": function () {
       this.search();
     },
@@ -267,12 +291,13 @@ export default {
           WarehouseCode: this.filter.warehouse || "",
           AreaCode: this.filter.area || "",
           AddressCode: this.filter.address || "",
+          SourceData: this.filter.sourcedata || "",
         },
       ];
 
       this.displayedCount = 50;
       this.ds.setFilter(filters);
-      this.ds.load();
+      this.ds.loadsourcedata();
     },
 
     checkAll: function (checked) {
