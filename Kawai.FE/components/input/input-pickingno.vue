@@ -121,9 +121,7 @@ export default {
             }${
               this.typeDate
                 ? "&typeDate=" +
-                  this.typeDate +
-                  "&claimId=" + this.claimId
-                : ""
+                  this.typeDate : ""
             }&showOptionAll=${this.showOptionAll || false}`,
           )
           .then((p) => {

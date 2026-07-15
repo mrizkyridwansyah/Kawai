@@ -33,6 +33,7 @@ public class ProductionNGClaimDetailDto : DataTableDto
 {
     public long DetailID { get; set; }
     public long ClaimID { get; set; }
+    public long InspectionID { get; set; }
     public string PickingNo { get; set; }
     public string BarcodeNo { get; set; }
     public string LotNo { get; set; }

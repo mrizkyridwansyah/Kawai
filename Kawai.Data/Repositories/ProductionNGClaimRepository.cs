@@ -91,6 +91,7 @@ public class ProductionNGClaimRepository : IProductionNGClaimRepository
         string sqlHeader = "sp_Wms_ProductionNGClaimMaterial_Update";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
+            prodngclaim.ClaimId,
             prodngclaim.ClaimNo,
             prodngclaim.LineCode,
             prodngclaim.ClaimDate,
@@ -106,6 +107,7 @@ public class ProductionNGClaimRepository : IProductionNGClaimRepository
         string sqlHeader = "sp_Wms_ProductionNGClaimMaterial_Approve";
         await _dbExecutor.ExecuteAsync(sqlHeader, new
         {
+            prodngclaim.ClaimId,
             prodngclaim.ClaimNo,
             prodngclaim.LineCode,
             prodngclaim.ClaimDate,

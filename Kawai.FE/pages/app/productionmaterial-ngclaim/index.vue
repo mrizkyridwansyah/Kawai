@@ -130,8 +130,8 @@
             :is-loading="isLoading"
           />
          <v-button-submit
-            :submit="submitDraft"
-            :disabled="!menuPrivAllowUpdate"
+            :submit="submitprocess"
+           :disabled="isNew || !menuPrivAllowUpdate"
              label="Submit Claim"
             icon="check"
             cClass="mr-1"
@@ -187,9 +187,29 @@
                   <td>{{ item.LotNo }}</td>
                   <td>{{ item.UnitClsName }}</td>
                   <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
-                 <td>{{ item.Reason }}</td>
-                 <td>{{ item.RemarksDetail }}</td>
-                  <td> </td>
+                 <td>
+                   <input-text
+                        v-model="item.Reason"
+                        :errors="errors?.[`Details[${idx}].Reason`]"
+                        style="width: 200px"
+                      />
+                       </td>
+                 <td>
+                  <input-text
+                        v-model="item.RemarksDetail"
+                        :errors="errors?.[`Details[${idx}].RemarksDetail`]"
+                        style="width: 200px"
+                      />
+                     </td>
+                  <td>
+                     <a
+                        href="javascript:void(0);"
+                        @click="() => showModal(item, 'VIEW')"
+                      >
+                        View
+                      </a>
+
+                  </td>
                   <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                   <td>{{ item.LastUser }}</td>
                 </tr>
@@ -217,6 +237,25 @@
       </div>
     </template>
   </v-frame>
+   <v-modal
+    ref="modalIQC"
+    id="modal-form-iqc-result"
+    :title="title"
+    size="md"
+    @hidden="
+      () => {
+        this.$refs.formIQC.resetForm();
+        modalMode = '';
+      }
+    "
+  >
+    <modal-form-iqc-result
+      ref="formIQC"
+      :id="idSelected"
+      :mode="modalMode"
+      @submitted="close"
+    />
+  </v-modal>
 </template>
 
 <script>
@@ -242,6 +281,7 @@ export default {
       Details: [],
     },
     listNGDetail: [],
+    Details: [],
     debounce: null,
     isLoading: false,
     errors: {},
@@ -255,6 +295,7 @@ export default {
     },
   },
   watch: {
+   
     "filter.LineCode": function () {
       this.listNGDetail = [];
     },
@@ -265,7 +306,7 @@ export default {
         LineCode: "",
         Priority: "",
         Status: "",
-        ClaimDate: null,
+        ClaimDate: today,
         Notes: "",
         Details: [],
       };
@@ -305,7 +346,7 @@ export default {
         LineCode: "",
         Priority: "",
         Status: "",
-        ClaimDate: null,
+        ClaimDate: today,
         Notes: "",
         Details: [],
       };
@@ -329,11 +370,16 @@ export default {
       let details = this.listNGDetail.filter((x) => x.Selected);
       if (details.length == 0) {
         this.isLoading = false;
-        toastDanger("Please Choose Barcode No!");
+        toastDanger("Please Choose Picking No!");
+        return;
+      }
+      if (!this.model.Priority) {
+        toastDanger("Please choose priority!");
         return;
       }
 
-      this.model.ClaimId = this.filter.ClaimId;
+
+      this.model.ClaimId = this.filter.ClaimId?.toString() || "0";
       this.model.LineCode = this.filter.LineCode;
       this.model.Details = details.map((p) => {
         return {
@@ -343,7 +389,7 @@ export default {
           ItemCode: p.ItemCode,
           RemarksDetail: p.RemarksDetail,
           Reason: p.Reason,
-          Qty: p.Qty,
+          Qty: p.Qty?.toString() || "0",
 
         };
       });
@@ -353,6 +399,34 @@ export default {
       } else {
         this.updateClaim();
       }
+    },
+
+    submitprocess: function () {
+      this.isLoading = true;
+      this.errors = {};
+
+      let details = this.listNGDetail.filter((x) => x.Selected);
+      if (details.length == 0) {
+        this.isLoading = false;
+        toastDanger("Please Choose Picking No!");
+        return;
+      }
+
+       if (!this.model.Priority) {
+        toastDanger("Please choose priority!");
+        return;
+      }
+      this.ds
+        .submit(this.model)
+        .then((dt) => {
+          toastSuccess("Data Approved successfully!");
+          this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
     },
     getClaim: function () {
       this.ds.loadDetail(this.filter.ClaimId).then((dt) => {
@@ -386,6 +460,17 @@ export default {
         this.listNGDetail.map((x) => (x.Selected = x.DetailID > 0));
       });
     },
+    showModal: function (dt, mode) {
+      this.title = "Evidence Detail";
+      this.modalMode = mode;
+      this.idSelected = dt.InspectionID;
+      this.$bvModal.show("modal-form-iqc-result");
+    },
+    close: function () {
+      this.$bvModal.hide("modal-form-iqc-result");
+      this.search();
+    },
+
     createClaim: function () {
       this.ds
         .create(this.model)
