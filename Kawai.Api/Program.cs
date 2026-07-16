@@ -123,6 +123,7 @@ builder.Services.AddControllers(options =>
 {
     opt.JsonSerializerOptions.PropertyNamingPolicy = null;
     opt.JsonSerializerOptions.Converters.Add(new EpochDateTimeConverter());
+    opt.JsonSerializerOptions.Converters.Add(new JsonTrimString());
 })
 .ConfigureApiBehaviorOptions(options =>
 {
