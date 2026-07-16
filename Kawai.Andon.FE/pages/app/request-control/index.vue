@@ -38,7 +38,7 @@
         <!-- Area Filter -->
         <div class="col-12 col-md-5 col-lg-5 d-flex align-items-center">
           <label class="form-label mb-0 me-2" style="min-width: 40px"
-            >Grouping Class Part</label
+            >Parts Group</label
           >
           <div class="flex-grow-1">
             <filter-area

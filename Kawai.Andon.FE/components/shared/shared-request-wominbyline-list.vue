@@ -50,7 +50,7 @@ export default {
       },
       sortItems: [
         {
-          label: "Grouping Class Part",
+          label: "Parts Group",
           value: "ChildClassificationPartDesc",
           selected: true,
           direction: "asc",
