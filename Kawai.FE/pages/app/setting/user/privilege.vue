@@ -291,10 +291,10 @@
                   <thead>
                     <tr>
                       <th class="text-center" style="vertical-align: middle">
-                        Grouping Class Part Code
+                        Parts Group Code
                       </th>
                       <th class="text-center" style="vertical-align: middle">
-                         Grouping Class Part Name
+                         Parts Group Name
                       </th>
                      
                       <th class="text-center" style="vertical-align: middle">
@@ -391,7 +391,7 @@ export default {
       { value: "Factory", text: "Factory", defaultActive: false },
       { value: "Warehouse", text: "Warehouse", defaultActive: false },
       { value: "Area", text: "Area", defaultActive: false },
-      { value: "GroupingClassPart", text: "Grouping Class Part", defaultActive: false },
+      { value: "GroupingClassPart", text: "Parts Group", defaultActive: false },
       { value: "Mobile", text: "Mobile", defaultActive: false },
     ],
     allowed: {

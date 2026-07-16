@@ -543,7 +543,7 @@
                             padding-left: 15px;
                           "
                         >
-                          <label class="form-label">Grouping Part Cls</label>
+                          <label class="form-label">Parts Group</label>
                         </td>
                         <td style="padding-left: 15px; padding-top: 5px">
                           <input-cls

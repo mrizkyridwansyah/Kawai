@@ -133,7 +133,7 @@
                       <th class="text-center">Line</th>
                       <th class="text-center">Production Date</th>
                       <th class="text-center">Request No</th>
-                      <th class="text-center">Grouping Part Class</th>
+                      <th class="text-center">Parts Group</th>
                       <th class="text-center">Item</th>
                       <th class="text-center">Model</th>
                       <th class="text-center">Work Station</th>

@@ -16,7 +16,7 @@
           <tr>
             <th class="text-center">#</th>
             
-                <th class="text-center">Grouping Class Part</th>			
+                <th class="text-center">Parts Group</th>			
                 <th class="text-center">Requirement Qty</th>			
                 <th class="text-center">Total Scan</th>		
                 <th class="text-center">Status</th>	
