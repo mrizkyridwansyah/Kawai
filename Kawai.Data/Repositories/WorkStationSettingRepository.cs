@@ -95,7 +95,7 @@ public class WorkStationSettingRepository : IWorkStationSettingRepository
             lineCode = wssettinglist.LineCode
         }, CommandType.StoredProcedure));
 
-        foreach (var wsSet in wssettinglist.SettingList.Where(p => (p.AllowSetting.HasValue && p.AllowSetting.Value)))
+        foreach (var wsSet in wssettinglist.SettingList.ToList())
         {
             commands.Add(("sp_WMS_WorkStationSetting_Upd", new
             {

@@ -49,7 +49,7 @@
               class="btn btn-sm btn-primary btn-elevate"
               @click="submit"
               :disabled="isLoading || !menuPrivAllowUpdate"
-             >
+            >
               <div
                 class="spinner-border spinner-border-sm text-light"
                 role="status"
@@ -86,7 +86,7 @@
         <template #table-content>
           <table
             class="table table-striped table-bordered mb-0 align-middle v-fixed-table"
-              style="table-layout:auto; "
+            style="table-layout: auto"
             v-if="!ds.isLoading && !ds.isNetworkError && !ds.isServerError"
             ref="table"
           >
@@ -131,7 +131,7 @@
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode"
-                       :include-temp="true"
+                      :include-temp="true"
                       :errors="item.errors?.StopPointCode"
                       style-code="width:200px"
                       @update:modelValue="
@@ -140,7 +140,7 @@
                     />
                   </div>
                 </td>
-                 <td style="width: max-content !important">
+                <td style="width: max-content !important">
                   <div style="justify-items: center; display: grid">
                     <input-stoppointbyaddress
                       :line="filter.linecode"
@@ -155,13 +155,13 @@
                     />
                   </div>
                 </td>
-                 <td style="width: max-content !important">
+                <td style="width: max-content !important">
                   <div style="justify-items: center; display: grid">
                     <input-stoppointbyaddress
                       :line="filter.linecode"
                       :workstation="item.WorkStationCode"
                       v-model="item.StopPointCode3"
-                       style-code="width:200px"
+                      style-code="width:200px"
                       :include-temp="true"
                       :errors="item.errors?.StopPointCode3"
                       @update:modelValue="
@@ -226,7 +226,7 @@ export default {
     selectedPrint: [],
     isLoading: false,
     isLoadingPrint: false,
-      menuPrivAllowUpdate: false,
+    menuPrivAllowUpdate: false,
   }),
   computed: {
     ds: function () {
@@ -245,7 +245,7 @@ export default {
     },
   },
   mounted: function () {
-     this.dsMenu.privileges().then((dt) => {
+    this.dsMenu.privileges().then((dt) => {
       this.menuPrivAllowUpdate = dt.Data.filter(
         (a) => a.MenuID == "A14",
       )[0].AllowUpdate;
