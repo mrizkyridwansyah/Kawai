@@ -33,6 +33,20 @@ public class AndonFilterController : HahaController
         return Success(results);
     }
 
+    //get ddl area
+    [HttpGet("ddstatus")]
+    public async Task<IActionResult> DDLStatus(string keyword, string ids)
+    {
+        var results = await _andonFilter.DDLStatus(keyword);
+
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.StatusCode)).ToList();
+        }
+        return Success(results);
+    }
+
     [HttpGet("ddl-linecompany-search")]
     public async Task<IActionResult> DDLLineSearch(string keyword, string companyCode, string manufacture, string ids)
     {

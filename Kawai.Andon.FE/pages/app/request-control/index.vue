@@ -13,35 +13,42 @@
       v-show="showFilter"
       @click.stop
     >
-      <!--dropdown area-->
-      <!--dropdown area-->
-      <div class="row align-items-center mt-1">
-        <!-- Line Filter -->
-        <div class="col-12 col-md-5 col-lg-5 d-flex align-items-center">
-          <label class="form-label mb-0 me-2" style="min-width: 40px"
-            >Line</label
-          >
-          <div class="flex-grow-1">
+    <table style="width: 99%;">
+      <tr>
+        <td Style="width:2%"></td>
+        <td Style="width:10%"> <label class="form-label mb-0 me-2" style="min-width: 40px">Line</label></td>
+        <td Style="width:39%">     
             <filter-line-factory
               class="form-control w-100"
               company="11111"
               manufacture="ALL"
               v-model="filter.line"
+              v-model:line-name="filter.lineName"
               :show-option-all="true"
               default-option-all="ALL"
               style-code="width: 110px"
               style-desc="width: 250px"
             />
-          </div>
-        </div>
-
-        <!-- Area Filter -->
-        <div class="col-12 col-md-5 col-lg-5 d-flex align-items-center">
-          <label class="form-label mb-0 me-2" style="min-width: 40px"
-            >Parts Group</label
-          >
-          <div class="flex-grow-1">
-            <filter-area
+         </td>
+        <td Style="width:1%"></td>
+        <td Style="width:10%"><label class="form-label mb-0 me-2" style="min-width: 40px">Preparation Status</label></td>
+        <td Style="width:39%">
+           <filter-status
+              class="form-control w-100"
+              v-model="filter.status"
+             :show-option-all="true"
+              default-option-all="ALL"
+              v-model:status-descs="filter.statusDescs"
+              
+            />
+             </td>
+         <td Style="width:8%"></td>
+      </tr>
+      <tr style="height:40px ;">
+        <td Style="width:2%"></td>
+        <td Style="width:10%"> <label class="form-label mb-0 me-2" style="min-width: 40px">Parts Group</label></td>
+        <td Style="width:39%">     
+           <filter-area
               class="form-control w-100"
               v-model="filter.area"
                  :show-option-all="true"
@@ -49,14 +56,16 @@
               v-model:area-name="filter.areaName"
               warehouse=""
             />
-          </div>
-        </div>
-
-        <!-- Search Button -->
-        <div class="col-12 col-md-2 col-lg-auto d-flex align-items-center">
-          <v-button-search :search="search" />
-        </div>
-      </div>
+         </td>
+        <td Style="width:1%"></td>
+        <td Style="width:10%"></td>
+        <td Style="width:39%">  <v-button-search :search="search" /></td>
+         <td Style="width:8%"></td>
+      </tr>
+      <tr></tr>
+      <tr></tr>
+    </table>
+    
     </div>
 
     <div class="panel-body" id="panelbody">
@@ -221,8 +230,10 @@ export default {
       // warehouse: null,
       area: null,
       areaName: "",
+      status:"",
       line: null,
       lineName: "",
+      statusDescs:"",
     },
 
      renderLimits: {
@@ -234,6 +245,7 @@ export default {
     ds: function () {
       return useWominRequest();
     },
+    
   },
   watch: {
  
@@ -292,15 +304,16 @@ export default {
       }
     },
     search: function () {
+       
       if (this.isLoading) {
         console.log("masih loading bro!");
         return;
       }
-
+   
       this.isLoading = true;
 
       this.ds
-        .load(this.filter.line, this.filter.area)
+        .load(this.filter.line, this.filter.area , this.filter.status)
         .then((dt) => {
           this.list = dt.Data;
           //total diambil dari countdata datalist
@@ -326,7 +339,7 @@ export default {
           // Ubah teks judul panel sesuai area yang difilter
           const headerPanel = document.getElementById("header-panel");
           if (headerPanel) {
-            headerPanel.innerText = `Remaining Item - Material Type (${this.filter.areaName})`;
+            headerPanel.innerText = `Remaining Item - Material Type (Line : ${this.filter.lineName} | Parts Group : ${this.filter.areaName} | Preparation Status : ${this.filter.statusDescs} )`;
           }
         }, 100);
       }

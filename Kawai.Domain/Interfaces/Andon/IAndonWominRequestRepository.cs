@@ -10,6 +10,7 @@ public interface IAndonWominRequestRepository
 
     #region ANDON
     Task<List<AndonWominRequestDto>> GetListNSummary(string line, string Area);
+    Task<List<AndonWominRequestDto>> GetListNSummaryStatus(string line, string Area , string status);
     Task<List<AndonWominRequestDetailDto>> GetListWomin(RequestParameter parameter);
     Task<List<AndonWominRequestDetailDto>> GetListWominByLine(RequestParameter parameter);
 

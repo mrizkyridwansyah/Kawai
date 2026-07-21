@@ -11,6 +11,7 @@ public interface IAndonFilterRepository
     #region ANDON
     Task<List<AndonFilterDto>> DDLArea(string keyword, string warehouseCode);
     Task<List<AndonFilterDto>> DDLLine(string keyword);
+    Task<List<AndonFilterDto>> DDLStatus(string keyword);
     Task<List<AndonFilterDto>> DDLModel(string keyword);
     Task<List<AndonFilterDto>> DDLSupplier(string keyword);
     #endregion

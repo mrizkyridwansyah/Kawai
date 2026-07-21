@@ -16,13 +16,13 @@ export const useWominRequest = defineStore("WominRequest", {
     },
   }),
   actions: {
-    load: function (line = null, area = null) {
+    load: function (line = null, area = null, status = null) {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
       return new Promise((resolve, reject) => {
         app.$http
           .get(
-            `/andon/womin-request/list?line=${line || ""}&area=${area || ""}`,
+            `/andon/womin-request/list-bystatus?line=${line || ""}&area=${area || ""}&status=${status || ""}`,
           )
           .then(({ data }) => {
             this.data = data.Data;

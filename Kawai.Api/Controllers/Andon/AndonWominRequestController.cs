@@ -22,6 +22,12 @@ public class AndonWominRequestController : HahaController
         var results = await _andonWominRequest.GetListNSummary(line, area);
         return Success(results);
     }
+    [HttpGet("list-bystatus")]
+    public async Task<IActionResult> ListbyStatus(string line, string area , string status)
+    {
+        var results = await _andonWominRequest.GetListNSummaryStatus(line, area , status);
+        return Success(results);
+    }
 
     [HttpPost("list-womindetail")]
     public async Task<IActionResult> ListStock([FromBody] RequestParameter parameter)

@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+    <div class="col-xl-5 col-lg-5 col-md-6 col-sm-12">
       <input-multiselect
         v-model="tempValue"
         :options="list"
@@ -11,8 +11,8 @@
         :placeholder="placeholder || ` `"
         :searchable="true"
         :label="displayLabel"
-        track-by="LineCode"
-        trackBy="LineCode"
+        track-by="StatusCode"
+        trackBy="StatusCode"
         :hide-selected="true"
         :internal-search="false"
         :loading="isLoading"
@@ -35,14 +35,7 @@
         description
       }}</small>
     </div>
-    <div class="col-xl-8 col-lg-8 col-md-6 col-sm-12">
-      <input
-        type="text"
-        disabled
-        :value="selectedItem?.LineName || ''"
-        class="w-100 form-control"
-      />
-    </div>
+    
   </div>
 </template>
 
@@ -52,7 +45,7 @@ export default {
     prop: "modelValue",
     event: "update",
   },
-  emits: ["update:modelValue", "update:line-name"],
+  emits: ["update:modelValue" , "update:status-descs"],
   props: [
     "modelValue",
     "type",
@@ -65,8 +58,8 @@ export default {
     "disabled",
     "multiple",
     "class",
-    "company",
-    "manufacture",
+    "warehouse",
+    "includeTemp",
     "styleCode",
     "styleDesc",
     "showOptionAll",
@@ -84,11 +77,11 @@ export default {
       return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
-      return this.list.find((x) => x.LineCode === this.tempValue) || null;
+      return this.list.find((x) => x.StatusCode === this.tempValue) || null;
     },
     displayLabel() {
       if (this.isOpen) return "DDLDescription";
-      return this.tempValue ? "LineCode" : "DDLDescription";
+      return this.tempValue ? "StatusCode" : "DDLDescription";
     },
   },
   watch: {
@@ -97,11 +90,7 @@ export default {
 
       this.load("", after);
     },
-    company: function (after) {
-      this.tempValue = null;
-      this.load("", this.modelValue);
-    },
-    manufacture: function (after) {
+    warehouse: function (after) {
       this.tempValue = null;
       this.load("", this.modelValue);
     },
@@ -115,9 +104,12 @@ export default {
   methods: {
     change: function (v) {
       if (this.onSelect) this.onSelect(v);
+      const selected = this.list.find((x) => x.StatusCode === v) || null;
 
       this.$emit("update:modelValue", v);
-      this.$emit("update:line-name", selected?.LineName || "");
+      this.$emit("update:status-descs", selected?.StatusDescs || "");
+      // console.log("Selected StatusCode:", v);
+      // console.log("Selected StatusDescs:", selected?.StatusDescs || "");
     },
     search: function (q) {
       this.load(q, null);
@@ -134,28 +126,30 @@ export default {
       this.isLoading = true;
       if (this.debounce != null) clearTimeout(this.debounce);
 
-      if ((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
+       if ((this.defaultOptionAll || "") == "ALL" && d == "ALL") {
         d = "";
       }
-
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/andon/filter/ddl-linecompany-search?keyword=${q || ""}&companycode=${this.company}&manufacture=${this.manufacture}&ids=${d || ""}`,
+            `/andon/filter/ddstatus?keyword=${q || ""}&ids=${
+              d || ""
+            }`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {
-              this.tempValue = p.data.Data[0]?.LineCode;
-              this.$emit("update:line-name", p.data.Data[0].LineName);
-            }
+              this.tempValue = p.data.Data[0]?.StatusCode;
+              this.$emit("update:status-descs", p.data.Data[0].StatusDescs);
 
-            if (
+            }
+             if (
               (this.defaultOptionAll || "") == "ALL" &&
               (this.tempValue || "") == ""
             ) {
               this.tempValue = "ALL";
               this.$emit("update:modelValue", "ALL");
-              this.$emit("update:line-name", "ALL");
+              this.$emit("update:status-descs", "ALL");
+ 
             }
 
             this.list =
@@ -164,8 +158,8 @@ export default {
               p.data.Data.length > 0
                 ? [
                     {
-                      LineCode: "ALL",
-                      LineName: "ALL",
+                      StatusCode: "ALL",
+                      StatusDescs: "ALL",
                       DDLDescription: "ALL",
                     },
                     ...p.data.Data,

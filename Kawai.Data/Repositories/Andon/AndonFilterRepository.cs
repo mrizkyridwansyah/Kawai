@@ -22,6 +22,11 @@ public class AndonFilterRepository : IAndonFilterRepository
         string sp = "sp_Wms_Andon_Filter_DDL";
         return (await _dbExecutor.QueryListAsync<AndonFilterDto>(sp, new { Keyword = keyword ?? "", WarehouseCode = warehouseCode })).ToList();
     }
+    public async Task<List<AndonFilterDto>> DDLStatus(string keyword)
+    {
+        string sp = "sp_Wms_Andon_FilterStatus_DDL";
+        return (await _dbExecutor.QueryListAsync<AndonFilterDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+    }
 
     public async Task<List<AndonFilterDto>> DDLLine(string keyword)
     {

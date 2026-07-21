@@ -9,6 +9,9 @@ public class AndonFilterDto: DataTableDto
     public string LineCode { get; set; }
     public string LineName { get; set; }
 
+    public string StatusCode { get; set; }
+    public string StatusDescs { get; set; }
+
     public string ModelCls { get; set; }
     public string ModelDescs { get; set; }
 

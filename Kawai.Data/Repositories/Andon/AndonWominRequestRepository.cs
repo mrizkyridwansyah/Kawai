@@ -25,6 +25,14 @@ public class AndonWominRequestRepository : IAndonWominRequestRepository
         return (await _dbExecutor.QueryListAsync<AndonWominRequestDto>(sp, new { Line = line ?? "" , Area = Area ?? "" })).ToList();
     }
 
+    public async Task<List<AndonWominRequestDto>> GetListNSummaryStatus(string line, string Area, string Status)
+    {
+        //string sp = "sp_Wms_Andon_WominRequest_GetList";
+        //return (await _dbExecutor.QueryListAsync<AndonWominRequestDto>(sp)).ToList();
+        string sp = "sp_Wms_Andon_WominRequest_GetListByStatus";
+        return (await _dbExecutor.QueryListAsync<AndonWominRequestDto>(sp, new { Line = line ?? "", Area = Area ?? "", Status = Status ?? "" })).ToList();
+    }
+
     public async Task<List<AndonWominRequestDetailDto>> GetListWomin(RequestParameter param)
     {
         string sp = "sp_Wms_Andon_WominRequest_GetListDetail";
