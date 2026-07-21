@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="NG Claim Material Input" icon="receipt">
+  <v-frame title="Return Material NG to Vendor" icon="receipt">
     <template #frame-content>
       <div class="filter-wrapper">
         <!-- 1 -->
@@ -34,7 +34,7 @@
           <input-claim
             class="form-control"
             :disabled="isNew"
-            status="NEW"
+            status="ALL"
             :supplier-code="filter.SupplierCode"
             :period-from="filter.PeriodFrom"
             :period-until="filter.PeriodUntil"
@@ -140,7 +140,7 @@
             :submit="submit"
             cClass="mr-1"
             :is-loading="isLoading"
-              :disabled="!menuPrivAllowUpdate"
+              :disabled="!menuPrivAllowUpdate  || model.Status === 'APPROVED'"
           />
           
           <button
@@ -164,7 +164,7 @@
             icon="print"
             :print="printSuratJalan"
             :is-loading="isLoading"
-              :disabled="!menuPrivAllowUpdate"
+              :disabled="!menuPrivAllowUpdate  || model.Status === 'NEW' || isNew"
           />
         </div>
       </div>
@@ -260,6 +260,7 @@ export default {
       ClaimId: null,
       ClaimNo: "",
       DNNumber: "",
+      Status: "",
       SupplierCode: null,
       DNDate: null,
       BCNumber: "",
@@ -291,6 +292,7 @@ export default {
         ClaimId: null,
         ClaimNo: "",
         DNNumber: "",
+         Status: "",
         SupplierCode: null,
         DNDate: null,
         BCNumber: "",
@@ -342,6 +344,7 @@ export default {
         ClaimId: null,
         ClaimNo: "",
         DNNumber: "",
+        Status: "",
         SupplierCode: null,
         DNDate: null,
         BCNumber: "",

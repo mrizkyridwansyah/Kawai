@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="NG Claim Material Approval" icon="receipt">
+  <v-frame title="Return Material NG Approval" icon="receipt">
     <template #frame-content>
       <div class="filter-wrapper">
         <!-- 1 -->

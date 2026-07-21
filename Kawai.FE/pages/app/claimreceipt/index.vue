@@ -1,5 +1,5 @@
 <template>
-  <v-frame title="Claim Receipt Input" icon="receipt">
+  <v-frame title="Receipt Return Input" icon="receipt">
     <template #frame-content>
       <div class="filter-wrapper">
         <!-- 1 -->
