@@ -169,8 +169,25 @@
         </div>
       </div>
       <hr />
+          <div
+              class="d-flex align-items-center mb-2 p-2"
+              style="gap: 10px; background: #2f2f2f; border-radius: 6px"
+            >
+              <!-- SORT BUTTON -->
+
+              <!-- SEARCH INPUT -->
+              <div style="flex: 1">
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  v-model="filter.keyword"
+                  placeholder="Search..."
+                  style="background: #f1f1f1"
+                />
+              </div>
+            </div>
       <v-table-input
-        :data-items="listPODetail"
+        :data-items="filteredSetting"
         :frozen-column-left="3"
         ref="vtable"
         :top-content-height="400"
@@ -200,7 +217,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item, idx) in listPODetail || []" :key="idx">
+               <tr v-for="(item, idx) in filteredSetting" :key="item.DetailID || idx">
                   <td class="text-center">
                     <input-checkbox
                       v-model="item.Selected"
@@ -235,7 +252,7 @@
                 !ds.isLoading &&
                 !ds.isNetworkError &&
                 !ds.isServerError &&
-                (!listPODetail || listPODetail.length === 0)
+                (filteredSetting.length === 0)
               "
             />
           </div>
@@ -255,6 +272,7 @@ export default {
       PeriodFrom: null,
       PeriodUntil: null,
       ClaimId: null,
+       keyword: null,
     },
     model: {
       ClaimId: null,
@@ -275,14 +293,29 @@ export default {
     isLoading: false,
     errors: {},
   }),
-  computed: {
-    ds: function () {
-      return useNGClaim();
-    },
-     dsMenu: function () {
-      return useMenu();
-    },
+ computed: {
+  ds() {
+    return useNGClaim();
   },
+  dsMenu() {
+    return useMenu();
+  },
+
+  filteredSetting() {
+    const keyword = (this.filter.keyword || "").toLowerCase().trim();
+
+    if (!keyword) return this.listPODetail;
+
+    return this.listPODetail.filter((item) => {
+      return (
+        (item.ReceiptNumber || "").toLowerCase().includes(keyword) ||
+        (item.ItemCode || "").toLowerCase().includes(keyword) ||
+        (item.ItemName || "").toLowerCase().includes(keyword)  
+       
+      );
+    });
+  },
+},
   watch: {
     "filter.SupplierCode": function () {
       this.listPODetail = [];
@@ -339,6 +372,7 @@ export default {
         PeriodFrom: null,
         PeriodUntil: null,
         ClaimId: null,
+         keyword: null,
       };
       this.model = {
         ClaimId: null,
