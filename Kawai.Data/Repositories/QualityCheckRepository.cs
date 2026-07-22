@@ -63,6 +63,7 @@ public class QualityCheckRepository : IQualityCheckRepository
         {
             payload.InspectionId,
             payload.InspectionResult,
+            payload.TypeHold,
             UserId = userId
         });
     }
@@ -85,6 +86,21 @@ public class QualityCheckRepository : IQualityCheckRepository
         {
             payload.InspectionId,
             payload.InspectionResult,
+            payload.TypeHold,
+            payload.RemarksSA,
+            UserId = userId
+        });
+    }
+
+    public async Task ApprovalSAUnapprove(QualityCheckConfirmSA payload, string userId)
+    {
+        string sql = @"sp_Wms_IQCResult_ApprovalSAFromUnapprove";
+        int i = await _dbExecutor.ExecuteNonTransactionAsync(sql, new
+        {
+            payload.InspectionId,
+            payload.InspectionResult,
+            payload.TotalGoodQty,
+            payload.TypeHold,
             payload.RemarksSA,
             UserId = userId
         });
