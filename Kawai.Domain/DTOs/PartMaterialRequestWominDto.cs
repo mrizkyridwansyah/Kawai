@@ -16,6 +16,7 @@ public class PartMaterialRequestWominDto: DataTableDto
     public DateTime? RequestDate { get; set; }
     public decimal? RequestSetQty { get; set; }
     public decimal? RemainingQty { get; set; }
+    public string Model { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
 }
@@ -61,6 +62,7 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public string WorkStationName { get; set; }
     public string ParentItemCode { get; set; }
     public string ParentItemName { get; set; }
+    public string Model { get; set; }
     public string ChildItemCode { get; set; }
     public string ChildItemName { get; set; }
     public string ChildClassificationPart { get; set; }

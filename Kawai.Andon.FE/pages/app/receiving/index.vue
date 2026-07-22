@@ -2,8 +2,8 @@
   <div class="panel panel-inverse">
     <div class="panel-heading ui-sortable-handle">
       <font-awesome-icon icon="chart-column" style="font-size: 1.25em" />
-       
-      <span  id="header-panel"  style="font-size: 1.25em" class="ml-3">
+
+      <span id="header-panel" style="font-size: 1.25em" class="ml-3">
         Receiving Andon (Temporary Area)
       </span>
     </div>
@@ -26,16 +26,12 @@
             <filter-supplier
               class="form-control w-100"
               v-model="filter.supplier"
-                 :show-option-all="true"
+              :show-option-all="true"
               default-option-all="ALL"
               v-model:supplier-name="filter.SupplierName"
-              
             />
-            
           </div>
         </div>
-
-        
 
         <!-- Search Button -->
         <div class="col-12 col-md-2 col-lg-auto d-flex align-items-center">
@@ -359,11 +355,11 @@ export default {
       passed: 0,
       ng: 0,
     },
-     intervalLoad: null,
-     showFilter: true,
-    filter:{
+    intervalLoad: null,
+    showFilter: true,
+    filter: {
       supplier: "",
-       SupplierName: ""
+      SupplierName: "",
     },
     isLoading: false,
     list: [],
@@ -402,20 +398,18 @@ export default {
     },
   },
   mounted: async function () {
-     document.addEventListener("click", this.handleGlobalClick);
+    document.addEventListener("click", this.handleGlobalClick);
     // Eksekusi tarikan data pertama kali saat halaman dibuka
-     
   },
- 
+
   beforeUnmount: function () {
     // Wajib: bersihkan interval dan listener jika pindah halaman (mencegah memory leak)
-     this.stopInterval();
+    this.stopInterval();
     document.removeEventListener("click", this.handleGlobalClick);
   },
 
   methods: {
-
-     startInterval: function () {
+    startInterval: function () {
       this.stopInterval(); // Pastikan tidak ada interval ganda
       this.intervalLoad = setInterval(() => {
         this.search(true); // true = pencarian dipicu otomatis oleh interval
@@ -432,14 +426,13 @@ export default {
       // maka munculkan filter dan matikan interval
       if (!this.showFilter) {
         this.showFilter = true;
-         this.stopInterval();
-        
-          // Kembalikan teks judul panel seperti semula
+        this.stopInterval();
+
+        // Kembalikan teks judul panel seperti semula
         const headerPanel = document.getElementById("header-panel");
         if (headerPanel) {
           headerPanel.innerText = "Receiving Andon (Temporary Area)";
         }
-
       }
     },
 
@@ -460,15 +453,15 @@ export default {
       }
     },
 
-   search: function () {
+    search: function () {
       if (this.isLoading) {
         console.log("masih loading bro!");
         return;
       }
-         debugger;
-         this.isLoading = true;
+      debugger;
+      this.isLoading = true;
 
-         this.ds
+      this.ds
         .loadbysupplier(this.filter.supplier)
         .then((dt) => {
           let rawData = dt.data.Data || [];
@@ -477,10 +470,10 @@ export default {
           rawData.sort((a, b) => {
             let dateA = new Date(a.ReceiptDate).getTime();
             let dateB = new Date(b.ReceiptDate).getTime();
-            
+
             // Urutkan berdasarkan Tanggal (Terlama di atas / ASC)
             if (dateA !== dateB) return dateA - dateB;
-            
+
             // Jika tanggal sama persis, urutkan berdasarkan DNNumber ASC agar posisinya terkunci mati
             let dnA = a.DNNumber || "";
             let dnB = b.DNNumber || "";
@@ -499,17 +492,16 @@ export default {
         .catch((err) => console.error(err))
         .finally(() => (this.isLoading = false));
       if (this.filter.supplier != null) {
-
         // Ubah teks judul panel sesuai area yang difilter
-          const headerPanel = document.getElementById("header-panel");
-          if (headerPanel) {
-            headerPanel.innerText = `Receiving Andon (Temporary Area)`;
-          }
+        const headerPanel = document.getElementById("header-panel");
+        if (headerPanel) {
+          headerPanel.innerText = `Receiving Andon (Temporary Area)`;
+        }
 
         // Gunakan setTimeout kecil untuk mencegah bentrok dengan handleGlobalClick
         setTimeout(() => {
           this.showFilter = false; // Sembunyikan area filter
-           this.startInterval(); // Nyalakan interval tiap 3 detik
+          this.startInterval(); // Nyalakan interval tiap 3 detik
         }, 100);
       }
     },
@@ -531,10 +523,10 @@ export default {
     //       rawData.sort((a, b) => {
     //         let dateA = new Date(a.ReceiptDate).getTime();
     //         let dateB = new Date(b.ReceiptDate).getTime();
-            
+
     //         // Urutkan berdasarkan Tanggal (Terlama di atas / ASC)
     //         if (dateA !== dateB) return dateA - dateB;
-            
+
     //         // Jika tanggal sama persis, urutkan berdasarkan DNNumber ASC agar posisinya terkunci mati
     //         let dnA = a.DNNumber || "";
     //         let dnB = b.DNNumber || "";
@@ -564,11 +556,6 @@ export default {
     //     });
     // },
   },
-
-  
-
-
-  
 };
 </script>
 

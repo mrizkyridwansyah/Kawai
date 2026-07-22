@@ -4,6 +4,7 @@ using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection.Emit;
 
 namespace Kawai.Data.Repositories;
@@ -25,7 +26,8 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         var paramFactory = param.GetParam("FactoryCode");
         var paramProcess = param.GetParam("ManufactureCode");
         var paramLine = param.GetParam("LineCode");
-        var paramRemainingFuckingCls = param.GetParam("RemainingCls");
+        var paramModel = param.GetParam("Model");
+        var paramRemainingCls = param.GetParam("RemainingCls");
 
         string sp = "sp_Wms_PartMaterialRequestWomin_GetListHeader";
         return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDto>(sp, new
@@ -35,23 +37,47 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
             FactoryCode = paramFactory,
             ProcessCode = paramProcess,
             LineCode = paramLine,
-            RemainingCls = paramRemainingFuckingCls == "ALL" ? (bool?)null : paramRemainingFuckingCls == "YES"
+            Model = paramModel,
+            RemainingCls = paramRemainingCls == "ALL" ? (bool?)null : paramRemainingCls == "YES"
         })).ToList();
+    }
+
+    public async Task CheckValidGenerateDetail(List<PartMaterialRequestWominModel> models)
+    {
+        string sql = @"sp_Wms_PartMaterialRequestWomin_CheckValidGenerateListDetail";
+        await _dbExecutor.ExecuteAsync(sql, new
+        {
+            models[0].LineCode,
+            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+        });
     }
 
     public async Task<List<PartMaterialRequestWominDetilDto>> GetListDetail(List<PartMaterialRequestWominModel> models)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_GetListDetail";
-        return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+        if(models[0].RequestId.HasValue)
         {
-            models[0].LineCode,
-            models[0].RequestId,
-            models[0].ProductionId,
-            models[0].ScheduleDate,
-            models[0].ItemCode,
-            models[0].RequestSetQty
-        })).ToList();
+            return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+            {
+                models[0].LineCode,
+                models[0].RequestId,
+                models[0].ProductionId,
+                models[0].ScheduleDate,
+                models[0].ItemCode,
+                models[0].RequestSetQty
+            })).ToList();
+        }
+        else
+        {
+            sp = "sp_Wms_PartMaterialRequestWomin_GenerateListDetail";
+            return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
+            {
+                models[0].LineCode,
+                NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+            })).ToList();
+        }
     }
+
     public async Task<List<StockDto>> GetListStock(RequestParameter param)
     {
         string sp = "sp_Wms_PartMaterialRequest_GetListStock";
@@ -71,7 +97,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         return (await _dbExecutor.QueryListAsync<StockScanDto>(sp, param.ToQueryObject())).ToList();
     }
 
-    public async Task<PartMaterialRequestWominEditDto> GetData(long idSeq)
+    public async Task<PartMaterialRequestWominEditDto> GetDataRequirement(long idSeq)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_GetDetail";
         return await _dbExecutor.QueryFirstOrDefaultAsync<PartMaterialRequestWominEditDto>(sp, new { IDSeq = idSeq });
@@ -100,15 +126,20 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 
-    public async Task Save(List<PartMaterialRequestWominModel> models, string userId)
+    public async Task<Dictionary<string, object>> Save(List<PartMaterialRequestWominModel> models, string userId)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_Save";
-        await _dbExecutor.ExecuteNonTransactionAsync(sp, new
+        var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new
         {
             models[0].LineCode,
             NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
             UserId = userId
         });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return ((IDictionary<string, object>)result).ToDictionary(k => k.Key, v => v.Value);
     }
 
     public async Task Remove(long requestId, string userId)
@@ -121,33 +152,6 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         });
     }
 
-    public async Task<Dictionary<string, object>> Capture(long productionId)
-    {
-        var result = await _dbExecutor.QueryMultipleAsync(
-            "sp_Wms_PartMaterialRequestWomin_Capture",
-            param: new { ProductionId = productionId },
-            async multi =>
-            {
-                var headers = (await multi.ReadAsync<dynamic>()).ToList();
-                var details = (await multi.ReadAsync<dynamic>()).ToList();
-                var detailItems = (await multi.ReadAsync<dynamic>()).ToList();
-
-                foreach (var header in headers)
-                {
-                    header.Details = details.Where(p => p.RequestID == header.RequestID).ToList();
-                    header.DetailItems = detailItems.Where(p => p.RequestID == header.RequestID).ToList();
-                }
-
-                return headers;
-            }
-        );
-
-        return new Dictionary<string, object>
-        {
-            { "Part Material Request Womin", result },
-        };
-    }
-
     public async Task<Dictionary<string, object>> CaptureRequest(long requestId)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
@@ -158,8 +162,9 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
                 var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
                 var details = (await multi.ReadAsync<dynamic>()).ToList();
                 var detailItems = (await multi.ReadAsync<dynamic>()).ToList();
+                var detailProds = (await multi.ReadAsync<dynamic>()).ToList();
 
-                return (header, details, detailItems);
+                return (header, details, detailItems, detailProds);
             }
         );
 
@@ -168,6 +173,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
             { "Part Material Request Womin Header", result.header },
             { "Part Material Request Womin Details", result.details },
             { "Part Material Request Womin Detail Items", result.detailItems },
+            { "Part Material Request Womin Production Details", result.detailProds },
         };
     }
 }

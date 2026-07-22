@@ -75,7 +75,7 @@ begin
 	--		a.NGCode, 
 	--		'' ,Getdate(), 
 	--		@UpdateBy
-	--	from @Details a left join Price_Master b on a.ItemCode  = b.Item_Code and b.Trade_Code = @SupplierCode and @ClaimDate between[dbo].[ConvertToDateTimeFromFuckingString](b.Start_Date) and [dbo].[ConvertToDateTimeFromFuckingString](b.End_Date)
+	--	from @Details a left join Price_Master b on a.ItemCode  = b.Item_Code and b.Trade_Code = @SupplierCode and @ClaimDate between[dbo].[ConvertToDateTimeFromString](b.Start_Date) and [dbo].[ConvertToDateTimeFromString](b.End_Date)
 
 
  
