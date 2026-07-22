@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using Hangfire;
 using Kawai.Api.Services;
 using Kawai.Domain.DTOs.Log;
@@ -256,7 +256,7 @@ public class ItemController : HahaController
     public async Task<IActionResult> ExportExcelUsingJob(RequestParameter param)
     {
         string key = Guid.NewGuid().ToString();
-        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelItem(param, Auth.User.UserID, key));
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelItem(param, Auth.Token, key));
         return Pending(message: "Data Export sedang diproses!");
     }
 }

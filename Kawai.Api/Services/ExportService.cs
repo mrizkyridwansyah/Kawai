@@ -17,12 +17,12 @@ namespace Kawai.Api.Services;
  */
 public interface IExportService
 {
-    Task ExportExcelItem(RequestParameter param, string userId, string key);
-    Task ExportExcelReceiptInquiry(RequestParameter param, string userId, string key);
-    Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId);
-    Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key);
-    Task ExportWomin(long requestId, string userId, string key);
-    Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userId, string key);
+    Task ExportExcelItem(RequestParameter param, string userOrToken, string key);
+    Task ExportExcelReceiptInquiry(RequestParameter param, string userOrToken, string key);
+    Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userOrToken);
+    Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userOrToken, string key);
+    Task ExportWomin(long requestId, string userOrToken, string key);
+    Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userOrToken, string key);
 }
 
 public class ExportService : IExportService
@@ -64,7 +64,7 @@ public class ExportService : IExportService
      * Setelah itu SignalR akan broadcast ke user yg tadi export kalo file nya udah siap dengan mengirikan Key (ID dari file di direktori)+ FileName (buat jadi nama setelah didownload)
      */
     [AutomaticRetry(Attempts = 0)]
-    public async Task ExportExcelItem(RequestParameter param, string userId, string key)
+    public async Task ExportExcelItem(RequestParameter param, string userOrToken, string key)
     {
         var results = await _itemRepository.GetAll(param);
         //if (results == null || !results.Any()) return NoContent();
@@ -128,11 +128,11 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Master Item" });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Master Item" });
     }
 
     [AutomaticRetry(Attempts = 0)]
-    public async Task ExportWomin(long requestId, string userId, string key)
+    public async Task ExportWomin(long requestId, string userOrToken, string key)
     {
         var results = await _wominRepository.WominReport(requestId);
         //if (results == null || !results.Any()) return NoContent();
@@ -184,13 +184,13 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Data Womin" });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Data Womin" });
     }
 
 
 
     [AutomaticRetry(Attempts = 0)]
-    public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userId)
+    public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userOrToken)
     {
         var results = await _receiptRepository.GetListBarcodeDetail(receipt.Id.Value);
         var models = results.Select(item => new LabelBarcodeDetailDto
@@ -224,11 +224,11 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = receipt.SupplierName + "_" + receipt.DNNumber });
     }
 
     [AutomaticRetry(Attempts = 0)]
-    public async Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userId, string key)
+    public async Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userOrToken, string key)
     {
         var fullHtml = await _renderer.RenderAsync(
             "Templates/QCReport.cshtml",
@@ -247,11 +247,11 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = "Report_NG_" + list[0].DNNumber });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = "Report_NG_" + list[0].DNNumber });
     }
 
     [AutomaticRetry(Attempts = 0)]
-    public async Task ExportExcelReceiptInquiry(RequestParameter param, string userId, string key)
+    public async Task ExportExcelReceiptInquiry(RequestParameter param, string userOrToken, string key)
     {
         var results = await _receiptRepository.Inquiry(param);
         if (results == null || !results.Any()) return;
@@ -320,11 +320,11 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Receipt Inquiry" });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Receipt Inquiry" });
     }
 
     [AutomaticRetry(Attempts = 0)]
-    public async Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userId, string key)
+    public async Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userOrToken, string key)
     {
         var barcodeNos = selectedPrint
             .Select(x => x.Key)
@@ -369,6 +369,6 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userId], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Reprint_Barcode_{DateTime.Now:yyyyMMddHHmmss}"  });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Reprint_Barcode_{DateTime.Now:yyyyMMddHHmmss}"  });
     }
 }

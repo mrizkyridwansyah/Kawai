@@ -71,7 +71,7 @@ public class ReprintController : HahaController
                 return BadRequest("No barcode selected");
 
             string key = "ReprintBarcode_" + Guid.NewGuid().ToString();
-            BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReprintBarcode(selectedPrint, Auth.User.UserID, key));
+            BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReprintBarcode(selectedPrint, Auth.Token, key));
 
             return Pending(message: "Data Export PDF sedang diproses!");
         }
