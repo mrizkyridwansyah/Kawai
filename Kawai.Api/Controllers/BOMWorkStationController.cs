@@ -1,6 +1,8 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Kawai.Api.Services;
+using Kawai.Data;
 using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -8,6 +10,7 @@ using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Kawai.Api.Controllers;
 
@@ -179,5 +182,267 @@ public class BOMWorkStationController : HahaController
 
         return Success(base64File);
     }
-    
+
+    public static BOMWSImport ReadBOMWSImport(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            throw new Exception("File kosong.");
+
+        using var stream = new MemoryStream();
+        file.CopyTo(stream);
+
+        using var workbook = new XLWorkbook(stream);
+        var ws = workbook.Worksheet(1);
+
+        var result = new BOMWSImport();
+
+        int lastRow = ws.LastRowUsed().RowNumber();
+
+        if (lastRow > 10000)
+            throw new Exception("Upload gagal: maksimal 10.000 baris.");
+
+        #region HEADER
+
+        result.Header = new BOMWSHeaderImport();
+
+        result.Header.LineCode = ws.Cell("A3").GetString()?.Trim();
+        result.Header.ParentItemCode = ws.Cell("B3").GetString()?.Trim();
+        result.Header.WorkStationCode = ws.Cell("D3").GetString()?.Trim();
+        result.Header.TrolleyCls = ws.Cell("E3").GetString()?.Trim();
+       
+
+        var headerErrors = new List<string>();
+        string lincode = result.Header.LineCode.Trim();
+        string parentitemcode = result.Header.ParentItemCode.Trim();
+        string workstationcode = result.Header.WorkStationCode.Trim();
+        string trolleycls = result.Header.TrolleyCls.Trim();
+       
+        if (string.IsNullOrWhiteSpace(result.Header.LineCode))
+            headerErrors.Add("Line Code wajib diisi");
+
+        if (string.IsNullOrWhiteSpace(result.Header.ParentItemCode))
+            headerErrors.Add("Parent Item Code wajib diisi");
+
+        if (string.IsNullOrWhiteSpace(result.Header.WorkStationCode))
+            headerErrors.Add("Workstation Code wajib diisi");
+
+        if (string.IsNullOrWhiteSpace(result.Header.TrolleyCls))
+            headerErrors.Add("Trolley Cls wajib diisi");
+
+       
+
+        // Length Validation
+        if (!string.IsNullOrWhiteSpace(lincode) && lincode.Length > 25)
+            headerErrors.Add("linecode maksimal 15 karakter.");
+
+        if (!string.IsNullOrWhiteSpace(parentitemcode) && parentitemcode.Length > 25)
+            headerErrors.Add("parent item code maksimal 25 karakter.");
+
+        if (!string.IsNullOrWhiteSpace(workstationcode) && workstationcode.Length > 15)
+            headerErrors.Add("workstation code maksimal 15 karakter.");
+        
+        if (!string.IsNullOrWhiteSpace(trolleycls) && trolleycls.Length > 15)
+            headerErrors.Add("trolley cls maksimal 15 karakter.");
+
+        //if (!string.IsNullOrWhiteSpace(bcno) && bcno.Length > 50)
+        //    headerErrors.Add("BCNo maksimal 50 karakter.");
+
+
+
+        result.Header.Errors = string.Join(", ", headerErrors);
+
+
+
+        #endregion
+
+        #region DETAIL
+
+        int startRow = 6;
+
+        for (int row = startRow; row <= lastRow; row++)
+        {
+            var detail = new BOMWSDetailImport
+            {
+                RowNumber = row
+            };
+
+            string childitem = ws.Cell(row, 1).GetValue<string>()?.Trim();
+            string qtyText = ws.Cell(row, 2).GetValue<string>()?.Trim();
+          
+            bool allEmpty =
+                string.IsNullOrWhiteSpace(childitem) &&
+                string.IsNullOrWhiteSpace(qtyText);
+
+            if (allEmpty)
+                continue;
+
+             detail.ChildItemCode = childitem;
+
+
+
+            // Required Validation
+         
+            if (string.IsNullOrWhiteSpace(childitem))
+                detail.Errors += $"Row {row}, Child Item wajib diisi. ";
+
+            // Length Validation
+            if (!string.IsNullOrWhiteSpace(childitem) && childitem.Length > 50)
+                detail.Errors += $"Row {row}, Child Item maksimal 25 karakter. ";
+
+          
+            // Qty Validation
+            if (!decimal.TryParse(qtyText, out decimal qty1))
+            {
+                detail.Errors += $"Row {row}, Qty harus berupa angka. ";
+            }
+            else
+            {
+                detail.Qty = qty1;
+
+                if (qty1 <= 0)
+                    detail.Errors += $"Row {row}, Qty harus lebih besar dari 0. ";
+            }
+
+            // Custom Validation
+            detail.IsValid();
+
+            result.Details.Add(detail);
+        }
+
+        #endregion
+
+        #region VALIDASI AKHIR
+
+        if (!result.Details.Any())
+            throw new Exception("Detail BOM WS tidak ditemukan.");
+
+        var duplicates = result.Details
+            .GroupBy(x => new
+            {
+                 
+                ChildItemCode = x.ChildItemCode?.Trim().ToUpper()
+            })
+            .Where(g => g.Count() > 1);
+
+        foreach (var duplicate in duplicates)
+        {
+            foreach (var item in duplicate)
+            {
+                item.Errors += $"Row {item.RowNumber},  Child Item '{item.ChildItemCode}' duplicate dalam file. ";
+            }
+        }
+
+
+
+        #endregion
+
+        return result;
+    }
+
+    [HttpPost("import")]
+    public async Task<IActionResult> Import(ImportModel payload)
+    {
+        try
+        {
+            Stopwatch timer = new();
+            timer.Start();
+
+            // Read Excel
+            var importData = ReadBOMWSImport(payload.File);
+
+            #region VALIDASI EXCEL
+
+            bool hasHeaderError =
+                !string.IsNullOrWhiteSpace(importData.Header?.Errors);
+
+            bool hasDetailError =
+                importData.Details.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.Errors));
+
+            if (hasHeaderError || hasDetailError)
+            {
+                timer.Stop();
+
+                return ImportInvalid(
+                    "DATA IMPORT TIDAK VALID",
+                    importData
+                );
+            }
+
+            #endregion
+
+            #region VALIDASI DATABASE
+
+            var dtDetail = DataTableHelper.ToDataTable(importData.Details);
+
+            var validateResult = await _bomworkstationRepository.ValidateImport(
+                importData.Header,
+                dtDetail,
+                Auth.User.UserID);
+
+            // update header
+            if (validateResult.Header != null)
+            {
+                importData.Header.Errors =
+                    validateResult.Header.Errors;
+            }
+
+            // update detail
+            importData.Details = validateResult.Details;
+
+            bool hasDbHeaderError =
+                !string.IsNullOrWhiteSpace(importData.Header?.Errors);
+
+            bool hasDbDetailError =
+                importData.Details.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.Errors));
+
+            if (hasDbHeaderError || hasDbDetailError)
+            {
+                timer.Stop();
+
+                return ImportInvalid(
+                    "DATA IMPORT TIDAK VALID",
+                    importData
+                );
+            }
+
+            #endregion
+
+            #region EXECUTE
+
+            if (payload.Action == "EXECUTE")
+            {
+                await _bomworkstationRepository.Import(
+                    importData.Header,
+                    dtDetail,
+                    Auth.User.UserID,
+                    payload.FactoryCode);
+
+                await _logger.SaveDataLog(new DataLogDto
+                {
+                    DocumentType = "BOMWS",
+                    EntityId = importData.Header.LineCode,
+                    ReferenceId = importData.Header.ParentItemCode,
+                    Action = DataLogAction.Import,
+                    Activity = "Import BOMWS",
+                    Before = null,
+                    After = Newtonsoft.Json.Linq.JObject
+                        .FromObject(importData)
+                        .ToObject<Dictionary<string, object>>()
+                });
+            }
+
+            #endregion
+
+            timer.Stop();
+
+            return Success(importData);
+        }
+        catch (Exception ex)
+        {
+            return Invalid(ex.Message);
+        }
+    }
+
 }

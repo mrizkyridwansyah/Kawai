@@ -76,6 +76,14 @@
               cClass="ml-1 btn-green"
                :disabled="!menuPrivAllowUpdate" 
             />
+              <v-button
+                :action="import"
+                label="Upload Bom WorkStation"
+                icon="file-excel"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
+              />
           </div>
         </div>
       </div>
@@ -337,6 +345,9 @@ export default {
       this.title = "Copy BOM WorkStation";
       this.modalMode = "add";
       this.$bvModal.show("modal-form-copybom");
+    },
+     import: function () {
+      this.$router.push("/app/master/bom-workstation/import");
     },
     close: function () {
       this.$bvModal.hide("modal-form-copybom");

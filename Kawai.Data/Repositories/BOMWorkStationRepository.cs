@@ -17,6 +17,60 @@ public class BOMWorkStationRepository : IBOMWorkStationRepository
         _dbExecutor = dbExecutor;
     }
 
+    public async Task Import(BOMWSHeaderImport header, DataTable dtDetail, string userId, string factoryCode)
+    {
+        string sql = @"sp_Wms_BOMWorkStation_Import";
+        await _dbExecutor.ExecuteNonTransactionAsync(sql, new
+        {
+            header.LineCode,
+            header.ParentItemCode,
+            header.WorkStationCode,
+            header.TrolleyCls,
+             DataImport = dtDetail,
+            UserId = userId,
+            FactoryCode = factoryCode
+        });
+
+
+    }
+
+    public async Task<BOMWSImport> ValidateImport(
+    BOMWSHeaderImport header,
+    DataTable datas,
+    string userId)
+    {
+        return await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_BOMWorkStation_ValidateImport",
+            param: new
+            {
+                LineCode = header.LineCode,
+                ParentItemCode = header.ParentItemCode,
+                WorkStationCode = header.WorkStationCode,
+                TrolleyCls = header.TrolleyCls,
+                 DataImport = datas,
+                UserId = userId
+            },
+            async multi =>
+            {
+                var headerResult =
+                    (await multi.ReadAsync<BOMWSHeaderImport>())
+                    .FirstOrDefault();
+
+                var detailResult =
+                    (await multi.ReadAsync<BOMWSDetailImport>())
+                    .ToList();
+
+                return new BOMWSImport
+                {
+                    Header = headerResult,
+                    Details = detailResult
+                };
+            }
+        );
+    }
+
+
+
     public async Task<List<BOMWorkStationDto>> GetAll(RequestParameter param)
     {
         string sp = "sp_Wms_BOMWorkStation_List";

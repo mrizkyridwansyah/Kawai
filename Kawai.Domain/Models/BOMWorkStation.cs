@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Kawai.Domain.Shared;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kawai.Domain.Models;
 
@@ -45,3 +46,29 @@ public class BOMWorkStationListHeader
     
 
 }
+
+public class BOMWSImport
+{
+    public BOMWSHeaderImport Header { get; set; }
+    public List<BOMWSDetailImport> Details { get; set; } = new();
+}
+
+public class BOMWSHeaderImport
+{
+    public string LineCode { get; set; }
+    public string ParentItemCode { get; set; }
+    public string WorkStationCode { get; set; }
+    public string TrolleyCls { get; set; }
+    public string Errors { get; set; } = "";
+}
+
+public class BOMWSDetailImport : ImportBase
+{
+
+ 
+    public string ChildItemCode { get; set; }
+    public decimal Qty { get; set; }
+
+
+}
+
