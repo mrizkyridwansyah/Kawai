@@ -34,5 +34,6 @@ public class IQCSampleDetailBarcodeDto
     public string LotNo { get; set; }
     public int SublotNo { get; set; }
     public decimal Qty { get; set; }
+    public decimal QtyReceipt { get; set; }
     public decimal QtySample { get; set; }
 }

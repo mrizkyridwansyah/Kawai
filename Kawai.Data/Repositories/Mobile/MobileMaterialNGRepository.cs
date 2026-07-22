@@ -28,6 +28,7 @@ public class MobileMaterialNGRepository : IMobileMaterialNGRepository
         {
             ng.BarcodeNo,
             ng.QtyNG,
+            ng.NGCode,
             UserId = userId
         });
 

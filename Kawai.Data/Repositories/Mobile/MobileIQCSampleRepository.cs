@@ -27,18 +27,18 @@ public class MobileIQCSampleRepository : IMobileIQCSampleRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<IQCSampleDetailBarcodeDto>(sp, new { ReceiptId = receiptId, BarcodeNo = barcodeNo });
     }
 
-    public async Task Save(MobileIQCSample receipt, string userId)
+    public async Task Save(MobileIQCSample payload, string userId)
     {
         string sql = "sp_Wms_Mobile_IQCSample_SaveSample";
         long newId = await _dbExecutor.QuerySingleOrDefaultAsync<long>(sql, new
         {
-            receipt.ReceiptId,
-            receipt.BarcodeNo,
-            receipt.QtySample,
+            payload.ReceiptId,
+            payload.BarcodeNo,
+            payload.QtySample,
             UserId = userId
         });
 
-        receipt.InspectionId = newId;
+        payload.InspectionId = newId;
     }
 
     public async Task<Dictionary<string, object>> Capture(long inspectionId)

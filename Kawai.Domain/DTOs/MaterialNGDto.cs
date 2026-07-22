@@ -13,4 +13,6 @@ public class MaterialNGDto
     public int SublotNo { get; set; }
     public decimal Qty { get; set; }
     public decimal QtyNG { get; set; }
+    public string NGCode { get; set; }
+    public string NGDesc { get; set; }
 }
