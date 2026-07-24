@@ -140,6 +140,25 @@
         HOLD PROCESS
       </button>
       <button
+        class="btn btn-green rounded-pill"
+        type="button"
+        style="color: white; width: 12em"
+        @click="() => confirm('SA')"
+        :disabled="
+          (btnDisabled !== undefined && btnDisabled !== false) ||
+          isLoading !== false
+        "
+      >
+        <div
+          class="spinner-border spinner-border-sm text-light"
+          role="status"
+          v-if="isLoading"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        SA
+      </button>
+      <button
         class="btn btn-primary rounded-pill"
         type="button"
         style="color: white; width: 12em"
