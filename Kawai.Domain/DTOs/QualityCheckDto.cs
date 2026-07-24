@@ -15,6 +15,7 @@ public class QualityCheckDto: DataTableDto
     public decimal Qty { get; set; }
     public decimal QtyReceipt { get; set; }
     public decimal QtyNG { get; set; }
+    public decimal TotalRealNG { get; set; }
     public string InspectionResult { get; set; }
     public DateTime RegisterDate { get; set; }
     public string RegisterUser { get; set; }
@@ -31,6 +32,7 @@ public class QualityCheckDto: DataTableDto
     public string SAApprovalUser { get; set; }
     public string SAApprovalUserName { get; set; }
     public string StatusQC { get; set; }
+    public bool? ProcessUnapprove { get; set; }
 
 }
 
@@ -44,12 +46,16 @@ public class QualityCheckResultDto: DataTableDto
     public decimal Qty { get; set; }
     public decimal QtyReceipt { get; set; }
     public decimal QtyNG { get; set; }
+    public decimal TotalRealNG { get; set; }
+    public decimal QtyGoodSA { get; set; }
     public string InspectionResult { get; set; }
     public string Remarks { get; set; }
     public string RemarksSA { get; set; }
+    public string RemarksUnapprove { get; set; }
     public long? AttachmentID { get; set; }
     public string AttachmentFileName { get; set; }
     public byte[] AttachmentFileBase64 { get; set; }
+    public bool? ProcessUnapprove { get; set; }
 
 }
 

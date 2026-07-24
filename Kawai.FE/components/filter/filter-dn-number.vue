@@ -60,6 +60,7 @@ export default {
     "sourceMenu",
     "periodFrom",
     "periodUntil",
+    "typePeriod",
     "showOptionAll",
   ],
   data: () => ({
@@ -97,6 +98,9 @@ export default {
     periodUntil: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
+    typePeriod: function (after) {
+      if (!after) this.$emit("update:modelValue", null);
+    },
     status: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
@@ -132,7 +136,7 @@ export default {
           .get(
             `/receipt/dn-ddlsearch?keyword=${q || ""}&ids=${d || ""}&factory=${this.factoryCode}&supplier=${this.supplierCode || ""}&status=${
               this.status || ""
-            }${
+            }&typePeriod=${this.typePeriod}${
               this.periodFrom
                 ? "&periodFrom=" +
                   this.$func.asUtcStringDateOnly(new Date(this.periodFrom))

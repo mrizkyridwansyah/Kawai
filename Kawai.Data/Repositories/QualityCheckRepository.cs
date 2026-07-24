@@ -92,6 +92,17 @@ public class QualityCheckRepository : IQualityCheckRepository
         });
     }
 
+    public async Task CancelApprove(QualityCheckCancelApprove payload, string userId)
+    {
+        string sql = @"sp_Wms_IQCResult_Unapprove";
+        int i = await _dbExecutor.ExecuteNonTransactionAsync(sql, new
+        {
+            payload.InspectionId,
+            Remarks = payload.RemarksUnapprove,
+            UserId = userId
+        });
+    }
+
     public async Task ApprovalSAUnapprove(QualityCheckConfirmSA payload, string userId)
     {
         string sql = @"sp_Wms_IQCResult_ApprovalSAFromUnapprove";

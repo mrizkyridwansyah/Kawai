@@ -33,7 +33,6 @@ public class QualityCheckConfirm
     public string InspectionResult { get; set; }
 
     [RequiredIfEqual(nameof(InspectionResult), "Rejected")]
-    [AllowedValues(["Process", "Vendor"])]
     public string TypeHold { get; set; }
 
 }
@@ -57,7 +56,15 @@ public class QualityCheckConfirmSA
     public bool? ProcessUnapprove { get; set; }
 
     [RequiredIfEqual(nameof(InspectionResult), "Rejected")]
-    [AllowedValues(["Process", "Vendor"])]
     public string TypeHold { get; set; }
 
+}
+
+public class QualityCheckCancelApprove
+{
+    [Required]
+    public long InspectionId { get; set; }
+
+    [Required]
+    public string RemarksUnapprove { get; set; }
 }
