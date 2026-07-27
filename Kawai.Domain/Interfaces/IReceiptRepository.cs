@@ -48,7 +48,7 @@ public interface IReceiptRepository
     Task<List<ReceiptDto>> DDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string sourceMenu, string userId);
     Task<List<ReceiptDto>> DDLSearchReceipt(string keyword, string userId);
 
-    Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
+    Task<List<ReceiptDto>> DNDDLSearch(string keyword, string factory, string supplier, string typePeriod, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
     Task<List<PODto>> PODDLSearch(string keyword, string factory, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string userId, long? receiptId);
 
 

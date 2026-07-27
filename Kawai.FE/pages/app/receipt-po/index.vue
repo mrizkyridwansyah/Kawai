@@ -839,7 +839,7 @@ export default {
           new Promise((resolve) => {
             this.isLoading = true;
             this.ds
-              //.printLabel(this.filter.ReceiptId)
+              .printLabel(this.filter.ReceiptId)
               .then((dt) => {
                 toastSuccess("Data saved successfully!");
                 this.isNew = false;

@@ -13,7 +13,7 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Receipt Date</label>
+            <label class="form-label">Inspection Date</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
             <input-date v-model="filter.PeriodFrom" style-date="width:120px" />
@@ -86,7 +86,8 @@
                     <th class="text-center">Unit</th>
                     <th class="text-center">Receipt Qty</th>
                     <th class="text-center">Sample Qty</th>
-                    <th class="text-center">NG Qty</th>
+                    <th class="text-center">NG Qty Input</th>
+                    <th class="text-center">NG Qty Final</th>
                     <th class="text-center">QC Status</th>
                     <th class="text-center">Approve</th>
                     <th class="text-center">Approval User</th>
@@ -119,6 +120,9 @@
                     </td>
                     <td class="text-right">
                       {{ $func.formatMoney(item.QtyNG) }}
+                    </td>
+                    <td class="text-right">
+                      {{ $func.formatMoney(item.TotalRealNG) }}
                     </td>
                     <td>{{ item.InspectionResult }}</td>
                     <td class="text-center">
@@ -166,7 +170,7 @@
     ref="modalIQC"
     id="modal-form-iqc-result"
     :title="title"
-    size="md"
+    size="lg"
     @hidden="
       () => {
         this.$refs.formIQC.resetForm();
@@ -179,6 +183,26 @@
       :id="idSelected"
       :mode="modalMode"
       @submitted="close"
+    />
+  </v-modal>
+
+  <v-modal
+    ref="modalIQCView"
+    id="modal-form-iqc-result-view"
+    :title="title"
+    size="lg"
+    @hidden="
+      () => {
+        this.$refs.formIQCView.resetForm();
+        modalMode = '';
+      }
+    "
+  >
+    <modal-form-iqc-result-view
+      ref="formIQCView"
+      :id="idSelected"
+      :mode="modalMode"
+      @submitted="closeView"
     />
   </v-modal>
 </template>
@@ -273,7 +297,8 @@ export default {
       this.title = "IQC Result SA Approval";
       this.modalMode = mode;
       this.idSelected = dt.InspectionId;
-      this.$bvModal.show("modal-form-iqc-result");
+      if (mode == "VIEW") this.$bvModal.show("modal-form-iqc-result-view");
+      else this.$bvModal.show("modal-form-iqc-result");
     },
     close: function () {
       this.$bvModal.hide("modal-form-iqc-result");

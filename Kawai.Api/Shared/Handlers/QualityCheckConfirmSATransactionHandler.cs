@@ -25,7 +25,10 @@ public class QualityCheckConfirmSATransactionHandler : ITransactionHandler
 
         var before = await _qualityCheckRepo.Capture(model.InspectionId);
 
-        await _qualityCheckRepo.ApprovalSA(model, userId);
+        if (model.ProcessUnapprove.HasValue && model.ProcessUnapprove.Value)
+            await _qualityCheckRepo.ApprovalSAUnapprove(model, userId);
+        else
+            await _qualityCheckRepo.ApprovalSA(model, userId);
 
         var after = await _qualityCheckRepo.Capture(model.InspectionId);
 

@@ -151,6 +151,28 @@ public class QualityCheckController : HahaController
         }
     }
 
+    [HttpPost("cancel-confirm")]
+    public async Task<IActionResult> CancelConfirm([FromBody] QualityCheckCancelApprove model)
+    {
+        var before = await _qualitycheckRepository.Capture(model.InspectionId);
+
+        await _qualitycheckRepository.CancelApprove(model, Auth.User.UserID);
+
+        var after = await _qualitycheckRepository.Capture(model.InspectionId);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Quality Check IQC",
+            EntityId = model.InspectionId.ToString(),
+            ReferenceId = model.InspectionId.ToString(),
+            Action = DataLogAction.Update,
+            Activity = "Cancel Confirm QC to SA",
+            Before = before,
+            After = after
+        });
+        return Success(after);
+    }
+
     [HttpPatch("approval-sa")]
     public async Task<IActionResult> ApprovalSA(QualityCheckConfirmSA model)
     {

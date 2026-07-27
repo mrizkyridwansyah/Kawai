@@ -108,6 +108,17 @@ export const useQualityCheck = defineStore('QualityCheck', {
           .finally(_ => this.isLoading = false);
       })
     },
+    cancelConfirm: function (data) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/qualitycheck/cancel-confirm`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
     approvalSA: function (data) {
       this.isLoading = true;
       return new Promise((resolve, reject) => {

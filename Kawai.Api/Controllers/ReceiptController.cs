@@ -219,9 +219,9 @@ public class ReceiptController : HahaController
     }
 
     [HttpGet("dn-ddlsearch")]
-    public async Task<IActionResult> DNDDLSearch(string keyword, string factory, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string ids)
-    {
-        var results = await _receiptRepository.DNDDLSearch(keyword, factory, supplier, periodFrom, periodUntil, status, Auth.User.UserID);
+    public async Task<IActionResult> DNDDLSearch(string keyword, string factory, string supplier, string typePeriod, DateTime? periodFrom, DateTime? periodUntil, string status, string ids)
+    {        
+        var results = await _receiptRepository.DNDDLSearch(keyword, factory, supplier, typePeriod, periodFrom, periodUntil, status, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

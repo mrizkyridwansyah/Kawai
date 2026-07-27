@@ -13,7 +13,7 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Receipt Date</label>
+            <label class="form-label">Inspection Date</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
             <input-date v-model="filter.PeriodFrom" style-date="width:120px" />
@@ -76,6 +76,7 @@
               :supplier-code="filter.SupplierCode"
               :period-from="filter.PeriodFrom"
               :period-until="filter.PeriodUntil"
+              type-period="Inspection Date"
               :show-option-all="true"
               style="width: 140px"
             />
@@ -200,7 +201,7 @@
     ref="modalIQC"
     id="modal-form-iqc-result"
     :title="title"
-    size="md"
+    size="lg"
     @hidden="
       () => {
         this.$refs.formIQC.resetForm();
@@ -213,6 +214,26 @@
       :id="idSelected"
       :mode="modalMode"
       @submitted="close"
+    />
+  </v-modal>
+
+  <v-modal
+    ref="modalIQCView"
+    id="modal-form-iqc-result-view"
+    :title="title"
+    size="lg"
+    @hidden="
+      () => {
+        this.$refs.formIQCView.resetForm();
+        modalMode = '';
+      }
+    "
+  >
+    <modal-form-iqc-result-view
+      ref="formIQCView"
+      :id="idSelected"
+      :mode="modalMode"
+      @submitted="closeView"
     />
   </v-modal>
 </template>
@@ -307,10 +328,19 @@ export default {
       this.title = "IQC Result Approval";
       this.modalMode = mode;
       this.idSelected = dt.InspectionId;
-      this.$bvModal.show("modal-form-iqc-result");
+      if (mode == "CONFIRM") {
+        this.$bvModal.show("modal-form-iqc-result");
+      } else if (mode == "VIEW" && dt.StatusQC != "PENDING-SA" && dt.InspectionResult != "SA") {
+        this.modalMode = "UNAPPROVE";
+        this.$bvModal.show("modal-form-iqc-result");
+      } else this.$bvModal.show("modal-form-iqc-result-view");
     },
     close: function () {
       this.$bvModal.hide("modal-form-iqc-result");
+      this.search();
+    },
+    closeView: function () {
+      this.$bvModal.hide("modal-form-iqc-result-view");
       this.search();
     },
     resetFilter: function () {

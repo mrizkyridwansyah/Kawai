@@ -32,6 +32,9 @@ public class QualityCheckConfirm
     [AllowedValues(["Accepted", "Rejected", "SA"])]
     public string InspectionResult { get; set; }
 
+    [RequiredIfEqual(nameof(InspectionResult), "Rejected")]
+    public string TypeHold { get; set; }
+
 }
 
 public class QualityCheckConfirmSA
@@ -40,10 +43,28 @@ public class QualityCheckConfirmSA
     public long InspectionId { get; set; }
 
     [Required]
-    [AllowedValues(["Accepted", "Rejected", "SA"])]
+    [AllowedValues(["Accepted", "Rejected"])]
     public string InspectionResult { get; set; }
 
     [Required]
     public string RemarksSA { get; set; }
 
+    [Required]
+    public decimal? TotalGoodQty { get; set; }
+
+    [Required]
+    public bool? ProcessUnapprove { get; set; }
+
+    [RequiredIfEqual(nameof(InspectionResult), "Rejected")]
+    public string TypeHold { get; set; }
+
+}
+
+public class QualityCheckCancelApprove
+{
+    [Required]
+    public long InspectionId { get; set; }
+
+    [Required]
+    public string RemarksUnapprove { get; set; }
 }
