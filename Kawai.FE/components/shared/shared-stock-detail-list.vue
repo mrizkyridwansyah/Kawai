@@ -44,7 +44,7 @@
 
 <script>
 export default {
-  props: ["warehouse", "area", "address", "item", "lotno", "counter"],
+  props: ["warehouse", "area", "address", "item", "lotno", "diffdata", "counter"],
   data: () => ({
     filter: {
       keyword: null,
@@ -88,6 +88,9 @@ export default {
     lotno: function () {
       this.search();
     },
+    diffdata: function () {
+      this.search();
+    },
     counter: function () {
       this.search();
     },
@@ -112,6 +115,7 @@ export default {
           AreaCode: this.area || "",
           AddressCode: this.address || "",
           LotNo: this.lotno || "",
+          DifferentData: this.diffdata? "true" : "false",
         },
       ];
 

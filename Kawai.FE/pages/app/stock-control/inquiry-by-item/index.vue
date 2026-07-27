@@ -31,6 +31,12 @@
               style-desc="width: 300px"
             />
           </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Include Allocation Stock</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+             <input-checkbox label=" " v-model="filter.diffData" />
+          </td>
         </tr>
         <tr>
           <td style="padding-top: 5px;">
@@ -61,6 +67,12 @@
               :show-option-all="true"
               style="width: 200px"
             />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            
           </td>
         </tr>
         <tr>
@@ -114,6 +126,7 @@
       :address="this.detail.address"
       :item="this.detail.item"
       :lotno="this.detail.lotno"
+      :diffdata="this.detail.diffdata"
       :counter="this.counter"
     />
   </v-modal>
@@ -135,6 +148,7 @@ export default {
       warehouse: null,
       area: null,
       lotno: null,
+      diffData: null,
     },
     detail: {
       warehouse: null,
@@ -142,6 +156,7 @@ export default {
       area: null,
       address: null,
       lotno: null,
+      diffdata: null,
     },
     counter: 0,
     columns: [],
@@ -163,6 +178,7 @@ export default {
   mounted: function () {
     this.getColumns();
     this.search(false);
+    this.filter.diffData = true;
   },
   watch: {
     "filter.item": function () {
@@ -270,6 +286,7 @@ export default {
           WarehouseCode: this.filter.warehouse || "",
           AreaCode: this.filter.area || "",
           LotNo: this.filter.lotno || "",
+          DifferentData: this.filter.diffData ? "true" : "false",
         },
       ];
 
@@ -284,6 +301,7 @@ export default {
       this.filter.area = null;
       this.filter.item = null;
       this.filter.lotno = null;
+      this.filter.diffData = null;
       this.search(false);
     },
     buildTree: function (items, level = 0, path = []) {
@@ -342,6 +360,7 @@ export default {
       this.detail.address = row.children[0].AddressCode;
       this.detail.item = row.children[0].ItemCode;
       this.detail.lotno = row.children[0].LotNo;
+      this.detail.diffdata = this.filter.diffData;
       this.counter++;
       this.$bvModal.show("modal-detail");
     },
