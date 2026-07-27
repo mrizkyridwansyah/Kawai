@@ -13,3 +13,15 @@ public class MobilePhysicalInventory
     [Required(ErrorMessage = "Inventory tidak boleh kosong")]    
     public decimal? InventoryQty { get; set; }
 }
+
+public class MobilePhysicalInventoryWarehouse
+{
+    [Required(ErrorMessage = "Warehouse tidak boleh kosong")]
+    public string WarehouseCode { get; set; }
+
+    [Required(ErrorMessage = "Barcode tidak boleh kosong")]
+    public string BarcodeNo { get; set; }
+
+    [Required(ErrorMessage = "Inventory tidak boleh kosong")]
+    public decimal? InventoryQty { get; set; }
+}

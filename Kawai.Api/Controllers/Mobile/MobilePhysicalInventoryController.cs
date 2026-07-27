@@ -110,4 +110,32 @@ public class MobilePhysicalInventoryController : HahaController
         //return Pending(message);
     }
 
+    [HttpGet("by-warehouse/data-barcode")]
+    public async Task<IActionResult> GetDataBarcodeByWarehouse(string warehouseCode, string barcodeNo)
+    {
+        var result = await _mobilePhysicalInventoryRepository.GetDataBarcodeByWarehouse(warehouseCode, barcodeNo);
+        return Success(result);
+    }
+
+    [HttpPost("by-warehouse/save")]
+    public async Task<IActionResult> SaveByWarehouse(MobilePhysicalInventoryWarehouse model)
+    {
+        var before = await _mobilePhysicalInventoryRepository.Capture(model.BarcodeNo);
+
+        await _mobilePhysicalInventoryRepository.SaveByWarehouse(model, Auth.User.UserID);
+
+        var after = await _mobilePhysicalInventoryRepository.Capture(model.BarcodeNo);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Mobile Physical Inventory",
+            EntityId = model.BarcodeNo.ToString(),
+            ReferenceId = model.BarcodeNo.ToString(),
+            Before = before,
+            After = after,
+            Activity = "Save Mobile Physical Inventory",
+            Action = DataLogAction.Update
+        });
+        return Success(after);
+    }
 }
