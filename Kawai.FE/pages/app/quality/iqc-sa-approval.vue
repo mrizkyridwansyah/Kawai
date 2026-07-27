@@ -86,8 +86,8 @@
                     <th class="text-center">Unit</th>
                     <th class="text-center">Receipt Qty</th>
                     <th class="text-center">Sample Qty</th>
-                    <th class="text-center">NG Qty</th>
-                    <th class="text-center">Total NG</th>
+                    <th class="text-center">NG Qty Input</th>
+                    <th class="text-center">NG Qty Final</th>
                     <th class="text-center">QC Status</th>
                     <th class="text-center">Approve</th>
                     <th class="text-center">Approval User</th>

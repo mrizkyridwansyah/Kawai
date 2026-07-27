@@ -9,7 +9,10 @@
         <label class="form-label">Item Name</label>
         <input-text v-model="model.ItemName" :disabled="true" />
       </div>
-      <div class="mb-3" v-if="mode == 'CONFIRM-SA'">
+      <div
+        class="mb-3"
+        v-if="mode == 'CONFIRM-SA' && this.model.ProcessUnapprove"
+      >
         <div class="row">
           <div class="col-3">
             <label class="form-label">Qty Receipt</label>
@@ -393,11 +396,9 @@ export default {
             this.ds
               .confirm(payload)
               .then((datas) => {
-                let msg =
-                  datas.Code == 200
-                    ? "Data saved successfully!"
-                    : "Transaction on process!";
-                toastSuccess(msg);
+                if (datas.Code == 200) toastSuccess("Data saved successfully!");
+                else toastInfo("Transaction on process!");
+
                 this.$emit("submitted");
                 resolve();
               })

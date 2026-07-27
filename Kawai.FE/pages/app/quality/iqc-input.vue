@@ -96,7 +96,8 @@
                     <th class="text-center">Unit</th>
                     <th class="text-center">Receipt Qty</th>
                     <th class="text-center">Sample Qty</th>
-                    <th class="text-center">NG Qty</th>
+                    <th class="text-center">NG Qty Input</th>
+                    <th class="text-center">NG Qty Final</th>
                     <th class="text-center">Result Input & View</th>
                     <th class="text-center">Register User</th>
                     <th class="text-center">Register Date</th>
@@ -213,6 +214,17 @@
                       class="text-right"
                     >
                       {{ $func.formatMoney(item.QtyNG) }}
+                    </td>
+                    <td
+                      :class="{
+                        'bg-danger': item.StatusQC != 'NEW' && item.QtyNG > 0,
+                        'bg-success': item.StatusQC != 'NEW' && item.QtyNG == 0,
+                        'table-striped-row':
+                          item.StatusQC == 'NEW' && (idx + 1) % 2 == 0,
+                      }"
+                      class="text-right"
+                    >
+                      {{ $func.formatMoney(item.TotalRealNG) }}
                     </td>
                     <td
                       :class="{
