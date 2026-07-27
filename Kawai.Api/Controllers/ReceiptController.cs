@@ -287,7 +287,7 @@ public class ReceiptController : HahaController
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
         string key = "ReceiptInquiryExport_" + Guid.NewGuid().ToString();
-        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelReceiptInquiry(parameter, Auth.User.UserID, key));
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelReceiptInquiry(parameter, Auth.Token, key));
         return Pending(message: "Data Export Excel sedang diproses!");
     }
 
@@ -375,7 +375,7 @@ public class ReceiptController : HahaController
         //}
         //else
         //{
-        BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReceiptBarcode(result, Auth.User.UserID));
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfReceiptBarcode(result, Auth.Token));
         //}
 
         return Pending(message: message);

@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Kawai.Api.Services;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -227,7 +227,7 @@ public class QualityCheckController : HahaController
         if (results == null || !results.Any()) return Invalid("No Data NG");
 
         string key = Guid.NewGuid().ToString();
-        BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfIQCReportNG(results, Auth.User.UserID, key));
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportPdfIQCReportNG(results, Auth.Token, key));
 
         return Pending(message: "Data Report NG sedang diproses");
     }
