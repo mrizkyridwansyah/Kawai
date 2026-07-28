@@ -71,9 +71,9 @@ public class PhysicalInventoryController : HahaController
 
             ExcelHelper.SetCell(row, colIdx, result.WarehouseName);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.AreaName);
+            ExcelHelper.SetCell(row, colIdx, result.AreaCode);
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.AddressName);
+            ExcelHelper.SetCell(row, colIdx, result.AddressCode);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.BarcodeNo);
             colIdx++;
