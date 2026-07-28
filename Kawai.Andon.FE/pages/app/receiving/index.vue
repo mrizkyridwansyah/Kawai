@@ -503,7 +503,7 @@ export default {
         // Ubah teks judul panel sesuai area yang difilter
           const headerPanel = document.getElementById("header-panel");
           if (headerPanel) {
-            headerPanel.innerText = `Receiving Andon (Temporary Area)`;
+            headerPanel.innerText = `Receiving Andon (Temporary Area) - Supplier : ${this.filter.SupplierName} `;
           }
 
         // Gunakan setTimeout kecil untuk mencegah bentrok dengan handleGlobalClick

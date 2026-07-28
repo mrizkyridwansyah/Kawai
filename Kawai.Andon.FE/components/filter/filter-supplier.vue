@@ -53,7 +53,7 @@ export default {
     prop: "modelValue",
     event: "update",
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "update:supplier-name"],
   props: [
     "modelValue",
     "type",
@@ -111,6 +111,7 @@ export default {
       const selected = this.list.find((x) => x.SupplierCode === v) || null;
 
       this.$emit("update:modelValue", v);
+      this.$emit("update:supplier-name", selected?.SupplierName || "");
     
       // console.log("Selected AreaCode:", v);
       // console.log("Selected AreaName:", selected?.AreaName || "");
@@ -143,6 +144,7 @@ export default {
           .then((p) => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.SupplierCode;
+             this.$emit("update:supplier-name", p.data.Data[0].SupplierName);
             }
              if (
               (this.defaultOptionAll || "") == "ALL" &&
@@ -150,6 +152,7 @@ export default {
             ) {
               this.tempValue = "ALL";
               this.$emit("update:modelValue", "ALL");
+               this.$emit("update:supplier-name", "ALL");
             }
 
             this.list =
