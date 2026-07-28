@@ -40,7 +40,7 @@
         <input
           type="text"
           disabled
-          :value="tempValue ? fuckingDescription : ''"
+          :value="tempValue ? itemDescription : ''"
           class="w-100 form-control"
         />
       </td>
@@ -75,7 +75,7 @@ export default {
     isOpen: false,
     list: [],
     tempValue: null,
-    fuckingDescription: "",
+    itemDescription: "",
     debounce: null,
   }),
   computed: {
@@ -106,7 +106,8 @@ export default {
       if (this.onSelect) this.onSelect(v);
 
       const selected = this.list.find((x) => x.ItemCode === v);
-      this.fuckingDescription = selected?.ItemName || "";
+      console.log(selected);
+      this.itemDescription = selected?.ItemName || "";
 
       this.$emit("update:modelValue", v);
     },
@@ -117,7 +118,7 @@ export default {
       this.isOpen = true;
       this.load("", this.modelValue);
     },
-    close: function() {
+    close: function () {
       this.isOpen = false;
     },
     load: function (q = "", d = "") {
@@ -131,6 +132,7 @@ export default {
           .then((p) => {
             if (d && p.data.Data.length > 0) {
               this.tempValue = p.data.Data[0]?.ItemCode;
+              this.itemDescription = p.data.Data[0]?.ItemName || "";
             }
             this.list = p.data.Data;
           })

@@ -330,7 +330,12 @@ export default {
       this.idSelected = dt.InspectionId;
       if (mode == "CONFIRM") {
         this.$bvModal.show("modal-form-iqc-result");
-      } else if (mode == "VIEW" && dt.StatusQC != "PENDING-SA" && dt.InspectionResult != "SA") {
+      } else if (
+        mode == "VIEW" &&
+        dt.StatusQC != "PENDING-SA" &&
+        dt.InspectionResult != "SA" &&
+        dt.QtyNG > 0
+      ) {
         this.modalMode = "UNAPPROVE";
         this.$bvModal.show("modal-form-iqc-result");
       } else this.$bvModal.show("modal-form-iqc-result-view");

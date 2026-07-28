@@ -6,14 +6,17 @@ export default defineNuxtPlugin(nuxtApp => {
   nuxtApp.provide('bvModal', {
     show: function(id) {
       var el = document.getElementById(id);
-      var modal = new bootstrap.Modal(el, { backdrop: true });
+      if (!el) return;
+      var modal = bootstrap.Modal.getOrCreateInstance(el, { backdrop: true });
       modal.show();
     },
     hide: function(id) {
       var el = document.getElementById(id);
+      if (!el) return;
       var modal = bootstrap.Modal.getInstance(el);
-      modal.hide();
-      document.querySelector('.modal-backdrop').remove();
+      if (modal) {
+        modal.hide();
+      }
     }
   })
 })

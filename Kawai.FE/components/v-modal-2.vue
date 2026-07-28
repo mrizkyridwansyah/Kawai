@@ -1,5 +1,5 @@
 <template>
-  <b-modal :id="id" :title="title" :size="size" :body-class="bodyClass || ''" class="zoom" centered hide-footer
+  <b-modal :id="id" teleport-to="body" :title="title" :size="size" :body-class="bodyClass || ''" class="zoom" centered hide-footer
     close-on-esc close-on-backdrop :scrollable="scrollable !== undefined && scrollable !== false" v-model="isShow" ref="modal">
     <template #header>
       <h5 class="modal-title">{{ title }}</h5>

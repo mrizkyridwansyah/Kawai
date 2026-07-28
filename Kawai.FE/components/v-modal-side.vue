@@ -1,6 +1,7 @@
 <template>
   <b-modal 
     :id="id"
+    teleport-to="body"
     :title="title"
     :body-class="bodyClass || ''"
     :class="direction"

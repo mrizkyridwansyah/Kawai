@@ -42,7 +42,7 @@
             :submit="submit"
             cClass="mr-1"
             :is-loading="isLoading"
-              :disabled="!menuPrivAllowUpdate" 
+            :disabled="!menuPrivAllowUpdate"
           />
 
           <button
@@ -198,13 +198,12 @@ export default {
     isLoading: false,
     errors: {},
     menuPrivAllowUpdate: false,
-    
   }),
   computed: {
     ds: function () {
       return usePeriodSetting();
     },
-     dsMenu: function () {
+    dsMenu: function () {
       return useMenu();
     },
     currentYear() {
@@ -224,7 +223,7 @@ export default {
     },
   },
   mounted: function () {
-     this.dsMenu.privileges().then((dt) => {
+    this.dsMenu.privileges().then((dt) => {
       this.menuPrivAllowUpdate = dt.Data.filter(
         (a) => a.MenuID == "A17",
       )[0].AllowUpdate;
@@ -309,8 +308,6 @@ export default {
       ];
 
       this.ds.listPeriodSettingDetail(filters).then((dt) => {
-        console.log(dt.Data.Items[0]);
-        console.log(typeof dt.Data.Items[0].StartDate);
         this.listPeriodSettingDetail = dt.Data.Items;
       });
     },

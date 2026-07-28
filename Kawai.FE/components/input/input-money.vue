@@ -59,8 +59,6 @@ export default {
         after = 0;
       }
 
-      console.log(typeof after, after);
-
       this.val = structuredClone(after.toFixed(9));
       this.val = after < 0 ? after * -1 : after;
 
