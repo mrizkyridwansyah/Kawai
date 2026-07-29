@@ -178,7 +178,7 @@
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.RequestId"
                 >
-                  <td colspan="3"></td>
+                  <td colspan="4"></td>
                   <td>
                     <a
                       href="javascript:void(0)"
