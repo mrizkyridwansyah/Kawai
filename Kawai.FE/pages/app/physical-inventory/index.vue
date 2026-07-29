@@ -101,14 +101,18 @@
           <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Status Scan </label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-scan-status
               class="form-control"
               v-model="filter.scanStatus"
               style="width: 170px"
             />
           </td>
-
+           <td style="padding-top: 5px; padding-left: 15px" colspan="2">
+            <input-checkbox class="form-label" label=" Include Allocation Stock" v-model="filter.diffData" />
+             
+          </td>
+           
           <td width="50px"></td>
           <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Not Scanned</label>
@@ -163,6 +167,7 @@
               />
             </div>
           </td>
+          
         </tr>
       </table>
       <hr />
@@ -271,6 +276,7 @@ export default {
       lotNo: null,
       statusScan: null,
       diffQty: null,
+      diffData: null,
       sorts: {
         ItemCode: "asc",
       },
@@ -331,6 +337,7 @@ export default {
 
     this.filter.scanStatus = "ALL";
     this.filter.diffQty = true;
+    this.filter.diffData = true;
   },
   methods: {
     onPageChange: function (page) {
@@ -388,6 +395,7 @@ export default {
           LotNo: this.filter.lotNo || "",
           ScanStatus: this.filter.scanStatus || "",
           DifferentQty: this.filter.diffQty ? "true" : "false",
+          DifferentData: this.filter.diffData ? "true" : "false",
         },
       ];
       this.ds.filter.Length = 100000;
@@ -411,6 +419,7 @@ export default {
       this.filter.lotNo = null;
       this.filter.scanStatus = "ALL";
       this.filter.diffQty = null;
+      this.filter.diffData = null;
 
       this.lists = [];
       this.listUpdate = [];
@@ -468,6 +477,7 @@ export default {
           LotNo: this.filter.lotNo || "",
           ScanStatus: this.filter.scanStatus || "",
           DifferentQty: this.filter.diffQty ? "true" : "false",
+          DifferentData: this.filter.diffData ? "true" : "false",
         },
       ];
 
