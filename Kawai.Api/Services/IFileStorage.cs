@@ -35,6 +35,50 @@ public static class FileValidator
             throw new Exception($"File type '{ext}' is not allowed. Allowed extensions: {string.Join(", ", WhitelistExtensions)}");
         }
     }
+    public static Stream CompressIfNeeded(IFormFile file, out bool isCompressed)
+    {
+        isCompressed = false;
+        var stream = file.OpenReadStream();
+
+        var ext = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+        var imageExtensions = new[] { ".jpg", ".jpeg", ".png" };
+
+        const long maxBytesBeforeCompress = 3 * 1024 * 1024; // 3MB
+
+        if (imageExtensions.Contains(ext) && file.Length > maxBytesBeforeCompress)
+        {
+            try
+            {
+                using var originalImage = System.Drawing.Image.FromStream(stream);
+                var memoryStream = new MemoryStream();
+
+                var jpegEncoder = System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders()
+                    .FirstOrDefault(c => c.FormatID == System.Drawing.Imaging.ImageFormat.Jpeg.Guid);
+
+                if (jpegEncoder != null)
+                {
+                    using var encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+                    encoderParameters.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 75L); // Quality 75%
+
+                    originalImage.Save(memoryStream, jpegEncoder, encoderParameters);
+                    memoryStream.Position = 0;
+
+                    // Cleanup stream awal
+                    stream.Dispose();
+
+                    isCompressed = true;
+                    return memoryStream;
+                }
+            }
+            catch
+            {
+                // Fallback ke stream awal jika format gambar tidak dapat dibaca/di-compress
+                stream.Position = 0;
+            }
+        }
+
+        return stream;
+    }
 }
 
 public static class FileStorageExtensions
@@ -140,7 +184,7 @@ public class LocalFileStorage : IFileStorage
     private void Save(string category, string key, IFormFile file)
     {
         FileValidator.Validate(file);
-        using var stream = file.OpenReadStream();
+        using var stream = FileValidator.CompressIfNeeded(file, out _);
         Save(category, key, stream);
     }
 
