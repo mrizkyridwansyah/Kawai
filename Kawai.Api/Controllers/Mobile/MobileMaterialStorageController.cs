@@ -31,9 +31,9 @@ public class MobileMaterialStorageController : HahaController
     }
 
     [HttpGet("list-detail")]
-    public async Task<IActionResult> GetListDetail(string warehouseCode, string lotNo, string itemCode)
+    public async Task<IActionResult> GetListDetail(string refNo, string warehouseCode, string lotNo, string itemCode)
     {
-        var result = await _materialStorageRepository.GetListDetail(warehouseCode, lotNo, itemCode);
+        var result = await _materialStorageRepository.GetListDetail(refNo, warehouseCode, lotNo, itemCode);
         return Success(result);
     }
 

@@ -14,6 +14,7 @@ public class MaterialStorageDto
 
 public class MaterialStorageSummaryDto
 {
+    public string RefNo { get; set; }
     public string WarehouseCode { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }

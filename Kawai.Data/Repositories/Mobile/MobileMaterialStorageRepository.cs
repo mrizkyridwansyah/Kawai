@@ -21,10 +21,10 @@ public class MobileMaterialStorageRepository : IMobileMaterialStorageRepository
         return (await _dbExecutor.QueryListAsync<MaterialStorageSummaryDto>(sp, new { WarehouseCode = warehouseCode, BarcodeNo = barcode })).ToList();
     }
 
-    public async Task<List<MaterialStorageDto>> GetListDetail(string warehouseCode, string lotNo, string itemCode)
+    public async Task<List<MaterialStorageDto>> GetListDetail(string refNo, string warehouseCode, string lotNo, string itemCode)
     {
         string sp = "sp_Wms_Mobile_MaterialStorage_GetListDetail";
-        return (await _dbExecutor.QueryListAsync<MaterialStorageDto>(sp, new { WarehouseCode = warehouseCode, LotNo = lotNo, ItemCode = itemCode })).ToList();
+        return (await _dbExecutor.QueryListAsync<MaterialStorageDto>(sp, new { RefNo = refNo, WarehouseCode = warehouseCode, LotNo = lotNo, ItemCode = itemCode })).ToList();
     }
 
     public async Task<List<MaterialStorageDto>> GetListRemainingStock(string userId)
