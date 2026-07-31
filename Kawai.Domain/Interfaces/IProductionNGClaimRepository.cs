@@ -17,6 +17,7 @@ public interface IProductionNGClaimRepository
     Task<List<ProductionNGClaimDto>> DDLSearch(string keyword, string status,   string userId);
     Task<List<ProductionNGClaimDto>> PickingDDLSearch(string keyword, string line, string typeDate,  bool showOptionAll, string userId);
     Task<Dictionary<string, object>> Capture(long claimid);
+
     
 
 

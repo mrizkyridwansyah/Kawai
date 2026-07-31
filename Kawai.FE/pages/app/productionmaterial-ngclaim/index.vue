@@ -129,6 +129,14 @@
             cClass="mr-1"
             :is-loading="isLoading"
           />
+           <v-button
+                :action="remove"
+                label="Delete"
+                icon="trash"
+                cClass="mr-1 btn-danger"
+                :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
+          />
          <v-button-submit
             :submit="submitprocess"
            :disabled="isNew || !menuPrivAllowUpdate"
@@ -306,7 +314,7 @@ export default {
         LineCode: "",
         Priority: "",
         Status: "",
-        ClaimDate: today,
+        ClaimDate: null,
         Notes: "",
         Details: [],
       };
@@ -470,7 +478,33 @@ export default {
       this.$bvModal.hide("modal-form-iqc-result");
       this.search();
     },
+    remove: function () {
+      if (!this.filter.ClaimId) {
+        toastDanger("Silahkan pilih Claim No!");
+        return;
+      }
 
+      confirmRemove(
+        () =>
+          new Promise((resolve, reject) => {
+            this.ds
+              .remove(this.filter.ClaimId)
+              .then((dt) => {
+                toastSuccess("Data deleted successfully!");
+                resolve();
+                this.reset();
+              })
+              .catch((err) => {
+                this.errors = err?.Errors;
+                resolve();
+                //toastDanger(err?.Message);
+              });
+          }),
+        null,
+
+        "",
+      );
+    },
     createClaim: function () {
       this.ds
         .create(this.model)
@@ -480,7 +514,7 @@ export default {
         })
         .catch((err) => {
           this.errors = err?.Errors;
-          toastDanger(err?.Message);
+          //toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
     },
@@ -493,7 +527,7 @@ export default {
         })
         .catch((err) => {
           this.errors = err?.Errors;
-          toastDanger(err?.Message);
+         // toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
     },

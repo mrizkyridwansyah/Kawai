@@ -128,7 +128,28 @@ public class ProductionNGClaimController : HahaController
 
         return Success(results.Take(100));
     }
- 
-   
+
+    [HttpDelete("remove")]
+    public async Task<IActionResult> Remove(long claimid)
+    {
+        var before = await _productionngclaimRepository.Capture(claimid);
+
+        await _productionngclaimRepository.Remove(claimid);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Delete Production NG Claim Material ",
+            EntityId = claimid.ToString(),
+            ReferenceId = claimid.ToString(),
+            Before = before,
+            After = null,
+            Action = DataLogAction.Delete,
+            Activity = "Delete Production NG Claim Material "
+        });
+
+        return Success();
+    }
+
+
 
 }
