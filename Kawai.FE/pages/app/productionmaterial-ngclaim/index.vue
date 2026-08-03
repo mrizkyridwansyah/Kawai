@@ -4,7 +4,7 @@
       <div class="filter-wrapper">
         <!-- 1 -->
 
-          <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Claim No</label>
           <input-productionclaim
             class="form-control"
@@ -23,7 +23,7 @@
           </div>
         </div>
 
-         <!-- 2 -->
+        <!-- 2 -->
         <div class="filter-item">
           <label class="form-label">Claim Date</label>
           <div>
@@ -41,7 +41,7 @@
           />
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Process</label>
           <filter-trade-2
             class="form-control"
@@ -63,22 +63,18 @@
           />
         </div>
 
-     
-
         <div class="filter-item">
           <label class="form-label">Picking No</label>
           <input-pickingno
-                    class="form-control"
-                    v-model="filter.PickingNo"
-                    :line="filter.LineCode"
-                    type-date="ALL"
-                    :show-option-all="true"
-                    :claim-id="filter.ClaimId"
-                    style="width: 420px"
-                  />
-           
+            class="form-control"
+            v-model="filter.PickingNo"
+            :line="filter.LineCode"
+            type-date="ALL"
+            :show-option-all="true"
+            :claim-id="filter.ClaimId"
+            style="width: 420px"
+          />
         </div>
-        
 
         <div class="filter-item">
           <label class="form-label">Priority</label>
@@ -95,13 +91,11 @@
           <input-text
             v-model="model.Status"
             maxlength="50"
-           :errors="errors?.Status"
+            :errors="errors?.Status"
             disabled="true"
             style="width: 420px"
           />
         </div>
-
-     
       </div>
 
       <div class="d-flex mt-3">
@@ -121,26 +115,26 @@
             <font-awesome-icon v-else icon="search" />
             <span class="ml-2">Search</span>
           </button>
-         <v-button-submit
+          <v-button-submit
             :submit="submitDraft"
             :disabled="!menuPrivAllowUpdate"
-             label="Save Draft"
+            label="Save Draft"
             icon="save"
             cClass="mr-1"
             :is-loading="isLoading"
           />
-           <v-button
-                :action="remove"
-                label="Delete"
-                icon="trash"
-                cClass="mr-1 btn-danger"
-                :is-loading="isLoading"
-                :disabled="!menuPrivAllowUpdate"
+          <v-button
+            :action="remove"
+            label="Delete"
+            icon="trash"
+            cClass="mr-1 btn-danger"
+            :is-loading="isLoading"
+            :disabled="!menuPrivAllowUpdate"
           />
-         <v-button-submit
+          <v-button-submit
             :submit="submitprocess"
-           :disabled="isNew || !menuPrivAllowUpdate"
-             label="Submit Claim"
+            :disabled="isNew || !menuPrivAllowUpdate"
+            label="Submit Claim"
             icon="check"
             cClass="mr-1"
             :is-loading="isLoading"
@@ -152,7 +146,7 @@
         :data-items="listNGDetail"
         :frozen-column-left="3"
         ref="vtable"
-        :top-content-height="450" 
+        :top-content-height="450"
       >
         <template #table-content>
           <div class="detail-content">
@@ -195,28 +189,27 @@
                   <td>{{ item.LotNo }}</td>
                   <td>{{ item.UnitClsName }}</td>
                   <td class="text-right">{{ $func.formatMoney(item.Qty) }}</td>
-                 <td>
-                   <input-text
-                        v-model="item.Reason"
-                        :errors="errors?.[`Details[${idx}].Reason`]"
-                        style="width: 200px"
-                      />
-                       </td>
-                 <td>
-                  <input-text
-                        v-model="item.RemarksDetail"
-                        :errors="errors?.[`Details[${idx}].RemarksDetail`]"
-                        style="width: 200px"
-                      />
-                     </td>
                   <td>
-                     <a
-                        href="javascript:void(0);"
-                        @click="() => showModal(item, 'VIEW')"
-                      >
-                        View
-                      </a>
-
+                    <input-text
+                      v-model="item.Reason"
+                      :errors="errors?.[`Details[${idx}].Reason`]"
+                      style="width: 200px"
+                    />
+                  </td>
+                  <td>
+                    <input-text
+                      v-model="item.RemarksDetail"
+                      :errors="errors?.[`Details[${idx}].RemarksDetail`]"
+                      style="width: 200px"
+                    />
+                  </td>
+                  <td>
+                    <a
+                      href="javascript:void(0);"
+                      @click="() => showModal(item, 'VIEW')"
+                    >
+                      View
+                    </a>
                   </td>
                   <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                   <td>{{ item.LastUser }}</td>
@@ -235,17 +228,13 @@
           </div>
         </template>
       </v-table-input>
-       <div>
+      <div>
         <label class="form-label">Remarks</label>
-        <input-text
-          multiline
-          v-model="model.Notes"
-          :errors="errors?.Notes"
-        />
+        <input-text multiline v-model="model.Notes" :errors="errors?.Notes" />
       </div>
     </template>
   </v-frame>
-   <v-modal
+  <v-modal
     ref="modalIQC"
     id="modal-form-iqc-result"
     :title="title"
@@ -272,11 +261,11 @@ export default {
     isNew: true,
     menuPrivAllowUpdate: false,
     filter: {
-        PickingNo: null,
-        FactoryCode: null,
-        ManufactureCode: null,
-        LineCode: null,
-        ClaimId: null,
+      PickingNo: null,
+      FactoryCode: null,
+      ManufactureCode: null,
+      LineCode: null,
+      ClaimId: null,
     },
     model: {
       ClaimId: null,
@@ -298,12 +287,11 @@ export default {
     ds: function () {
       return useProductionNGClaim();
     },
-     dsMenu: function () {
+    dsMenu: function () {
       return useMenu();
     },
   },
   watch: {
-   
     "filter.LineCode": function () {
       this.listNGDetail = [];
     },
@@ -331,7 +319,6 @@ export default {
     });
     let today = new Date();
     this.model.ClaimDate = today;
-
   },
   methods: {
     deepClone: function (obj) {
@@ -340,6 +327,7 @@ export default {
         : JSON.parse(JSON.stringify(obj));
     },
     reset: function () {
+      let today = new Date();
       this.isNew = true;
       this.filter = {
         PickingNo: null,
@@ -359,8 +347,6 @@ export default {
         Details: [],
       };
       this.listNGDetail = [];
-      let today = new Date();
-   
     },
     changeNew: function (e) {
       if (e.target.checked) this.reset();
@@ -381,11 +367,12 @@ export default {
         toastDanger("Please Choose Picking No!");
         return;
       }
+
       if (!this.model.Priority) {
+        this.isLoading = false;
         toastDanger("Please choose priority!");
         return;
       }
-
 
       this.model.ClaimId = this.filter.ClaimId?.toString() || "0";
       this.model.LineCode = this.filter.LineCode;
@@ -398,7 +385,6 @@ export default {
           RemarksDetail: p.RemarksDetail,
           Reason: p.Reason,
           Qty: p.Qty?.toString() || "0",
-
         };
       });
 
@@ -420,7 +406,8 @@ export default {
         return;
       }
 
-       if (!this.model.Priority) {
+      if (!this.model.Priority) {
+        this.isLoading = false;
         toastDanger("Please choose priority!");
         return;
       }
@@ -460,7 +447,6 @@ export default {
           LineCode: this.filter.LineCode,
           PickingNo: this.filter.PickingNo,
           ManufactureCode: this.filter.ManufactureCode,
-          
         },
       ];
       this.ds.listNGDetail(filters).then((dt) => {
@@ -527,7 +513,7 @@ export default {
         })
         .catch((err) => {
           this.errors = err?.Errors;
-         // toastDanger(err?.Message);
+          // toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
     },
@@ -600,7 +586,7 @@ thead {
 
 .filter-wrapper:has(.filter-item:nth-child(4)):not(
     :has(.filter-item:nth-child(5))
-  ) {   
+  ) {
   grid-template-rows: repeat(2, auto);
 }
 
