@@ -1,5 +1,6 @@
 ﻿using Kawai.Api.Services;
 using Kawai.Domain.DTOs.Log;
+using Kawai.Domain.DTOs.Mobile;
 using Kawai.Domain.Interfaces.Mobile;
 using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
@@ -139,6 +140,9 @@ public class MobileLoadingConfirmationController : HahaController
         // =====================================================
         // SAVE FILES TO SERVER
         // =====================================================
+        var results = await _repository.GetInstructionDDL(model.InstructionNo);
+        DateTime shippingDate = results.FirstOrDefault(x => x.InstructionNo == model.InstructionNo)?.InstructionDate ?? DateTime.Today;
+
         foreach (var item in model.Files ?? new List<MobileLoadingConfirmationEvidenceFile>())
         {
             if (item.File == null)
@@ -149,7 +153,10 @@ public class MobileLoadingConfirmationController : HahaController
                 "wwwroot",
                 "uploads",
                 "loading-confirmation",
-                "Evidence Before"
+                "Evidence",
+                shippingDate.ToString("yyyy-MM-dd"),
+                model.InstructionNo,
+                "Before"
             );
 
             if (!Directory.Exists(folderPath))
@@ -163,7 +170,7 @@ public class MobileLoadingConfirmationController : HahaController
                 await item.File.CopyToAsync(stream);
             }
 
-            string relativePath = $"/uploads/loading-confirmation/Evidence Before/{fileName}";
+            string relativePath = $"/uploads/loading-confirmation/Evidence/{shippingDate.ToString("yyyy-MM-dd")}/{model.InstructionNo}/Before/{fileName}";
 
             files.Add(new LoadingConfirmationEvidenceFileQueue
             {
@@ -254,6 +261,9 @@ public class MobileLoadingConfirmationController : HahaController
         // =====================================================
         // SAVE FILES TO SERVER
         // =====================================================
+        var results = await _repository.GetInstructionDDL(model.InstructionNo);
+        DateTime shippingDate = results.FirstOrDefault(x => x.InstructionNo == model.InstructionNo)?.InstructionDate ?? DateTime.Today;
+
         foreach (var item in model.Files ?? new List<MobileLoadingConfirmationEvidenceFile>())
         {
             if (item.File == null)
@@ -264,7 +274,10 @@ public class MobileLoadingConfirmationController : HahaController
                 "wwwroot",
                 "uploads",
                 "loading-confirmation",
-                "Evidence After"
+                "Evidence",
+                shippingDate.ToString("yyyy-MM-dd"),
+                model.InstructionNo,
+                "After"
             );
 
             if (!Directory.Exists(folderPath))
@@ -278,7 +291,7 @@ public class MobileLoadingConfirmationController : HahaController
                 await item.File.CopyToAsync(stream);
             }
 
-            string relativePath = $"/uploads/loading-confirmation/Evidence After/{fileName}";
+            string relativePath = $"/uploads/loading-confirmation/Evidence/{shippingDate.ToString("yyyy-MM-dd")}/{model.InstructionNo}/After/{fileName}";
 
             files.Add(new LoadingConfirmationEvidenceFileQueue
             {
