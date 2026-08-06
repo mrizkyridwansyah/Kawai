@@ -43,7 +43,7 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
             CommandType.StoredProcedure
         ));
 
-        
+
 
         await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
     }
@@ -51,22 +51,22 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
 
     public async Task<List<ShippingInstructionDetailDto>> GetListDetail(RequestParameter param)
     {
-        
+
         var paramSupplier = param.GetParam("Supplier");
         var paramPONumber = param.GetParam("PONumber");
         var paramShippingInstructionNo = param.GetParam("ShippingInstructionNo");
         var paramDeliveryFrom = param.GetParam("DeliveryFrom");
         var paramDeliveryTo = param.GetParam("DeliveryTo");
- 
+
         string sp = "sp_Wms_Shipping_Instruction_ListDetail";
         return (await _dbExecutor.QueryListAsync<ShippingInstructionDetailDto>(sp, new
         {
-                Supplier =  paramSupplier ,
-                PONumber =  paramPONumber ,
-                ShippingInstructionNo =  paramShippingInstructionNo ,
-                DeliveryFrom =  paramDeliveryFrom ,
-                DeliveryTo = paramDeliveryTo ,
- 
+            Supplier = paramSupplier,
+            PONumber = paramPONumber,
+            ShippingInstructionNo = paramShippingInstructionNo,
+            DeliveryFrom = paramDeliveryFrom,
+            DeliveryTo = paramDeliveryTo,
+
         })).ToList();
     }
 
@@ -76,7 +76,7 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<ShippingInstructionDto>(sp, new { ShippingInstructionNo = shippinginstructionno });
     }
 
-    public async Task<List<ShippingInstructionFilterDto>> GetSIDDL(string keyword,  string supplier, DateTime? periodFrom, DateTime? periodUntil,   string sourceMenu, string userId)
+    public async Task<List<ShippingInstructionFilterDto>> GetSIDDL(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string sourceMenu, string orderEntry, string userId)
     {
         string sp = "sp_Wms_Shipping_Instruction_DDL";
 
@@ -85,6 +85,7 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
             Keyword = keyword ?? "",
             SourceMenu = sourceMenu ?? "",
             SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            OrderEntry = String.IsNullOrEmpty(orderEntry) ? "ALL" : orderEntry,
             PeriodFrom = periodFrom,
             PeriodUntil = periodUntil,
             UserId = userId
@@ -124,7 +125,7 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
             RegisterBy = userId
         });
 
-       
+
 
     }
 

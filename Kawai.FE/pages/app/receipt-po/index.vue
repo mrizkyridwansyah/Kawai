@@ -284,9 +284,23 @@
               />
               <table class="ml-9">
                 <tr>
-                  <td>  <label class="form-label" style="font-size: medium;" >Total Qty DN</label></td>
-                   <td> <label class="ml-2" style="font-size: medium;" > : </label></td>
-                  <td>  <label id="TotalQtyDN"  class="ml-2" style="font-size: medium;"> {{ $func.formatMoney(model.QtyDN) }}</label></td>
+                  <td>
+                    <label class="form-label" style="font-size: medium"
+                      >Total Qty DN</label
+                    >
+                  </td>
+                  <td>
+                    <label class="ml-2" style="font-size: medium"> : </label>
+                  </td>
+                  <td>
+                    <label
+                      id="TotalQtyDN"
+                      class="ml-2"
+                      style="font-size: medium"
+                    >
+                      {{ $func.formatMoney(model.QtyDN) }}</label
+                    >
+                  </td>
                 </tr>
               </table>
             </div>

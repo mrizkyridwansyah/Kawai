@@ -39,9 +39,9 @@ public class ShippingInstructionController : HahaController
     }
 
     [HttpGet("si-ddlsearch")]
-    public async Task<IActionResult> SIDDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil , string sourceMenu, string ids)
+    public async Task<IActionResult> SIDDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil , string sourceMenu, string orderEntry, string ids)
     {
-        var results = await _shippingInstructionRepository.GetSIDDL(keyword, supplier, periodFrom, periodUntil, sourceMenu, Auth.User.UserID);
+        var results = await _shippingInstructionRepository.GetSIDDL(keyword, supplier, periodFrom, periodUntil, sourceMenu, orderEntry, Auth.User.UserID);
         if (!string.IsNullOrEmpty(ids))
         {
             var idList = ids.Split(',').Select(id => id.Trim()).ToList();

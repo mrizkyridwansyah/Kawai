@@ -58,6 +58,7 @@ export default {
     "sourceMenu",
     "periodFrom",
     "periodUntil",
+    "orderEntry",
   ],
   data: () => ({
     isLoading: false,
@@ -79,7 +80,7 @@ export default {
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
-   
+
     supplierCode: function (after) {
       if (!after) this.$emit("update:modelValue", null);
     },
@@ -111,7 +112,7 @@ export default {
     open: function () {
       this.load("", null);
     },
- 
+
     load: function (q = "", d = "") {
       this.list = [];
       this.isLoading = true;
@@ -120,13 +121,12 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/shipping-instruction/si-ddlsearch?keyword=${q || ""}&ids=${d || ""}&supplier=${this.supplierCode || ""}&sourceMenu=${this.sourceMenu || ""}${
+            `/shipping-instruction/si-ddlsearch?keyword=${q || ""}&ids=${d || ""}${this.supplierCode ? "&supplier=" + this.supplierCode : ""}&sourceMenu=${this.sourceMenu || ""}${
               this.periodFrom
                 ? "&periodFrom=" +
                   this.$func.asUtcStringDateOnly(new Date(this.periodFrom))
                 : ""
-            }
-                  ${this.periodUntil ? "&periodUntil=" + this.$func.asUtcStringDateOnly(new Date(this.periodUntil)) : ""}`,
+            }${this.periodUntil ? "&periodUntil=" + this.$func.asUtcStringDateOnly(new Date(this.periodUntil)) : ""}${this.orderEntry ? "&orderEntry=" + this.orderEntry : ""}`,
           )
           .then((p) => {
             if (d && p.data.Data.length > 0) {

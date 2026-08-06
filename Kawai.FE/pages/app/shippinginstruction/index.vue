@@ -6,16 +6,15 @@
         <div class="filter-item">
           <label class="form-label">Supplier</label>
           <div>
-           <filter-trade-cust
-                class="form-control"
-                v-model="filter.Supplier"
-                :placeholder="''"
-                style-code="width: 170px;"
-                style-desc="width: 250px;"
-              />
+            <filter-trade-cust
+              class="form-control"
+              v-model="filter.Supplier"
+              :placeholder="''"
+              style-code="width: 170px;"
+              style-desc="width: 250px;"
+            />
           </div>
         </div>
- 
 
         <!-- 2 -->
         <div class="filter-item">
@@ -27,39 +26,38 @@
             class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
             >To</label
           >
-          <div> 
+          <div>
             <input-date v-model="filter.DeliveryTo" />
           </div>
         </div>
 
         <div class="filter-item">
           <label class="form-label">Order Number</label>
-                 <input-order-entry
-                    class="form-control"
-                    v-model="filter.PONumber"
-                    :supplier-code="filter.Supplier"
-                    :type-date="'ALL'"
-                    :period-from="filter.DeliveryFrom"
-                    :period-until="filter.DeliveryTo"
-                    :show-option-all="true"
-                    :si-no="filter.ShippingInstructionNo"
-                    style="width: 360px"
-                  />
+          <input-order-entry
+            class="form-control"
+            v-model="filter.PONumber"
+            :supplier-code="filter.Supplier"
+            :type-date="'ALL'"
+            :period-from="filter.DeliveryFrom"
+            :period-until="filter.DeliveryTo"
+            :show-option-all="true"
+            :si-no="filter.ShippingInstructionNo"
+            style="width: 360px"
+          />
         </div>
 
-         <div class="filter-item">			 
+        <div class="filter-item">
           <label class="form-label">SI No</label>
           <input-shipping-instruction
             class="form-control"
             :disabled="isNew"
             source-menu="SI"
             :supplier-code="filter.Supplier"
+            :order-entry="filter.PONumber"
             v-model="filter.ShippingInstructionNo"
-              :period-from="filter.DeliveryFrom"
-                    :period-until="filter.DeliveryTo"
             style="width: 375px"
           />
-          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">						 
+          <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-xs-1 mt-2">
             <input-checkbox
               label="New"
               v-model="isNew"
@@ -68,21 +66,18 @@
           </div>
         </div>
 
-
-
         <div class="filter-item">
           <label class="form-label">SI Date</label>
           <input-date
-                    v-model="model.ShippingInstructionDate"
-                    style-date="width: 115px"
-                    :errors="errors?.ShippingInstructionDate"
-                  />
+            v-model="model.ShippingInstructionDate"
+            style-date="width: 115px"
+            :errors="errors?.ShippingInstructionDate"
+          />
         </div>
       </div>
 
       <div class="d-flex mt-3">
         <div class="d-flex flex-fill">
-      
           <button
             class="btn btn-sm btn-blue btn-elevate mr-1"
             @click="searchDetail"
@@ -107,12 +102,12 @@
             cClass="mr-1"
             :is-loading="isLoading"
           />
-             <v-button-print
-                  label="Print Surat Jalan"
-                  class="mr-1"
-                  :print="print"
-                  :is-loading="isLoading"
-                />
+          <v-button-print
+            label="Print Surat Jalan"
+            class="mr-1"
+            :print="print"
+            :is-loading="isLoading"
+          />
         </div>
       </div>
       <hr />
@@ -131,50 +126,55 @@
             >
               <thead>
                 <tr>
-                  <th class="text-center">
-                    
-                  </th>
-                     <th class="text-center">Part Number</th>
-                      <th class="text-center">Description</th>
-                      <th class="text-center">Unit</th>
-                      <th class="text-center">Qty Shipping</th>
-                      <th class="text-center">Delivery Date</th>
-                      <th class="text-center">Qty Stock</th>
-                      <th class="text-center">Serial No</th>
-                      <th class="text-center">Picking Detail</th>
+                  <th class="text-center"></th>
+                  <th class="text-center">Part Number</th>
+                  <th class="text-center">Description</th>
+                  <th class="text-center">Unit</th>
+                  <th class="text-center">Qty Shipping</th>
+                  <th class="text-center">Delivery Date</th>
+                  <th class="text-center">Qty Stock</th>
+                  <th class="text-center">Serial No</th>
+                  <th class="text-center">Picking Detail</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(item, idx) in listDetail || []" :key="idx">
                   <td class="text-center">
-                   <input-checkbox
-  v-model="item.Selected"
-  @click="(e) => {
-    if (item.Selected) {
-      e.preventDefault(); // Sudah tercentang, tidak boleh di-uncheck
-      return;
-    }
-    check(e, item);
-  }"
-/>
-                   </td>
-                    <td>{{ item.Item_Code }}</td>
-                    <td>{{ item.Item_Name }}</td>
-                    <td>{{ item.Unit_Desc }}</td>
-                    <td class="text-right">{{ item.Qty }}</td>
-                    <td>{{ item.DeliveryDate }}</td>
-                    <td class="text-right">{{ item.Qty_Stock }}</td>
-                    <td>{{ item.Serial_No }}</td>
-                    <td class="text-center">
-                       <v-button
-                            @click="viewDetail(item.ShippingInstructionNo,item.Item_Code,item.PONumber,item.PO_SeqNo)"
-                            icon="eye"
-                            label="View Detail"
-                            cClass="ml-1 btn-info"
-                            :is-loading="isLoading"
-                          />
-
-                    
+                    <input-checkbox
+                      v-model="item.Selected"
+                      @click="
+                        (e) => {
+                          if (item.Selected) {
+                            e.preventDefault(); // Sudah tercentang, tidak boleh di-uncheck
+                            return;
+                          }
+                          check(e, item);
+                        }
+                      "
+                    />
+                  </td>
+                  <td>{{ item.Item_Code }}</td>
+                  <td>{{ item.Item_Name }}</td>
+                  <td>{{ item.Unit_Desc }}</td>
+                  <td class="text-right">{{ item.Qty }}</td>
+                  <td>{{ item.DeliveryDate }}</td>
+                  <td class="text-right">{{ item.Qty_Stock }}</td>
+                  <td>{{ item.Serial_No }}</td>
+                  <td class="text-center">
+                    <v-button
+                      @click="
+                        viewDetail(
+                          item.ShippingInstructionNo,
+                          item.Item_Code,
+                          item.PONumber,
+                          item.PO_SeqNo,
+                        )
+                      "
+                      icon="eye"
+                      label="View Detail"
+                      cClass="ml-1 btn-info"
+                      :is-loading="isLoading"
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -191,14 +191,9 @@
           </div>
         </template>
       </v-table-input>
-     
     </template>
   </v-frame>
-  <v-modal
-    title="Picking Detail"
-    class="modal-lg"
-    id="modal-list-detail"
-  >
+  <v-modal title="Picking Detail" class="modal-lg" id="modal-list-detail">
     <shared-shipping-scan
       :sino="this.selectedSINo"
       :item="this.selectedItem"
@@ -207,8 +202,6 @@
       :counter="this.counter"
     />
   </v-modal>
-
-  
 </template>
 
 <script>
@@ -217,25 +210,24 @@ export default {
     isNew: true,
     menuPrivAllowUpdate: false,
     filter: {
-      Supplier: null,
+      Supplier: "ALL",
       DeliveryFrom: null,
       DeliveryTo: null,
       PONumber: null,
       ShippingInstructionNo: null,
-      
     },
     model: {
-       ShippingInstructionDate: null,
+      ShippingInstructionDate: null,
       Details: [],
     },
     listDetail: [],
     Details: [],
     debounce: null,
-     selectedSINo: "",
-     selectedItem: "",
-     selectedPONo: "",
-     selectedPOSeqNo: 0,
-     counter: 0,
+    selectedSINo: "",
+    selectedItem: "",
+    selectedPONo: "",
+    selectedPOSeqNo: 0,
+    counter: 0,
     isLoading: false,
     errors: {},
   }),
@@ -248,20 +240,32 @@ export default {
     },
   },
   watch: {
-    
-     "filter.PONumber": function () {
+    "filter.Supplier": function () {
+      this.listDetail = [];
+    },
+    "filter.PONumber": function () {
       this.listDetail = [];
     },
     "filter.ShippingInstructionNo": function () {
-      this.model = {
-        ShippingInstructionDate: null,
-        Details: [],
-      };
-      this.listDetail = [];
-      let today = new Date();
       if (this.filter.ShippingInstructionNo) this.getSI();
+      else {
+        this.isNew = true;
+        let today = new Date();
+        this.filter.PeriodFrom = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          1,
+        );
+        this.filter.PeriodUntil = today;
+        this.filter.PONumber = null;
+        this.listDetail = [];
+        this.filter.ReceiptId = null;
+        this.model = {
+          ShippingInstructionDate: null,
+          Details: [],
+        };
+      }
     },
-    
   },
   mounted: function () {
     this.dsMenu.privileges().then((dt) => {
@@ -284,11 +288,11 @@ export default {
       let today = new Date();
       this.isNew = true;
       this.filter = {
-         Supplier: null,
-         DeliveryFrom: today,
-         DeliveryTo: today,
-         PONumber: null,
-         ShippingInstructionNo: null,
+        Supplier: "ALL",
+        DeliveryFrom: today,
+        DeliveryTo: today,
+        PONumber: null,
+        ShippingInstructionNo: null,
       };
       this.model = {
         ShippingInstructionDate: today,
@@ -299,13 +303,13 @@ export default {
     changeNew: function (e) {
       if (e.target.checked) this.reset();
     },
-    
+
     check: function (e, item) {
       item.Selected = e.target.checked;
     },
-     print() {
-    debugger;
-         this.PrintSuratJalan(this.filter.ShippingInstructionNo)
+    print() {
+      debugger;
+      this.PrintSuratJalan(this.filter.ShippingInstructionNo)
         .then((dt) => {
           toastSuccess("Download successfully!");
           this.reset();
@@ -315,34 +319,34 @@ export default {
           //toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
-
-       
     },
 
     PrintSuratJalan: function (sino) {
       this.isLoading = true;
-      return this.$http.post(
-        `/shipping-instruction/report-surat-jalan?sino=${sino}`,
-        null,
-        { responseType: 'blob' }
-      )
-        .then(res => {
-          const blob = res.data instanceof Blob
-            ? res.data
-            : new Blob([res.data], { type: 'application/pdf' });
+      return this.$http
+        .post(`/shipping-instruction/report-surat-jalan?sino=${sino}`, null, {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const blob =
+            res.data instanceof Blob
+              ? res.data
+              : new Blob([res.data], { type: "application/pdf" });
 
           const url = window.URL.createObjectURL(blob);
 
-          let fileName = 'Surat_Jalan.pdf';
-          const contentDisposition = res.headers['content-disposition'];
+          let fileName = "Surat_Jalan.pdf";
+          const contentDisposition = res.headers["content-disposition"];
           if (contentDisposition) {
-            const match = contentDisposition.match(/filename\*?=(?:UTF-8''|")?([^;"\n]+)/i);
+            const match = contentDisposition.match(
+              /filename\*?=(?:UTF-8''|")?([^;"\n]+)/i,
+            );
             if (match && match[1]) {
               fileName = decodeURIComponent(match[1].trim());
             }
           }
 
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
           link.download = fileName;
           document.body.appendChild(link);
@@ -351,22 +355,28 @@ export default {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
         })
-        .catch(async err => {
+        .catch(async (err) => {
           if (err.response) {
             // server ngirim response, tapi error
             const blob = err.response.data;
             try {
               const text = await blob.text();
               const json = JSON.parse(text);
-              throw { message: json.Message || 'Server returned an error', isServerError: true};
+              throw {
+                message: json.Message || "Server returned an error",
+                isServerError: true,
+              };
             } catch (e) {
-              console.log('Server Error, but not JSON', e);
-              throw { message: e.message || 'Server returned an error', isServerError: true};
+              console.log("Server Error, but not JSON", e);
+              throw {
+                message: e.message || "Server returned an error",
+                isServerError: true,
+              };
             }
           }
 
-          if (err?.code === 'ERR_NETWORK') this.isNetworkError = true;
-          if (err?.code === 'ERR_BAD_RESPONSE') this.isServerError = true;
+          if (err?.code === "ERR_NETWORK") this.isNetworkError = true;
+          if (err?.code === "ERR_BAD_RESPONSE") this.isServerError = true;
 
           throw err;
         })
@@ -374,7 +384,6 @@ export default {
           this.isLoading = false;
         });
     },
-
 
     submit: function () {
       this.isLoading = true;
@@ -387,9 +396,8 @@ export default {
         return;
       }
 
-      
-
-      this.model.ShippingInstructionNo = this.filter.ShippingInstructionNo?.toString() || "";
+      this.model.ShippingInstructionNo =
+        this.filter.ShippingInstructionNo?.toString() || "";
       this.model.ShippingInstructionDate = this.model.ShippingInstructionDate;
       this.model.PONumber = this.filter.PONumber;
       this.model.Supplier = this.filter.Supplier;
@@ -409,7 +417,7 @@ export default {
         this.updateSI();
       }
     },
- 
+
     getSI: function () {
       this.ds.loadDetail(this.filter.ShippingInstructionNo).then((dt) => {
         this.model = this.deepClone(dt.Data || {});
@@ -431,7 +439,8 @@ export default {
         {
           Supplier: this.filter.Supplier,
           PONumber: this.filter.PONumber?.toString() || "0",
-          ShippingInstructionNo: this.filter.ShippingInstructionNo?.toString() || " ",
+          ShippingInstructionNo:
+            this.filter.ShippingInstructionNo?.toString() || " ",
           DeliveryFrom: this.filter.DeliveryFrom,
           DeliveryTo: this.filter.DeliveryTo,
         },
@@ -441,8 +450,7 @@ export default {
         this.listDetail.map((x) => (x.Selected = x.SIDetailID > 0));
       });
     },
-    viewDetail: function (sino, item , pono , poseqno) {
- 
+    viewDetail: function (sino, item, pono, poseqno) {
       this.selectedSINo = sino;
       this.selectedItem = item;
       this.selectedPONo = pono;
@@ -451,7 +459,6 @@ export default {
       this.$bvModal.show("modal-list-detail");
     },
 
-   
     remove: function () {
       if (!this.filter.ShippingInstructionNo) {
         toastDanger("Silahkan pilih Shipping Instruction No!");

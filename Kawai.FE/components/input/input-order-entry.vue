@@ -57,10 +57,10 @@ export default {
     "factoryCode",
     "supplierCode",
     "periodFrom",
-     "typeDate",
+    "typeDate",
     "periodUntil",
     "showOptionAll",
-    "siNo"
+    "siNo",
   ],
   data: () => ({
     isLoading: false,
@@ -130,7 +130,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/shipping-instruction/po-ddlsearch?keyword=${q || ""}&ids=${d || ""}&custCode=${this.supplierCode}${
+            `/shipping-instruction/po-ddlsearch?keyword=${q || ""}&ids=${d || ""}${this.supplierCode ? "&custCode=" + this.supplierCode : ""}${
               this.typeDate
                 ? "&typeDate=" +
                   this.typeDate +
@@ -138,7 +138,8 @@ export default {
                   this.$func.asUtcStringDateOnly(new Date(this.periodFrom)) +
                   "&periodUntil=" +
                   this.$func.asUtcStringDateOnly(new Date(this.periodUntil)) +
-                  "&sino=" + this.siNo
+                  "&sino=" +
+                  this.siNo
                 : ""
             }&showOptionAll=${this.showOptionAll || false}`,
           )
