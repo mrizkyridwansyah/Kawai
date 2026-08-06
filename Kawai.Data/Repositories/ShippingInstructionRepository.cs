@@ -2,6 +2,9 @@ using Kawai.Data.SqlConnections;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
+using Kawai.Domain.Models.Mobile;
+using Kawai.Domain.Shared;
+using System.Data;
 
 namespace Kawai.Data.Repositories;
 
@@ -14,201 +17,167 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         _dbExecutor = dbExecutor;
     }
 
-    public async Task<List<ShippingInstructionFilterDto>> GetFilterDDL(string custCode, DateTime? dateFrom, DateTime? dateTo)
+    public async Task<List<ShippingInstructionPickingDto>> GetListPicking(RequestParameter param)
     {
-        var fromDate = dateFrom ?? new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-        var toDate = dateTo ?? fromDate.AddMonths(1).AddDays(-1);
-        var customer = string.IsNullOrWhiteSpace(custCode) || string.Equals(custCode, "ALL", StringComparison.OrdinalIgnoreCase)
-            ? "ALL"
-            : custCode;
-
-        var data = (await _dbExecutor.QueryListAsync<ShippingInstructionFilterDto>(
-            "sp_Wms_ShippingInstruction_DLL",
-            new
-            {
-                CustCode = customer,
-                DateFrom = fromDate,
-                DateTo = toDate
-            }
-        )).ToList();
-
-        foreach (var item in data)
-            item.DDLDescription = item.SI_No;
-
-        return data;
+        string sp = "sp_Wms_Shipping_Instruction_List_Picking";
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionPickingDto>(sp, param.ToQueryObject())).ToList();
     }
 
-    public async Task<List<ShippingInstructionGridRowDto>> GetList(string poNo, bool isNew)
+    public async Task SavePicking(ShippingInstructionPicking model, string userId)
     {
-        var result = await _dbExecutor.QueryMultipleAsync(
-            "sp_Wms_ShippingInstruction_GetList",
+
+        var header = model.Header.First();
+
+        var commands = new List<(string, object?, CommandType)>();
+        commands.Add((
+            "sp_Wms_Shipping_Instruction_Save_Picking",
             new
             {
-                PONo = string.IsNullOrWhiteSpace(poNo) ? null : poNo.Trim()
+                header.ShippingInstructionNo,
+                header.ItemCode,
+                header.PONumber,
+                header.PO_SeqNo,
+                Details = DataTableHelper.ToDataTable(model.Details),
+                PickingBy = userId
             },
+            CommandType.StoredProcedure
+        ));
+
+        
+
+        await _dbExecutor.ExecuteMultiCommandWithTransactionAsync(commands);
+    }
+
+
+    public async Task<List<ShippingInstructionDetailDto>> GetListDetail(RequestParameter param)
+    {
+        
+        var paramSupplier = param.GetParam("Supplier");
+        var paramPONumber = param.GetParam("PONumber");
+        var paramShippingInstructionNo = param.GetParam("ShippingInstructionNo");
+        var paramDeliveryFrom = param.GetParam("DeliveryFrom");
+        var paramDeliveryTo = param.GetParam("DeliveryTo");
+ 
+        string sp = "sp_Wms_Shipping_Instruction_ListDetail";
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionDetailDto>(sp, new
+        {
+                Supplier =  paramSupplier ,
+                PONumber =  paramPONumber ,
+                ShippingInstructionNo =  paramShippingInstructionNo ,
+                DeliveryFrom =  paramDeliveryFrom ,
+                DeliveryTo = paramDeliveryTo ,
+ 
+        })).ToList();
+    }
+
+    public async Task<ShippingInstructionDto> GetDataHeader(string shippinginstructionno)
+    {
+        string sp = "sp_Wms_Shipping_Instruction_DataHeader";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<ShippingInstructionDto>(sp, new { ShippingInstructionNo = shippinginstructionno });
+    }
+
+    public async Task<List<ShippingInstructionFilterDto>> GetSIDDL(string keyword,  string supplier, DateTime? periodFrom, DateTime? periodUntil,   string sourceMenu, string userId)
+    {
+        string sp = "sp_Wms_Shipping_Instruction_DDL";
+
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionFilterDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            SourceMenu = sourceMenu ?? "",
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            PeriodFrom = periodFrom,
+            PeriodUntil = periodUntil,
+            UserId = userId
+        })).ToList();
+    }
+
+    public async Task<List<ShippingInstructionFilterDto>> GetPODDL(string keyword, string supplier, string typeDate, DateTime? periodFrom, DateTime? periodUntil, bool showOptionAll, string userId)
+    {
+        string sp = "sp_Wms_Shipping_Instruction_PODDL";
+        var today = DateTime.Today;
+        var awalBulan = new DateTime(today.Year, today.Month, 1);
+
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionFilterDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            TypeDate = typeDate,
+            PeriodFrom = periodFrom.HasValue ? periodFrom.Value : awalBulan,
+            PeriodUntil = periodUntil.HasValue ? periodUntil.Value : DateTime.Today,
+            ShowOptionAll = showOptionAll,
+            UserId = userId
+        })).ToList();
+    }
+
+    public async Task Create(ShippingInstruction si, string userId)
+    {
+        si.ShippingInstructionNo = await _dbExecutor.QuerySingleOrDefaultAsync<string>("sp_Wms_Shipping_Instruction_GenerateCode");
+        var DetaiTest = DataTableHelper.ToDataTable(si.Details);
+        string sqlHeader = "sp_Wms_Shipping_Instruction_Create";
+        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        {
+            si.ShippingInstructionNo,
+            si.ShippingInstructionDate,
+            si.PONumber,
+            si.Supplier,
+            Details = DataTableHelper.ToDataTable(si.Details),
+            RegisterBy = userId
+        });
+
+       
+
+    }
+
+    public async Task Update(ShippingInstruction si, string userId)
+    {
+        string sqlHeader = "sp_Wms_Shipping_Instruction_Update";
+        await _dbExecutor.ExecuteAsync(sqlHeader, new
+        {
+            si.ShippingInstructionNo,
+            si.ShippingInstructionDate,
+            si.PONumber,
+            si.Supplier,
+            Details = DataTableHelper.ToDataTable(si.Details),
+            UpdateBy = userId
+        });
+    }
+
+    public async Task Remove(string shippinginstructionno)
+    {
+        string sqlHeader = "sp_Wms_Shipping_Instruction_Delete";
+        await _dbExecutor.ExecuteAsync(sqlHeader, new { ShippingInstructionNo = shippinginstructionno });
+    }
+
+    public async Task<Dictionary<string, object>> Capture(string shippinginstructionno)
+    {
+        var result = await _dbExecutor.QueryMultipleAsync(
+            "sp_Wms_Shipping_Instruction_Capture",
+            param: new { ShippingInstructionNo = shippinginstructionno },
             async multi =>
             {
+                var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
                 var details = (await multi.ReadAsync<dynamic>()).ToList();
-                var serials = (await multi.ReadAsync<dynamic>()).ToList();
-                return (details, serials);
+
+                return (header, details);
             }
         );
 
-        var detailRows = result.details
-            .Select(MapDetail)
-            .Where(x => !string.IsNullOrWhiteSpace(x.ItemCode) && x.SeqNo > 0)
-            .ToList();
-
-        var serialRows = result.serials
-            .Select(MapSerial)
-            .Where(x => !string.IsNullOrWhiteSpace(x.ItemCode) && x.SeqNo > 0)
-            .ToList();
-
-        foreach (var row in detailRows)
+        return new Dictionary<string, object>
         {
-            row.Serials = serialRows
-                .Where(x => x.ItemCode == row.ItemCode && x.SeqNo == row.SeqNo)
-                .OrderBy(x => x.SerialNo)
-                .ToList();
-        }
-
-        return detailRows.OrderBy(x => x.SeqNo).ToList();
-    }
-
-    private static ShippingInstructionGridRowDto MapDetail(dynamic row)
-    {
-        var dict = ToDictionary(row);
-        return new ShippingInstructionGridRowDto
-        {
-            IsPicking = GetInt(dict, "isPicking", "IsPicking") == 1,
-            SINo = GetString(dict, "SI_NO", "SI_No", "SINo"),
-            SIDate = GetDate(dict, "SI_Date", "SIDate"),
-            PONo = GetString(dict, "PO_No", "PONo"),
-            SeqNo = GetInt(dict, "PO_SeqNo", "Seq_No"),
-            ItemCode = GetString(dict, "Item_Code"),
-            PartNumber = GetString(dict, "Item_Code"),
-            Description = GetString(dict, "Item_Name"),
-            Unit = GetString(dict, "Unit_Desc"),
-            QtyShipping = GetDecimal(dict, "Qty_Shipping", "Qty"),
-            DeliveryDate = GetDate(dict, "PO_DelivDate", "Delivery_Date"),
-            QtyStock = GetDecimal(dict, "Qty_Stock"),
-            QtyPicking = GetDecimal(dict, "Qty_Picking"),
-            SerialNoFrom = GetString(dict, "SerialNo_From", "SerialNoFrom"),
-            SerialNoTo = GetString(dict, "SerialNo_To", "SerialNoto"),
+            { "Shipping InstructionNo Header", result.header },
+            { "Shipping InstructionNo Detail", result.details }
         };
     }
 
-    public async Task Submit(List<ShippingInstructionRequest> requests, string userId)
-    {
-        var validRequests = (requests ?? [])
-            .Where(x => !string.IsNullOrWhiteSpace(x.PONo)
-                && x.POSeqNo > 0
-                && !string.IsNullOrWhiteSpace(x.ItemCode)
-                && x.SIDate != default)
-            .ToList();
-
-        if (!validRequests.Any())
-            return;
-
-        await _dbExecutor.ExecuteAsync(
-            "sp_Wms_ShippingInstruction_Insert",
-            new
-            {
-                LastUser = userId,
-                Request = DataTableHelper.ToDataTable(validRequests)
-            }
-        );
-    }
-
-    public async Task<List<NGClaimReportDto>> GetListReport(string sino)
+    public async Task<List<ShippingInstructionReportDto>> GetListReport(string sino)
     {
         string sp = "sp_Wms_ShippingInstruction_Report";
 
-        return (await _dbExecutor.QueryListAsync<NGClaimReportDto>(sp, new
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionReportDto>(sp, new
         {
             SINo = sino
         })).ToList();
     }
 
 
-    public async Task UpdatePicking(List<ShippingPickingRequest> requests, string userId)
-    {
-        var validRequests = (requests ?? [])
-            .Where(x => !string.IsNullOrWhiteSpace(x.PONo)
-                && x.POSeqNo > 0
-                && !string.IsNullOrWhiteSpace(x.ItemCode)
-                && !string.IsNullOrWhiteSpace(x.SerialNo))
-            .ToList();
-
-        if (!validRequests.Any())
-            return;
-
-        await _dbExecutor.ExecuteAsync(
-            "sp_Wms_ShippingPicking_Update",
-            new
-            {
-                LastUser = userId,
-                Request = DataTableHelper.ToDataTable(validRequests)
-            }
-        );
-    }
-
-    private static ShippingInstructionGridSerialDto MapSerial(dynamic row)
-    {
-        var dict = ToDictionary(row);
-        return new ShippingInstructionGridSerialDto
-        {
-            PONo = GetString(dict, "PO_No", "PONo"),
-            ItemCode = GetString(dict, "Item_Code"),
-            SeqNo = GetInt(dict, "PO_SeqNo", "Seq_No"),
-            SerialNo = GetString(dict, "Serial_No"),
-            IsPicking = GetInt(dict, "IsPicking", "isPicking") == 1,
-            Address = GetString(dict, "Address", "Addres"),
-            PickingDate = GetDate(dict, "Picking_Date"),
-            PickingTime = GetString(dict, "Picking_Time"),
-            PickingBy = GetString(dict, "Picking_By"),
-        };
-    }
-
-    private static Dictionary<string, object> ToDictionary(dynamic row)
-    {
-        return ((IDictionary<string, object>)row)
-            .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
-    }
-
-    private static object GetValue(Dictionary<string, object> dict, params string[] keys)
-    {
-        foreach (var key in keys)
-        {
-            if (dict.TryGetValue(key, out var value) && value != null && value != DBNull.Value)
-                return value;
-        }
-        return null;
-    }
-
-    private static string GetString(Dictionary<string, object> dict, params string[] keys)
-    {
-        return Convert.ToString(GetValue(dict, keys)) ?? string.Empty;
-    }
-
-    private static int GetInt(Dictionary<string, object> dict, params string[] keys)
-    {
-        var value = GetValue(dict, keys);
-        if (value == null) return 0;
-        return int.TryParse(Convert.ToString(value), out var result) ? result : 0;
-    }
-
-    private static decimal GetDecimal(Dictionary<string, object> dict, params string[] keys)
-    {
-        var value = GetValue(dict, keys);
-        if (value == null) return 0m;
-        return decimal.TryParse(Convert.ToString(value), out var result) ? result : 0m;
-    }
-
-    private static DateTime? GetDate(Dictionary<string, object> dict, params string[] keys)
-    {
-        var value = GetValue(dict, keys);
-        if (value == null) return null;
-        return DateTime.TryParse(Convert.ToString(value), out var result) ? result : null;
-    }
 }
