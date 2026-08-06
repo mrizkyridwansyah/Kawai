@@ -1,0 +1,37 @@
+﻿namespace Kawai.Domain.DTOs.Mobile;
+public class RequestOthersRequestNoDto
+{
+    public string RequestNo { get; set; }
+    public string Description { get; set; }
+}
+public class RequestOthersDto
+{
+    public string WarehouseCode { get; set; }
+    public string BarcodeNo { get; set; }
+    public string LineCode { get; set; }
+    public string RequestNo { get; set; }
+    public string Status { get; set; }
+    public string ProductionDate { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string LotNo { get; set; }
+    public string UnitDesc { get; set; }
+    public decimal PlanQty { get; set; }
+    public decimal QtyScan { get; set; }
+}
+
+public class RequestOthersDetailDto
+{
+    public string WarehouseCode { get; set; }
+    public string Address { get; set; }
+    public string RequestNo { get; set; }
+    public string Status { get; set; }
+    public decimal Qty { get; set; }
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string LotNo { get; set; }
+    public string StatusReceipt { get; set; }
+
+}
+
+ 
