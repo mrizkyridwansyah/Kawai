@@ -46,7 +46,7 @@ class MobileRequestOthersRepository : IMobileRequestOthersRepository
         string sp = "sp_Wms_Mobile_RequestOthers_GetListDetail";
         return (await _dbExecutor.QueryListAsync<RequestOthersDetailDto>(sp, new { Linecode = linecode, RequestNo = requestno,  ItemCode = itemCode })).ToList();
     }
-    public async Task<RequestOthersDto> GetDataBarcode(string barcodeNo, string claimno, string linecode)
+    public async Task<RequestOthersDto> GetDataBarcode(string barcodeNo, string requestno, string linecode)
     {
         string sp = "sp_Wms_Mobile_RequestOthers_GetDataBarcode";
         return await _dbExecutor.QueryFirstOrDefaultAsync<RequestOthersDto>(sp, new { BarcodeNo = barcodeNo, RequestNo = requestno, LineCode = linecode });
