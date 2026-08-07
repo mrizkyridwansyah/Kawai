@@ -19,7 +19,7 @@ public class ShippingInstructionDto
     public string Unit_Cls { get; set; }
     public string Unit_Desc { get; set; }
     public Decimal Qty { get; set; }
-    public string DeliveryDate { get; set; }
+    public DateTime DeliveryDate { get; set; }
     public string SerialNo_From { get; set; }
     public string SerialNo_To { get; set; }
  
