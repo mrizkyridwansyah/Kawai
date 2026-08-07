@@ -12,6 +12,7 @@
               :placeholder="''"
               style-code="width: 170px;"
               style-desc="width: 250px;"
+              :disabled="!isNew"
             />
           </div>
         </div>
@@ -20,19 +21,19 @@
         <div class="filter-item">
           <label class="form-label">Delivery Date</label>
           <div>
-            <input-date v-model="filter.DeliveryFrom" />
+            <input-date v-model="filter.DeliveryFrom" :disabled="!isNew" />
           </div>
           <label
             class="form-label col-form-label col-xl-1 col-lg-1 col-md-2 col-sm-2 col-xs-1"
             >To</label
           >
           <div>
-            <input-date v-model="filter.DeliveryTo" />
+            <input-date v-model="filter.DeliveryTo" :disabled="!isNew" />
           </div>
         </div>
 
         <div class="filter-item">
-          <label class="form-label">Order Number</label>
+          <label class="form-label">Order No</label>
           <input-order-entry
             class="form-control"
             v-model="filter.PONumber"
@@ -42,6 +43,7 @@
             :period-until="filter.DeliveryTo"
             :show-option-all="true"
             :si-no="filter.ShippingInstructionNo"
+            :disabled="!isNew"
             style="width: 360px"
           />
         </div>
@@ -96,7 +98,7 @@
 
           <v-button-submit
             :submit="submit"
-            :disabled="!menuPrivAllowUpdate"
+            :disabled="!menuPrivAllowUpdate || !isNew"
             label="Save"
             icon="save"
             cClass="mr-1"
@@ -105,6 +107,7 @@
           <v-button-print
             label="Print Surat Jalan"
             class="mr-1"
+            :disabled="isNew"
             :print="print"
             :is-loading="isLoading"
           />
@@ -112,7 +115,7 @@
       </div>
       <hr />
       <v-table-input
-        :data-items="listDetail"
+        :data-items="this.model.Details"
         :frozen-column-left="3"
         ref="vtable"
         :top-content-height="450"
@@ -138,7 +141,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item, idx) in listDetail || []" :key="idx">
+                <tr v-for="(item, idx) in this.model.Details || []" :key="idx">
                   <td class="text-center">
                     <input-checkbox
                       v-model="item.Selected"
@@ -185,7 +188,7 @@
                 !ds.isLoading &&
                 !ds.isNetworkError &&
                 !ds.isServerError &&
-                (!listDetail || listDetail.length === 0)
+                (!this.model.Details || this.model.Details.length === 0)
               "
             />
           </div>
@@ -217,11 +220,13 @@ export default {
       ShippingInstructionNo: null,
     },
     model: {
+      Supplier: null,
+      ShippingInstructionNo: null,
       ShippingInstructionDate: null,
+      PONumber: null,
+      DeliveryDate: null,
       Details: [],
     },
-    listDetail: [],
-    Details: [],
     debounce: null,
     selectedSINo: "",
     selectedItem: "",
@@ -241,29 +246,22 @@ export default {
   },
   watch: {
     "filter.Supplier": function () {
-      this.listDetail = [];
+      let bfr = this.filter.Supplier;
+      if (!this.filter.PONumber && !this.filter.ShippingInstructionNo) {
+        this.reset();
+        this.filter.Supplier = bfr;
+      }
     },
     "filter.PONumber": function () {
-      this.listDetail = [];
+      if (this.filter.PONumber && !this.filter.ShippingInstructionNo) {
+        this.model.Details = [];
+        this.getDataShippingByPO(this.filter.PONumber);
+      }
     },
     "filter.ShippingInstructionNo": function () {
-      if (this.filter.ShippingInstructionNo) this.getSI();
-      else {
-        this.isNew = true;
-        let today = new Date();
-        this.filter.PeriodFrom = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          1,
-        );
-        this.filter.PeriodUntil = today;
-        this.filter.PONumber = null;
-        this.listDetail = [];
-        this.filter.ReceiptId = null;
-        this.model = {
-          ShippingInstructionDate: null,
-          Details: [],
-        };
+      if (this.filter.ShippingInstructionNo && !this.filter.PONumber) {
+        this.model.Details = [];
+        this.getShipping();
       }
     },
   },
@@ -275,15 +273,14 @@ export default {
     });
     let today = new Date();
     this.model.ShippingInstructionDate = today;
-    this.filter.DeliveryFrom = today;
+    this.filter.DeliveryFrom = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1,
+    );
     this.filter.DeliveryTo = today;
   },
   methods: {
-    deepClone: function (obj) {
-      return typeof structuredClone === "function"
-        ? structuredClone(obj)
-        : JSON.parse(JSON.stringify(obj));
-    },
     reset: function () {
       let today = new Date();
       this.isNew = true;
@@ -295,15 +292,18 @@ export default {
         ShippingInstructionNo: null,
       };
       this.model = {
+        Supplier: null,
+        ShippingInstructionNo: null,
         ShippingInstructionDate: today,
+        PONumber: null,
+        DeliveryDate: null,
         Details: [],
       };
-      this.listDetail = [];
+      this.model.Details = [];
     },
     changeNew: function (e) {
       if (e.target.checked) this.reset();
     },
-
     check: function (e, item) {
       item.Selected = e.target.checked;
     },
@@ -389,7 +389,7 @@ export default {
       this.isLoading = true;
       this.errors = {};
 
-      let details = this.listDetail.filter((x) => x.Selected);
+      let details = this.model.Details.filter((x) => x.Selected);
       if (details.length == 0) {
         this.isLoading = false;
         toastDanger("Please Choose Part No!");
@@ -401,31 +401,55 @@ export default {
       this.model.ShippingInstructionDate = this.model.ShippingInstructionDate;
       this.model.PONumber = this.filter.PONumber;
       this.model.Supplier = this.filter.Supplier;
-      this.model.Details = details.map((p) => {
-        return {
-          Item_Code: p.Item_Code,
-          PO_SeqNo: p.PO_SeqNo,
-          Qty: p.Qty?.toString() || "0",
-          SerialNo_From: p.SerialNo_From?.toString() || " ",
-          SerialNo_To: p.SerialNo_To?.toString() || " ",
-        };
-      });
+
+      let payload = {
+        ...this.model,
+        Details: details.map((p) => {
+          return {
+            Item_Code: p.Item_Code,
+            PO_SeqNo: p.PO_SeqNo,
+            Qty: p.Qty?.toString() || "0",
+            SerialNo_From: p.SerialNo_From?.toString() || " ",
+            SerialNo_To: p.SerialNo_To?.toString() || " ",
+          };
+        }),
+      };
 
       if (this.isNew) {
-        this.createSI();
+        this.createSI(payload);
       } else {
-        this.updateSI();
+        this.updateSI(payload);
       }
     },
+    getDataShippingByPO: function () {
+      this.ds.loadShippingByPO(this.filter.PONumber).then((dt) => {
+        this.model = dt.Data;
+        this.model.ShippingInstructionDate = !this.model.ShippingInstructionNo
+          ? new Date()
+          : this.model.ShippingInstructionDate;
 
-    getSI: function () {
-      this.ds.loadDetail(this.filter.ShippingInstructionNo).then((dt) => {
-        this.model = this.deepClone(dt.Data || {});
+        this.isNew = !this.model.ShippingInstructionNo;
         this.filter.Supplier = this.model.Supplier;
         this.filter.PONumber = this.model.PONumber;
         this.filter.DeliveryFrom = this.model.DeliveryDate;
         this.filter.DeliveryTo = this.model.DeliveryDate;
-        this.$nextTick(() => setTimeout(() => this.searchDetail(), 500));
+        this.filter.ShippingInstructionNo = this.model.ShippingInstructionNo;
+        this.model.Details.map((x) => (x.Selected = true));
+      });
+    },
+    getShipping: function () {
+      this.ds.loadShipping(this.filter.ShippingInstructionNo).then((dt) => {
+        this.model = dt.Data;
+        this.model.ShippingInstructionDate = !this.model.ShippingInstructionNo
+          ? new Date()
+          : this.model.ShippingInstructionDate;
+
+        this.isNew = !this.model.ShippingInstructionNo;
+        this.filter.Supplier = this.model.Supplier;
+        this.filter.PONumber = this.model.PONumber;
+        this.filter.DeliveryFrom = this.model.DeliveryDate;
+        this.filter.DeliveryTo = this.model.DeliveryDate;
+        this.model.Details.map((x) => (x.Selected = true));
       });
     },
     searchDetail: function () {
@@ -434,21 +458,13 @@ export default {
         return;
       }
 
-      let filters = { ...this.ds.filter };
-      filters.Filters = [
-        {
-          Supplier: this.filter.Supplier,
-          PONumber: this.filter.PONumber?.toString() || "0",
-          ShippingInstructionNo:
-            this.filter.ShippingInstructionNo?.toString() || " ",
-          DeliveryFrom: this.filter.DeliveryFrom,
-          DeliveryTo: this.filter.DeliveryTo,
-        },
-      ];
-      this.ds.listDetail(filters).then((dt) => {
-        this.listDetail = dt.Data.Items;
-        this.listDetail.map((x) => (x.Selected = x.SIDetailID > 0));
-      });
+      if (!this.filter.PONumber && !this.filter.ShippingInstructionNo) {
+        toastDanger("Please Select PO Number or SI No!");
+        return;
+      }
+
+      if (this.filter.PONumber) this.getDataShippingByPO();
+      else if (this.filter.ShippingInstructionNo) this.getShipping();
     },
     viewDetail: function (sino, item, pono, poseqno) {
       this.selectedSINo = sino;
@@ -458,57 +474,29 @@ export default {
       this.counter++;
       this.$bvModal.show("modal-list-detail");
     },
-
-    remove: function () {
-      if (!this.filter.ShippingInstructionNo) {
-        toastDanger("Silahkan pilih Shipping Instruction No!");
-        return;
-      }
-
-      confirmRemove(
-        () =>
-          new Promise((resolve, reject) => {
-            this.ds
-              .remove(this.filter.ShippingInstructionNo)
-              .then((dt) => {
-                toastSuccess("Data deleted successfully!");
-                resolve();
-                this.reset();
-              })
-              .catch((err) => {
-                this.errors = err?.Errors;
-                resolve();
-                //toastDanger(err?.Message);
-              });
-          }),
-        null,
-
-        "",
-      );
-    },
-    createSI: function () {
+    createSI: function (payload) {
       this.ds
-        .create(this.model)
+        .create(payload)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
-          //toastDanger(err?.Message);
+          toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
     },
-    updateSI: function () {
+    updateSI: function (payload) {
       this.ds
-        .update(this.model)
+        .update(payload)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
           this.reset();
         })
         .catch((err) => {
           this.errors = err?.Errors;
-          // toastDanger(err?.Message);
+          toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
     },

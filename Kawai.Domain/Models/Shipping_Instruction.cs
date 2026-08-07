@@ -43,12 +43,14 @@ public class ShippingInstruction
 {
  
     public string ShippingInstructionNo { get; set; }
+
+    [Required(ErrorMessage = "SI Date harus diisi")]
     public DateTime? ShippingInstructionDate { get; set; }
+
+    [Required(ErrorMessage = "Order Number harus diisi")]
     public string PONumber { get; set; }
+
     public string Supplier { get; set; }
- 
-
-
 
     [Required(ErrorMessage = "List Detail harus diisi")]
     public List<ShippingInstruction_Detail> Details { get; set; } = new List<ShippingInstruction_Detail>();

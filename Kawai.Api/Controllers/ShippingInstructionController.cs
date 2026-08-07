@@ -58,20 +58,73 @@ public class ShippingInstructionController : HahaController
         return DataTableResult(parameter, results);
     }
 
-    [HttpGet("data-header")]
-    public async Task<IActionResult> GetDataHeader(string shippinginstructionno)
+    [HttpGet("data-shipping-by-po")]
+    public async Task<IActionResult> GetDataShippingByPO(string poNumber)
     {
-        var result = await _shippingInstructionRepository.GetDataHeader(shippinginstructionno);
-        return Success(result);
+        var result = await _shippingInstructionRepository.GetDataShippingByPO(poNumber);
+
+        var grouped = result
+            .GroupBy(x => new { x.Supplier, x.ShippingInstructionNo, x.ShippingInstructionDate, x.PONumber, x.DeliveryDate })
+            .Select(g => new
+            {
+                g.Key.Supplier,
+                g.Key.ShippingInstructionNo,
+                g.Key.ShippingInstructionDate,
+                g.Key.PONumber,
+                g.Key.DeliveryDate,
+                Details = g.Select(x => new
+                {
+                    x.PO_SeqNo,
+                    x.Item_Code,
+                    x.Item_Name,
+                    x.Unit_Cls,
+                    x.Unit_Desc,
+                    x.Qty,
+                    x.Qty_Stock,
+                    x.Qty_Picking,
+                    x.Serial_No,
+                    x.SerialNo_From,
+                    x.SerialNo_To,
+                }).ToList()
+            })
+            .FirstOrDefault();
+
+        return Success(grouped);
     }
 
-    [HttpPost("list-detail")]
-    public async Task<IActionResult> GetListDetail([FromBody] RequestParameter parameter)
+    [HttpGet("data-shipping")]
+    public async Task<IActionResult> GetDataShipping(string shippingNo)
     {
-        var results = await _shippingInstructionRepository.GetListDetail(parameter);
-        return DataTableResult(parameter, results);
-    }
+        var result = await _shippingInstructionRepository.GetDataHeaderNew(shippingNo);
 
+        var grouped = result
+            .GroupBy(x => new { x.Supplier, x.ShippingInstructionNo, x.ShippingInstructionDate, x.PONumber, x.DeliveryDate })
+            .Select(g => new
+            {
+                g.Key.Supplier,
+                g.Key.ShippingInstructionNo,
+                g.Key.ShippingInstructionDate,
+                g.Key.PONumber,
+                g.Key.DeliveryDate,
+                Details = g.Select(x => new
+                {
+                    x.PO_SeqNo,
+                    x.Item_Code,
+                    x.Item_Name,
+                    x.Unit_Cls,
+                    x.Unit_Desc,
+                    x.Qty,
+                    x.Qty_Stock,
+                    x.Qty_Picking,
+                    x.Serial_No,
+                    x.SerialNo_From,
+                    x.SerialNo_To,
+                }).ToList()
+            })
+            .FirstOrDefault();
+
+        return Success(grouped);
+    }
 
     [HttpPost("save-picking")]
     public async Task<IActionResult> Save(ShippingInstructionPicking model)
@@ -96,6 +149,9 @@ public class ShippingInstructionController : HahaController
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] ShippingInstruction model)
     {
+        if (model.Details == null || !model.Details.Any())
+            return Invalid("Detail Order didn't exists!");
+
         await _shippingInstructionRepository.Create(model, Auth.User.UserID);
 
         var after = await _shippingInstructionRepository.Capture(model.ShippingInstructionNo.ToString());

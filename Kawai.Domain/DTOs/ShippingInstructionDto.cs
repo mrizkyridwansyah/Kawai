@@ -38,10 +38,10 @@ public class ShippingInstructionDetailDto : DataTableDto
     public string Item_Name { get; set; }
     public string Unit_Cls { get; set; }
     public string Unit_Desc { get; set; }
-    public Decimal Qty { get; set; }
-    public Decimal Qty_Stock { get; set; }
-    public Decimal Qty_Picking { get; set; }
-    public string DeliveryDate { get; set; }
+    public decimal Qty { get; set; }
+    public decimal Qty_Stock { get; set; }
+    public decimal Qty_Picking { get; set; }
+    public DateTime DeliveryDate { get; set; }
     public string SerialNo_From { get; set; }
     public string Serial_No { get; set; }
     public string SerialNo_To { get; set; }

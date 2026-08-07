@@ -121,7 +121,7 @@ export default {
       this.debounce = setTimeout(() => {
         this.$http
           .get(
-            `/shipping-instruction/si-ddlsearch?keyword=${q || ""}&ids=${d || ""}${this.supplierCode ? "&supplier=" + this.supplierCode : ""}&sourceMenu=${this.sourceMenu || ""}${
+            `/shipping-instruction/si-ddlsearch?keyword=${q || ""}&ids=${d || ""}&supplier=${this.supplierCode || ""}&sourceMenu=${this.sourceMenu || ""}${
               this.periodFrom
                 ? "&periodFrom=" +
                   this.$func.asUtcStringDateOnly(new Date(this.periodFrom))

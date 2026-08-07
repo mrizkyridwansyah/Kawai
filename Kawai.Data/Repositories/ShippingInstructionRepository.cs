@@ -5,6 +5,7 @@ using Kawai.Domain.Models;
 using Kawai.Domain.Models.Mobile;
 using Kawai.Domain.Shared;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace Kawai.Data.Repositories;
 
@@ -76,6 +77,18 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         return await _dbExecutor.QueryFirstOrDefaultAsync<ShippingInstructionDto>(sp, new { ShippingInstructionNo = shippinginstructionno });
     }
 
+    public async Task<List<ShippingInstructionDetailDto>> GetDataShippingByPO(string poNumber)
+    {
+        string sp = "sp_Wms_Shipping_Instruction_DataShippingByPO";
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionDetailDto>(sp, new { PONumber = poNumber })).ToList();
+    }
+
+    public async Task<List<ShippingInstructionDetailDto>> GetDataHeaderNew(string shippingNo)
+    {
+        string sp = "sp_Wms_Shipping_Instruction_DataHeaderNew";
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionDetailDto>(sp, new { ShippingNo = shippingNo })).ToList();
+    }
+
     public async Task<List<ShippingInstructionFilterDto>> GetSIDDL(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string sourceMenu, string orderEntry, string userId)
     {
         string sp = "sp_Wms_Shipping_Instruction_DDL";
@@ -136,9 +149,6 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         {
             si.ShippingInstructionNo,
             si.ShippingInstructionDate,
-            si.PONumber,
-            si.Supplier,
-            Details = DataTableHelper.ToDataTable(si.Details),
             UpdateBy = userId
         });
     }
