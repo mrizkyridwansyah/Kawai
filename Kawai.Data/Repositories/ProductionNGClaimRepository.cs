@@ -22,12 +22,14 @@ public class ProductionNGClaimRepository : IProductionNGClaimRepository
     {
         var paramClaimId = param.GetParam("ClaimId");
         var paramLineCode = param.GetParam("LineCode");
-       
+        var paramPickingNo = param.GetParam("PickingNo");
+
         string sp = "sp_Wms_ProductionNGClaimMaterial_ListNGDetail";
         return (await _dbExecutor.QueryListAsync<ProductionNGClaimDetailDto>(sp, new
         {
             ClaimId = paramClaimId,
-            LineCode = paramLineCode, 
+            LineCode = paramLineCode,
+            PickingNo = paramPickingNo,
         })).ToList();
     }
 
