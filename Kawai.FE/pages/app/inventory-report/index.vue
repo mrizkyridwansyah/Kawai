@@ -75,6 +75,8 @@
                 <th class="text-center">Allocation (B)</th>
                 <th class="text-center">Ready Stock (C = A-B)</th>
                 <th class="text-center">Inventory</th>
+                <th class="text-center">Qty Sebelum Palletizer</th>
+                <th class="text-center">View Serial No</th>
                 <th class="text-center">Remarks</th>
                 <th class="text-center">User</th>
               </tr>
@@ -99,6 +101,16 @@
                 <td class="text-end">
                   {{ $func.formatMoney(item.Inventory) }}
                 </td>
+                <td>{{ item.QtyPalletizer }}</td>
+                   <td class="text-center align-middle">
+                          <v-button
+                            @click="viewDetail(item.ProductCode)"
+                            icon="eye"
+                            :label="`View Detail (${item.Total}) `"
+                            cClass="ml-1 btn-info"
+                            :is-loading="isLoading"
+                          />
+                        </td>
                 <td>{{ item.Remarks }}</td>
                 <td>{{ item.LastUser }}</td>
               </tr>
@@ -108,6 +120,16 @@
       </v-table>
     </template>
   </v-frame>
+   <v-modal
+    title="Serial Number — Ready Stock + Before Palletizer"
+    class="modal-lg"
+    id="modal-list-view"
+  >
+    <shared-serialnumber-stockpalletizer
+      :productcode="this.selectedProductCode"
+      :counter="this.counter"
+    />
+  </v-modal>
 </template>
 
 <script>
@@ -132,7 +154,6 @@ export default {
         ).toISOString(),
 
         keyword: null,
-
         sorts: {},
 
         sortItems: [
@@ -156,6 +177,8 @@ export default {
           },
         ],
       },
+      selectedProductCode: "",
+      counter: 0,
     };
   },
 
@@ -200,6 +223,12 @@ export default {
       this.filter.keyword = null;
       this.filter.sorts = {};
       this.search();
+    },
+    viewDetail: function (productcode) {
+     
+      this.selectedProductCode = productcode;
+      this.counter++;
+      this.$bvModal.show("modal-list-view");
     },
 
     exportExcel() {

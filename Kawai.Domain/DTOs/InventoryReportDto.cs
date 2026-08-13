@@ -14,7 +14,19 @@ public class InventoryReportDto : DataTableDto
     public decimal Current { get; set; }
     public decimal Allocation { get; set; }
     public decimal Ready { get; set; }
+    public int Total { get; set; }
+    public decimal QtyPalletizer { get; set; }
     public decimal Inventory { get; set; }
     public string Remarks { get; set; }
     public string LastUser { get; set; }
+}
+
+public class InventoryListScanReportDto : DataTableDto
+{
+    public string ProductCode { get; set; }
+    public string ProductName { get; set; }
+    public string SerialNumber { get; set; }
+    public string Status { get; set; }
+    public DateTime ScanTime { get; set; }
+
 }

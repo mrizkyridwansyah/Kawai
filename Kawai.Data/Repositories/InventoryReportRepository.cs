@@ -21,4 +21,10 @@ public class InventoryReportRepository : IInventoryReportRepository
         return (await _dbExecutor.QueryListAsync<InventoryReportDto>(sp, param.ToQueryObject())).ToList();
     }
 
+    public async Task<List<InventoryListScanReportDto>> GetListScan(RequestParameter param)
+    {
+        string sp = "sp_Wms_InventoryReport_GetListScan";
+        return (await _dbExecutor.QueryListAsync<InventoryListScanReportDto>(sp, param.ToQueryObject())).ToList();
+    }
+
 }

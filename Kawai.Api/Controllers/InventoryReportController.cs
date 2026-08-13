@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -30,6 +31,14 @@ public class InventoryReportController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpPost("list-scan")]
+    public async Task<IActionResult> ListScan([FromBody] RequestParameter parameter)
+    {
+        var results = await _InventoryReportRepository.GetListScan(parameter);
+        return DataTableResult(parameter, results);
+    }
+
+
     [HttpPost("export/excel")]
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
@@ -42,7 +51,7 @@ public class InventoryReportController : HahaController
         int rowIdx = 1;
 
         List<string> headers = ["Warehouse", "Product Code", "Product Name",
-                "Pre Month", "Receipt", "Supply", "Loss / Reject","Current (A)","Allocation (B)","Ready Stock (C = A-B)","Inventory","Remarks","User"];
+                "Pre Month", "Receipt", "Supply", "Loss / Reject","Current (A)","Allocation (B)","Ready Stock (C = A-B)","Inventory" ,"Qty Before Palletizer ","Remarks","User"];
         ExcelHelper.SetHeader(ws, rowIdx, headers);
 
         foreach (var result in results)
@@ -74,6 +83,8 @@ public class InventoryReportController : HahaController
             ExcelHelper.SetCell(row, colIdx, result.Ready);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Inventory);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.QtyPalletizer);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Remarks);
             colIdx++;
