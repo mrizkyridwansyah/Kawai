@@ -127,6 +127,8 @@
   >
     <shared-serialnumber-stockpalletizer
       :productcode="this.selectedProductCode"
+      :whcode="this.filter.warehouse"
+      :period="this.$func.asUtcStringDateOnly(new Date(this.filter.period))"
       :counter="this.counter"
     />
   </v-modal>

@@ -39,7 +39,7 @@
 
 <script>
 export default {
-  props: ["productcode", "counter"],
+  props: ["productcode","whcode","period", "counter"],
   data: () => ({
     filter: {
       keyword: null,
@@ -66,6 +66,13 @@ export default {
     productcode: function () {
       this.search();
     },
+     whcode: function () {
+      this.search();
+    },
+     period: function () {
+      this.search();
+    },
+    
     
     counter: function () {
       this.search();
@@ -88,6 +95,8 @@ export default {
         {
           Keyword: this.filter.keyword || "",
           ProductCode: this.productcode || "",
+          WarehouseCode: this.whcode || "",
+          Period: this.period || "",
         },
       ];
 
