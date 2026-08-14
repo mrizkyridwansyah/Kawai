@@ -21,4 +21,5 @@ public interface IShippingInstructionRepository
 
     Task<Dictionary<string, object>> Capture(string shippinginstructionno);
     Task<List<ShippingInstructionReportDto>> GetListReport(string sino);
+    Task<List<string>> GetListEvidenceLoading(string shippingNo, string evidenceType);
 }

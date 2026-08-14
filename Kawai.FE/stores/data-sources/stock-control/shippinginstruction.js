@@ -105,6 +105,42 @@ export const useShippingInstruction = defineStore("ShippingInstruction", {
           .finally((_) => (this.isEditing = false));
       });
     },
+    loadEvidenceBefore: function (shippingNo) {
+      return new Promise((resolve, reject) => {
+        app.$http
+          .get(
+            `/shipping-instruction/list-evidence-loading-before?shippingNo=${shippingNo}`,
+          )
+          .then(({ data }) => {
+            resolve(data.Data || []);
+          })
+          .catch((err) => reject(err));
+      });
+    },
+    loadEvidenceAfter: function (shippingNo) {
+      return new Promise((resolve, reject) => {
+        app.$http
+          .get(
+            `/shipping-instruction/list-evidence-loading-after?shippingNo=${shippingNo}`,
+          )
+          .then(({ data }) => {
+            resolve(data.Data || []);
+          })
+          .catch((err) => reject(err));
+      });
+    },
+    downloadZipEvidenceBefore: function (shippingNo) {
+      return app.$http.get(
+        `/shipping-instruction/download-evidence-loading-before?shippingNo=${shippingNo}`,
+        { responseType: "blob" },
+      );
+    },
+    downloadZipEvidenceAfter: function (shippingNo) {
+      return app.$http.get(
+        `/shipping-instruction/download-evidence-loading-after?shippingNo=${shippingNo}`,
+        { responseType: "blob" },
+      );
+    },
   },
 });
 

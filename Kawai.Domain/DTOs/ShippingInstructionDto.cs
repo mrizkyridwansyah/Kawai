@@ -45,6 +45,7 @@ public class ShippingInstructionDetailDto : DataTableDto
     public string SerialNo_From { get; set; }
     public string Serial_No { get; set; }
     public string SerialNo_To { get; set; }
+    public bool IsExistsEvidenceLoading { get; set; }
 }
 
 public class ShippingInstructionPickingDto : DataTableDto

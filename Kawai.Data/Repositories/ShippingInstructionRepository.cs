@@ -192,5 +192,16 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         })).ToList();
     }
 
+    public async Task<List<string>> GetListEvidenceLoading(string shippingNo, string evidenceType)
+    {
+        string sp = "sp_Wms_Shipping_Instruction_GetListEvidenceLoading";
+
+        return (await _dbExecutor.QueryListAsync<string>(sp, new
+        {
+            ShippingNo = shippingNo,
+            EvidenceType = evidenceType
+        })).ToList();
+    }
+
 
 }

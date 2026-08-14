@@ -111,6 +111,20 @@
             :print="print"
             :is-loading="isLoading"
           />
+          <v-button
+            :disabled="!this.model.IsExistsEvidenceLoading"
+            @click="viewEvidenceBefore(filter.ShippingInstructionNo)"
+            icon="image"
+            label="Evidence Before"
+            cClass="btn-sm btn-info mr-1"
+          />
+          <v-button
+            :disabled="!this.model.IsExistsEvidenceLoading"
+            @click="viewEvidenceAfter(filter.ShippingInstructionNo)"
+            icon="image"
+            label="Evidence After"
+            cClass="btn-sm btn-info"
+          />
         </div>
       </div>
       <hr />
@@ -163,22 +177,6 @@
                   <td>{{ item.DeliveryDate }}</td>
                   <td class="text-right">{{ item.Qty_Stock }}</td>
                   <td>{{ item.Serial_No }}</td>
-                  <!-- <td class="text-center">
-                    <v-button
-                      @click="
-                        viewDetail(
-                          this.model.ShippingInstructionNo,
-                          item.Item_Code,
-                          this.model.PONumber,
-                          item.PO_SeqNo,
-                        )
-                      "
-                      icon="eye"
-                      label="View Detail"
-                      cClass="ml-1 btn-info"
-                      :is-loading="isLoading"
-                    />
-                  </td> -->
                 </tr>
               </tbody>
             </table>
@@ -205,6 +203,13 @@
       :counter="this.counter"
     />
   </v-modal>
+  <shared-evidence-loading
+    id="modal-shared-evidence-loading"
+    :title="evidenceTitle"
+    :items="evidenceItems"
+    :loading="isEvidenceLoading"
+    :download-handler="downloadEvidenceZip"
+  />
 </template>
 
 <script>
@@ -225,6 +230,7 @@ export default {
       ShippingInstructionDate: null,
       PONumber: null,
       DeliveryDate: null,
+      IsExistsEvidenceLoading: false,
       Details: [],
     },
     debounce: null,
@@ -235,6 +241,9 @@ export default {
     counter: 0,
     isLoading: false,
     errors: {},
+    evidenceTitle: "Detail Attachment",
+    evidenceItems: [],
+    isEvidenceLoading: false,
   }),
   computed: {
     ds: function () {
@@ -472,6 +481,79 @@ export default {
       this.selectedPOSeqNo = poseqno;
       this.counter++;
       this.$bvModal.show("modal-list-detail");
+    },
+    viewEvidenceBefore: function (shippingNo) {
+      if (!shippingNo) return;
+      this.evidenceType = "BEFORE";
+      this.evidenceTitle = "Detail Attachment - Loading Evidence Before";
+      this.evidenceItems = [];
+      this.isEvidenceLoading = true;
+      this.$bvModal.show("modal-shared-evidence-loading");
+
+      this.ds
+        .loadEvidenceBefore(shippingNo)
+        .then((items) => {
+          this.evidenceItems = items;
+        })
+        .catch((err) => {
+          console.error("Error loading evidence before:", err);
+          toastDanger("Failed to load evidence images");
+        })
+        .finally(() => {
+          this.isEvidenceLoading = false;
+        });
+    },
+    viewEvidenceAfter: function (shippingNo) {
+      if (!shippingNo) return;
+      this.evidenceType = "AFTER";
+      this.evidenceTitle = "Detail Attachment - Loading Evidence After";
+      this.evidenceItems = [];
+      this.isEvidenceLoading = true;
+      this.$bvModal.show("modal-shared-evidence-loading");
+
+      this.ds
+        .loadEvidenceAfter(shippingNo)
+        .then((items) => {
+          this.evidenceItems = items;
+        })
+        .catch((err) => {
+          console.error("Error loading evidence after:", err);
+          toastDanger("Failed to load evidence images");
+        })
+        .finally(() => {
+          this.isEvidenceLoading = false;
+        });
+    },
+    downloadEvidenceZip: function () {
+      const shippingNo =
+        this.model.ShippingInstructionNo || this.filter.ShippingInstructionNo;
+      if (!shippingNo) return Promise.resolve();
+
+      const action =
+        this.evidenceType === "BEFORE"
+          ? this.ds.downloadZipEvidenceBefore(shippingNo)
+          : this.ds.downloadZipEvidenceAfter(shippingNo);
+
+      return action
+        .then((res) => {
+          const blob =
+            res.data instanceof Blob
+              ? res.data
+              : new Blob([res.data], { type: "application/zip" });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `Evidence_${this.evidenceType || "Loading"}_${shippingNo}.zip`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          toastSuccess("Download attachment successfully!");
+        })
+        .catch((err) => {
+          console.error("Download ZIP failed:", err);
+          toastDanger("Failed to download ZIP attachments");
+        });
     },
     createSI: function (payload) {
       this.ds

@@ -64,7 +64,7 @@ public class ShippingInstructionController : HahaController
         var result = await _shippingInstructionRepository.GetDataShippingByPO(poNumber);
 
         var grouped = result
-            .GroupBy(x => new { x.Supplier, x.ShippingInstructionNo, x.ShippingInstructionDate, x.PONumber, x.DeliveryDate })
+            .GroupBy(x => new { x.Supplier, x.ShippingInstructionNo, x.ShippingInstructionDate, x.PONumber, x.DeliveryDate, x.IsExistsEvidenceLoading })
             .Select(g => new
             {
                 g.Key.Supplier,
@@ -72,6 +72,7 @@ public class ShippingInstructionController : HahaController
                 g.Key.ShippingInstructionDate,
                 g.Key.PONumber,
                 g.Key.DeliveryDate,
+                g.Key.IsExistsEvidenceLoading,
                 Details = g.Select(x => new
                 {
                     x.PO_SeqNo,
@@ -98,7 +99,7 @@ public class ShippingInstructionController : HahaController
         var result = await _shippingInstructionRepository.GetDataHeaderNew(shippingNo);
 
         var grouped = result
-            .GroupBy(x => new { x.Supplier, x.ShippingInstructionNo, x.ShippingInstructionDate, x.PONumber, x.DeliveryDate })
+            .GroupBy(x => new { x.Supplier, x.ShippingInstructionNo, x.ShippingInstructionDate, x.PONumber, x.DeliveryDate, x.IsExistsEvidenceLoading })
             .Select(g => new
             {
                 g.Key.Supplier,
@@ -106,6 +107,7 @@ public class ShippingInstructionController : HahaController
                 g.Key.ShippingInstructionDate,
                 g.Key.PONumber,
                 g.Key.DeliveryDate,
+                g.Key.IsExistsEvidenceLoading,
                 Details = g.Select(x => new
                 {
                     x.PO_SeqNo,
@@ -226,4 +228,80 @@ public class ShippingInstructionController : HahaController
         return File(pdfBytes, "application/pdf", "SuratJalan_" + results[0].CustPONo);
     }
 
+    [HttpGet("list-evidence-loading-before")]
+    public async Task<IActionResult> ListEvidenceLoadingBefore(string shippingNo)
+    {
+        var results = await _shippingInstructionRepository.GetListEvidenceLoading(shippingNo, "BEFORE");
+        return Success(results);
+    }
+
+    [HttpGet("list-evidence-loading-after")]
+    public async Task<IActionResult> ListEvidenceLoadingAfter(string shippingNo)
+    {
+        var results = await _shippingInstructionRepository.GetListEvidenceLoading(shippingNo, "AFTER");
+        return Success(results);
+    }
+
+    [HttpGet("download-evidence-loading-before")]
+    public async Task<IActionResult> DownloadEvidenceLoadingBefore(string shippingNo)
+    {
+        var relativePaths = await _shippingInstructionRepository.GetListEvidenceLoading(shippingNo, "BEFORE");
+        if (relativePaths == null || relativePaths.Count == 0)
+        {
+            return NotFound("No evidence files found.");
+        }
+
+        return DownloadFilesAsZip(relativePaths, $"Evidence_Before_{shippingNo}.zip");
+    }
+
+    [HttpGet("download-evidence-loading-after")]
+    public async Task<IActionResult> DownloadEvidenceLoadingAfter(string shippingNo)
+    {
+        var relativePaths = await _shippingInstructionRepository.GetListEvidenceLoading(shippingNo, "AFTER");
+        if (relativePaths == null || relativePaths.Count == 0)
+        {
+            return NotFound("No evidence files found.");
+        }
+
+        return DownloadFilesAsZip(relativePaths, $"Evidence_After_{shippingNo}.zip");
+    }
+
+    private IActionResult DownloadFilesAsZip(List<string> relativePaths, string zipFileName)
+    {
+        using (var memoryStream = new System.IO.MemoryStream())
+        {
+            using (var zip = new System.IO.Compression.ZipArchive(memoryStream, System.IO.Compression.ZipArchiveMode.Create, true))
+            {
+                int index = 1;
+                foreach (var relPath in relativePaths)
+                {
+                    if (string.IsNullOrWhiteSpace(relPath)) continue;
+
+                    var trimmedPath = relPath.TrimStart('/', '\\').Replace('/', System.IO.Path.DirectorySeparatorChar);
+                    var fullPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", trimmedPath);
+
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        var entryName = System.IO.Path.GetFileName(fullPath);
+                        if (string.IsNullOrEmpty(entryName))
+                        {
+                            entryName = $"Evidence_{index}.jpg";
+                        }
+
+                        var entry = zip.CreateEntry(entryName, System.IO.Compression.CompressionLevel.Optimal);
+                        using (var entryStream = entry.Open())
+                        using (var fileStream = System.IO.File.OpenRead(fullPath))
+                        {
+                            fileStream.CopyTo(entryStream);
+                        }
+                        index++;
+                    }
+                }
+            }
+
+            memoryStream.Position = 0;
+            Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+            return File(memoryStream.ToArray(), "application/zip", zipFileName);
+        }
+    }
 }
