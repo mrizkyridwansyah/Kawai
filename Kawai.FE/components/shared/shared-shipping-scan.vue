@@ -1,7 +1,13 @@
 <template>
-      <div class="text-start">
-        <v-button class="btn-success" icon="save" label="Submit Picking"  @click="submit" :disabled="isSubmittingDetail" />
-      </div>
+  <div class="text-start">
+    <v-button
+      class="btn-success"
+      icon="save"
+      label="Submit Picking"
+      @click="submit"
+      :disabled="isSubmittingDetail"
+    />
+  </div>
   <v-table
     :filter="filter"
     :ds="ds"
@@ -22,43 +28,38 @@
             <th class="text-center">Picking Date</th>
             <th class="text-center">Time</th>
             <th class="text-center">Picking By</th>
-               
-            
           </tr>
         </thead>
         <tbody>
-     
           <tr v-for="(item, idx) in ds.dataListScan.Items">
-               <td class="text-center">
-                  <div style="justify-items: center">
-                    <input-checkbox
-                      :model-value="item.AlreadyPicking"
-                      :disabled="isSubmitted"
-                      @click="(e) => setPicking(e, item)"
-                        />
-                  </div>
-                </td>	
-                <td>{{ item.SerialNo}}</td>		
-                <td>{{ item.PickingDate}}</td>	
-                <td>{{ item.PickingTime}}</td>				
-                <td>{{ item.PickingBy}}</td>	
+            <td class="text-center">
+              <div style="justify-items: center">
+                <input-checkbox
+                  :model-value="item.AlreadyPicking"
+                  :disabled="isSubmitted"
+                  @click="(e) => setPicking(e, item)"
+                />
+              </div>
+            </td>
+            <td>{{ item.SerialNo }}</td>
+            <td>{{ item.PickingDate }}</td>
+            <td>{{ item.PickingTime }}</td>
+            <td>{{ item.PickingBy }}</td>
           </tr>
         </tbody>
       </table>
-       
     </template>
   </v-table>
-  
 </template>
 
 <script>
 export default {
-  props: ["sino","item", "pono", "poseqno","counter"],
+  props: ["sino", "item", "pono", "poseqno", "counter"],
   data: () => ({
     filter: {
       keyword: null,
       sorts: {
-        SerialNo: "asc" 
+        SerialNo: "asc",
       },
       sortItems: [
         {
@@ -67,12 +68,10 @@ export default {
           selected: true,
           direction: "asc",
         },
- 
       ],
     },
-  isSubmittingDetail: false,
-  isSubmitted: false,
-    
+    isSubmittingDetail: false,
+    isSubmitted: false,
   }),
   computed: {
     ds: function () {
@@ -106,23 +105,25 @@ export default {
     this.search();
   },
   methods: {
-  setPicking(e, item) {
-    item.AlreadyPicking = e.target.checked;
-    const index = this.ds.dataListScan.Items.findIndex(
-      x => x.SerialNo === item.SerialNo
-    );
+    setPicking(e, item) {
+      item.AlreadyPicking = e.target.checked;
+      const index = this.ds.dataListScan.Items.findIndex(
+        (x) => x.SerialNo === item.SerialNo,
+      );
 
-    if (index !== -1) {
-      this.ds.dataListScan.Items[index].AlreadyPicking = item.AlreadyPicking;
-    }
-  },
-      submit() {
-   const selected = this.ds.dataListScan.Items.filter(x => x.AlreadyPicking);
+      if (index !== -1) {
+        this.ds.dataListScan.Items[index].AlreadyPicking = item.AlreadyPicking;
+      }
+    },
+    submit() {
+      const selected = this.ds.dataListScan.Items.filter(
+        (x) => x.AlreadyPicking,
+      );
 
-  if (selected.length === 0) {
-    toastDanger("Pilih minimal satu Serial No.");
-    return;
-  }
+      if (selected.length === 0) {
+        toastDanger("Pilih minimal satu Serial No.");
+        return;
+      }
 
       // if (details.length === 0) {
       //   toastWarning("Please select child item setting (minimal 1 data)!");
@@ -161,9 +162,7 @@ export default {
         });
     },
 
-
     search: function () {
-       debugger;
       this.ds.setSortListScan(this.filter.sorts);
       let filters = [
         {
@@ -179,7 +178,7 @@ export default {
       this.$nextTick(() => this.ds.loadListScan());
     },
     reset: function () {
-       this.search();
+      this.search();
     },
   },
 };

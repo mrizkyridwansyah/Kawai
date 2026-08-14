@@ -50,6 +50,7 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
     }
 
 
+    [Obsolete]
     public async Task<List<ShippingInstructionDetailDto>> GetListDetail(RequestParameter param)
     {
 
@@ -71,6 +72,7 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         })).ToList();
     }
 
+    [Obsolete]
     public async Task<ShippingInstructionDto> GetDataHeader(string shippinginstructionno)
     {
         string sp = "sp_Wms_Shipping_Instruction_DataHeader";

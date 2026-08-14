@@ -6,9 +6,10 @@ namespace Kawai.Domain.Interfaces;
 
 public interface IShippingInstructionRepository
 {
-    Task<List<ShippingInstructionDetailDto>> GetListDetail(RequestParameter parameter);
+    //Task<List<ShippingInstructionDetailDto>> GetListDetail(RequestParameter parameter);
+    //Task<ShippingInstructionDto> GetDataHeader(string shippinginstructionno);
+
     Task<List<ShippingInstructionPickingDto>> GetListPicking(RequestParameter parameter);
-    Task<ShippingInstructionDto> GetDataHeader(string shippinginstructionno);
     Task<List<ShippingInstructionDetailDto>> GetDataShippingByPO(string poNumber);
     Task<List<ShippingInstructionDetailDto>> GetDataHeaderNew(string shippingNo);
     Task Create(ShippingInstruction si, string userId);

@@ -137,7 +137,7 @@
                   <th class="text-center">Delivery Date</th>
                   <th class="text-center">Qty Stock</th>
                   <th class="text-center">Serial No</th>
-                  <th class="text-center">Picking Detail</th>
+                  <!-- <th class="text-center">Picking Detail</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -163,13 +163,13 @@
                   <td>{{ item.DeliveryDate }}</td>
                   <td class="text-right">{{ item.Qty_Stock }}</td>
                   <td>{{ item.Serial_No }}</td>
-                  <td class="text-center">
+                  <!-- <td class="text-center">
                     <v-button
                       @click="
                         viewDetail(
-                          item.ShippingInstructionNo,
+                          this.model.ShippingInstructionNo,
                           item.Item_Code,
-                          item.PONumber,
+                          this.model.PONumber,
                           item.PO_SeqNo,
                         )
                       "
@@ -178,7 +178,7 @@
                       cClass="ml-1 btn-info"
                       :is-loading="isLoading"
                     />
-                  </td>
+                  </td> -->
                 </tr>
               </tbody>
             </table>
@@ -308,7 +308,6 @@ export default {
       item.Selected = e.target.checked;
     },
     print() {
-      debugger;
       this.PrintSuratJalan(this.filter.ShippingInstructionNo)
         .then((dt) => {
           toastSuccess("Download successfully!");
