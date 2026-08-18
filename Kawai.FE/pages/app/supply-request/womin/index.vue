@@ -6,13 +6,20 @@
           <td style="padding-top: 5px">
             <label class="form-label">Schedule Date</label>
           </td>
-          <td
-            style="padding-top: 5px; padding-left: 15px; width: 180px"
-            colspan="3"
-          >
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="filter.PeriodFrom"
               style-date="width: 100px !important"
+            />
+          </td>
+          <td style="padding-top: 5px">
+            <label class="form-label">To</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
+            <input-date
+              v-model="filter.PeriodUntil"
+              style-date="width: 100px !important"
+              :disabled="true"
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -212,6 +219,7 @@ export default {
       FactoryCode: null,
       ManufactureCode: null,
       PeriodFrom: null,
+      PeriodUntil: null,
       LineCode: null,
       Model: null,
       RemainingCls: null,
@@ -245,7 +253,14 @@ export default {
     "filter.RemainingCls": function () {
       this.resetGrid();
     },
-    "filter.PeriodFrom": function () {
+    "filter.PeriodFrom": function (val) {
+      if (val) {
+        let d = new Date(val);
+        d.setDate(d.getDate() + 1);
+        this.filter.PeriodUntil = d;
+      } else {
+        this.filter.PeriodUntil = null;
+      }
       this.resetGrid();
     },
   },
@@ -307,7 +322,7 @@ export default {
             new Date(this.filter.PeriodFrom),
           ),
           PeriodUntil: this.$func.asUtcStringDateOnly(
-            new Date(this.filter.PeriodFrom),
+            new Date(this.filter.PeriodUntil),
           ),
         },
       ];
