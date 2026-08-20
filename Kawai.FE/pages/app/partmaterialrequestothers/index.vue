@@ -4,7 +4,7 @@
       <div class="filter-wrapper">
         <!-- 1 -->
 
-          <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Request No</label>
           <input-partmaterialrequestother
             class="form-control"
@@ -23,7 +23,7 @@
           </div>
         </div>
 
-         <!-- 2 -->
+        <!-- 2 -->
         <div class="filter-item">
           <label class="form-label">Request Date</label>
           <div>
@@ -41,7 +41,7 @@
           />
         </div>
 
-         <div class="filter-item">
+        <div class="filter-item">
           <label class="form-label">Process</label>
           <filter-trade-2
             class="form-control"
@@ -68,13 +68,11 @@
           <input-text
             v-model="model.Status"
             maxlength="50"
-           :errors="errors?.Status"
+            :errors="errors?.Status"
             disabled="true"
             style="width: 420px"
           />
         </div>
-
-     
       </div>
 
       <div class="d-flex mt-3">
@@ -95,54 +93,52 @@
             <span class="ml-2">Search</span>
           </button>
           <v-button
-                :action="remove"
-                label="Delete"
-                icon="trash"
-                cClass="mr-1 btn-danger"
-                :is-loading="isLoading"
-                :disabled="!menuPrivAllowUpdate"
+            :action="remove"
+            label="Delete"
+            icon="trash"
+            cClass="mr-1 btn-danger"
+            :is-loading="isLoading"
+            :disabled="!menuPrivAllowUpdate"
           />
-         <v-button-submit
+          <v-button-submit
             :submit="submit"
             :disabled="!menuPrivAllowUpdate"
-             label="Save"
+            label="Save"
             icon="save"
             cClass="ml-1 mr-2"
             :is-loading="isLoading"
           />
-           <button
-                class="btn btn-green btn-elevate btn-search"
-                
-                @click="RequestHistory"
-              >
-                <font-awesome-icon icon="receipt" />
-                <span class="ml-2">Part Material Request Others History</span>
-              </button>
-     
+          <button
+            class="btn btn-green btn-elevate btn-search"
+            @click="RequestHistory"
+          >
+            <font-awesome-icon icon="receipt" />
+            <span class="ml-2">Part Material Request Others History</span>
+          </button>
         </div>
       </div>
       <hr />
       <div
-              class="d-flex align-items-center mb-2 p-2"
-              style="gap: 10px; background: #2f2f2f; border-radius: 6px"
-            >
-              <!-- SORT BUTTON -->
+        class="d-flex align-items-center mb-2 p-2"
+        style="gap: 10px; background: #2f2f2f; border-radius: 6px"
+      >
+        <!-- SORT BUTTON -->
 
-              <!-- SEARCH INPUT -->
-              <div style="flex: 1">
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  v-model="filter.keyword"
-                  placeholder="Search..."
-                  style="background: #f1f1f1"
-                />
-              </div>
-            </div>
+        <!-- SEARCH INPUT -->
+        <div style="flex: 1">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            v-model="filter.keyword"
+            placeholder="Search..."
+            style="background: #f1f1f1"
+          />
+        </div>
+      </div>
       <v-table-input
         :data-items="filteredSetting"
-         ref="vtable"
-        :top-content-height="450" 
+        ref="vtable"
+        :top-content-height="450"
       >
         <template #table-content>
           <div class="detail-content">
@@ -154,9 +150,7 @@
               <thead>
                 <tr>
                   <th class="text-center">
-                    <input-checkbox 
-                 
-                     @click="(e) => checkAll(e)" />
+                    <input-checkbox @click="(e) => checkAll(e)" />
                   </th>
                   <th class="text-center">Item Code</th>
                   <th class="text-center">Item Name</th>
@@ -170,47 +164,53 @@
                 </tr>
               </thead>
               <tbody>
-                 <tr v-for="(item, idx) in filteredSetting" :key="item.DetailID || idx">
-                 <td class="text-center">
+                <tr
+                  v-for="(item, idx) in filteredSetting"
+                  :key="item.DetailID || idx"
+                >
+                  <td class="text-center">
                     <input-checkbox
                       v-model="item.Selected"
-                          :disabled="item.Status === 'No Stock'"
+                      :disabled="item.Status === 'No Stock'"
                       @click="(e) => check(e, item)"
                     />
                   </td>
-               
+
                   <td>{{ item.ItemCode }}</td>
                   <td>{{ item.ItemName }}</td>
                   <td>
                     <a
-                          href="javascript:void(0)"
-                          @click="viewStock(item.ItemCode)"
-                        >
-                          View Stock Detail</a
-                        >
-                        </td>
-                  <td class="text-right">{{ $func.formatMoney(item.QtyPacking) }}</td>
-                  <td class="text-right">{{ $func.formatMoney(item.AvailableStock) }}</td>
-               
-                 
+                      href="javascript:void(0)"
+                      @click="viewStock(item.ItemCode)"
+                    >
+                      View Stock Detail</a
+                    >
+                  </td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.QtyPacking) }}
+                  </td>
+                  <td class="text-right">
+                    {{ $func.formatMoney(item.AvailableStock) }}
+                  </td>
+
                   <td>
-                      <div class="d-flex align-items-center">
-                        <input-money-small
-                          v-model="item.RequestQty"
-                          :errors="errors?.[`Details[${idx}].RequestQty`]"
-                          style="width: 100px"
-                        />
-                      </div>
-                    </td>
-                     <td
-                        :class="{
-                          'text-danger': item.Status === 'No Stock',
-                          'text-green': item.Status === 'Eligible',
-                        }"
-                      >
-                        {{ item.Status }}
-                      </td>
-                   
+                    <div class="d-flex align-items-center">
+                      <input-money-small
+                        v-model="item.RequestQty"
+                        :errors="errors?.[`Details[${idx}].RequestQty`]"
+                        style="width: 100px"
+                      />
+                    </div>
+                  </td>
+                  <td
+                    :class="{
+                      'text-danger': item.Status === 'No Stock',
+                      'text-green': item.Status === 'Eligible',
+                    }"
+                  >
+                    {{ item.Status }}
+                  </td>
+
                   <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
                   <td>{{ item.LastUser }}</td>
                 </tr>
@@ -222,16 +222,15 @@
                 !ds.isLoading &&
                 !ds.isNetworkError &&
                 !ds.isServerError &&
-               (filteredSetting.length === 0)
+                filteredSetting.length === 0
               "
             />
           </div>
         </template>
       </v-table-input>
-  
     </template>
   </v-frame>
-   <v-modal title="Detail Stock" class="modal-lg" id="modal-list-stock">
+  <v-modal title="Detail Stock" class="modal-lg" id="modal-list-stock">
     <shared-request-womin-list-stock
       :item="this.selectedItem"
       :counter="this.counter"
@@ -245,11 +244,11 @@ export default {
     isNew: true,
     menuPrivAllowUpdate: false,
     filter: {
-        FactoryCode: null,
-        ManufactureCode: null,
-        LineCode: null,
-        RequestId: null, 
-        keyword: null,
+      FactoryCode: null,
+      ManufactureCode: null,
+      LineCode: null,
+      RequestId: null,
+      keyword: null,
     },
     model: {
       RequestId: null,
@@ -269,25 +268,23 @@ export default {
     ds: function () {
       return usePartMaterialRequestOthers();
     },
-     dsMenu: function () {
+    dsMenu: function () {
       return useMenu();
     },
-      filteredSetting() {
-    const keyword = (this.filter.keyword || "").toLowerCase().trim();
+    filteredSetting() {
+      const keyword = (this.filter.keyword || "").toLowerCase().trim();
 
-    if (!keyword) return this.listRequestOthersDetail;
+      if (!keyword) return this.listRequestOthersDetail;
 
-    return this.listRequestOthersDetail.filter((item) => {
-      return (
-        (item.ItemCode || "").toLowerCase().includes(keyword) ||
-        (item.ItemName|| "").toLowerCase().includes(keyword)   
-       
-      );
-    });
-  },
+      return this.listRequestOthersDetail.filter((item) => {
+        return (
+          (item.ItemCode || "").toLowerCase().includes(keyword) ||
+          (item.ItemName || "").toLowerCase().includes(keyword)
+        );
+      });
+    },
   },
   watch: {
-   
     "filter.LineCode": function () {
       this.listRequestOthersDetail = [];
     },
@@ -301,7 +298,7 @@ export default {
         Details: [],
       };
       this.listRequestOthersDetail = [];
-      
+
       if (this.filter.RequestId) this.getRequest();
     },
   },
@@ -313,7 +310,6 @@ export default {
     });
     let today = new Date();
     this.model.RequestDate = today;
-
   },
   methods: {
     deepClone: function (obj) {
@@ -328,7 +324,7 @@ export default {
         ManufactureCode: null,
         LineCode: null,
         RequestId: null,
-         keyword: null,
+        keyword: null,
       };
       this.model = {
         RequestId: null,
@@ -340,7 +336,6 @@ export default {
       };
       this.listRequestOthersDetail = [];
       let today = new Date();
-   
     },
     changeNew: function (e) {
       if (e.target.checked) this.reset();
@@ -351,9 +346,8 @@ export default {
     check: function (e, item) {
       item.Selected = e.target.checked;
     },
- RequestHistory: function () {
+    RequestHistory: function () {
       this.$router.push("/app/partmaterialrequestothers/view");
-    
     },
     viewStock: function (item) {
       this.selectedItem = item;
@@ -361,61 +355,63 @@ export default {
       this.$bvModal.show("modal-list-stock");
     },
     submit: function () {
-  this.isLoading = true;
-  this.errors = {};
+      this.isLoading = true;
+      this.errors = {};
 
-  let details = this.listRequestOthersDetail.filter((x) => x.Selected);
+      let details = this.listRequestOthersDetail.filter((x) => x.Selected);
 
-  if (details.length == 0) {
-    this.isLoading = false;
-    toastDanger("Please Choose Item!");
-    return;
-  }
+      if (details.length == 0) {
+        this.isLoading = false;
+        toastDanger("Please Choose Item!");
+        return;
+      }
 
-  // ===== VALIDATION =====
-  for (const item of details) {
-    const requestQty = Number(item.RequestQty || 0);
-    const packQty = Number(item.QtyPacking || 0);
-    const availableStock = Number(item.AvailableStock || 0);
+      // ===== VALIDATION =====
+      for (const item of details) {
+        const requestQty = Number(item.RequestQty || 0);
+        const packQty = Number(item.QtyPacking || 0);
+        const availableStock = Number(item.AvailableStock || 0);
 
-    if (requestQty <= 0) {
-      this.isLoading = false;
-      toastDanger(`Request Qty for Item ${item.ItemCode} must be greater than 0.`);
-      return;
-    }
+        if (requestQty <= 0) {
+          this.isLoading = false;
+          toastDanger(
+            `Request Qty for Item ${item.ItemCode} must be greater than 0.`,
+          );
+          return;
+        }
 
-    if (packQty > 0 && requestQty % packQty !== 0) {
-      this.isLoading = false;
-      toastDanger(
-        `Request Qty for Item ${item.ItemCode} must be a multiple of Pack Qty (${packQty}).`
-      );
-      return;
-    }
+        // if (packQty > 0 && requestQty % packQty !== 0) {
+        //   this.isLoading = false;
+        //   toastDanger(
+        //     `Request Qty for Item ${item.ItemCode} must be a multiple of Pack Qty (${packQty}).`,
+        //   );
+        //   return;
+        // }
 
-    if (requestQty > availableStock) {
-      this.isLoading = false;
-      toastDanger(
-        `Request Qty for Item ${item.ItemCode} cannot exceed Available Stock (${availableStock}).`
-      );
-      return;
-    }
-  }
+        if (requestQty > availableStock) {
+          this.isLoading = false;
+          toastDanger(
+            `Request Qty for Item ${item.ItemCode} cannot exceed Available Stock (${availableStock}).`,
+          );
+          return;
+        }
+      }
 
-  this.model.RequestId = this.filter.RequestId?.toString() || "0";
-  this.model.LineCode = this.filter.LineCode;
-  this.model.Details = details.map((p) => ({
-    ItemCode: p.ItemCode,
-    RequestQty: p.RequestQty,
-  }));
+      this.model.RequestId = this.filter.RequestId?.toString() || "0";
+      this.model.LineCode = this.filter.LineCode;
+      this.model.Details = details.map((p) => ({
+        ItemCode: p.ItemCode,
+        RequestQty: p.RequestQty,
+      }));
 
-  if (this.isNew) {
-    this.createRequest();
-  } else {
-    this.updateRequest();
-  }
-},
+      if (this.isNew) {
+        this.createRequest();
+      } else {
+        this.updateRequest();
+      }
+    },
 
-   remove: function () {
+    remove: function () {
       if (!this.filter.RequestId) {
         toastDanger("Silahkan pilih Request No!");
         return;
@@ -449,7 +445,9 @@ export default {
         this.filter.FactoryCode = this.model.FactoryCode;
         this.filter.ManufactureCode = this.model.ManufactureCode;
         this.filter.LineCode = this.model.LineCode;
-        this.$nextTick(() => setTimeout(() => this.searchRequestOthersDetail(), 500));
+        this.$nextTick(() =>
+          setTimeout(() => this.searchRequestOthersDetail(), 500),
+        );
       });
     },
     searchRequestOthersDetail: function () {
@@ -465,7 +463,6 @@ export default {
           RequestId: this.filter.RequestId?.toString() || "0",
           LineCode: this.filter.LineCode,
           ManufactureCode: this.filter.ManufactureCode,
-          
         },
       ];
       this.ds.listRequestOthersDetail(filters).then((dt) => {
@@ -473,7 +470,6 @@ export default {
         this.listRequestOthersDetail.map((x) => (x.Selected = x.DetailID > 0));
       });
     },
- 
 
     createRequest: function () {
       this.ds
@@ -570,7 +566,7 @@ thead {
 
 .filter-wrapper:has(.filter-item:nth-child(4)):not(
     :has(.filter-item:nth-child(5))
-  ) {   
+  ) {
   grid-template-rows: repeat(2, auto);
 }
 
