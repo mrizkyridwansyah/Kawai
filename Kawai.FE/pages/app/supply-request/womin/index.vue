@@ -273,7 +273,12 @@ export default {
       this.filter.LineCode = f.LineCode;
       this.filter.Model = f.Model;
       this.filter.RemainingCls = f.RemainingCls;
+
       this.filter.PeriodFrom = f.PeriodFrom ? new Date(f.PeriodFrom) : null;
+
+      let d = new Date(f.PeriodFrom);
+      d.setDate(d.getDate() + 1);
+      this.filter.PeriodUntil = d;
 
       // OPTIONAL: auto load
       this.search();
