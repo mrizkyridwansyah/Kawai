@@ -32,6 +32,12 @@
               style-date="width: 100px !important"
             />
           </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Model</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <input-text v-model="modelName" disabled style="width: 200px" />
+          </td>
         </tr>
         <tr>
           <td colspan="4" style="padding-top: 5px">
@@ -86,12 +92,6 @@
                 <th class="text-center" style="vertical-align: middle">
                   Work Station
                 </th>
-                <th class="text-center" style="vertical-align: middle">
-                  Parent Item
-                </th>
-                <th class="text-center" style="vertical-align: middle">
-                  Parent Item Name
-                </th>
                 <th class="text-center" style="vertical-align: middle">No.</th>
                 <th class="text-center" style="vertical-align: middle">
                   Qty Set
@@ -128,8 +128,6 @@
                 <tr>
                   <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
                   <td>{{ item.WorkStationName }}</td>
-                  <td>{{ item.ParentItemCode }}</td>
-                  <td>{{ item.ParentItemName }}</td>
                   <td class="text-right">{{ item.SetNumber }}</td>
                   <td class="text-right" style="white-space: nowrap">
                     {{ $func.formatMoney(item.QtySet) }}
@@ -155,14 +153,14 @@
                   >
                     <!-- Classification Row -->
                     <tr>
-                      <td colspan="6"></td>
+                      <td colspan="4"></td>
                       <td>{{ cls }}</td>
                       <td colspan="4"></td>
                     </tr>
 
                     <!-- Detail Rows -->
                     <tr v-for="dtl in details" :key="dtl.ChildItemCode">
-                      <td colspan="7"></td>
+                      <td colspan="5"></td>
                       <td>{{ dtl.ChildItemCode }}</td>
                       <td>{{ dtl.ChildItemName }}</td>
                       <td class="text-right">
@@ -209,6 +207,7 @@ export default {
     selectedItem: null,
     counter: 0,
     lineName: "",
+    modelName: "",
   }),
   computed: {
     ds: function () {
@@ -242,6 +241,7 @@ export default {
           // Isi lineName dari data pertama
           if (dt.Data.length > 0) {
             this.lineName = dt.Data[0].LineName;
+            this.modelName = dt.Data[0].Model;
           }
 
           dt.Data.forEach((item) => {
@@ -327,19 +327,8 @@ export default {
             .map((group) => group.ProductionId),
         ),
       ];
-
-      let payload = this.ds.newRequest
-        .filter((x) => avaiableGroupList.some((y) => y == x.ProductionId))
-        .map((x) => {
-          return {
-            LineCode: x.LineCode,
-            RequestId: x.RequestId,
-            ProductionId: x.ProductionId,
-            ScheduleDate: x.ScheduleDate,
-            ItemCode: x.ItemCode,
-            RequestSetQty: x.RequestSetQty,
-          };
-        });
+      console.log(this.ds.newRequest);
+      let payload = this.ds.newRequest;
 
       this.ds
         .save(payload)
