@@ -15,10 +15,11 @@
           <td style="padding-top: 5px">
             <label class="form-label">To</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px">
+          <td style="padding-top: 5px; padding-left: 15px; width: 180px">
             <input-date
               v-model="filter.PeriodUntil"
               style-date="width: 100px !important"
+              :disabled="true"
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
@@ -30,6 +31,20 @@
               v-model="filter.FactoryCode"
               style-code="width: 110px"
               style-desc="width: 250px"
+            />
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Model</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <filter-cls-2
+              class="form-control"
+              :show-option-all="true"
+              default-option-all="ALL"
+              type-data="Model_Cls"
+              v-model="filter.Model"
+              style-code="width: 100px"
+              style-desc="width: 110px"
             />
           </td>
         </tr>
@@ -66,7 +81,7 @@
             <filter-yes-no-all
               class="form-control"
               v-model="filter.RemainingCls"
-              style="width: 110px"
+              style="width: 210px"
             />
           </td>
         </tr>
@@ -106,6 +121,7 @@
               <tr>
                 <th class="text-center"></th>
                 <th class="text-center">Schedule Date</th>
+                <th class="text-center">Model</th>
                 <th class="text-center">Item Code</th>
                 <th class="text-center">Item Name / Request No</th>
                 <th class="text-center">Unit</th>
@@ -129,6 +145,7 @@
                     />
                   </td>
                   <td>{{ $func.formatDate(item.ScheduleDate) }}</td>
+                  <td>{{ item.Model }}</td>
                   <td>
                     <div style="display: flex; justify-content: space-between">
                       <span>
@@ -151,7 +168,12 @@
                   <td class="text-right">
                     {{ $func.formatMoney(item.PlanQty) }}
                   </td>
-                  <td><input-money v-model="item.RequestSetQty" /></td>
+                  <td>
+                    <input-money
+                      v-model="item.RequestSetQty"
+                      style="width: 100px"
+                    />
+                  </td>
                   <td class="text-right">
                     {{ $func.formatMoney(item.RemainingQty) }}
                   </td>
@@ -163,7 +185,7 @@
                   v-for="(dtl, idxx) in item.Details || []"
                   :key="dtl.RequestId"
                 >
-                  <td colspan="3"></td>
+                  <td colspan="4"></td>
                   <td>
                     <a
                       href="javascript:void(0)"
@@ -199,6 +221,7 @@ export default {
       PeriodFrom: null,
       PeriodUntil: null,
       LineCode: null,
+      Model: null,
       RemainingCls: null,
       sorts: {
         ProductionId: "asc",
@@ -224,13 +247,20 @@ export default {
     "filter.LineCode": function () {
       this.resetGrid();
     },
+    "filter.Model": function () {
+      this.resetGrid();
+    },
     "filter.RemainingCls": function () {
       this.resetGrid();
     },
-    "filter.PeriodFrom": function () {
-      this.resetGrid();
-    },
-    "filter.PeriodUntil": function () {
+    "filter.PeriodFrom": function (val) {
+      if (val) {
+        let d = new Date(val);
+        d.setDate(d.getDate() + 1);
+        this.filter.PeriodUntil = d;
+      } else {
+        this.filter.PeriodUntil = null;
+      }
       this.resetGrid();
     },
   },
@@ -241,9 +271,14 @@ export default {
       this.filter.FactoryCode = f.FactoryCode;
       this.filter.ManufactureCode = f.ManufactureCode;
       this.filter.LineCode = f.LineCode;
+      this.filter.Model = f.Model;
       this.filter.RemainingCls = f.RemainingCls;
+
       this.filter.PeriodFrom = f.PeriodFrom ? new Date(f.PeriodFrom) : null;
-      this.filter.PeriodUntil = f.PeriodUntil ? new Date(f.PeriodUntil) : null;
+
+      let d = new Date(f.PeriodFrom);
+      d.setDate(d.getDate() + 1);
+      this.filter.PeriodUntil = d;
 
       // OPTIONAL: auto load
       this.search();
@@ -256,23 +291,6 @@ export default {
       this.groupLists = [];
     },
     search: function () {
-      let rangePeriodDays = this.$func.dateDiffInDays(
-        this.filter.PeriodFrom,
-        this.filter.PeriodUntil,
-      );
-
-      if (
-        new Date(this.filter.PeriodFrom) > new Date(this.filter.PeriodUntil)
-      ) {
-        toastWarning("Periode Dari tidak boleh melewati Periode Sampai.");
-        return;
-      }
-
-      if (rangePeriodDays > 30) {
-        toastWarning("Jarak Periode hanya 30 hari.");
-        return;
-      }
-
       if (!this.filter.ManufactureCode) {
         toastWarning("Silahkan pilih process.");
         return;
@@ -280,6 +298,11 @@ export default {
 
       if (!this.filter.LineCode) {
         toastWarning("Silahkan pilih line.");
+        return;
+      }
+
+      if (!this.filter.Model) {
+        toastWarning("Silahkan pilih filter remaining.");
         return;
       }
 
@@ -298,6 +321,7 @@ export default {
           FactoryCode: this.filter.FactoryCode,
           ManufactureCode: this.filter.ManufactureCode,
           LineCode: this.filter.LineCode,
+          Model: this.filter.Model,
           RemainingCls: this.filter.RemainingCls,
           PeriodFrom: this.$func.asUtcStringDateOnly(
             new Date(this.filter.PeriodFrom),
@@ -355,22 +379,18 @@ export default {
       this.filter.FactoryCode = null;
       this.filter.ManufactureCode = null;
       this.filter.LineCode = null;
+      this.filter.Model = null;
       this.filter.RemainingCls = null;
 
       let today = new Date();
-      this.filter.PeriodFrom = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1,
-      );
-      this.filter.PeriodUntil = today;
+      this.filter.PeriodFrom = today;
       this.search();
     },
     check: function (e, item) {
       const isChecked = e.target.checked;
-      this.groupLists.forEach((x) => {
-        x.Selected = false;
-      });
+      // this.groupLists.forEach((x) => {
+      //   x.Selected = false;
+      // });
       item.Selected = isChecked;
     },
     newRequest: function () {
@@ -393,6 +413,7 @@ export default {
       let newRequestPayload = selected.map((x) => {
         return {
           LineCode: this.filter.LineCode,
+          Model: this.filter.Model,
           RequestId: null,
           ProductionId: x.ProductionId,
           ScheduleDate: x.ScheduleDate,
@@ -402,12 +423,24 @@ export default {
       });
 
       this.ds.setRequest(newRequestPayload);
-      this.$router.push("/app/supply-request/womin/create");
+      this.$nextTick(() => {
+        this.ds
+          .checkValid()
+          .then(() => {
+            this.$router.push("/app/supply-request/womin/create");
+          })
+          .catch((err) => {
+            console.log(err);
+            toastDanger(err?.Message);
+          })
+          .finally(() => (this.isLoading = false));
+      });
     },
     viewRequest: function (selected, dtl) {
       let payloadrequest = [
         {
           LineCode: this.filter.LineCode,
+          Model: this.filter.Model,
           RequestId: dtl.RequestId,
           RequestNo: dtl.RequestNo,
           RequestDate: dtl.RequestDate,
@@ -424,12 +457,8 @@ export default {
 
     setDefaultFilter: function () {
       let today = new Date();
-      this.filter.PeriodFrom = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1,
-      );
-      this.filter.PeriodUntil = today;
+      this.filter.PeriodFrom = today;
+      this.filter.Model = "ALL";
       this.filter.RemainingCls = "ALL";
     },
   },

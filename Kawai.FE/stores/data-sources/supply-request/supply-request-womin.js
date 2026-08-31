@@ -48,7 +48,7 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       Sorts: {},
     },
 
-     dataListScan: {
+    dataListScan: {
       Items: [],
       Total: 0,
       Filtered: 0,
@@ -85,6 +85,20 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .finally((_) => (this.isLoading = false));
       });
     },
+    checkValid: function () {
+      this.isLoadingDetail = true;
+      return new Promise((resolve, reject) => {
+        app.$http
+          .post(`/supply-request/womin/check-valid`, this.newRequest)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => {
+            reject(err.response?.data);
+          })
+          .finally((_) => (this.isLoadingDetail = false));
+      });
+    },
     loadDetail: function () {
       this.isLoadingDetail = true;
       return new Promise((resolve, reject) => {
@@ -104,7 +118,7 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .finally((_) => (this.isLoadingDetail = false));
       });
     },
-     loadListStock: function () {
+    loadListStock: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
 
@@ -127,7 +141,7 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       });
     },
 
-     loadListScan: function () {
+    loadListScan: function () {
       this.isLoading = true;
       this.isNetworkError = this.isServerError = false;
 
@@ -186,7 +200,7 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       this.loadListStock();
     },
 
-     setFilterListScan: function (v) {
+    setFilterListScan: function (v) {
       this.filterListScan.Filters = v;
       this.filterListScan.Page = 1;
     },
@@ -216,7 +230,7 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       });
     },
 
-     printWominUsingJob: function (id) {
+    printWominUsingJob: function (id) {
       this.isLoading = true;
       return new Promise((resolve, reject) => {
         app.$http
@@ -228,7 +242,6 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .finally((_) => (this.isLoading = false));
       });
     },
-
 
     remove: function (id, reqNo) {
       this.isRemoving = true;
