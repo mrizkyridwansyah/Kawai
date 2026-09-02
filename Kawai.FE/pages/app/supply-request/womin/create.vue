@@ -248,11 +248,11 @@ export default {
             // Grouping berdasarkan Parent level (tanpa ChildClassificationPartDesc)
             let parentKey = [
               item.RequestId,
-              item.ProductionId,
+              // item.ProductionId,
               item.ScheduleDate,
               item.LineCode,
               item.WorkStationCode,
-              item.ParentItemCode,
+              // item.ParentItemCode,
               item.SetNumber,
               item.Status,
             ].join("|");
@@ -297,9 +297,9 @@ export default {
               return dateA - dateB;
             }
 
-            if (a.ParentItemCode !== b.ParentItemCode) {
-              return a.ParentItemCode.localeCompare(b.ParentItemCode);
-            }
+            // if (a.ParentItemCode !== b.ParentItemCode) {
+            //   return a.ParentItemCode.localeCompare(b.ParentItemCode);
+            // }
 
             if (a.WorkStationName !== b.WorkStationName) {
               return a.WorkStationName.localeCompare(b.WorkStationName);
