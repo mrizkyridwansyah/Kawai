@@ -30,7 +30,7 @@ public class MobilePickingByScanRepository : IMobilePickingByScanRepository
 
     public async Task<List<PickingByScanListDto>> GetListDetailShipping(string instructionNo, string keyword)
     {
-        string sp = "sp_Wms_Mobile_PickingByScan_GetList";
+        string sp = "sp_Wms_Mobile_PickingByScan_GetListNew";
         return (await _dbExecutor.QueryListAsync<PickingByScanListDto>(sp, new { InstructionNo = instructionNo, Keyword= keyword })).ToList();
     }
 

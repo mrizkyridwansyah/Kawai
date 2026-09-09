@@ -75,13 +75,17 @@ public class ShippingInstructionReportDto : DataTableDto
     public string BCNumber { get; set; }
     public string Qty { get; set; }
     public string Delivery { get; set; }
+    public string DeliveryAddress { get; set; }
+    public string DeliveryCity { get; set; }
     public string Model { get; set; }
     public string VehicleNo { get; set; }
     public string Transport { get; set; }
     public string SJDate { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
-    public string QtyNG { get; set; }
+    public string SerialNoFrom { get; set; }
+    public string SerialNoTo { get; set; }
+    public decimal QtyNG { get; set; }
     public string UnitCls { get; set; }
     public string Remarks { get; set; }
     public string DeliveryBy { get; set; }

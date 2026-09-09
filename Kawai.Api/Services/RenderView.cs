@@ -10,6 +10,10 @@ namespace Kawai.Api.Services;
 
 public class RazorViewRenderer
 {
+    // Batasi jumlah generate PDF yang jalan bersamaan supaya satu instance Chromium
+    // (singleton) tidak kehabisan memory saat banyak user export report bareng-bareng.
+    private static readonly SemaphoreSlim _pdfConcurrencyLimiter = new(10, 10);
+
     private readonly IServiceProvider _serviceProvider;
     private readonly IRazorViewEngine _viewEngine;
     private readonly ITempDataProvider _tempDataProvider;
@@ -67,6 +71,30 @@ public class RazorViewRenderer
     }
 
     public async Task<byte[]> GeneratePdfAsync(string html)
+    {
+        await _pdfConcurrencyLimiter.WaitAsync();
+        try
+        {
+            // Retry sekali: kalau proses Chromium mati di tengah jalan (mis. IIS
+            // recycle app pool / OOM), TargetClosedException akan muncul di sini.
+            // GetBrowserAsync akan mendeteksi IsConnected == false dan start ulang,
+            // jadi cukup coba lagi sekali dengan browser yang baru.
+            try
+            {
+                return await RenderPdfAsync(html);
+            }
+            catch (PlaywrightException)
+            {
+                return await RenderPdfAsync(html);
+            }
+        }
+        finally
+        {
+            _pdfConcurrencyLimiter.Release();
+        }
+    }
+
+    private async Task<byte[]> RenderPdfAsync(string html)
     {
         // 1. Ambil Singleton Browser Instance
         var browser = await _browserService.GetBrowserAsync();

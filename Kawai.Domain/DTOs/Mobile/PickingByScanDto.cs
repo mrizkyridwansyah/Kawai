@@ -38,6 +38,8 @@ public class PickingByScanListDto
 
     public bool IsScanned { get; set; }
     public string StatusPicking { get; set; }
+    public decimal QtyShipping { get; set; }
+    public decimal QtyPicking { get; set; }
 }
 
 public class PickingByScanDetailDto

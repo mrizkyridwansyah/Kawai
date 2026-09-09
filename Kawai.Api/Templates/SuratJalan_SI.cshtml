@@ -16,15 +16,19 @@
         }
 
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             font-size: 10px;
+            margin: 0;
+            padding: 20px;
         }
 
         table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        td, th {
+        td,
+        th {
             padding: 3px 5px;
         }
 
@@ -52,7 +56,7 @@
         .title {
             font-size: 16px;
             font-weight: bold;
-            text-align: right;
+            text-align: center;
         }
 
         .small {
@@ -64,36 +68,33 @@
             text-align: center;
             vertical-align: bottom;
         }
+
+        /* Helper border style untuk tabel barang */
+        .table-items,
+        .table-items th,
+        .table-items td {
+            border: 1px solid black;
+        }
     </style>
 </head>
 
 <body>
-
     <!-- HEADER ATAS -->
-    <table class="header">
-        <tr>
-            <td class="bold"> </td>
-            <td class="right">@first?.TanggalSurat</td>
-        </tr>
-        <tr>
-            <td class="bold">&nbsp;</td>
-            <td class="right">&nbsp;</td>
-        </tr>
-        <tr>
+    <table class="header mt-6">
+        <tr class="center">
             <td class="bold">@first?.CompanyName</td>
-            <td class="bold" style="text-align: right;">Surat Jalan</td>
         </tr>
-        <tr>
-            <td colspan="2">
+        <tr class="center">
+            <td>
                 @first?.CompanyAddress
             </td>
-        <tr>
-            <td style="border-bottom: 1px solid black;" colspan="2">
-                 @first?.Phone 
+        </tr>
+        <tr class="center">
+            <td style="border-bottom: 1px solid black;">
+                @first?.Phone
             </td>
         </tr>
         <tr>
-            <td></td>
             <td></td>
         </tr>
     </table>
@@ -105,24 +106,29 @@
         <tr>
             <td style="width:15%">No</td>
             <td style="width:1%">:</td>
-            <td>@first?.SJNo</td>
+            <td style="width: 34%">@first?.SJNo</td>
 
             <td class="no-border"></td>
 
             <td style="width:15%">Delivery To</td>
             <td style="width:1%">:</td>
-            <td>@first?.Delivery</td>
+            <td rowspan="3"
+                style="width: 34%; white-space: nowrap; vertical-align: top">
+                @first?.Delivery <br />
+                @first?.DeliveryAddress <br />
+                @first?.DeliveryCity
+            </td>
         </tr>
         <tr>
-            <td style="width:15%">Cust PO No</td>
-            <td style="width:1%">:</td>
+            <td>Cust PO No</td>
+            <td>:</td>
             <td>@first?.CustPONo</td>
 
             <td class="no-border"></td>
 
-            <td style="width:15%"> </td>
-            <td style="width:1%"> </td>
-            <td> </td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
 
         <tr>
@@ -132,9 +138,9 @@
 
             <td class="no-border"></td>
 
-            <td>Model</td>
-            <td>:</td>
-            <td>@first?.Model</td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
 
         <tr>
@@ -172,18 +178,20 @@
             <td></td>
             <td></td>
         </tr>
-    </table>
-
-    <br />
-
-    <!-- DESKRIPSI -->
-    <table>
         <tr>
-            <td class="no-border">
-                Kami kirimkan barang-barang tersebut dibawah ini dengan kendaraan :
-                <span class="line">@first?.Kendaraan</span>
-                &nbsp; No :
-                <span class="line-short">@first?.NoKendaraan</span>
+            <td>No. Pol</td>
+            <td>:</td>
+            <td></td>
+
+            <td class="no-border"></td>
+
+            <td>No. Container</td>
+            <td>:</td>
+            <td>
+                <div style="display: flex">
+                    <div style="width: 100px">&nbsp;</div>
+                    <label for="">No. Seal : </label>
+                </div>
             </td>
         </tr>
     </table>
@@ -191,44 +199,43 @@
     <br />
 
     <!-- TABLE BARANG -->
-    <table style=" border-collapse: collapse;">
-        <tr class="border: 1px solid black;center bold">
-            <th style="border: 1px solid black;width:5%">No</th>
-            <th style="border: 1px solid black;">Nama Part</th>
-            <th style="border: 1px solid black;width:15%">Kode Part</th>
-            <th style="border: 1px solid black;width:15%">QTY Pengiriman</th>
-            <th style="border: 1px solid black;width:10%">Satuan</th>
-            <th style="border: 1px solid black;width:20%">Keterangan</th>
-        </tr>
-
-        @{
-            int no = 1;
-        }
-
-        @foreach (var item in Model)
-        {
-            <tr style="border: 1px solid black;">
-                <td style="border: 1px solid black;" class="center">@no</td>
-                <td style="border: 1px solid black;">@item.ItemName</td>
-                <td style="border: 1px solid black;" class="center">@item.ItemCode</td>
-                <td style="border: 1px solid black;" class="right">@item.QtyNG</td>
-                <td style="border: 1px solid black;" class="center">@item.UnitCls</td>
-                <td style="border: 1px solid black;">@item.Remarks</td>
+    <table class="table-items">
+        <thead>
+            <tr class="center bold">
+                <th style="width: 5%">No</th>
+                <th>Part Number & Description</th>
+                <th style="width: 15%">Serial From</th>
+                <th style="width: 15%">Serial To</th>
+                <th style="width: 15%">QTY Pengiriman</th>
+                <th style="width: 10%">Satuan</th>
+                <th style="width: 20%">Keterangan</th>
             </tr>
-            no++;
-        }
+        </thead>
+        <tbody>
+            @{
+                int no = 1;
+            }
 
-        @for (int i = Model.Count; i < 1; i++)
-        {
-            <tr style="border: 1px solid black;">
-                <td style="border: 1px solid black;">&nbsp;</td>
-                <td style="border: 1px solid black;"></td>
-                <td style="border: 1px solid black;"></td>
-                <td style="border: 1px solid black;"></td>
-                <td style="border: 1px solid black;"></td>
-                <td style="border: 1px solid black;"></td>
+            @foreach (var item in Model.OrderBy(p => p.ItemCode))
+            {
+                <tr>
+                    <td class="center">@no</td>
+                    <td style="white-space: nowrap">@item.ItemCode @item.ItemName</td>
+                    <td class="center">@item.SerialNoFrom</td>
+                    <td class="center">@item.SerialNoTo</td>
+                    <td class="right">@item.QtyNG.ToString("N2")</td>
+                    <td class="center">@item.UnitCls</td>
+                    <td>@item.Remarks</td>
+                </tr>
+                no++;
+            }
+
+            <tr class="bold">
+                <td colspan="4" class="center">Total Qty</td>
+                <td class="right">@Model.Sum(y => y.QtyNG).ToString("N2")</td>
+                <td colspan="2" style="border: 1px solid black;"></td>
             </tr>
-        }
+        </tbody>
     </table>
 
     <br />
@@ -237,29 +244,50 @@
     <table>
         <tr>
             <td class="no-border small">
-                * Please return this original letter to <span class="line-short">@first?.CompanyName</span>
+                * Please return this original letter to <span>@first?.CompanyName</span>
             </td>
         </tr>
     </table>
 
     <br />
-    <br />
-
     <!-- SIGN -->
-    <table class="sign">
-        <tr class="bold">
-            <td>Delivered by,</td>
-            <td>Approved by,</td>
-            <td>Checked by,</td>
-            <td>Received by,</td>
-        </tr>
-        <tr>
-            <td>@first?.DeliveryBy</td>
-            <td>@first?.ApprovedBy</td>
-            <td>@first?.CheckedBy</td>
-            <td>@first?.ReceivedBy</td>
-        </tr>
-    </table>
+    <div style="display:flex; width: 100%;">
 
+        <div style="width: 80%">
+            <table class="table-items">
+                <thead>
+                    <tr class="center bold">
+                        <th style="width: 20%">Warehouse</th>
+                        <th style="width: 20%"></th>
+                        <th style="width: 20%">Security</th>
+                        <th style="width: 20%">Pembawa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="height: 5em"></td>
+                        <td style="height: 5em"></td>
+                        <td style="height: 5em"></td>
+                        <td style="height: 5em"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="width: 20%; margin-left: 10em;">
+            <table class="table-items">
+                <thead>
+                    <tr class="center bold">
+                        <th>Penerima</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="height: 5em"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
 </body>
 </html>
