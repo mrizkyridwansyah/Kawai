@@ -6,13 +6,13 @@
           <td style="padding-top: 5px">
             <label class="form-label">Line</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-text v-model="lineName" disabled style="width: 200px" />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
             <label class="form-label">Supply Request No.</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+          <td style="padding-top: 5px; padding-left: 15px">
             <input-text
               v-model="ds.newRequest[0].RequestNo"
               disabled
@@ -32,6 +32,18 @@
               style-date="width: 100px !important"
             />
           </td>
+          <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Start Scan</label>
+          </td>
+          <td
+            style="padding-top: 5px; padding-left: 15px; width: 250px"
+            colspan="3"
+          >
+            <input-datetime
+              v-model="startScan"
+              style-date="width: 100px !important"
+            />
+          </td>
         </tr>
         <tr>
           <td colspan="4" style="padding-top: 5px">
@@ -42,6 +54,13 @@
                 icon="arrow-left"
                 cClass="ml-1 btn-danger"
                 :is-loading="isLoading"
+              />
+
+              <v-button-submit
+                :submit="submit"
+                cClass="ml-1"
+                :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
               />
 
               <v-button
@@ -271,6 +290,7 @@ export default {
     selectedItem: null,
     counter: 0,
     lineName: "",
+    startScan: null,
   }),
   computed: {
     ds: function () {
@@ -299,6 +319,7 @@ export default {
         // Isi lineName dari data pertama
         if (dt.Data.length > 0) {
           this.lineName = dt.Data[0].LineName;
+          this.startScan = dt.Data[0].StartScan;
         }
 
         dt.Data.forEach((item) => {
@@ -435,6 +456,25 @@ export default {
 
     toggleExpand: function (item) {
       item.Expanded = !item.Expanded;
+    },
+    submit: function () {
+      this.isLoading = true;
+      let payload = {
+        RequestId: this.ds.newRequest[0].RequestId,
+        StartScan: this.startScan,
+      };
+
+      this.ds
+        .updateHeader(payload)
+        .then((dt) => {
+          toastSuccess("Data saved successfully!");
+          this.back();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
     },
   },
 };

@@ -48,7 +48,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         await _dbExecutor.ExecuteAsync(sql, new
         {
             models[0].LineCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode", "StartScan"]),
         });
     }
 
@@ -73,7 +73,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
             return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
             {
                 models[0].LineCode,
-                NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+                NewRequest = DataTableHelper.ToDataTable(models, ["LineCode", "StartScan"]),
             })).ToList();
         }
     }
@@ -115,6 +115,17 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         });
     }
 
+    public async Task UpdateHeader(PartMaterialRequestWominEditHeaderModel model, string userId)
+    {
+        string sql = @"sp_Wms_PartMaterialRequestWomin_UpdateHeader";
+        int i = await _dbExecutor.ExecuteAsync(sql, new
+        {
+            model.RequestId,
+            model.StartScan,
+            UpdateBy = userId
+        });
+    }
+
     public async Task<Dictionary<string, object>> CaptureRequirement(long idSeq)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_CaptureRequirement";
@@ -132,7 +143,8 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
         var result = await _dbExecutor.QueryFirstOrDefaultAsync<dynamic>(sp, new
         {
             models[0].LineCode,
-            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode"]),
+            models[0].StartScan,
+            NewRequest = DataTableHelper.ToDataTable(models, ["LineCode", "StartScan"]),
             UserId = userId
         });
 

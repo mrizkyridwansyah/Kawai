@@ -330,7 +330,7 @@ export default {
     },
     close() {
       this.isOpen = false;
-      this.$emit("update:openPopUp", false);
+      this.$emit("update:openPopUp", false);  
     },
     confirm(datetime) {
       // var asd = datetime.toUTC();
@@ -341,15 +341,15 @@ export default {
         day: asd.c.day,
         hour: asd.c.hour,
         minute: asd.c.minute,
-        second: asd.c.second,
-        millisecond: asd.c.millisecond,
+        // Popup-nya tidak punya kontrol pilih detik, jadi selalu nol-kan
+        // biar detik lama (mis. dari value awal saat edit) tidak kebawa.
+        second: 0,
+        millisecond: 0,
       };
       if (this.type == "month") {
         aa.day = 1;
         aa.hour = 0;
         aa.minute = 0;
-        aa.second = 0;
-        aa.millisecond = 0;
       }
       this.datetime = DateTime.utc().setZone(this.zone).set(aa);
       this.emitInput();
@@ -414,6 +414,27 @@ export default {
         return; // keluar setelah menangani format ini
       }
 
+      if (this.type === "datetime") {
+        const fmt = typeof this.format === "string" ? this.format : "dd/MM/yyyy HH:mm";
+
+        if (!e.target.value) {
+          if (this.modelValue) {
+            const c = DateTime.fromISO(this.modelValue).setZone(this.zone);
+            e.target.value = c.toFormat(fmt);
+          }
+          return;
+        }
+
+        const c = DateTime.fromFormat(e.target.value, fmt);
+        if (!c.invalid) {
+          this.datetime = c.setZone(this.zone);
+          this.emitInput();
+        } else {
+          this.$emit("update:modelValue", null);
+        }
+        return;
+      }
+
       if (this.type == "month") {
         if (!e.target.value) {
           if (this.modelValue) {
@@ -422,7 +443,7 @@ export default {
           }
           return;
         }
-        
+
         var c = DateTime.fromFormat(e.target.value, "MMM yyyy");
         if (c.invalid == null) {
           this.datetime = datetimeFromISO(c);

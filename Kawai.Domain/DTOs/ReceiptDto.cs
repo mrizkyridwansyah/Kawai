@@ -68,6 +68,9 @@ public class ReceiptDetailBarcodeDto : DataTableDto
     public bool IsVerified { get; set; }
     public string VerifiedBy { get; set; }
     public DateTime? VerifiedDate { get; set; }
+    public int TotalBarcodeDN { get; set; }
+    public int TotalBarcodeScan { get; set; }
+    public int TotalBarcodeRemaining { get; set; }
 
     // properti ini buat di detail receipt inquiry
     public string WarehouseCode { get; set; }

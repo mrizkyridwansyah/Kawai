@@ -6,8 +6,15 @@ public class PartMaterialRequestWominModel
     public long? RequestId { get; set; }
     public long ProductionId { get; set; }
     public DateTime ScheduleDate { get; set; }
+    public DateTime StartScan { get; set; }
     public string ItemCode { get; set; }
     public decimal RequestSetQty { get; set; }
+}
+
+public class PartMaterialRequestWominEditHeaderModel
+{
+    public long RequestId { get; set; }
+    public DateTime StartScan { get; set; }
 }
 
 public class PartMaterialRequestWominEditModel

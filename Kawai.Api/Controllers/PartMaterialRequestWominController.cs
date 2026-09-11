@@ -44,6 +44,25 @@ public class PartMaterialRequestWominController : HahaController
         return Success(result);
     }
 
+    [HttpPatch("update-header")]
+    public async Task<IActionResult> Update([FromBody] PartMaterialRequestWominEditHeaderModel model)
+    {
+        var before = await _partMaterialRequestWominRepository.CaptureRequest(model.RequestId);
+        await _partMaterialRequestWominRepository.UpdateHeader(model, Auth.User.UserID);
+        var after = await _partMaterialRequestWominRepository.CaptureRequest(model.RequestId);
+
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Part Material Request Womin - Edit Header",
+            EntityId = model.RequestId.ToString(),
+            ReferenceId = model.RequestId.ToString(),
+            Action = DataLogAction.Update,
+            Before = before,
+            After = after
+        });
+        return Success(after);
+    }
+
     [HttpPatch("updatereqqty")]
     public async Task<IActionResult> Update([FromBody] PartMaterialRequestWominEditModel model)
     {

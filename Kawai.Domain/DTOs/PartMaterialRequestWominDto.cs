@@ -19,6 +19,7 @@ public class PartMaterialRequestWominDto: DataTableDto
     public string Model { get; set; }
     public string RegisterUser { get; set; }
     public DateTime? RegisterDate { get; set; }
+    public DateTime StartScan { get; set; }
 }
 
 public class PartMaterialRequestWominReportDto : DataTableDto
@@ -74,4 +75,5 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public string PickingNo { get; set; }
     public string Status { get; set; }
     public decimal? TotalScan { get; set; }
+    public DateTime StartScan { get; set; }
 }

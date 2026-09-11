@@ -130,6 +130,7 @@
                 <th class="text-center">Remaining Qty</th>
                 <th class="text-center">Request User</th>
                 <th class="text-center">Request Date</th>
+                <th class="text-center">Start Scan</th>
               </tr>
             </thead>
             <tbody>
@@ -179,6 +180,7 @@
                   </td>
                   <td></td>
                   <td></td>
+                  <td></td>
                 </tr>
                 <tr
                   v-if="item.Expanded"
@@ -201,6 +203,7 @@
                   <td></td>
                   <td>{{ dtl.RegisterUser }}</td>
                   <td>{{ $func.formatDate(dtl.RequestDate) }}</td>
+                  <td>{{ $func.formatDateTime(dtl.StartScan) }}</td>
                 </tr>
               </template>
             </tbody>
@@ -365,6 +368,7 @@ export default {
               RequestId: item.RequestId,
               RequestNo: item.RequestNo,
               RequestDate: item.RequestDate,
+              StartScan: item.StartScan,
               RequestSetQty: item.RequestSetQty,
               RegisterUser: item.RegisterUser,
               RegisterDate: item.RegisterDate,

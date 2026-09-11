@@ -20,11 +20,18 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
+            <label class="form-label">Model</label>
+          </td>
+          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
+            <input-text v-model="modelName" disabled style="width: 200px" />
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px;">
             <label class="form-label">Request Date</label>
           </td>
           <td
-            style="padding-top: 5px; padding-left: 15px; width: 180px"
-            colspan="3"
+            style="padding-top: 5px; padding-left: 15px;" colspan="3"
           >
             <input-date
               v-model="model.RequestDate"
@@ -33,10 +40,15 @@
             />
           </td>
           <td style="padding-top: 5px; padding-left: 15px">
-            <label class="form-label">Model</label>
+            <label class="form-label">Start Scan</label>
           </td>
-          <td style="padding-top: 5px; padding-left: 15px" colspan="3">
-            <input-text v-model="modelName" disabled style="width: 200px" />
+          <td
+            style="padding-top: 5px; padding-left: 15px; width: 200px"
+          >
+            <input-datetime
+              v-model="model.StartScan"
+              style-date="width: 150px !important"
+            />
           </td>
         </tr>
         <tr>
@@ -198,6 +210,7 @@ export default {
     model: {
       RequestNo: "#AUTO",
       RequestDate: new Date(),
+      StartScan: new Date(),
     },
     debounce: null,
     lists: [],
@@ -316,6 +329,7 @@ export default {
     print: function () {},
     submit: function () {
       this.isLoading = true;
+      console.log(this.ds.newRequest);
       let avaiableGroupList = [
         ...new Set(
           this.groupLists
@@ -327,7 +341,7 @@ export default {
             .map((group) => group.ProductionId),
         ),
       ];
-      console.log(this.ds.newRequest);
+      this.ds.newRequest.forEach(x => x.StartScan = this.model.StartScan);
       let payload = this.ds.newRequest;
 
       this.ds

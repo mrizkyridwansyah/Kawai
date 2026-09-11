@@ -243,6 +243,19 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       });
     },
 
+    updateHeader: function (data) {
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http
+          .patch(`/supply-request/womin/update-header`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally((_) => (this.isLoading = false));
+      });
+    },
+
     remove: function (id, reqNo) {
       this.isRemoving = true;
       return new Promise((resolve, reject) => {
