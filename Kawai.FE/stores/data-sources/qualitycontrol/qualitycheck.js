@@ -169,10 +169,10 @@ export const useQualityCheck = defineStore('QualityCheck', {
             try {
               const text = await blob.text();
               const json = JSON.parse(text);
-              throw { message: json.Message || 'Server returned an error', isServerError: true};
+              throw { message: json.Message || 'Server returned an error', isServerError: true };
             } catch (e) {
               console.log('Server Error, but not JSON', e);
-              throw { message: e.message || 'Server returned an error', isServerError: true};
+              throw { message: e.message || 'Server returned an error', isServerError: true };
             }
           }
 
@@ -189,6 +189,23 @@ export const useQualityCheck = defineStore('QualityCheck', {
       this.isLoading = true;
       return new Promise((resolve, reject) => {
         app.$http.post(`/qualitycheck/print/report-ng-by-job?receiptId=${id}`)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isLoading = false);
+      })
+    },
+    export: function (filters) {
+      let xPayload = {
+        Page: 1,
+        Length: 10,
+        Filters: filters,
+        Sorts: {},
+      }
+      this.isLoading = true;
+      return new Promise((resolve, reject) => {
+        app.$http.post(`/qualitycheck/export`, xPayload)
           .then(({ data }) => {
             resolve(data);
           })

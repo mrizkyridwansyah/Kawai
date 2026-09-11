@@ -231,4 +231,16 @@ public class QualityCheckController : HahaController
 
         return Pending(message: "Data Report NG sedang diproses");
     }
+
+    [HttpPost("export")]
+    public async Task<IActionResult> Export([FromBody] RequestParameter parameter)
+    {
+        var results = await _qualitycheckRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return Invalid("No Data");
+
+        string key = Guid.NewGuid().ToString();
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelIQC(results, Auth.Token, key));
+
+        return Pending(message: "Data Report NG sedang diproses");
+    }
 }

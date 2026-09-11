@@ -87,6 +87,14 @@
             <div class="d-flex flex-fill">
               <v-button-search-reset :search="search" :reset="resetFilter" />
               <v-button
+                :action="exportScan"
+                label="Export"
+                icon="file-excel"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+              />
+
+              <v-button
                 :disabled="(filter.DNNumber || 'ALL') == 'ALL'"
                 :action="printUsingJob"
                 label="Report NG"
@@ -397,6 +405,36 @@ export default {
         .catch((err) => toastDanger(err.Message))
         .finally(() => (this.isLoading = false));
     },
+    exportScan: function() {
+      this.isLoading = true;
+
+      let filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          SupplierCode: this.filter.SupplierCode || "",
+          Source: this.filter.Source || "",
+          StatusInspection: this.filter.Status || "",
+          ReceiptId:
+            this.filter.DNNumber == "ALL"
+              ? ""
+              : this.filter.DNNumber.toString(),
+          PeriodFrom: this.$func.asUtcStringDateOnly(
+            new Date(this.filter.PeriodFrom),
+          ),
+          PeriodUntil: this.$func.asUtcStringDateOnly(
+            new Date(this.filter.PeriodUntil),
+          ),
+        },
+      ];
+
+      this.ds
+        .export(filters)
+        .then((data) => {
+          if (data.Message != "-") toastInfo(data.Message);
+        })
+        .catch((err) => toastDanger(err.Message))
+        .finally(() => (this.isLoading = false));
+    }
   },
 };
 </script>

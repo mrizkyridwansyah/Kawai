@@ -19,6 +19,7 @@ public interface IExportService
 {
     Task ExportExcelItem(RequestParameter param, string userOrToken, string key);
     Task ExportExcelReceiptInquiry(RequestParameter param, string userOrToken, string key);
+    Task ExportExcelIQC(List<QualityCheckDto> list, string userOrToken, string key);
     Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userOrToken);
     Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userOrToken, string key);
     Task ExportWomin(long requestId, string userOrToken, string key);
@@ -33,6 +34,7 @@ public class ExportService : IExportService
     private readonly IPartMaterialRequestWominRepository _wominRepository;
     private readonly IReceiptRepository _receiptRepository;
     private readonly IReprintRepository _reprintRepository;
+    private readonly IQualityCheckRepository _qcRepository;
     private readonly NotificationService<NotifApprovalHub> _notificationService;
     private readonly DbExecutor _dbExecutor;
 
@@ -41,6 +43,7 @@ public class ExportService : IExportService
         IFileStorage fileStorage,
         IItemRepository itemRepository,
         IReceiptRepository receiptRepository,
+        IQualityCheckRepository qcRepository,
         IReprintRepository reprintRepository,
         IPartMaterialRequestWominRepository wominRepository,
         NotificationService<NotifApprovalHub> notificationService,
@@ -53,6 +56,7 @@ public class ExportService : IExportService
         _receiptRepository = receiptRepository;
         _reprintRepository = reprintRepository;
         _wominRepository = wominRepository;
+        _qcRepository = qcRepository;
         _notificationService = notificationService;
         _renderer = renderer;
         _dbExecutor = dbExecutor;
@@ -151,7 +155,7 @@ public class ExportService : IExportService
 
         ws.Cell(2, 1).InsertData(results.Select(r => new
         {
-            r.ProductionDate, 
+            r.ProductionDate,
             r.LineCode,
             r.LineName,
             r.ParentItemCode,
@@ -164,7 +168,7 @@ public class ExportService : IExportService
             r.ChildItemName,
             r.ChildRequirementQty,
             r.ChildScanQty
- 
+
         }));
 
         var range = ws.Range(1, 1, rowIdx, headers.Count);
@@ -188,6 +192,58 @@ public class ExportService : IExportService
     }
 
 
+    [AutomaticRetry(Attempts = 0)]
+    public async Task ExportExcelIQC(List<QualityCheckDto> results, string userOrToken, string key)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 1;
+
+        List<string> headers =
+        [
+            "Source","Supplier","DN Number","DN Date","Item Code","Item Name","Unit","Receipt Qty","Sample Qty","NG Qty","QC Status","Approval User","Approval Date"
+        ];
+
+        ExcelHelper.SetHeader(ws, rowIdx, headers);
+
+        ws.Cell(2, 1).InsertData(results.Select(r => new
+        {
+            Source = r.Source == "Incoming Material" ? "IQC Sample" : r.Source,
+            r.SupplierName,
+            r.DNNumber,
+            r.DNDate,
+            r.ItemCode,
+            r.ItemName,
+            r.UnitClsDescription,
+            r.QtyReceipt,
+            r.Qty,
+            r.QtyNG,
+            r.InspectionResult,
+            r.ApprovalUserName,
+            r.ApprovalDate
+
+        }));
+
+        var range = ws.Range(1, 1, rowIdx, headers.Count);
+        ExcelHelper.SetBorders(range);
+        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms, false);
+        ms.Position = 0;
+
+        _fileStorage.SaveToExports(key, ms);
+
+        int defaultTTLMinute = 0;// simpen file fisik nya selama 5 menit
+
+        // Masukkan ke Table ExportFile kalo file hasil export nya mau di hapus
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
+
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportExcel", new { KeyFile = key, KeyStorage = key, FileName = "Data IQC" });
+    }
 
     [AutomaticRetry(Attempts = 0)]
     public async Task ExportPdfReceiptBarcode(ReceiptDto receipt, string userOrToken)
@@ -348,12 +404,12 @@ public class ExportService : IExportService
             DeliveryDate = item.DeliveryDate,
             DNNumber = item.DNNumber,
             ShippingLabelNo = item.ShippingLabelNo,
-            BarcodeLabelTitle = item.BarcodeLabelTitle, 
-            BarcodeLabelFrom = item.BarcodeLabelFrom, 
-            BarcodeLabelTo = item.BarcodeLabelTo, 
-            BarcodeLabelShippingLot = item.BarcodeLabelShippingLot, 
-            BarcodeLabelDeliveryDate = item.BarcodeLabelDeliveryDate, 
-            BarcodeLabelPONumber = item.BarcodeLabelPONumber, 
+            BarcodeLabelTitle = item.BarcodeLabelTitle,
+            BarcodeLabelFrom = item.BarcodeLabelFrom,
+            BarcodeLabelTo = item.BarcodeLabelTo,
+            BarcodeLabelShippingLot = item.BarcodeLabelShippingLot,
+            BarcodeLabelDeliveryDate = item.BarcodeLabelDeliveryDate,
+            BarcodeLabelPONumber = item.BarcodeLabelPONumber,
             BarcodeLabelDNNumber = item.BarcodeLabelDNNumber,
         }).ToList();
 
@@ -369,6 +425,6 @@ public class ExportService : IExportService
             INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
-        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Reprint_Barcode_{DateTime.Now:yyyyMMddHHmmss}"  });
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Reprint_Barcode_{DateTime.Now:yyyyMMddHHmmss}" });
     }
 }
