@@ -350,7 +350,7 @@ public class RobotService : IRobotService
                 PropertyNamingPolicy = null
             };
 
-            var response = await _client.PostAsJsonAsync("/api/robot/complete-status-special", newPayload);
+            var response = await _client.PostAsJsonAsync("/api/robot/complete-status-special", newPayload, options);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -443,7 +443,7 @@ public class RobotService : IRobotService
                 PropertyNamingPolicy = null
             };
 
-            var response = await _client.PostAsJsonAsync("/api/robot/cancel-request", payload);
+            var response = await _client.PostAsJsonAsync("/api/robot/cancel-request", payload, options);
 
             if (!response.IsSuccessStatusCode)
             {
