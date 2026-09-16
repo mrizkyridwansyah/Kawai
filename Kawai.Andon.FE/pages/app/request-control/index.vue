@@ -137,22 +137,21 @@
                   class="table mb-0 align-middle w-100 v-fixed-table"
                   ref="table"
                 >
-                  <thead>
-                    <tr>
-                      <th class="text-center">Line</th>
-                      <th class="text-center">Production Date</th>
-                      <th class="text-center">Request No</th>
-                      <th class="text-center">Parts Group</th>
-                      <th class="text-center">Item</th>
-                      <th class="text-center">Model</th>
-                      <th class="text-center">Work Station</th>
-                      <th class="text-center">Preparation Status</th>
-                      <th class="text-center">Trolly Number</th>
-                      <th class="text-center">Current Position</th>
-                      <th class="text-center">Next Location</th>
-                      
-                    </tr>
-                  </thead>
+                <thead>
+                <tr>
+                  <th class="text-center">Line</th>
+                  <th class="text-center wrap-header">Production Date</th>
+                  <th class="text-center wrap-header">Request No</th>
+                  <th class="text-center wrap-header">Parts Group</th>
+                  <th class="text-center wrap-header">Item</th>
+                  <th class="text-center wrap-header">Model</th>
+                  <th class="text-center wrap-header">WS</th>
+                  <th class="text-center wrap-header">Status</th>
+                  <th class="text-center wrap-header">Trolly Number</th>
+                  <th class="text-center wrap-header">Current Position</th>
+                  <th class="text-center wrap-header">Next Location</th>
+                </tr>
+              </thead>
                   <tbody>
                   <tr v-for="(item, i) in ds.data">
                       <td>
@@ -239,7 +238,9 @@ export default {
      renderLimits: {
       main: 50 
       
-    },
+    },   
+
+    
   }),
   computed: {
     ds: function () {
@@ -295,7 +296,37 @@ export default {
       if (!this.showFilter) {
         this.showFilter = true;
         this.stopInterval();
+ // =========================================
+    // TAMPILKAN HEADER TEMPLATE
+    // =========================================
 
+    const header =
+      document.getElementById("header");
+
+    if (header) {
+      header.style.display = "";
+    }
+
+    // =========================================
+    // RESTORE APP
+    // =========================================
+
+    const appContent =
+      document.getElementById("app");
+
+    if (appContent) {
+      appContent.style.paddingTop = "";
+      appContent.style.marginTop = "";
+    }
+
+    // =========================================
+    // RESTORE BODY
+    // =========================================
+
+    document.body.style.backgroundColor = "";
+    document.body.style.overflow = "";
+
+    
         // Kembalikan teks judul panel seperti semula
         const headerPanel = document.getElementById("header-panel");
         if (headerPanel) {
@@ -334,6 +365,34 @@ export default {
         // Gunakan setTimeout kecil untuk mencegah bentrok dengan handleGlobalClick
         setTimeout(() => {
           this.showFilter = false; // Sembunyikan area filter
+
+           // =========================================
+  // HIDE HEADER TEMPLATE
+  // =========================================
+
+  const header =
+    document.getElementById("header");
+
+  if (header) {
+    header.style.display = "none";
+  }
+
+  // =========================================
+  // FULLSCREEN APP
+  // =========================================
+
+  const appContent =
+    document.getElementById("app");
+
+  if (appContent) {
+
+    appContent.style.paddingTop = "0px";
+
+    appContent.style.marginTop = "0px";
+
+  }
+
+
           this.startInterval(); // Nyalakan interval tiap 3 detik
 
           // Ubah teks judul panel sesuai area yang difilter
