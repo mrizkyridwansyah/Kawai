@@ -81,57 +81,7 @@
 
           <td style="width:12%">
 
-            <label class="form-label">
-              Production Date
-            </label>
-
-          </td>
-
-
-          <td style="width:36%">
-
-            <input-date
-              v-model="filter.ProductionDate"
-              style-date="width:100px"
-            />
-
-          </td>
-
-        </tr>
-
-
-        <!-- MODEL / SEARCH -->
-
-        <tr style="height:37px">
-
-          <td style="width:2%"></td>
-
-          <td style="width:12%">
-
-            <label class="form-label">
-              Model
-            </label>
-
-          </td>
-
-
-          <td style="width:36%">
-
-            <filter-modelcls
-              class="form-control"
-              v-model="filter.Model"
-              v-model:model-descs="filter.modelDescs"
-            ></filter-modelcls>
-
-          </td>
-
-
-          <td style="width:2%"></td>
-
-
-          <td style="width:12%">
-
-            <v-button-search
+             <v-button-search
               class="ms-1"
               :search="search"
             />
@@ -139,7 +89,11 @@
           </td>
 
 
-          <td style="width:36%"></td>
+          <td style="width:36%">
+
+            
+
+          </td>
 
         </tr>
 
@@ -161,6 +115,8 @@
           <td style="width:36%"></td>
 
         </tr>
+
+         
 
       </table>
 
@@ -249,7 +205,7 @@
 
         <div class="header-value white-text">
 
-        {{ formatDate(filter.ProductionDate) }}
+        {{ formatDate(model.ScheduleDate) }}
 
         </div>
 
@@ -755,10 +711,7 @@ export default {
     globalClickHandler: null,
     isFullscreen: false,
     filter: {
-      ProductionDate: new Date(),
       Line: null,
-      Model: null,
-      modelDescs: "",
       lineName: "",
     },
 
@@ -775,6 +728,7 @@ export default {
       Production_Color: "",
       Production_Progress: "",
       Production_Date: "",
+      ScheduleDate: null,
       Production_Target: "",
       Production_Actual: "",
       Production_Cycle: "",
@@ -1287,24 +1241,7 @@ export default {
       }
 
 
-      /*
-       * VALIDASI MODEL
-       */
-
-      if (!this.filter.Model) {
-
-        if (!isAutoRefresh) {
-
-          toastDanger(
-            "Please select Model!"
-          );
-
-        }
-
-        return;
-
-      }
-
+    
 
       /*
        * =====================================================
@@ -1315,8 +1252,8 @@ export default {
       this.ds
         .loadheaderinfo(
           this.filter.Line,
-          this.filter.Model,
-          this.filter.ProductionDate
+           'CX102',
+          '2026-09-01'
         )
 
         .then(dt => {
@@ -1350,7 +1287,9 @@ export default {
 
           this.model.LineStatus =
             x.LineStatus || "";
-
+          
+          this.model.ScheduleDate =
+            x.ScheduleDate || "";
 
           this.model.Production_Image =
             x.Production_Image || "";
@@ -1412,8 +1351,8 @@ export default {
       this.dsschedule
         .loadlistschedule(
           this.filter.Line,
-          this.filter.Model,
-          this.filter.ProductionDate
+          'CX102',
+          '2026-09-01'
         )
 
         .then(dt => {
