@@ -1,5 +1,6 @@
 using Hangfire;
 using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
@@ -206,9 +207,9 @@ public class QualityCheckController : HahaController
     }
 
     [HttpPost("print/report-ng")]
-    public async Task<IActionResult> PrintReportNG(long receiptId, [FromServices] RazorViewRenderer renderer)
+    public async Task<IActionResult> PrintReportNG(string receiptId, DateTime inspectionDate, [FromServices] RazorViewRenderer renderer)
     {
-        var results = await _qualitycheckRepository.PrintReportNG(receiptId);
+        var results = await _qualitycheckRepository.PrintReportNG(receiptId, inspectionDate, Auth.User.UserID);
         if (results == null || !results.Any()) return Invalid("No Data NG");
 
         var fullHtml = await renderer.RenderAsync(
@@ -221,9 +222,9 @@ public class QualityCheckController : HahaController
     }
 
     [HttpPost("print/report-ng-by-job")]
-    public async Task<IActionResult> PrintReportNGByJob(long receiptId)
+    public async Task<IActionResult> PrintReportNGByJob(string receiptId, DateTime inspectionDate)
     {
-        var results = await _qualitycheckRepository.PrintReportNG(receiptId);
+        var results = await _qualitycheckRepository.PrintReportNG(receiptId, inspectionDate, Auth.User.UserID);
         if (results == null || !results.Any()) return Invalid("No Data NG");
 
         string key = Guid.NewGuid().ToString();
@@ -242,5 +243,18 @@ public class QualityCheckController : HahaController
         BackgroundJob.Enqueue<ExportService>(service => service.ExportExcelIQC(results, Auth.Token, key));
 
         return Pending(message: "Data Report NG sedang diproses");
+    }
+
+    [HttpGet("dn-ddlsearch")]
+    public async Task<IActionResult> DNDDLSearch(string keyword, string factory, string supplier, string typePeriod, DateTime? periodFrom, DateTime? periodUntil, string status, string ids)
+    {
+        var results = await _qualitycheckRepository.DNDDLSearch(keyword, factory, supplier, typePeriod, periodFrom, periodUntil, status, Auth.User.UserID);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.Id)).ToList();
+        }
+
+        return Success(results.Take(100));
     }
 }

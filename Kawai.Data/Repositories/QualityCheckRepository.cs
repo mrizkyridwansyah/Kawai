@@ -33,7 +33,7 @@ public class QualityCheckRepository : IQualityCheckRepository
             StatusInspection = paramStatus,
             PeriodFrom = paramDateFrom,
             PeriodUntil = paramDateUntil,
-            ReceiptId = String.IsNullOrEmpty(paramReceiptId) ? 0 : paramReceiptId.ToInt32(),
+            ReceiptId = paramReceiptId,
         })).ToList();
     }
 
@@ -150,12 +150,30 @@ public class QualityCheckRepository : IQualityCheckRepository
         })).ToList();
     }
 
-    public async Task<List<QualityCheckReportDto>> PrintReportNG(long receiptId)
+    public async Task<List<QualityCheckReportDto>> PrintReportNG(string receiptId, DateTime inspectionDate, string userId)
     {
         string sp = "sp_Wms_QualityCheck_PrintReportNG";
         return (await _dbExecutor.QueryListAsync<QualityCheckReportDto>(sp, new
         {
             ReceiptId = receiptId,
+            InspectionDate = inspectionDate,
+            UserId = userId
+        })).ToList();
+    }
+
+    public async Task<List<QualityCheckDNDto>> DNDDLSearch(string keyword, string factory, string supplier, string typePeriod, DateTime? periodFrom, DateTime? periodUntil, string status, string userId)
+    {
+        string sp = "sp_Wms_QualityCheck_DDLDN";
+
+        return (await _dbExecutor.QueryListAsync<QualityCheckDNDto>(sp, new
+        {
+            Keyword = keyword ?? "",
+            Status = status ?? "",
+            FactoryCode = String.IsNullOrEmpty(factory) ? "ALL" : factory,
+            SupplierCode = String.IsNullOrEmpty(supplier) ? "ALL" : supplier,
+            PeriodFrom = periodFrom,
+            PeriodUntil = periodUntil,
+            UserId = userId
         })).ToList();
     }
 }

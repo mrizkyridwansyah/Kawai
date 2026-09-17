@@ -37,7 +37,7 @@
             <filter-trade-2
               class="form-control"
               v-model="filter.SupplierCode"
-              :trade-cls="['2', '3']"
+              :trade-cls="['1', '2', '3']"
               :show-option-all="true"
               style-code="width: 140px;"
               style-desc="width: 250px;"
@@ -69,7 +69,7 @@
             <label class="form-label">DN Number</label>
           </td>
           <td style="padding-top: 5px; padding-left: 15px" colspan="4">
-            <filter-dn-number
+            <filter-dn-iqc
               class="form-control"
               v-model="filter.DNNumber"
               :factory-code="filter.FactoryCode"
@@ -96,7 +96,7 @@
 
               <v-button
                 :disabled="(filter.DNNumber || 'ALL') == 'ALL'"
-                :action="printUsingJob"
+                :action="openPrintModal"
                 label="Report NG"
                 icon="file-excel"
                 cClass="ml-1 btn-green"
@@ -244,6 +244,40 @@
       @submitted="closeView"
     />
   </v-modal>
+
+  <v-modal
+    id="modal-report-ng-inspection-date"
+    title="Pilih Tanggal Inspection"
+    size="sm"
+    @hidden="() => (selectedInspectionDate = null)"
+  >
+    <div v-if="inspectionDateOptions.length">
+      <div
+        class="form-check"
+        v-for="(opt, idx) in inspectionDateOptions"
+        :key="idx"
+      >
+        <input
+          class="form-check-input"
+          type="radio"
+          name="inspectionDate"
+          :id="`inspection-date-${idx}`"
+          :value="opt.value"
+          v-model="selectedInspectionDate"
+        />
+        <label class="form-check-label" :for="`inspection-date-${idx}`">
+          {{ opt.label }}
+        </label>
+      </div>
+    </div>
+    <v-data-empty class="mt-2" v-else />
+    <v-button-submit-modal
+      :submit="printUsingJob"
+      label="Print"
+      :is-loading="isLoading"
+      :disabled="!selectedInspectionDate"
+    />
+  </v-modal>
 </template>
 
 <script>
@@ -267,6 +301,7 @@ export default {
     isLoading: false,
     errors: {},
     debounce: null,
+    selectedInspectionDate: null,
   }),
   computed: {
     ds: function () {
@@ -274,6 +309,18 @@ export default {
     },
     notif: function () {
       return useNotification();
+    },
+    inspectionDateOptions: function () {
+      let seen = new Set();
+      let options = [];
+      (this.lists || []).forEach((item) => {
+        if (!item.InspectionDate) return;
+        let label = this.$func.formatDate(item.InspectionDate);
+        if (seen.has(label)) return;
+        seen.add(label);
+        options.push({ value: item.InspectionDate, label });
+      });
+      return options;
     },
   },
   watch: {
@@ -389,18 +436,39 @@ export default {
         })
         .finally(() => (this.isLoading = false));
     },
-    printUsingJob: function () {
-      if ((this.filter.DNNumber || "") == "") {
+    openPrintModal: function () {
+      if ((this.filter.DNNumber || "ALL") == "ALL") {
         toastDanger("Silahkan pilih DN Number");
+        return;
+      }
+
+      if (this.inspectionDateOptions.length == 0) {
+        toastDanger("Tidak ada tanggal inspection untuk dicetak");
+        return;
+      }
+
+      this.selectedInspectionDate = this.inspectionDateOptions[0].value;
+
+      if (this.inspectionDateOptions.length == 1) {
+        this.printUsingJob();
+        return;
+      }
+
+      this.$bvModal.show("modal-report-ng-inspection-date");
+    },
+    printUsingJob: function () {
+      if (!this.selectedInspectionDate) {
+        toastDanger("Silahkan pilih Tanggal Inspection");
         return;
       }
 
       this.isLoading = true;
 
-      this.ds
-        .printReportNGUsingJob(this.filter.DNNumber)
+      return this.ds
+        .printReportNGUsingJob(this.filter.DNNumber, this.selectedInspectionDate)
         .then((data) => {
           if (data.Message != "-") toastInfo(data.Message);
+          this.$bvModal.hide("modal-report-ng-inspection-date");
         })
         .catch((err) => toastDanger(err.Message))
         .finally(() => (this.isLoading = false));

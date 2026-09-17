@@ -7,7 +7,7 @@
           <label class="form-label">Supplier</label>
           <filter-trade-2
             v-model="filter.SupplierCode"
-            :trade-cls="['2', '3']"
+            :trade-cls="['1', '2', '3']"
             :disabled="filter.ClaimId != null"
             style-code="width: 120px"
             style-desc="width: 300px"
