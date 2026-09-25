@@ -39,6 +39,18 @@ public class ItemRepository : IItemRepository
                 StatusHoldNG = String.IsNullOrEmpty(statusHoldNG) ? "ALL" : statusHoldNG
             })).ToList();
     }
+
+    public async Task<List<ItemDto>> DDLItemSearchByStockPeriod(string keyword, string warehouse, string perioddata)
+    {
+        string sp = "sp_Wms_Item_DDLByStockPeriod";
+        return (await _dbExecutor.QueryListAsync<ItemDto>(sp,
+            new
+            {
+                Keyword = keyword ?? "",
+                WarehouseCode = !String.IsNullOrEmpty(warehouse) ? warehouse : "ALL",
+                PeriodData = !String.IsNullOrEmpty(perioddata) ? perioddata : "2026-01-01"
+            })).ToList();
+    }
     public async Task<List<WarehouseDto>> GetWarehouseDDL(string keyword)
     {
         string sp = "sp_Wms_ItemWarehouse_DDL";

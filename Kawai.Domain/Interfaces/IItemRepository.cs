@@ -9,6 +9,8 @@ public interface IItemRepository
     Task<List<ItemDto>> GetAll(RequestParameter param);
     Task<List<ItemDto>> GetDDL(string keyword);
     Task<List<ItemDto>> DDLItemSearchByStock(string keyword, string warehouse, string area, string address, string category, string statusReceipt, string statusHoldNG);
+    Task<List<ItemDto>> DDLItemSearchByStockPeriod(string keyword, string warehouse, string perioddata);
+
     Task<List<WarehouseDto>> GetWarehouseDDL(string keyword);
     Task<ItemDto> GetData(string itemCode);
     Task Create(Item item, string userId);

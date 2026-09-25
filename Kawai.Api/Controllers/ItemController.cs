@@ -57,6 +57,19 @@ public class ItemController : HahaController
         return Success(results.Take(100));
     }
 
+    [HttpGet("ddl-item-search-by-stockperiod")]
+    public async Task<IActionResult> DDLItemSearchByStockPeriod(string keyword, string ids, string warehouse, string perioddata)
+    {
+        var results = await _itemRepository.DDLItemSearchByStockPeriod(keyword, warehouse, perioddata);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.ItemCode)).ToList();
+        }
+
+        return Success(results.Take(100));
+    }
+
     [HttpGet("warehouse-ddlsearch")]
     public async Task<IActionResult> WarehouseDDLSearch(string keyword, string ids)
     {
