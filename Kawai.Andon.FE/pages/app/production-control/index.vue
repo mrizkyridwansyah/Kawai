@@ -2361,7 +2361,7 @@ export default {
 .schedule-table th:nth-child(1),
 .schedule-table td:nth-child(1) {
 
-  width: 38%;
+  width: 60%;
 
   text-align: left;
 
@@ -2373,7 +2373,7 @@ export default {
 .schedule-table th:nth-child(2),
 .schedule-table td:nth-child(2) {
 
-  width: 22%;
+  width: 15%;
 
 }
 
@@ -2381,7 +2381,7 @@ export default {
 .schedule-table th:nth-child(3),
 .schedule-table td:nth-child(3) {
 
-  width: 22%;
+  width: 15%;
 
 }
 
@@ -2389,7 +2389,7 @@ export default {
 .schedule-table th:nth-child(4),
 .schedule-table td:nth-child(4) {
 
-  width: 18%;
+  width: 10%;
 
 }
 
@@ -2403,7 +2403,7 @@ export default {
   color: #00d5ff;
 
   font-size: 48px;
-
+ 
   font-weight: 800;
 
   white-space: nowrap;
