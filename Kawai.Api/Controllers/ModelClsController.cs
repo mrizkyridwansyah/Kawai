@@ -8,6 +8,7 @@ using Kawai.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using ClosedXML.Excel;
 
 namespace Kawai.Api.Controllers;
 
@@ -106,6 +107,50 @@ public class ModelClsController : HahaController
         return Success(before);
     }
 
-    
-     
+    [HttpPost("export/excel")]
+    public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
+    {
+        var results = await _modelclsRepository.GetAll(parameter);
+        if (results == null || !results.Any()) return NoContent();
+
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Data");
+
+        int rowIdx = 1;
+
+        List<string> headers = ["Model Cls Code", "Description", "Cycle Time", "Last Update", "Last User"];
+        ExcelHelper.SetHeader(ws, rowIdx, headers);
+
+        foreach (var result in results)
+        {
+            rowIdx++;
+            var row = ws.Row(rowIdx);
+            int colIdx = 1;
+
+            ExcelHelper.SetCell(row, colIdx, result.Model_Cls);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.Description);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.CycleTime);
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.LastUpdate.HasValue ? result.LastUpdate.Value.ToString("dd MMM yyyy HH:mm") : "");
+            colIdx++;
+            ExcelHelper.SetCell(row, colIdx, result.LastUser);
+        }
+
+        ExcelHelper.AutofitColumns(ws, 1, headers.Count);
+
+        var range = ws.Range(1, 1, rowIdx, headers.Count);
+        ExcelHelper.SetBorders(range);
+
+        using var ms = new MemoryStream();
+        workbook.SaveAs(ms);
+        var fileBytes = ms.ToArray();
+        var base64File = Convert.ToBase64String(fileBytes);
+
+        return Success(base64File);
+    }
+
+
+
 }

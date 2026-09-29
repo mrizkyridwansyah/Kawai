@@ -36,17 +36,12 @@
                     icon="pencil"
                     @click="menuPrivAllowUpdate && edit(item)"
                   />
-                  <font-awesome-icon
-                    class="ml-2 text-danger"
-                    icon="trash"
-                    @click="menuPrivAllowUpdate && remove(item)"
-                  />
                 </td>
                 <td>{{ item.Model_Cls }}</td>
                 <td>{{ item.Description }}</td>
                 <td class="text-right">{{ item.CycleTime }}</td>
                 <td>{{ $func.formatDateTime(item.LastUpdate) }}</td>
-                <td>{{ item.Lastuser }}</td>
+                <td>{{ item.LastUser }}</td>
               </tr>
             </tbody>
           </table>
