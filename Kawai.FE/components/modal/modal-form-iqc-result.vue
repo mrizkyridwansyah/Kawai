@@ -443,7 +443,7 @@ export default {
               });
           }),
         null,
-        `If you submit <strong>${inspectionResult.toUpperCase()}</strong>, you CAN'T recover it. Are you sure to <strong>SUBMIT</strong> the data?`,
+        `If you submit <strong>${inspectionResult.toUpperCase()} ${typeHold.toUpperCase()}</strong>, you CAN'T recover it. Are you sure to <strong>SUBMIT</strong> the data?`,
       );
     },
     cancelConfirm: function () {

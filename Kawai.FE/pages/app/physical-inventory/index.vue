@@ -457,7 +457,7 @@ export default {
         .update(dataChanges)
         .then((dt) => {
           toastSuccess("Data saved successfully!");
-          this.back();
+          this.search();
         })
         .catch((err) => {
           this.errors = err?.Errors;
