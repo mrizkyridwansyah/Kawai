@@ -12,9 +12,12 @@ public class ReprintDto: DataTableDto
     public string SubLotNo { get; set; }
     public int? Qty { get; set; }
     public string Source { get; set; }
+    public string SourceTable { get; set; }
     public DateTime? PrintDate { get; set; }
     public string PrintUser { get; set; }
-    
+    public string Id { get; set; }
+    public string Name { get; set; }
+
 }
 public class SelectedPrintDto
 {

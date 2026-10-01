@@ -8,6 +8,7 @@ public interface IReprintRepository
 {
     Task<List<ReprintDto>> GetAll(RequestParameter param);
     Task<List<ReprintDto>> GetAllSourceData(RequestParameter param);
+    Task<List<ReprintDto>> GetDDL(string keyword);
     Task UpdatePrintValue(string keyData, string valueData, string userId);
     Task<List<LabelBarcodeDetailDto>> GetListBarcodeDetail(List<string> barcodeNos);
 

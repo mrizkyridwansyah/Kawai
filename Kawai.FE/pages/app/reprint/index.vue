@@ -131,7 +131,7 @@
                 <th class="text-center">Address</th>
                 <th class="text-center">Lot No</th>
                 <th class="text-center">Qty</th>
-                <th class="text-center">Source</th>
+              
               </tr>
             </thead>
             <tbody>
@@ -153,7 +153,7 @@
                 <td>{{ item.Address }}</td>
                 <td>{{ item.LotNo }}</td>
                 <td>{{ item.Qty }}</td>
-                <td>{{ item.Source }}</td>
+               
               </tr>
             </tbody>
           </table>

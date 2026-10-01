@@ -22,6 +22,13 @@ public class ReprintRepository : IReprintRepository
         return (await _dbExecutor.QueryListAsync<ReprintDto>(sp, param.ToQueryObject())).ToList();
     }
 
+    public async Task<List<ReprintDto>> GetDDL(string keyword)
+    {
+        string sp = "sp_Wms_Reprint_DDL";
+        return (await _dbExecutor.QueryListAsync<ReprintDto>(sp, new { Keyword = keyword ?? "" })).ToList();
+    }
+
+
     public async Task<List<ReprintDto>> GetAllSourceData(RequestParameter param)
     {
         string sp = "sp_Wms_Reprint_ListSourceData";

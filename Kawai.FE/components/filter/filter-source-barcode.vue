@@ -55,32 +55,7 @@ export default {
   ],
   data: () => ({
     isLoading: false,
-    lists: [
-      {
-        Id: "ALL",
-        Name: "ALL",
-      },
-      {
-        Id: "Receipt",
-        Name: "Barcode Receipt",
-      },
-      {
-        Id: "Production",
-        Name: "Barcode Production",
-      },
-       {
-        Id: "BarcodeSplitSupply",
-        Name: "Barcode Split from Supply",
-      },
-      {
-        Id: "BarcodeSplitNG",
-        Name: "Barcode Split from NG",
-      },
-      {
-        Id: "BarcodeSplitMaterial",
-        Name: "Barcode Split from Material",
-      },
-    ],
+  
     list: [],
     tempValue: null,
     debounce: null,
@@ -115,19 +90,24 @@ export default {
     open: function () {
       this.load("", null);
     },
-    load: function (q = "", d = "") {
+   load: function (q = "", d = "") {
+      this.list = [];
       this.isLoading = true;
-      this.list = this.lists.filter((o) =>
-        o.Name.toLowerCase().includes(q.toLowerCase())
-      );
+      if (this.debounce != null) clearTimeout(this.debounce);
 
-      if (d) this.list = this.lists.filter((o) => o.Id == d);
+      this.debounce = setTimeout(() => {
+        this.$http
+          .get(`/reprint/ddlsearch?keyword=${q || ""}&ids=${d || ""}`) //&itemGroup=01&brand=${this.brand || ''}&itemType=${this.itemType || ''}&itemCls=${this.itemCls || ''}`)
+          .then((p) => {
+            if (d && p.data.Data.length > 0) {
+              this.tempValue = p.data.Data[0]?.Id;
+            }
+            this.list = p.data.Data;
+          })
+          .finally(() => (this.isLoading = false));
 
-      if (d && this.list.length > 0) {
-        this.tempValue = this.list[0]?.Id;
-      }
-
-      this.isLoading = false;
+        clearTimeout(this.debounce);
+      }, 200);
     },
   },
 };
