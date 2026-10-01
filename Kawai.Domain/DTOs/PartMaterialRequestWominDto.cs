@@ -77,3 +77,17 @@ public class PartMaterialRequestWominDetilDto : DataTableDto
     public decimal? TotalScan { get; set; }
     public DateTime StartScan { get; set; }
 }
+
+
+public class PartMaterialRequestWominBarcodeDto
+{
+    public string ItemCode { get; set; }
+    public string ItemName { get; set; }
+    public string BarcodeNo { get; set; }
+    public string PickingNo { get; set; }
+    public string WorkStationCode { get; set; }
+    public string WorkStationName { get; set; }
+    public string GroupCode { get; set; }
+    public string GroupName { get; set; }
+    public decimal? Qty { get; set; }
+}

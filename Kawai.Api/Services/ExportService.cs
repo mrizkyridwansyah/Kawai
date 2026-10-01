@@ -24,6 +24,7 @@ public interface IExportService
     Task ExportPdfIQCReportNG(List<QualityCheckReportDto> list, string userOrToken, string key);
     Task ExportWomin(long requestId, string userOrToken, string key);
     Task ExportPdfReprintBarcode(List<SelectedPrintDto> selectedPrint, string userOrToken, string key);
+    Task ExportBarcodeWomin(List<string> selectedBarcodes, string userOrToken, string key);
 }
 
 public class ExportService : IExportService
@@ -426,5 +427,51 @@ public class ExportService : IExportService
             VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
 
         await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Reprint_Barcode_{DateTime.Now:yyyyMMddHHmmss}" });
+    }
+
+
+    [AutomaticRetry(Attempts = 0)]
+    public async Task ExportBarcodeWomin(List<string> barcodes, string userOrToken, string key)
+    {
+        var results = await _reprintRepository
+            .GetListBarcodeDetail(barcodes);
+
+        if (results == null || !results.Any()) return;
+
+        var models = results.Select(item => new LabelBarcodeDetailDto
+        {
+            BarcodeNo = item.BarcodeNo,
+            FromCompany = item.FromCompany,
+            ToCompany = item.ToCompany,
+            PONumber = item.PONumber,
+            ShippingLot = item.ShippingLot,
+            ItemCode = item.ItemCode,
+            ItemName = item.ItemName,
+            Qty = item.Qty,
+            DeliveryDate = item.DeliveryDate,
+            DNNumber = item.DNNumber,
+            ShippingLabelNo = item.ShippingLabelNo,
+            BarcodeLabelTitle = item.BarcodeLabelTitle,
+            BarcodeLabelFrom = item.BarcodeLabelFrom,
+            BarcodeLabelTo = item.BarcodeLabelTo,
+            BarcodeLabelShippingLot = item.BarcodeLabelShippingLot,
+            BarcodeLabelDeliveryDate = item.BarcodeLabelDeliveryDate,
+            BarcodeLabelPONumber = item.BarcodeLabelPONumber,
+            BarcodeLabelDNNumber = item.BarcodeLabelDNNumber,
+        }).ToList();
+
+        var fullHtml = await _renderer.RenderAsync("Templates/PrintBarcodesReprint.cshtml", models);
+        var pdfBytes = await _renderer.GeneratePdfAsync(fullHtml);
+
+        _fileStorage.SaveToExports(key, new MemoryStream(pdfBytes));
+
+        string keyStorage = Guid.NewGuid().ToString();
+        int defaultTTLMinute = 0; // simpan file fisik selama 5 menit
+
+        await _dbExecutor.ExecuteAsync(@"
+            INSERT INTO ExportFile (FileKey, RegisterDate, TTLMinute)
+            VALUES (@key, GETDATE(), @ttl)", new { key, ttl = defaultTTLMinute }, commandType: CommandType.Text);
+
+        await _notificationService.BroadCastOnlyTo([userOrToken], "FileExportPDF", new { KeyFile = key, KeyStorage = keyStorage, FileName = $"Womin_Barcode_{DateTime.Now:yyyyMMddHHmmss}" });
     }
 }

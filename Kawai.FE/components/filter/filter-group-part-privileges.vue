@@ -12,8 +12,8 @@
           :placeholder="placeholder || ` `"
           :searchable="true"
           :label="displayLabel"
-          track-by="WorkStationCode"
-          trackBy="WorkStationCode"
+          track-by="GroupingClassPartCode"
+          trackBy="GroupingClassPartCode"
           :hide-selected="true"
           :internal-search="false"
           :loading="isLoading"
@@ -32,12 +32,15 @@
         <div class="invalid-feedback d-block" v-if="errors">
           {{ errors[0] }}
         </div>
+        <small class="form-text text-muted" v-if="description">{{
+          description
+        }}</small>
       </td>
       <td :style="this.styleDesc" style="padding-left: 5px">
         <input
           type="text"
           disabled
-          :value="selectedItem?.WorkStationName || ''"
+          :value="selectedItem?.Description || ''"
           class="w-100 form-control"
         />
       </td>
@@ -54,6 +57,7 @@ export default {
   emits: ["update:modelValue"],
   props: [
     "modelValue",
+    "type",
     "label",
     "col",
     "description",
@@ -63,6 +67,7 @@ export default {
     "disabled",
     "multiple",
     "class",
+    "factoryCode",
     "styleCode",
     "styleDesc",
     "showOptionAll",
@@ -77,16 +82,17 @@ export default {
   }),
   computed: {
     cClass: function () {
-      return (this["class"] ?? "") + (this.errors ? " is-invalid" : "");
+      return (this["class"] ?? "") + (this.errors ? "is-invalid" : "");
     },
     selectedItem: function () {
       return (
-        this.list.find((x) => x.WorkStationCode === this.tempValue) || null
+        this.list.find((x) => x.GroupingClassPartCode === this.tempValue) ||
+        null
       );
     },
-    displayLabel() {
+    displayLabel: function () {
       if (this.isOpen) return "DDLDescription";
-      return this.tempValue ? "WorkStationCode" : "DDLDescription";
+      return this.tempValue ? "GroupingClassPartCode" : "DDLDescription";
     },
   },
   watch: {
@@ -97,6 +103,10 @@ export default {
     },
     tempValue: function (after) {
       if (!after) this.$emit("update:modelValue", null);
+    },
+    factoryCode: function (after) {
+      this.tempValue = null;
+      this.load("", this.modelValue);
     },
   },
   mounted: function () {
@@ -129,7 +139,11 @@ export default {
 
       this.debounce = setTimeout(() => {
         this.$http
-          .get(`/workstation/ddlsearch?keyword=${q || ""}&ids=${d || ""}`)
+          .get(
+            `/grouping-class-part/ddlsearch-privileges?keyword=${q || ""}&ids=${
+              d || ""
+            }`,
+          )
           .then((p) => {
             this.list =
               (this.showOptionAll || false) &&
@@ -137,8 +151,8 @@ export default {
               p.data.Data.length > 0
                 ? [
                     {
-                      WorkStationCode: "ALL",
-                      WorkStationName: "ALL",
+                      GroupingClassPartCode: "ALL",
+                      Description: "ALL",
                       DDLDescription: "ALL",
                     },
                     ...p.data.Data,
@@ -146,7 +160,7 @@ export default {
                 : p.data.Data;
 
             if (d && p.data.Data.length > 0) {
-              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.WorkStationCode;
+              this.tempValue = d == "ALL" ? "ALL" : p.data.Data[0]?.GroupingClassPartCode;
             }
 
             if (

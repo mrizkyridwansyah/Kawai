@@ -21,4 +21,6 @@ public interface IPartMaterialRequestWominRepository
     Task<List<PartMaterialRequestWominReportDto>> WominReport(long requestId);
     Task<Dictionary<string, object>> CaptureRequirement(long IDSeq);
     Task<Dictionary<string, object>> CaptureRequest(long requestId);
+
+    Task<List<PartMaterialRequestWominBarcodeDto>> ListScanBarcode(long requestId, string workstation, string group);
 }

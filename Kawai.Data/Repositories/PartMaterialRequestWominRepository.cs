@@ -3,9 +3,6 @@ using Kawai.Domain.DTOs;
 using Kawai.Domain.Interfaces;
 using Kawai.Domain.Models;
 using Kawai.Domain.Shared;
-using System.Collections.Generic;
-using System.Net;
-using System.Reflection.Emit;
 
 namespace Kawai.Data.Repositories;
 
@@ -55,7 +52,7 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
     public async Task<List<PartMaterialRequestWominDetilDto>> GetListDetail(List<PartMaterialRequestWominModel> models)
     {
         string sp = "sp_Wms_PartMaterialRequestWomin_GetListDetail";
-        if(models[0].RequestId.HasValue)
+        if (models[0].RequestId.HasValue)
         {
             return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominDetilDto>(sp, new
             {
@@ -188,4 +185,16 @@ public class PartMaterialRequestWominRepository : IPartMaterialRequestWominRepos
             { "Part Material Request Womin Production Details", result.detailProds },
         };
     }
+
+    public async Task<List<PartMaterialRequestWominBarcodeDto>> ListScanBarcode(long requestId, string workstation, string group)
+    {
+        string sp = "sp_Wms_PartMaterialRequestWomin_ListScanBarcode";
+        return (await _dbExecutor.QueryListAsync<PartMaterialRequestWominBarcodeDto>(sp, new
+        {
+            RequestId = requestId,
+            WorkstationCode = string.IsNullOrEmpty(workstation) ? "ALL" : workstation,
+            GroupCode = string.IsNullOrEmpty(group) ? "ALL" : group
+        })).ToList();
+    }
+
 }

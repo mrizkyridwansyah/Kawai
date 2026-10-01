@@ -164,6 +164,19 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
       });
     },
 
+    loadListScanBarcode: function (requestId, workstation, group) {
+      return new Promise((resolve, reject) => {
+        app.$http
+          .get(
+            `/supply-request/womin/list-scan-barcode?requestId=${requestId}&workstation=${workstation || ""}&group=${group || ""}`,
+          )
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data));
+      });
+    },
+
     setRequest: function (req) {
       this.newRequest = req;
     },
@@ -270,39 +283,16 @@ export const useSupplyRequestWomin = defineStore("SupplyRequestWomin", {
           .finally((_) => (this.isRemoving = false));
       });
     },
-    print(data) {
+    print: function (barcodes) {
       this.isEditing = true;
-
       return new Promise((resolve, reject) => {
         app.$http
-          .post(`/supply-request/womin/print-barcodes`, data, {
-            responseType: "blob",
+          .post(`/supply-request/womin/print-list-barcode-scan`, barcodes)
+          .then(({ data }) => {
+            resolve(data);
           })
-          .then((res) => {
-            const blob = new Blob([res.data], { type: "application/pdf" });
-            const url = window.URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "labels.pdf"; // nama file
-            document.body.appendChild(link);
-            link.click();
-
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-
-            resolve();
-          })
-          .catch((err) => {
-            if (err.code === "ERR_NETWORK") this.isNetworkError = true;
-
-            if (err.code === "ERR_BAD_RESPONSE") this.isServerError = true;
-
-            reject(err.response?.data);
-          })
-          .finally(() => {
-            this.isEditing = false;
-          });
+          .catch((err) => reject(err.response?.data))
+          .finally((_) => (this.isEditing = false));
       });
     },
   },

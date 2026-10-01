@@ -69,6 +69,7 @@
           <filter-workstation
             class="form-control"
             :disabled="true"
+            :show-option-all="false"
             v-model="filter.workstation"
             style-code="width: 110px"
             style-desc="width: 250px"

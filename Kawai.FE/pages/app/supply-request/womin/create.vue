@@ -62,14 +62,14 @@
                 :is-loading="isLoading"
               />
 
-              <v-button
+              <!-- <v-button
                 :action="print"
                 label="Print"
                 icon="print"
                 cClass="ml-1 btn-blue"
                 :is-loading="isLoading"
                 :disabled="this.groupLists.length == 0 || !menuPrivAllowUpdate"
-              />
+              /> -->
 
               <v-button-submit
                 :submit="submit"

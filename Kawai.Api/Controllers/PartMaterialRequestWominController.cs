@@ -184,5 +184,20 @@ public class PartMaterialRequestWominController : HahaController
         return Pending(message: "Data Export sedang diproses!");
     }
 
+    [HttpGet("list-scan-barcode")]
+    public async Task<IActionResult> ListScanBarcode(long requestId, string workstation, string group)
+    {
+        var results = await _partMaterialRequestWominRepository.ListScanBarcode(requestId, workstation, group);
+        return Success(results);
+    }
+
+    [HttpPost("print-list-barcode-scan")]
+    public async Task<IActionResult> PrintListBarcodeScan(List<string> barcodes)
+    {
+        string key = Guid.NewGuid().ToString();
+        BackgroundJob.Enqueue<ExportService>(service => service.ExportBarcodeWomin(barcodes, Auth.Token, key));
+        return Pending(message: "Data Export sedang diproses!");
+    }
+
 
 }

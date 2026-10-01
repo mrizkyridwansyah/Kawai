@@ -80,6 +80,15 @@
                 :is-loading="isLoadingPrint"
                 :disabled="!menuPrivAllowUpdate"
               />
+
+              <v-button
+                :action="openPrintSupply"
+                label="Print Barcode"
+                icon="print"
+                cClass="ml-1 btn-green"
+                :is-loading="isLoading"
+                :disabled="!menuPrivAllowUpdate"
+              />
             </div>
           </td>
         </tr>
@@ -266,6 +275,21 @@
     />
   </v-modal>
 
+  <v-modal
+    id="shared-print-barcode-womin"
+    title="Print Barcode"
+    size="xl"
+    @hidden="() => this.$refs.printSupply?.reset()"
+  >
+    <shared-print-barcode-womin
+      ref="printSupply"
+      :request-id="ds.newRequest[0]?.RequestId"
+      :counter="printCounter"
+      @cancel="closePrintSupply"
+      @printed="closePrintSupply"
+    />
+  </v-modal>
+
   <!-- <v-modal title="Edit Requirement Qty" class="modal-lg" id="modal-edit-reqqty">
     <shared-request-womin-edit-reqqty
       :item="this.selectedItem"
@@ -291,6 +315,7 @@ export default {
     counter: 0,
     lineName: "",
     startScan: null,
+    printCounter: 0,
   }),
   computed: {
     ds: function () {
@@ -446,6 +471,15 @@ export default {
       this.selectedItem = item;
       this.counter++;
       this.$bvModal.show("modal-list-scan");
+    },
+
+    openPrintSupply: function () {
+      this.printCounter++;
+      this.$bvModal.show("shared-print-barcode-womin");
+    },
+
+    closePrintSupply: function () {
+      this.$bvModal.hide("shared-print-barcode-womin");
     },
 
     editStock: function (item) {
