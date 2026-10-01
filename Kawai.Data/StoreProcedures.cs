@@ -8,6 +8,14 @@ namespace Kawai.Data;
 
 public static class StoreProcedures
 {
+    public static class RackDashboard
+    {
+        public const string WarehouseList = "sp_Wms_RackDashboard_Warehouse_List";
+        public const string AreaList = "sp_Wms_RackDashboard_Area_List";
+        public const string LocationList = "sp_Wms_RackDashboard_Location_List";
+        public const string AddressDetail = "sp_Wms_RackDashboard_Address_GetDetail";
+        public const string KpiSummary = "sp_Wms_RackDashboard_Kpi_Get";
+    }
     public static class Address
     {
 
