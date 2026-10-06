@@ -11,12 +11,13 @@
         format="dd MMM yyyy HH:mm"
         :mask="null"
         :input-id="key"
-        :disabled="disabled"
+        :disabled="isDisabled"
         v-model:open-pop-up="isOpen"
       />
       <span
         class="input-group-text btn btn-primary"
-        @click="() => (this.disabled ? null : open())"
+        :class="{ disabled: isDisabled }"
+        @click="open"
       >
         <v-icon name="calendar" width="16" />
       </span>
@@ -51,11 +52,12 @@
         :input-id="key"
         v-model:open-pop-up="isOpen"
         placeholder="dd MMM yyyy HH:mm"
-        :disabled="disabled"
+        :disabled="isDisabled"
       />
       <span
         class="input-group-text btn btn-primary"
-        @click="() => (this.disabled ? null : open())"
+        :class="{ disabled: isDisabled }"
+        @click="open"
       >
         <v-icon name="calendar" width="16" />
       </span>
@@ -101,6 +103,11 @@ export default {
     key: uniqueId(),
     isOpen: false,
   }),
+  computed: {
+    isDisabled: function () {
+      return this.disabled !== undefined && this.disabled !== false;
+    },
+  },
   watch: {
     modelValue: function (after, before) {
       if (after === null) {
@@ -133,6 +140,8 @@ export default {
       this.$emit("update:modelValue", e.target.value);
     },
     open: function () {
+      if (this.isDisabled) return;
+
       this.isOpen = true;
       // var c = document.getElementById(this.key)
       // c.blur();

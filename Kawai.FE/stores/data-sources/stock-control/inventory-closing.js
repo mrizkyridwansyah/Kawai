@@ -3,40 +3,65 @@ var app = useNuxtApp();
 export const useInventoryClosing = defineStore('InventoryClosing', {
     state: () => ({
         isLoading: false,
-        isLoaded: false,
+        isServerError: false,
+        isNetworkError: false,
         data: null,
     }),
     actions: {
-      load() {
-    this.isLoading = true;
-    this.isLoaded = false;
+        load: function () {
+            this.isLoading = true;
+            this.isNetworkError = this.isServerError = false;
 
-    return app.$http.post(`/inventoryclosing/getcurrent`)
-        .then(({ data }) => {
-            this.data = data?.Data || null;
-            this.isLoaded = true;
-        })
-        .finally(() => this.isLoading = false);
-},
+            return new Promise((resolve, reject) => {
+                app.$http
+                    .post(`/inventoryclosing/getcurrent`)
+                    .then(({ data }) => {
+                        this.data = data.Data;
 
-        getPeriod() {
+                        resolve(data);
+                    })
+                    .catch((err) => {
+                        if (err.code == "ERR_NETWORK") this.isNetworkError = true;
+
+                        if (err.code == "ERR_BAD_RESPONSE") this.isServerError = true;
+
+                        reject(err);
+                    })
+                    .finally((_) => (this.isLoading = false));
+            });
+
+        },
+        getPeriod: function () {
             return this.data?.Period ?? null;
         },
-  async processClosing() {
-  const [year, month] = this.data.Period.split("-");
+        processClosing: function () {
+            const [year, month] = this.data.Period.split("-");
+            this.isLoading = true;
+            this.isNetworkError = this.isServerError = false;
+            let payload = {
+                IvtYear: Number(year),
+                IvtMonth: Number(month),
+            };
 
-  try {
-    await app.$http.post(`/inventoryclosing/process`, {
-      IvtYear: Number(year),
-      IvtMonth: Number(month),
-    });
-  } catch (err) {
-    // lempar ke Vue
-    throw err;
-  }
-},
+            return new Promise((resolve, reject) => {
+                app.$http
+                    .post("/inventoryclosing/process", payload)
+                    .then(({ data }) => {
+                        resolve(data);
+                    })
+                    .catch((err) => {
+                        if (err.code === "ERR_NETWORK") this.isNetworkError = true;
+
+                        if (err.code === "ERR_BAD_RESPONSE") this.isServerError = true;
+
+                        reject(err);
+                    })
+                    .finally(() => {
+                        this.isLoading = false;
+                    });
+            });
+        },
     },
-    persist: true
 });
 
 if (import.meta.hot) {
