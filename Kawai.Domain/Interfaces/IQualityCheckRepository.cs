@@ -17,6 +17,7 @@ public interface IQualityCheckRepository
     Task ApprovalSAUnapprove(QualityCheckConfirmSA payload, string userid);
     Task<Dictionary<string, object>> Capture(long id);
    
-    Task<List<QualityCheckReportDto>> PrintReportNG(long receiptId);
+    Task<List<QualityCheckReportDto>> PrintReportNG(string receiptId, DateTime inspectionDate, string userId);
 
+    Task<List<QualityCheckDNDto>> DNDDLSearch(string keyword, string factory, string supplier, string typePeriod, DateTime? periodFrom, DateTime? periodUntil, string status, string userId);
 }

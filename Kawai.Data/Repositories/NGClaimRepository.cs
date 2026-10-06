@@ -67,7 +67,7 @@ public class NGClaimRepository : INGClaimRepository
     //    return (await _dbExecutor.QueryListAsync<NGClaimDetailDto>(sp, new { ClaimId = claimid })).ToList();
     //}
 
-      public async Task<List<NGClaimDto>> DDLSearch(string keyword,   string supplier, DateTime? periodFrom, DateTime? periodUntil, string status,   string userId)
+    public async Task<List<NGClaimDto>> DDLSearch(string keyword, string supplier, DateTime? periodFrom, DateTime? periodUntil, string status, string userId)
     {
         string sp = "sp_Wms_NGClaimMaterial_DDL";
 
@@ -75,7 +75,7 @@ public class NGClaimRepository : INGClaimRepository
         {
             Keyword = keyword ?? "",
             Status = status ?? "",
-            SupplierCode = supplier?? "",
+            SupplierCode = supplier ?? "",
             PeriodFrom = periodFrom,
             PeriodUntil = periodUntil,
             UserId = userId
@@ -172,7 +172,7 @@ public class NGClaimRepository : INGClaimRepository
         });
     }
 
-    
+
     public async Task<Dictionary<string, object>> Capture(long claimid)
     {
         var result = await _dbExecutor.QueryMultipleAsync(
@@ -182,7 +182,7 @@ public class NGClaimRepository : INGClaimRepository
             {
                 var header = (await multi.ReadAsync<dynamic>()).FirstOrDefault();
                 var details = (await multi.ReadAsync<dynamic>()).ToList();
-               
+
                 return (header, details);
             }
         );
@@ -194,4 +194,4 @@ public class NGClaimRepository : INGClaimRepository
         };
     }
 
- }
+}

@@ -73,6 +73,10 @@ export default {
         Id: "Process",
         Name: "Process",
       },
+      {
+        Id: "Handling",
+        Name: "Handling",
+      },
     ],
     list: [],
     tempValue: null,
