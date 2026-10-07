@@ -40,6 +40,19 @@ public class ReprintController : HahaController
         return DataTableResult(parameter, results);
     }
 
+    [HttpGet("ddlsearch")]
+    public async Task<IActionResult> DDLSearch(string keyword, string ids)
+    {
+        var results = await _reprintRepository.GetDDL(keyword);
+        if (!string.IsNullOrEmpty(ids))
+        {
+            var idList = ids.Split(',').Select(id => id.Trim()).ToList();
+            results = results.Where(x => idList.Contains(x.Id)).ToList();
+        }
+
+        return Success(results);
+    }
+
     [HttpPost("printupdate")]
     public async Task<IActionResult> Printupdate([FromBody] List<Dictionary<string, object>> rows)
     {
