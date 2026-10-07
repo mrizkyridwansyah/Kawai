@@ -104,44 +104,54 @@
   </div>
   <div class="mt-4 mb-3" v-else-if="mode == 'CONFIRM'">
     <div style="display: flex; justify-content: space-between">
-      <button
-        class="btn btn-danger rounded-pill"
-        type="button"
-        style="color: white; width: 12em"
-        @click="() => confirm('Rejected', 'Vendor')"
-        :disabled="
-          (btnDisabled !== undefined && btnDisabled !== false) ||
-          isLoading !== false
-        "
-      >
-        <div
-          class="spinner-border spinner-border-sm text-light"
-          role="status"
-          v-if="isLoading"
+      <div class="dropdown">
+        <button
+          class="btn btn-danger rounded-pill dropdown-toggle"
+          type="button"
+          style="color: white; width: 12em"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          :disabled="
+            (btnDisabled !== undefined && btnDisabled !== false) ||
+            isLoading !== false
+          "
         >
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        HOLD VENDOR
-      </button>
-      <button
-        class="btn btn-danger rounded-pill"
-        type="button"
-        style="color: white; width: 12em"
-        @click="() => confirm('Rejected', 'Process')"
-        :disabled="
-          (btnDisabled !== undefined && btnDisabled !== false) ||
-          isLoading !== false
-        "
-      >
-        <div
-          class="spinner-border spinner-border-sm text-light"
-          role="status"
-          v-if="isLoading"
-        >
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        HOLD PROCESS
-      </button>
+          <div
+            class="spinner-border spinner-border-sm text-light"
+            role="status"
+            v-if="isLoading"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          HOLD
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="() => confirm('Rejected', 'Process')"
+              >HOLD PROCESS</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="() => confirm('Rejected', 'Vendor')"
+              >HOLD VENDOR</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="() => confirm('Rejected', 'Handling')"
+              >HOLD HANDLING</a
+            >
+          </li>
+        </ul>
+      </div>
       <button
         class="btn btn-green rounded-pill"
         type="button"
@@ -184,44 +194,54 @@
   </div>
   <div class="mt-4 mb-3" v-else-if="mode == 'CONFIRM-SA'">
     <div style="display: flex; justify-content: space-between">
-      <button
-        class="btn btn-danger rounded-pill"
-        type="button"
-        style="color: white; width: 12em"
-        @click="() => approvalSA('Rejected', 'Vendor')"
-        :disabled="
-          (btnDisabled !== undefined && btnDisabled !== false) ||
-          isLoading !== false
-        "
-      >
-        <div
-          class="spinner-border spinner-border-sm text-light"
-          role="status"
-          v-if="isLoading"
+      <div class="dropdown">
+        <button
+          class="btn btn-danger rounded-pill dropdown-toggle"
+          type="button"
+          style="color: white; width: 12em"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          :disabled="
+            (btnDisabled !== undefined && btnDisabled !== false) ||
+            isLoading !== false
+          "
         >
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        HOLD VENDOR
-      </button>
-      <button
-        class="btn btn-danger rounded-pill"
-        type="button"
-        style="color: white; width: 12em"
-        @click="() => approvalSA('Rejected', 'Process')"
-        :disabled="
-          (btnDisabled !== undefined && btnDisabled !== false) ||
-          isLoading !== false
-        "
-      >
-        <div
-          class="spinner-border spinner-border-sm text-light"
-          role="status"
-          v-if="isLoading"
-        >
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        HOLD PROCESS
-      </button>
+          <div
+            class="spinner-border spinner-border-sm text-light"
+            role="status"
+            v-if="isLoading"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          HOLD
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="() => approvalSA('Rejected', 'Process')"
+              >HOLD PROCESS</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="() => approvalSA('Rejected', 'Vendor')"
+              >HOLD VENDOR</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click.prevent="() => approvalSA('Rejected', 'Handling')"
+              >HOLD HANDLING</a
+            >
+          </li>
+        </ul>
+      </div>
       <button
         class="btn btn-primary rounded-pill"
         type="button"

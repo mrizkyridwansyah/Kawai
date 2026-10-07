@@ -2,7 +2,7 @@
   <div class="row" style="max-height: 80vh; overflow-y: scroll">
     <div class="col-lg-12">
       <div class="mb-3">
-        <label class="form-label">DN Number xxx</label>
+        <label class="form-label">DN Number</label>
         <input-text v-model="model.DNNumber" :disabled="true" />
       </div>
       <div class="mb-3">

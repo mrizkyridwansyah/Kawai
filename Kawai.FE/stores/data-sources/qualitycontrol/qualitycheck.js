@@ -130,10 +130,10 @@ export const useQualityCheck = defineStore('QualityCheck', {
           .finally(_ => this.isLoading = false);
       })
     },
-    printReportNG: function (receiptId) {
+    printReportNG: function (receiptId, inspectionDate) {
       this.isLoading = true;
       return app.$http.post(
-        `/qualitycheck/print/report-ng?receiptId=${receiptId}`,
+        `/qualitycheck/print/report-ng?receiptId=${receiptId}&inspectionDate=${inspectionDate}`,
         null,
         { responseType: 'blob' }
       )
@@ -185,10 +185,10 @@ export const useQualityCheck = defineStore('QualityCheck', {
           this.isLoading = false;
         });
     },
-    printReportNGUsingJob: function (id) {
+    printReportNGUsingJob: function (id, inspectionDate) {
       this.isLoading = true;
       return new Promise((resolve, reject) => {
-        app.$http.post(`/qualitycheck/print/report-ng-by-job?receiptId=${id}`)
+        app.$http.post(`/qualitycheck/print/report-ng-by-job?receiptId=${id}&inspectionDate=${inspectionDate}`)
           .then(({ data }) => {
             resolve(data);
           })

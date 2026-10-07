@@ -69,6 +69,15 @@
             vertical-align: bottom;
         }
 
+        .delivery-address {
+            width: 34%;
+            vertical-align: top;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.3;
+        }
+
         /* Helper border style untuk tabel barang */
         .table-items,
         .table-items th,
@@ -112,11 +121,10 @@
 
             <td style="width:15%">Delivery To</td>
             <td style="width:1%">:</td>
-            <td rowspan="3"
-                style="width: 34%; white-space: nowrap; vertical-align: top">
-                @first?.Delivery <br />
-                @first?.DeliveryAddress <br />
-                @first?.DeliveryCity
+            <td rowspan="3" class="delivery-address">
+                <div>@first?.Delivery</div>
+                <div>@first?.DeliveryAddress</div>
+                <div>@first?.DeliveryCity</div>
             </td>
         </tr>
         <tr>

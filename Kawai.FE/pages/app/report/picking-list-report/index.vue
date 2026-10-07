@@ -28,7 +28,18 @@
         <tr>
           <td><label class="form-label">Shipping Instruction No.</label></td>
           <td>
-            <filter-shipping-instruction
+            <input-shipping-instruction
+            class="form-control"
+            source-menu="SI"
+            :supplier-code="filter.customer"
+             order-entry="ALL"
+            :period-from="filter.dateFrom"
+            :period-until="filter.dateTo"
+            v-model="filter.ShippingInstructionNo"
+            style="width: 375px"
+          />
+
+            <!-- <filter-shipping-instruction
               class="form-control"
               v-model="filter.shippingInstructionNo"
               :customer="filter.customer"
@@ -36,7 +47,7 @@
               :date-to="filter.dateTo"
               :placeholder="'Select Shipping Instruction No'"
               style-code="width: 270px;"
-            />
+            /> -->
           </td>
           <td colspan="3">
             <v-button-search-reset :search="search" :reset="reset" />
@@ -126,7 +137,7 @@ export default {
           new Date().getMonth() + 1,
           0
         ),
-        shippingInstructionNo: "ALL",
+        shippingInstructionNo: "",
         keyword: null,
 
         sorts: {},
@@ -197,7 +208,7 @@ export default {
           DateTo: this.filter.dateTo
             ? this.$func.asUtcStringDateOnly(new Date(this.filter.dateTo))
             : "",
-          ShippingNo: this.filter.shippingInstructionNo || "ALL",
+          ShippingNo: this.filter.shippingInstructionNo || "",
           Keyword: this.filter.keyword || "",
         },
       ];
@@ -212,7 +223,7 @@ export default {
       this.filter.customer = 'ALL';
       this.filter.dateFrom = new Date(today.getFullYear(), today.getMonth(), 1);
       this.filter.dateTo = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      this.filter.shippingInstructionNo = "ALL";
+      this.filter.shippingInstructionNo = "";
       this.filter.keyword = null;
       this.filter.sorts = {};
       this.search();
@@ -228,7 +239,7 @@ export default {
             DateTo: this.filter.dateTo
               ? this.$func.asUtcStringDateOnly(new Date(this.filter.dateTo))
               : "",
-            ShippingNo: this.filter.shippingInstructionNo || "ALL",
+            ShippingNo: this.filter.shippingInstructionNo || "",
             Keyword: this.filter.keyword || "",
           },
         ];

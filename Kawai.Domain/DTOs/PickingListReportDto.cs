@@ -11,7 +11,7 @@ public class PickingListReportDto : DataTableDto
     public string Serial_No { get; set; }
     public string Address { get; set; }
     public DateTime? Picking_Date { get; set; }
-    public TimeSpan? Picking_Time { get; set; }
+    public string Picking_Time { get; set; }
     public string Picking_By { get; set; }
     public string Picking_Name { get; set; }
 }

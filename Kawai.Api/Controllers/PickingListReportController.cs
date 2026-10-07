@@ -69,7 +69,7 @@ public class PickingListReportController : HahaController
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Picking_Date.HasValue ? result.Picking_Date.Value.ToString("dd-MMM-yy") : "");
             colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Picking_Time.HasValue ? result.Picking_Time.Value.ToString(@"hh\:mm\:ss") : "");
+            ExcelHelper.SetCell(row, colIdx, result.Picking_Time);
             colIdx++;
             ExcelHelper.SetCell(row, colIdx, result.Picking_Name);
         }

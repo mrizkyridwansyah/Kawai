@@ -37,7 +37,7 @@
             <filter-trade-2
               class="form-control"
               v-model="filter.SupplierCode"
-              :trade-cls="['2', '3']"
+              :trade-cls="['1', '2', '3']"
               :show-option-all="true"
               style-code="width: 140px;"
               style-desc="width: 250px;"

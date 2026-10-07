@@ -79,3 +79,8 @@ public class QualityCheckReportDto
     public DateTime ReceiptDate { get; set; }
 }
 
+public class QualityCheckDNDto
+{
+    public string Id { get; set; }
+    public string DNNumber { get; set; }
+}
