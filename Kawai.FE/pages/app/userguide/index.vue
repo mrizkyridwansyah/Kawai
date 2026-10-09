@@ -43,7 +43,7 @@
                 :is-loading="isLoading"
                 @click="loadPdf"
               />
-
+             <v-button label="Download PDF" icon="download" cClass="btn btn-primary" :disabled="!filter.menu" @click="downloadPdf" />
               <v-button
                 label="Find"
                 icon="search"
@@ -169,7 +169,53 @@ export default {
       return text.toLowerCase();
     },
 
-    async loadPdf() {
+downloadPdf() {
+  try {
+    if (!this.filter.menu) {
+      toastDanger("Silahkan pilih sub menu");
+      return;
+    }
+
+    // Master Sub Menu
+    const menuList = [
+      { Id: "01", Name: "Manual Book - Master" },
+      { Id: "02", Name: "Manual Book - Receiving" },
+      { Id: "03", Name: "Manual Book - Production" },
+      { Id: "04", Name: "Manual Book - Shipping" },
+      { Id: "05", Name: "Manual Book - Stock Control" },
+      { Id: "06", Name: "Manual Book - Material / Production NG" },
+      { Id: "07", Name: "Manual Book - Reports" },
+    ];
+
+    // Ambil nama Sub Menu berdasarkan ID
+    const selectedMenu = menuList.find(
+      item => item.Id === String(this.filter.menu)
+    );
+
+    if (!selectedMenu) {
+      toastDanger("Sub Menu tidak ditemukan");
+      return;
+    }
+
+    // URL file sumber tetap menggunakan ID
+    const url = `/file/${selectedMenu.Id}.pdf`;
+
+    // Nama file download menggunakan Name
+    const fileName = `${selectedMenu.Name}.pdf`;
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    console.error("Download PDF error:", err);
+    toastDanger("Gagal mendownload file PDF");
+  }
+},
+ async loadPdf() {
       try {
         if (!this.filter.menu) {
           toastDanger("Silahkan pilih sub menu");

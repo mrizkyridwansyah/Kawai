@@ -78,6 +78,10 @@ export default {
       },
       {
         Id: "06",
+        Name: "Material / Production NG",
+      },
+      {
+        Id: "07",
         Name: "Reports",
       },
     ],
