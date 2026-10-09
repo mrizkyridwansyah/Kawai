@@ -3,6 +3,7 @@ public class SupplyScanRequestNoDto
 {
     public string RequestNo { get; set; }
     public string Description { get; set; }
+    public string StatusPicking { get; set; }
 }
 public class SupplyScanRequestDto
 {
