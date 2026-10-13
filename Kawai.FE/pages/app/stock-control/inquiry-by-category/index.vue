@@ -112,6 +112,7 @@
       :address="this.detail.address"
       :item="this.detail.item"
       :lotno="this.detail.lotno"
+       diffdata="true"
       :counter="this.counter"
     />
   </v-modal>
