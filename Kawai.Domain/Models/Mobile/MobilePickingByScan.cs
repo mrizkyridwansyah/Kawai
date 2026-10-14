@@ -9,6 +9,9 @@ public class MobilePickingByScanSubmit
 
     [Required(ErrorMessage = "Barcode No tidak boleh kosong")]
     public string BarcodeNo { get; set; }
+
+    [Required(ErrorMessage = "Pallet No tidak boleh kosong")]
+    public string PalletNo { get; set; }
 }
 
 public class MobilePickingByScanBarcodeScan

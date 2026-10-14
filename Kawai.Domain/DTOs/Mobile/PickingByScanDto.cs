@@ -23,7 +23,8 @@ public class PickingByScanListDto
     public string PartName { get; set; }
     public string SerialNo { get; set; }
     public string BarcodeNo { get; set; }
-
+    public string AddressCode { get; set; }
+    public string PalletNo { get; set; }
     [JsonIgnore]
     public DateTime? PickingDate { get; set; }
 

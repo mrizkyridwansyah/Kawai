@@ -53,6 +53,7 @@ public class MobilePickingByScanRepository : IMobilePickingByScanRepository
         {
             payload.InstructionNo,
             payload.BarcodeNo,
+            payload.PalletNo,
             DeviceID = deviceId,
             UserId = userId
         });
