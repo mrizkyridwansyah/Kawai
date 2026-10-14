@@ -78,6 +78,7 @@ public class MobilePickingByScanController : HahaController
         {
             model.InstructionNo,
             model.BarcodeNo,
+            model.PalletNo,
             DeviceID = remoteIp,
             Auth.User.UserID
         };
