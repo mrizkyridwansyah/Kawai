@@ -11,6 +11,7 @@ public class PhysicalInventoryDto : DataTableDto
     public string AddressName { get; set; }
     public string? BarcodeNo { get; set; }
     public string ItemCode { get; set; }
+    public string SerialNo { get; set; }
     public string ItemDesc { get; set; }
     public string UnitCls { get; set; }
     public string Unit { get; set; }
@@ -24,6 +25,17 @@ public class PhysicalInventoryDto : DataTableDto
     public DateTime? LastUpdate { get; set; }
     public string? LastUserID { get; set; }
     public string? LastUserName { get; set; }
+
+    public string ParamPeriod { get; set; }
+    public string ParamWarehouse { get; set; }
+    public string ParamArea { get; set; }
+    public string ParamAddress { get; set; }
+    public string ParamItem { get; set; }
+    public string ParamLot { get; set; }
+    public string ParamScanStatus { get; set; }
+    public string ParamDiffQty { get; set; }
+    public string ParamDiffData { get; set; }
+
 
 }
 
