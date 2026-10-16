@@ -203,7 +203,7 @@ public class ExportService : IExportService
 
         List<string> headers =
         [
-            "Source","Supplier","DN Number","DN Date","Item Code","Item Name","Unit","Receipt Qty","Sample Qty","NG Qty","QC Status","Approval User","Approval Date"
+            "Source","Supplier","DN Number","DN Date","Item Code","Item Name","Unit","Receipt Qty","Sample Qty","NG Qty", "Vendor", "Proses", "Lain-lain", "QC Status","Approval User","Approval Date"
         ];
 
         ExcelHelper.SetHeader(ws, rowIdx, headers);
@@ -220,6 +220,9 @@ public class ExportService : IExportService
             r.QtyReceipt,
             r.Qty,
             r.QtyNG,
+            r.QtyNGVendor,
+            r.QtyNGProcess,
+            r.QtyNGOthers,
             r.InspectionResult,
             r.ApprovalUserName,
             r.ApprovalDate

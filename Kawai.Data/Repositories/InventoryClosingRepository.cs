@@ -30,14 +30,15 @@ public class InventoryClosingRepository : IInventoryClosingRepository
 
     public async Task ProcessClosing(int ivtYear, int ivtMonth, string userId)
     {
-        await _dbExecutor.QueryListAsync<object>(
+        await _dbExecutor.ExecuteNonTransactionAsync(
             "sp_WMS_Closing",
             new
             {
                 IvtYear = ivtYear,
                 IvtMonth = ivtMonth,
                 UserId = userId
-            }
+            },
+            commandTimeout: 600 // 10 Menit
         );
     }
 

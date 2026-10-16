@@ -1,6 +1,6 @@
 ﻿namespace Kawai.Domain.DTOs;
 
-public class QualityCheckDto: DataTableDto
+public class QualityCheckDto : DataTableDto
 {
     public long InspectionId { get; set; }
     public string Source { get; set; }
@@ -15,6 +15,9 @@ public class QualityCheckDto: DataTableDto
     public decimal Qty { get; set; }
     public decimal QtyReceipt { get; set; }
     public decimal QtyNG { get; set; }
+    public decimal? QtyNGVendor { get; set; }
+    public decimal? QtyNGProcess { get; set; }
+    public decimal? QtyNGOthers { get; set; }
     public decimal TotalRealNG { get; set; }
     public string InspectionResult { get; set; }
     public DateTime RegisterDate { get; set; }
@@ -32,12 +35,13 @@ public class QualityCheckDto: DataTableDto
     public string SAApprovalUser { get; set; }
     public string SAApprovalUserName { get; set; }
     public string StatusQC { get; set; }
+    public string TypeHold { get; set; }
     public bool? ProcessUnapprove { get; set; }
 
 }
 
 
-public class QualityCheckResultDto: DataTableDto
+public class QualityCheckResultDto : DataTableDto
 {
     public long InspectionId { get; set; }
     public string DNNumber { get; set; }
@@ -70,6 +74,9 @@ public class QualityCheckReportDto
     public string Model { get; set; }
     public string NoPPR { get; set; }
     public decimal TotalQtyNG { get; set; }
+    public decimal? TotalQtyNGVendor { get; set; }
+    public decimal? TotalQtyNGProcess { get; set; }
+    public decimal? TotalQtyNGOthers { get; set; }
     public string Remarks { get; set; }
     public string SupplierCode { get; set; }
     public string SupplierName { get; set; }

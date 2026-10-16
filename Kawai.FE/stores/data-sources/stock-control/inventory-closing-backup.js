@@ -1,6 +1,6 @@
 var app = useNuxtApp();
 
-export const useInventoryClosing = defineStore('InventoryClosing', {
+export const useInventoryClosingBak = defineStore('InventoryClosingBak', {
     state: () => ({
         isLoading: false,
         isLoaded: false,
@@ -41,6 +41,6 @@ export const useInventoryClosing = defineStore('InventoryClosing', {
 
 if (import.meta.hot) {
     import.meta.hot.accept(
-        acceptHMRUpdate(useInventoryClosing, import.meta.hot)
+        acceptHMRUpdate(useInventoryClosingBak, import.meta.hot)
     );
 }

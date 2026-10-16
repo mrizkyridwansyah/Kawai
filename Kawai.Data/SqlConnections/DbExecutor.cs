@@ -117,13 +117,32 @@ public class DbExecutor
 
     }
 
-    public async Task<int> ExecuteNonTransactionAsync(string sql, object? param = null, CommandType commandType = CommandType.StoredProcedure)
+    //public async Task<int> ExecuteNonTransactionAsync(string sql, object? param = null, CommandType commandType = CommandType.StoredProcedure)
+    //{
+    //    try
+    //    {
+    //        using var conn = _connectionFactory.GetDbConnection();
+    //        conn.Open();
+    //        return await conn.ExecuteAsync(sql, param, commandType: commandType);
+    //    }
+    //    catch (SqlException)
+    //    {
+    //        throw;
+    //    }
+    //    catch (Exception)
+    //    {
+    //        throw;
+    //    }
+
+    //}
+
+    public async Task<int> ExecuteNonTransactionAsync(string sql, object? param = null, CommandType commandType = CommandType.StoredProcedure, int? commandTimeout = null)
     {
         try
         {
             using var conn = _connectionFactory.GetDbConnection();
             conn.Open();
-            return await conn.ExecuteAsync(sql, param, commandType: commandType);
+            return await conn.ExecuteAsync(sql, param, commandTimeout: commandTimeout, commandType: commandType);
         }
         catch (SqlException)
         {

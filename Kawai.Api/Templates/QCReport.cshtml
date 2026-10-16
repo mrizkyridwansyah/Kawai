@@ -202,9 +202,9 @@
 						<td class="right">@((int)item.TotalQtyNG)</td>
 						<td class="left"></td>
 						<td class="left"></td>
-						<td class="right">@((int)item.TotalQtyNG)</td>
-						<td class="left"></td>
-						<td class="left"></td>
+						<td class="right">@(item.TotalQtyNGVendor?.ToString("0"))</td>
+						<td class="right">@(item.TotalQtyNGProcess?.ToString("0"))</td>
+						<td class="right">@(item.TotalQtyNGOthers?.ToString("0"))</td>
 						<td class="left" style="border-right: none;">@item.Remarks</td>
 					</tr>
 
