@@ -24,6 +24,17 @@ public class ShippingInstructionRepository : IShippingInstructionRepository
         return (await _dbExecutor.QueryListAsync<ShippingInstructionPickingDto>(sp, param.ToQueryObject())).ToList();
     }
 
+
+    public async Task<List<ShippingInstructionReportPickingDto>> GetListReportPicking(RequestParameter param)
+    {
+        string sp = "sp_Wms_ShippingInstructionPicking_Report";
+        var paramQuery = param.ToQueryObject();
+
+        return (await _dbExecutor.QueryListAsync<ShippingInstructionReportPickingDto>(sp, paramQuery)).ToList();
+
+        
+    }
+
     public async Task SavePicking(ShippingInstructionPicking model, string userId)
     {
 

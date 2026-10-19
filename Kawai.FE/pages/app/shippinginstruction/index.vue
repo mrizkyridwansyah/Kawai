@@ -111,6 +111,13 @@
             :print="print"
             :is-loading="isLoading"
           />
+           <v-button-print
+            label="Print Stuffing Report"
+            class="mr-1"
+            :disabled="isNew"
+            :print="exportExcel"
+            :is-loading="isLoading"
+          />
           <v-button
             :disabled="!this.model.IsExistsEvidenceLoading"
             @click="viewEvidenceBefore(filter.ShippingInstructionNo)"
@@ -327,6 +334,17 @@ export default {
           //toastDanger(err?.Message);
         })
         .finally(() => (this.isLoading = false));
+    },
+
+   exportExcel: function () {
+      const filters = [
+        {
+          Keyword: this.filter.keyword || "",
+          SINo: this.filter.ShippingInstructionNo 
+        },
+      ];
+
+      return this.ds.exportExcel(filters);
     },
 
     PrintSuratJalan: function (sino) {

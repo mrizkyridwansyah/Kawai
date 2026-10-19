@@ -19,6 +19,11 @@ public class InventoryReportByItemDto : DataTableDto
     public decimal Inventory { get; set; }
     public string Remarks { get; set; }
     public string LastUser { get; set; }
+
+    
+
+
+
 }
 
 public class InventoryListReceiptSupplyReportDto : DataTableDto

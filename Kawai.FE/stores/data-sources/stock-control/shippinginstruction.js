@@ -141,6 +141,51 @@ export const useShippingInstruction = defineStore("ShippingInstruction", {
         { responseType: "blob" },
       );
     },
+  exportExcel: function (filters) {
+      return new Promise((resolve, reject) => {
+        let filterExport = {
+          Page: 1,
+          Length: 1000000,
+          Filters: filters,
+          Sorts: {},
+        };
+
+        app.$http
+          .post(`/shipping-instruction/export/excel`, filterExport)
+          .then(({ data }) => {
+            if (data.Data) {
+              const byteCharacters = atob(data.Data); // decode base64
+              const byteNumbers = new Array(byteCharacters.length)
+                .fill(0)
+                .map((_, i) => byteCharacters.charCodeAt(i));
+              const byteArray = new Uint8Array(byteNumbers);
+
+              const blob = new Blob([byteArray], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              });
+
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute("download", "StuffingReport.xlsx");
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+
+              resolve();
+            } else {
+              reject(data);
+            }
+          })
+          .catch(async (err) => {
+            reject(err?.response?.data);
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      });
+    },
   },
 });
 

@@ -230,7 +230,7 @@ public class PhysicalInventoryController : HahaController
             {
                 ItemCode = g.Key.ItemCode,
                 ItemName = g.Key.ItemDesc,
-                TotalQty = g.Sum(x => x.Inventory)
+                TotalQty = g.Sum(x => x.CurrentQty)
             })
             .OrderBy(x => x.ItemCode)
             .ToList();

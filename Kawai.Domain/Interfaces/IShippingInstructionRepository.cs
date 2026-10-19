@@ -10,6 +10,7 @@ public interface IShippingInstructionRepository
     //Task<ShippingInstructionDto> GetDataHeader(string shippinginstructionno);
 
     Task<List<ShippingInstructionPickingDto>> GetListPicking(RequestParameter parameter);
+    Task<List<ShippingInstructionReportPickingDto>> GetListReportPicking(RequestParameter parameter);
     Task<List<ShippingInstructionDetailDto>> GetDataShippingByPO(string poNumber);
     Task<List<ShippingInstructionDetailDto>> GetDataHeaderNew(string shippingNo);
     Task Create(ShippingInstruction si, string userId);

@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Kawai.Domain.DTOs;
 
 public class ShippingInstructionFilterDto
@@ -96,6 +98,32 @@ public class ShippingInstructionReportDto : DataTableDto
     public string ApprovedByPosition { get; set; }
     public string CheckedByPosition { get; set; }
     public string ReceivedByPosition { get; set; }
+
+
+}
+
+public class ShippingInstructionReportPickingDto : DataTableDto
+{
+
+ public string SI_No { get; set; }
+    public string SI_Date { get; set; }
+    public string Vehicle_No { get; set; }
+    public string Container_No { get; set; }
+    public string Seal_No { get; set; }
+    public string DO_No { get; set; }
+    public string Destination { get; set; }
+    public string LoadingBy { get; set; }
+    public string CheckedBy { get; set; }
+    public string PreparedBy { get; set; }
+    public string Model { get; set; }
+    public string TotalQty { get; set; }
+    public string Check { get; set; }
+    public string Serial_No { get; set; }
+    public string PalletNo { get; set; }
+    public string QtyPicking { get; set; }
+    public string NoUrut { get; set; }
+
+    
 
 
 }
