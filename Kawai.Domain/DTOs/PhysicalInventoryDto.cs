@@ -26,6 +26,9 @@ public class PhysicalInventoryDto : DataTableDto
     public string? LastUserID { get; set; }
     public string? LastUserName { get; set; }
 
+    public string? ApproveDate { get; set; }
+    public string? ApproveUser { get; set; }
+
     public string ParamPeriod { get; set; }
     public string ParamWarehouse { get; set; }
     public string ParamArea { get; set; }

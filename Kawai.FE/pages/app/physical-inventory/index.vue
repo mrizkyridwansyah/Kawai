@@ -155,7 +155,7 @@
         </tr>
         <tr>
         
-          <td colspan="5"   style="padding-top: 5px">
+          <td colspan="7"   style="padding-top: 5px">
            
             <div class="d-inline-flex">
                <v-button-search-reset :search="search" :reset="reset" />
@@ -181,7 +181,10 @@
                 cClass="ml-1 btn-green"
                 :is-loading="isLoading"
                 
+                
               />
+              <label class="mt-1 ml-2 form-label">  Approve User : {{ lists.length > 0 ? lists[0].ApproveUser : "-" }}</label>
+              <label class="mt-1 ml-3 form-label">  Approve Date: {{ lists.length > 0 ? lists[0].ApproveDate : "-" }}</label>
             </div>
           </td>
           
