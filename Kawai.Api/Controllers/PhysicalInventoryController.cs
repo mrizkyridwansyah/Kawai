@@ -1,5 +1,7 @@
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Kawai.Api.Services;
+using Kawai.Data.Repositories;
 using Kawai.Domain.DTOs;
 using Kawai.Domain.DTOs.Log;
 using Kawai.Domain.Interfaces;
@@ -47,6 +49,26 @@ public class PhysicalInventoryController : HahaController
         });
 
         return Success(model);
+    }
+
+    [HttpPatch("approve")]
+    public async Task<IActionResult> Approve([FromBody] List<PhysicalInventoryApproveDto> model)
+    {
+
+        var before = await _physicalInventoryRepository.CaptureApprove(model);
+        await _physicalInventoryRepository.Approve(model, Auth.User.UserID);
+        var after = await _physicalInventoryRepository.CaptureApprove(model);
+        await _logger.SaveDataLog(new DataLogDto
+        {
+            DocumentType = "Physical Inventory Approve",
+            EntityId = Auth.User.UserID,
+            ReferenceId = Auth.User.UserID,
+            Before = before,
+            After = after,
+            Action = DataLogAction.Update
+        });
+        return Success(after);
+ 
     }
 
     [HttpPost("export/excel")]

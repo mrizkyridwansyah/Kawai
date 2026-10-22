@@ -51,6 +51,12 @@ public class PhysicalInventoryUpdateDto
     public decimal Inventory { get; set; }
 }
 
+public class PhysicalInventoryApproveDto
+{
+    public string Period { get; set; }
+  
+}
+
 public class PhysicalInventoryCaptureDto
 {
     public string RefNo { get; set; }

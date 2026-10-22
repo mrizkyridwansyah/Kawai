@@ -1,7 +1,7 @@
 <template>
   <v-frame title="Physical Inventory Update" icon="receipt">
     <template #frame-content>
-      <table>
+      <table style="border: 1; border-color: bisque;">
         <tr>
           <td style="padding-top: 5px">
             <label class="form-label">Period</label>
@@ -147,15 +147,32 @@
             <input-checkbox label=" " v-model="filter.diffQty" />
           </td>
 
-          <td style="padding-top: 5px">
-            <v-button-search-reset :search="search" :reset="reset" />
+          <td   style="padding-top: 5px">
+            
+            
+          </td>
+          
+        </tr>
+        <tr>
+        
+          <td colspan="5"   style="padding-top: 5px">
+           
             <div class="d-inline-flex">
+               <v-button-search-reset :search="search" :reset="reset" />
               <v-button-submit
-                class="btn-success ms-1"
+                class="btn-success ml-1"
                 icon="save"
                 label="Submit"
                 :submit="submit"
                 :disabled="isLoading || !menuPrivAllowUpdate"
+              />
+               <v-button-submit
+                :submit="approve"
+                :disabled="isLoading || !menuPrivAllowUpdate"
+                label="Approved"
+                icon="check"
+                cClass="ml-1"
+                :is-loading="isLoading"
               />
                <v-button
                 :action="exportExcel"
@@ -431,6 +448,59 @@ export default {
       if (status === "DIFFERENT") return "bg-different";
       return "";
     },
+   approve: function () {
+      this.isLoading = true;
+      this.errors = {};
+
+       if (!this.filter.period) {
+        toastDanger("Silahkan pilih Period!");
+        return;
+      }
+ if (!this.filter.warehouse) {
+        toastDanger("Silahkan pilih Warehouse!");
+        return;
+      }
+
+      if (!this.filter.area) {
+        toastDanger("Silahkan pilih area!");
+        return;
+      }
+
+      if (!this.filter.address) {
+        toastDanger("Silahkan pilih address!");
+        return;
+      }
+
+      if (!this.filter.item) {
+        toastDanger("Silahkan pilih item!");
+        return;
+      }
+
+      if (!this.filter.lotNo) {
+        toastDanger("Silahkan pilih lotNo!");
+        return;
+      }
+      let model = [
+        {
+          Period: this.$func.asUtcStringDateOnly(new Date(this.filter.period)),
+          
+        },
+      ];
+
+      this.ds
+        .approve(model)
+        .then((dt) => {
+          toastSuccess("Data Approved successfully!");
+          this.reset();
+        })
+        .catch((err) => {
+          this.errors = err?.Errors;
+          toastDanger(err?.Message);
+        })
+        .finally(() => (this.isLoading = false));
+        
+    },
+
     submit: function () {
       let dataChanges = this.lists
         .filter((x) => x.Inventory !== x.CurrentInventory)

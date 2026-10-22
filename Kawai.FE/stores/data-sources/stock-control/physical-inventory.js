@@ -82,6 +82,18 @@ export const usePhysicalInventory = defineStore("PhysicalInventory", {
           });
       });
     },
+    approve: function (data) {
+      this.isEditing = true;
+      return new Promise((resolve, reject) => {
+         app.$http.patch(`/physical-inventory/approve`, data)
+          .then(({ data }) => {
+            resolve(data);
+          })
+          .catch((err) => reject(err.response?.data))
+          .finally(_ => this.isEditing = false);
+      })
+    },
+
     exportExcel: function (filters) {
       return new Promise((resolve, reject) => {
         let filterExport = {

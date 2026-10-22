@@ -9,4 +9,7 @@ public interface IPhysicalInventoryRepository
     Task<List<PhysicalInventoryDto>> GetList(RequestParameter parameter);
     Task Update(List<PhysicalInventoryUpdateDto> model, string userId);
     Task<Dictionary<string, object>> Capture(List<PhysicalInventoryUpdateDto> model);
+    Task<Dictionary<string, object>> CaptureApprove(List<PhysicalInventoryApproveDto> model);
+    Task Approve(List<PhysicalInventoryApproveDto> model, string userId);
+
 }

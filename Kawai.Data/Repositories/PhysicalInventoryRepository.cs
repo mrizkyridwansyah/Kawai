@@ -36,10 +36,38 @@ public class PhysicalInventoryRepository : IPhysicalInventoryRepository
         });
     }
 
+    public async Task Approve(List<PhysicalInventoryApproveDto> model, string userId)
+    {
+        string sp = "sp_Wms_Physical_Inventory_Approve";
+
+        await _dbExecutor.ExecuteAsync(sp, new
+        {
+            LastUser = userId,
+            Details = DataTableHelper.ToDataTable(model)
+        });
+    }
+
     public async Task<Dictionary<string, object>> Capture(List<PhysicalInventoryUpdateDto> model)
     {
         string sp = "sp_Wms_Physical_Inventory_Capture";
         var result = await _dbExecutor.QueryListAsync<PhysicalInventoryCaptureDto>(sp, new
+        {
+            Details = DataTableHelper.ToDataTable(model)
+        });
+
+        if (result == null)
+            return new Dictionary<string, object>();
+
+        return new Dictionary<string, object>
+        {
+            { "Detail", result }
+        };
+    }
+
+    public async Task<Dictionary<string, object>> CaptureApprove(List<PhysicalInventoryApproveDto> model)
+    {
+        string sp = "sp_Wms_Physical_Inventory_CaptureApprove";
+        var result = await _dbExecutor.QueryListAsync<PhysicalInventoryApproveDto>(sp, new
         {
             Details = DataTableHelper.ToDataTable(model)
         });
