@@ -12,6 +12,7 @@ public class StockDto: DataTableDto
     public string AreaName { get; set; }
     public string AddressCode { get; set; }
     public string AddressName { get; set; }
+    public string CurrentAddress { get; set; }
     public string ItemCode { get; set; }
     public string ItemName { get; set; }
     public string LotNo { get; set; }

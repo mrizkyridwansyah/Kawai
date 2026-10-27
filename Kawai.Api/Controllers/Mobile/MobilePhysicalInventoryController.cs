@@ -67,6 +67,8 @@ public class MobilePhysicalInventoryController : HahaController
         return Success(result);
     }
 
+   
+
     [HttpPost("save")]
     public async Task<IActionResult> Save(MobilePhysicalInventory model)
     {
@@ -114,6 +116,13 @@ public class MobilePhysicalInventoryController : HahaController
     public async Task<IActionResult> GetDataBarcodeByWarehouse(string warehouseCode, string barcodeNo)
     {
         var result = await _mobilePhysicalInventoryRepository.GetDataBarcodeByWarehouse(warehouseCode, barcodeNo);
+        return Success(result);
+    }
+
+    [HttpGet("by-warehouse/data-address")]
+    public async Task<IActionResult> GetDataAddressByWarehouse(string addressCode )
+    {
+        var result = await _mobilePhysicalInventoryRepository.GetDataAddressByWarehouse(addressCode);
         return Success(result);
     }
 

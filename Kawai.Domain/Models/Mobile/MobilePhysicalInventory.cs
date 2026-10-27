@@ -19,6 +19,7 @@ public class MobilePhysicalInventoryWarehouse
     [Required(ErrorMessage = "Warehouse tidak boleh kosong")]
     public string WarehouseCode { get; set; }
 
+    public string? AddressCode { get; set; }
     [Required(ErrorMessage = "Barcode tidak boleh kosong")]
     public string BarcodeNo { get; set; }
 

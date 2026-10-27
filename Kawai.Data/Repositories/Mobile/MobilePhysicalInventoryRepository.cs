@@ -53,10 +53,17 @@ public class MobilePhysicalInventoryRepository : IMobilePhysicalInventoryReposit
         });
     }
 
+
     public async Task<StockDto> GetDataBarcodeByWarehouse(string warehouseCode, string barcodeNo)
     {
         string sp = "sp_Wms_Mobile_PhysicalInventory_GetDataBarcodeByWarehouse";
         return await _dbExecutor.QueryFirstOrDefaultAsync<StockDto>(sp, new { WarehouseCode = warehouseCode, BarcodeNo = barcodeNo });
+    }
+
+    public async Task<StockDto> GetDataAddressByWarehouse(string addressCode)
+    {
+        string sp = "sp_Wms_Mobile_PhysicalInventory_GetDataAddressByWarehouse";
+        return await _dbExecutor.QueryFirstOrDefaultAsync<StockDto>(sp, new { AddressCode = addressCode });
     }
     public async Task SaveByWarehouse(MobilePhysicalInventoryWarehouse payload, string userId)
     {
@@ -64,6 +71,7 @@ public class MobilePhysicalInventoryRepository : IMobilePhysicalInventoryReposit
         int i = await _dbExecutor.ExecuteAsync(sql, new
         {
             payload.WarehouseCode,
+            payload.AddressCode,
             payload.BarcodeNo,
             InventoryQty = payload.InventoryQty ?? 0,
             UserId = userId
