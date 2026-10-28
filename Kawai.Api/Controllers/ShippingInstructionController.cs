@@ -400,89 +400,120 @@ public class ShippingInstructionController : HahaController
         ws.Range(dataRowIdx, 14, lastDataRow, 18).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
         ws.Range(dataRowIdx, 14, lastDataRow, 18).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-       
-        ws.Cell(38, 2).Value = "Sub QTY : " + resultheader.TotalQty;
 
+        // =========================
+        // FOOTER REPORT
+        // =========================
 
-        ws.Cell(38, 5).Value = "Pcs";
+        // Footer dimulai 2 baris setelah baris terakhir tabel detail
+        int footerRow = lastDataRow + 2;
 
-        ws.Cell(40, 2).Value = "ITEM CHECK";
-        ws.Range(40, 2, 40, 4).Merge();
+        // Baris Sub QTY
+        ws.Cell(footerRow, 2).Value = "Sub QTY : " + resultheader.TotalQty;
+        ws.Cell(footerRow, 5).Value = "Pcs";
 
-        ws.Cell(41, 2).Value = "1. ATAP";
-        ws.Range(41, 2, 41, 4).Merge();
+        // Baris tanda centang
+        int checkRow = footerRow + 1;
 
-        ws.Cell(42, 2).Value = "2. DINDING";
-        ws.Range(42, 2, 42, 4).Merge();
+        ws.Cell(checkRow, 10).Value = "✓";
+        ws.Range(checkRow, 10, checkRow, 11).Merge();
+        ws.Range(checkRow, 10, checkRow, 11).Style.Alignment.Horizontal =
+            XLAlignmentHorizontalValues.Center;
+        ws.Range(checkRow, 10, checkRow, 11).Style.Border.OutsideBorder =
+            XLBorderStyleValues.Thin;
 
-        ws.Cell(43, 2).Value = "3. LANTAI UTAMA";
-        ws.Range(43, 2, 43, 4).Merge();
+        // =========================
+        // ITEM CHECK
+        // =========================
 
-        ws.Cell(44, 2).Value = "4. LT SUDUT DAN PINGGIR";
-        ws.Range(44, 2, 44, 4).Merge();
+        int itemCheckRow = footerRow + 2;
 
-        ws.Cell(45, 2).Value = "5. PINTU";
-        ws.Range(45, 2, 45, 4).Merge();
+        ws.Cell(itemCheckRow, 2).Value = "ITEM CHECK";
+        ws.Range(itemCheckRow, 2, itemCheckRow, 4).Merge();
 
-        ws.Cell(46, 2).Value = "6. PASANG PLASTIK (KHUSUS DEST JPN)";
-        ws.Range(46, 2, 46, 9).Merge();
+        ws.Cell(itemCheckRow + 1, 2).Value = "1. ATAP";
+        ws.Range(itemCheckRow + 1, 2, itemCheckRow + 1, 4).Merge();
 
+        ws.Cell(itemCheckRow + 2, 2).Value = "2. DINDING";
+        ws.Range(itemCheckRow + 2, 2, itemCheckRow + 2, 4).Merge();
 
-        ws.Cell(40, 5).Value = "STANDARD";
-        ws.Range(40, 5, 40, 9).Merge();
+        ws.Cell(itemCheckRow + 3, 2).Value = "3. LANTAI UTAMA";
+        ws.Range(itemCheckRow + 3, 2, itemCheckRow + 3, 4).Merge();
 
-        ws.Cell(41, 5).Value = "TIDAK BOCOR";
-        ws.Range(41, 5, 41, 9).Merge();
+        ws.Cell(itemCheckRow + 4, 2).Value = "4. LT SUDUT DAN PINGGIR";
+        ws.Range(itemCheckRow + 4, 2, itemCheckRow + 4, 4).Merge();
 
-        ws.Cell(42, 5).Value = "TIDAK LENGKET / BERSIH";
-        ws.Range(42, 5, 42, 9).Merge();
+        ws.Cell(itemCheckRow + 5, 2).Value = "5. PINTU";
+        ws.Range(itemCheckRow + 5, 2, itemCheckRow + 5, 4).Merge();
 
-        ws.Cell(43, 5).Value = "BERSIHKAN DENGAN SAPU";
-        ws.Range(43, 5, 43, 9).Merge();
+        ws.Cell(itemCheckRow + 6, 2).Value = "6. PASANG PLASTIK (KHUSUS DEST JPN)";
+        ws.Range(itemCheckRow + 6, 2, itemCheckRow + 6, 9).Merge();
 
-        ws.Cell(44, 5).Value = "BERSIHKAN DENGAN SAPU";
-        ws.Range(44, 5, 44, 9).Merge();
+        // =========================
+        // STANDARD
+        // =========================
 
-        ws.Cell(45, 5).Value = "TIDAK BOCOR";
-        ws.Range(45, 5, 45, 9).Merge();
+        ws.Cell(itemCheckRow, 5).Value = "STANDARD";
+        ws.Range(itemCheckRow, 5, itemCheckRow, 9).Merge();
 
-        ws.Cell(39, 10).Value = "✓";
-        ws.Range(39, 10, 39, 11).Merge();
-        ws.Range(39, 10, 39, 11).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-        ws.Range(39, 10, 39, 11).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        ws.Cell(itemCheckRow + 1, 5).Value = "TIDAK BOCOR";
+        ws.Range(itemCheckRow + 1, 5, itemCheckRow + 1, 9).Merge();
 
-        ws.Cell(40, 10).Value = "OK";
-        ws.Cell(40, 11).Value = "NG";
+        ws.Cell(itemCheckRow + 2, 5).Value = "TIDAK LENGKET / BERSIH";
+        ws.Range(itemCheckRow + 2, 5, itemCheckRow + 2, 9).Merge();
 
-        ws.Range("B40:K46").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-        ws.Range("B40:K46").Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+        ws.Cell(itemCheckRow + 3, 5).Value = "BERSIHKAN DENGAN SAPU";
+        ws.Range(itemCheckRow + 3, 5, itemCheckRow + 3, 9).Merge();
 
+        ws.Cell(itemCheckRow + 4, 5).Value = "BERSIHKAN DENGAN SAPU";
+        ws.Range(itemCheckRow + 4, 5, itemCheckRow + 4, 9).Merge();
 
-        ws.Cell(39, 14).Value = "NO";
-        ws.Cell(39, 15).Value = "DESCRIPTION";
-        ws.Range(39, 15 , 39, 16).Merge();
+        ws.Cell(itemCheckRow + 5, 5).Value = "TIDAK BOCOR";
+        ws.Range(itemCheckRow + 5, 5, itemCheckRow + 5, 9).Merge();
 
-        ws.Cell(39, 17).Value = "ACTION";
-        ws.Range(39, 17, 39, 18).Merge();
+        // Border tabel Item Check
+        ws.Range(
+            itemCheckRow, 2,
+            itemCheckRow + 6, 11
+        ).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
+        ws.Range(
+            itemCheckRow, 2,
+            itemCheckRow + 6, 11
+        ).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-        ws.Range(40, 15, 40, 16).Merge();
-        ws.Range(40, 17, 40, 18).Merge();
+        // =========================
+        // DESCRIPTION / ACTION
+        // =========================
 
-        ws.Range(41, 15, 41, 16).Merge();
-        ws.Range(41, 17, 41, 18).Merge();
+        int actionHeaderRow = checkRow;
 
-        ws.Range(42, 15, 42, 16).Merge();
-        ws.Range(42, 17, 42, 18).Merge();
+        ws.Cell(actionHeaderRow, 14).Value = "NO";
+        ws.Cell(actionHeaderRow, 15).Value = "DESCRIPTION";
+        ws.Range(actionHeaderRow, 15, actionHeaderRow, 16).Merge();
 
-        ws.Range(43, 15, 43, 16).Merge();
-        ws.Range(43, 17, 43, 18).Merge();
+        ws.Cell(actionHeaderRow, 17).Value = "ACTION";
+        ws.Range(actionHeaderRow, 17, actionHeaderRow, 18).Merge();
 
-        ws.Range(44, 15, 44, 16).Merge();
-        ws.Range(44, 17, 44, 18).Merge();
+        // Baris kosong Description dan Action
+        for (int i = 1; i <= 5; i++)
+        {
+            int r = actionHeaderRow + i;
 
-        ws.Range("N39:R44").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-        ws.Range("N39:R44").Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            ws.Range(r, 15, r, 16).Merge();
+            ws.Range(r, 17, r, 18).Merge();
+        }
+
+        // Border tabel Description / Action
+        ws.Range(
+            actionHeaderRow, 14,
+            actionHeaderRow + 5, 18
+        ).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+        ws.Range(
+            actionHeaderRow, 14,
+            actionHeaderRow + 5, 18
+        ).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
         // =========================
         // FINAL TOUCH & EXPORT
@@ -514,6 +545,7 @@ public class ShippingInstructionController : HahaController
 
         return Success(base64File);
     }
+   
     [HttpPost("report-surat-jalan")]
     public async Task<IActionResult> ExportExcel(string sino, [FromServices] RazorViewRenderer renderer)
     {
