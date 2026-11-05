@@ -38,7 +38,7 @@ public class PhysicalInventoryDto : DataTableDto
     public string ParamScanStatus { get; set; }
     public string ParamDiffQty { get; set; }
     public string ParamDiffData { get; set; }
-
+    public string PickingStatus { get; set; }
 
 }
 

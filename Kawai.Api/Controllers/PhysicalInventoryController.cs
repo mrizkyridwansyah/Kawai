@@ -75,152 +75,210 @@ public class PhysicalInventoryController : HahaController
     public async Task<IActionResult> ExportExcel([FromBody] RequestParameter parameter)
     {
         var results = await _physicalInventoryRepository.GetList(parameter);
-        if (results == null || !results.Any()) return NoContent();
+
+        if (results == null || !results.Any())
+            return NoContent();
+
+        // =========================
+        // FLAG DATA ALLOCATION
+        // =========================
+
+        string FlagDataAllocation = parameter.Filters[0]["DifferentData"].ToString();
 
         var resultheader = results.FirstOrDefault();
 
         using var workbook = new XLWorkbook();
-        var ws = workbook.Worksheets.Add("Data");
-
-        int rowIdx = 1;
 
         // =========================
-        // REPORT HEADER
+        // FUNCTION CREATE SHEET DATA
         // =========================
 
-        // Judul report
-        ws.Cell(rowIdx, 1).Value = "PHYSICAL INVENTORY REPORT";
-        ws.Range(rowIdx, 1, rowIdx, 14).Merge();
-        ws.Cell(rowIdx, 1).Style.Font.Bold = true;
-        ws.Cell(rowIdx, 1).Style.Font.FontSize = 16;
-        ws.Cell(rowIdx, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-        ws.Cell(rowIdx, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-        ws.Row(rowIdx).Height = 30;
-
-        ws.Range(rowIdx, 1, rowIdx, 14).Style.Fill.BackgroundColor = XLColor.NoColor;
-        ws.Range(rowIdx, 1, rowIdx, 14).Style.Font.FontColor = XLColor.Black;
-
-        rowIdx++;
-
-      
-        ws.Cell(rowIdx, 1).Value = "Period";
-        ws.Cell(rowIdx, 2).Value = resultheader.ParamPeriod;
-        ws.Cell(rowIdx, 1).Style.Font.Bold = true;
-
-        ws.Cell(rowIdx, 5).Value = "Item";
-        ws.Cell(rowIdx, 6).Value = resultheader.ParamItem;
-        ws.Cell(rowIdx, 5).Style.Font.Bold = true;
-
-        rowIdx++;
-        
-        ws.Cell(rowIdx, 1).Value = "Warehouse";
-        ws.Cell(rowIdx, 2).Value = resultheader.ParamWarehouse;
-        ws.Cell(rowIdx, 1).Style.Font.Bold = true;
-
-        ws.Cell(rowIdx, 5).Value = "Lot No";
-        ws.Cell(rowIdx, 6).Value = resultheader.ParamLot;
-        ws.Cell(rowIdx, 5).Style.Font.Bold = true;
-
-        rowIdx++;
-     
-        ws.Cell(rowIdx, 1).Value = "Area";
-        ws.Cell(rowIdx, 2).Value = resultheader.ParamArea;
-        ws.Cell(rowIdx, 1).Style.Font.Bold = true;
-
-        ws.Cell(rowIdx, 5).Value = "Status Scan";
-        ws.Cell(rowIdx, 6).Value = resultheader.ParamScanStatus;
-        ws.Cell(rowIdx, 5).Style.Font.Bold = true;
-
-        rowIdx++;
-
-        ws.Cell(rowIdx, 1).Value = "Address";
-        ws.Cell(rowIdx, 2).Value = resultheader.ParamAddress;
-        ws.Cell(rowIdx, 1).Style.Font.Bold = true;
-
-        ws.Cell(rowIdx, 5).Value = "Different Qty";
-        ws.Cell(rowIdx, 6).Value = resultheader.ParamDiffQty;
-        ws.Cell(rowIdx, 5).Style.Font.Bold = true;
-        rowIdx++;
-
-        // Baris kosong sebagai pemisah
-        rowIdx++;
-     
-        List<string> headers = ["Warehouse", "Area", "Address", "Barcode No", "Item Code", "Item Name", "Serial No", "Unit", "Lot No", "CurrentQty", "Inventory", "Difference", "LastUpdate", "LastUser"];
-        ExcelHelper.SetHeader(ws, rowIdx, headers);
-
-        foreach (var result in results)
+        void CreateDataSheet(string sheetName, IEnumerable<dynamic> sheetResults)
         {
+            var ws = workbook.Worksheets.Add(sheetName);
+
+            int rowIdx = 1;
+
+            // =========================
+            // REPORT HEADER
+            // =========================
+
+            ws.Cell(rowIdx, 1).Value = "PHYSICAL INVENTORY REPORT";
+            ws.Range(rowIdx, 1, rowIdx, 14).Merge();
+            ws.Cell(rowIdx, 1).Style.Font.Bold = true;
+            ws.Cell(rowIdx, 1).Style.Font.FontSize = 16;
+            ws.Cell(rowIdx, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell(rowIdx, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            ws.Row(rowIdx).Height = 30;
+
+            ws.Range(rowIdx, 1, rowIdx, 14).Style.Fill.BackgroundColor = XLColor.NoColor;
+            ws.Range(rowIdx, 1, rowIdx, 14).Style.Font.FontColor = XLColor.Black;
+
             rowIdx++;
-            var row = ws.Row(rowIdx);
-            int colIdx = 1;
 
-            ExcelHelper.SetCell(row, colIdx, result.WarehouseName);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.AreaCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.AddressCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.BarcodeNo);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ItemCode);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.ItemDesc);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.SerialNo);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Unit);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LotNo);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.CurrentQty);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.Inventory);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.CurrentQty - result.Inventory);
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LastUpdate?.ToString("dd MMM yyyy") ?? "");
-            colIdx++;
-            ExcelHelper.SetCell(row, colIdx, result.LastUserName);
+            ws.Cell(rowIdx, 1).Value = "Period";
+            ws.Cell(rowIdx, 2).Value = resultheader.ParamPeriod;
+            ws.Cell(rowIdx, 1).Style.Font.Bold = true;
 
-            // warna background berdasarkan StatusScan
-            if (result.StatusScan == "DIFFERENT")
+            ws.Cell(rowIdx, 5).Value = "Item";
+            ws.Cell(rowIdx, 6).Value = resultheader.ParamItem;
+            ws.Cell(rowIdx, 5).Style.Font.Bold = true;
+
+            rowIdx++;
+
+            ws.Cell(rowIdx, 1).Value = "Warehouse";
+            ws.Cell(rowIdx, 2).Value = resultheader.ParamWarehouse;
+            ws.Cell(rowIdx, 1).Style.Font.Bold = true;
+
+            ws.Cell(rowIdx, 5).Value = "Lot No";
+            ws.Cell(rowIdx, 6).Value = resultheader.ParamLot;
+            ws.Cell(rowIdx, 5).Style.Font.Bold = true;
+
+            rowIdx++;
+
+            ws.Cell(rowIdx, 1).Value = "Area";
+            ws.Cell(rowIdx, 2).Value = resultheader.ParamArea;
+            ws.Cell(rowIdx, 1).Style.Font.Bold = true;
+
+            ws.Cell(rowIdx, 5).Value = "Status Scan";
+            ws.Cell(rowIdx, 6).Value = resultheader.ParamScanStatus;
+            ws.Cell(rowIdx, 5).Style.Font.Bold = true;
+
+            rowIdx++;
+
+            ws.Cell(rowIdx, 1).Value = "Address";
+            ws.Cell(rowIdx, 2).Value = resultheader.ParamAddress;
+            ws.Cell(rowIdx, 1).Style.Font.Bold = true;
+
+            string DiffQty;
+           
+            if (resultheader.ParamDiffQty == "true")   
+                {
+                DiffQty = "YES";
+                }
+                else
+                {
+                    DiffQty = "NO";
+                }
+
+            ws.Cell(rowIdx, 5).Value = "Different Qty";
+            ws.Cell(rowIdx, 6).Value = DiffQty;
+            ws.Cell(rowIdx, 5).Style.Font.Bold = true;
+
+            rowIdx++;
+
+            // Baris kosong
+            rowIdx++;
+
+            List<string> headers =
+            [
+                "Warehouse", "Area", "Address", "Barcode No",
+            "Item Code", "Item Name", "Serial No", "Unit",
+            "Lot No", "CurrentQty", "Inventory", "Difference",
+            "LastUpdate", "LastUser"
+            ];
+
+            ExcelHelper.SetHeader(ws, rowIdx, headers);
+
+            // =========================
+            // DATA
+            // =========================
+
+            foreach (var result in sheetResults)
             {
-                ws.Range(rowIdx, 1, rowIdx, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
-            }
-            else if (result.StatusScan == "SCANNED")
-            {
-                ws.Range(rowIdx, 1, rowIdx, 9).Style.Fill.BackgroundColor = XLColor.Gray;
-            }
-            else if (result.StatusScan == "NOTYET")
-            {
-                ws.Range(rowIdx, 1, rowIdx, 9).Style.Fill.BackgroundColor = XLColor.LightCoral;
+                rowIdx++;
+
+                var row = ws.Row(rowIdx);
+                int colIdx = 1;
+
+                ExcelHelper.SetCell(row, colIdx++, result.WarehouseName);
+                ExcelHelper.SetCell(row, colIdx++, result.AreaCode);
+                ExcelHelper.SetCell(row, colIdx++, result.AddressCode);
+                ExcelHelper.SetCell(row, colIdx++, result.BarcodeNo);
+                ExcelHelper.SetCell(row, colIdx++, result.ItemCode);
+                ExcelHelper.SetCell(row, colIdx++, result.ItemDesc);
+                ExcelHelper.SetCell(row, colIdx++, result.SerialNo);
+                ExcelHelper.SetCell(row, colIdx++, result.Unit);
+                ExcelHelper.SetCell(row, colIdx++, result.LotNo);
+                ExcelHelper.SetCell(row, colIdx++, result.CurrentQty);
+                ExcelHelper.SetCell(row, colIdx++, result.Inventory);
+                ExcelHelper.SetCell(row, colIdx++, result.CurrentQty - result.Inventory);
+                ExcelHelper.SetCell(row, colIdx++, result.LastUpdate?.ToString("dd MMM yyyy") ?? "");
+                ExcelHelper.SetCell(row, colIdx++, result.LastUserName);
+
+                // Warna berdasarkan StatusScan
+                if (result.StatusScan == "DIFFERENT")
+                {
+                    ws.Range(rowIdx, 1, rowIdx, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                }
+                else if (result.StatusScan == "SCANNED")
+                {
+                    ws.Range(rowIdx, 1, rowIdx, 9).Style.Fill.BackgroundColor = XLColor.Gray;
+                }
+                else if (result.StatusScan == "NOTYET")
+                {
+                    ws.Range(rowIdx, 1, rowIdx, 9).Style.Fill.BackgroundColor = XLColor.LightCoral;
+                }
+
+                // Warna kolom Difference
+                ws.Range(rowIdx, 12, rowIdx, 12).Style.Fill.BackgroundColor = XLColor.LightYellow;
             }
 
-            // warna background kolom Difference
-            ws.Range(rowIdx, 11, rowIdx, 11).Style.Fill.BackgroundColor = XLColor.LightYellow;
+            // =========================
+            // FINAL TOUCH
+            // =========================
+
+            var lastRow = ws.LastRowUsed().RowNumber();
+
+            ws.Range(7, 1, lastRow, 14).Style.Border.OutsideBorder =
+                XLBorderStyleValues.Thin;
+
+            ws.Range(7, 1, lastRow, 14).Style.Border.InsideBorder =
+                XLBorderStyleValues.Thin;
+
+            ws.Columns().AdjustToContents();
         }
 
         // =========================
-        // FINAL TOUCH
+        // SHEET 1: DATA
         // =========================
-        // Border hanya untuk header tabel mulai baris 7 sampai data terakhir
-        var lastRow = ws.LastRowUsed().RowNumber();
 
-        ws.Range(7, 1, lastRow, 14).Style.Border.OutsideBorder
-            = XLBorderStyleValues.Thin;
+        if (FlagDataAllocation == "true")
+        {
+            // Data hanya PickingStatus = 0
+            CreateDataSheet(
+                "Data",
+                results.Where(x =>  x.PickingStatus  == "0").Cast<dynamic>()
+            );
 
-        ws.Range(7, 1, lastRow, 14).Style.Border.InsideBorder
-            = XLBorderStyleValues.Thin;
-        ws.Columns().AdjustToContents();
+            // Data Allocation hanya PickingStatus = 1
+            CreateDataSheet(
+                "Data Allocation Stock",
+                results.Where(x =>  x.PickingStatus  == "1").Cast<dynamic>()
+            );
+        }
+        else
+        {
+            // Kondisi normal: semua data
+            CreateDataSheet(
+                "Data",
+                results.Cast<dynamic>()
+            );
+        }
+
         // =========================
-        // SHEET 2: SUMMARY
+        // SHEET SUMMARY
         // =========================
 
         var wsSummary = workbook.Worksheets.Add("Summary");
 
+        bool isDataAllocation = FlagDataAllocation == "true";
+
         // Judul summary
         wsSummary.Cell(1, 1).Value = "PHYSICAL INVENTORY SUMMARY";
-        wsSummary.Range(1, 1, 1, 3).Merge();
+
+        // Merge judul menyesuaikan jumlah kolom
+        wsSummary.Range(1, 1, 1, isDataAllocation ? 4 : 3).Merge();
 
         wsSummary.Cell(1, 1).Style.Font.Bold = true;
         wsSummary.Cell(1, 1).Style.Font.FontSize = 16;
@@ -231,17 +289,30 @@ public class PhysicalInventoryController : HahaController
 
         wsSummary.Row(1).Height = 30;
 
-        // Header summary
+        // =========================
+        // HEADER SUMMARY
+        // =========================
+
         var summaryHeaders = new List<string>
-    {
-        "Item Code",
-        "Item Name",
-        "Total Qty"
-    };
+        {
+            "Item Code",
+            "Item Name",
+            "Total Qty"
+        };
+
+        // Jika FlagDataAllocation = 1
+        // Tambahkan kolom Total Qty Allocation
+        if (isDataAllocation)
+        {
+            summaryHeaders.Add("Total Qty Allocation");
+        }
 
         ExcelHelper.SetHeader(wsSummary, 3, summaryHeaders);
 
-        // Group berdasarkan ItemCode dan ItemDesc
+        // =========================
+        // GROUP SUMMARY DATA
+        // =========================
+
         var summaryData = results
             .GroupBy(x => new
             {
@@ -252,12 +323,26 @@ public class PhysicalInventoryController : HahaController
             {
                 ItemCode = g.Key.ItemCode,
                 ItemName = g.Key.ItemDesc,
-                TotalQty = g.Sum(x => x.CurrentQty)
+
+                // Total Qty hanya PickingStatus = 0
+                TotalQty = isDataAllocation
+                    ? g.Where(x => x.PickingStatus == "0")
+                       .Sum(x => x.CurrentQty)
+                    : g.Sum(x => x.CurrentQty),
+
+                // Total Qty Allocation hanya PickingStatus = 1
+                TotalQtyAllocation = isDataAllocation
+                    ? g.Where(x =>  x.PickingStatus  == "1")
+                       .Sum(x => x.CurrentQty)
+                    : 0
             })
             .OrderBy(x => x.ItemCode)
             .ToList();
 
-        // Isi data summary
+        // =========================
+        // ISI DATA SUMMARY
+        // =========================
+
         int summaryRow = 3;
 
         foreach (var item in summaryData)
@@ -270,21 +355,31 @@ public class PhysicalInventoryController : HahaController
             ExcelHelper.SetCell(row, colIdx++, item.ItemCode);
             ExcelHelper.SetCell(row, colIdx++, item.ItemName);
             ExcelHelper.SetCell(row, colIdx++, item.TotalQty);
+
+            if (isDataAllocation)
+            {
+                ExcelHelper.SetCell(row, colIdx++, item.TotalQtyAllocation);
+            }
         }
 
-        // Border summary
+        // =========================
+        // BORDER SUMMARY
+        // =========================
+
         var summaryLastRow = wsSummary.LastRowUsed().RowNumber();
 
-        wsSummary.Range(3, 1, summaryLastRow, 3)
+        int totalColumns = isDataAllocation ? 4 : 3;
+
+        wsSummary.Range(3, 1, summaryLastRow, totalColumns)
             .Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
-        wsSummary.Range(3, 1, summaryLastRow, 3)
+        wsSummary.Range(3, 1, summaryLastRow, totalColumns)
             .Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-        // Format kolom summary
+        // Format kolom
         wsSummary.Columns().AdjustToContents();
 
-        // Freeze header summary
+        // Freeze header
         wsSummary.SheetView.FreezeRows(3);
 
         // =========================
