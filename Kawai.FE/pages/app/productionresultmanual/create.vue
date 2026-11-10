@@ -269,12 +269,12 @@ export default {
         (parent.details || []).some((dtl) => dtl.Status == 0),
       );
 
-      if (hasRed) {
-        toastWarning(
-          "Material Supply Request tidak mencukupi berdasarkan Result Qty yang di input. Silahkan Scan Material atau ubah Result Qty lebih kecil",
-        );
-        return;
-      }
+     // if (hasRed) {
+     //   toastWarning(
+     //     "Material Supply Request tidak mencukupi berdasarkan Result Qty yang di input. Silahkan Scan Material atau ubah Result Qty lebih kecil",
+     //   );
+     //   return;
+     // }
 
       /* ===============================
      LOADING
