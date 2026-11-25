@@ -292,52 +292,55 @@ public class PhysicalInventoryController : HahaController
         // =========================
         // HEADER SUMMARY
         // =========================
-
         var summaryHeaders = new List<string>
         {
             "Item Code",
             "Item Name",
-            "Total Qty"
+            "Total Current Qty"
         };
 
-        // Jika FlagDataAllocation = 1
-        // Tambahkan kolom Total Qty Allocation
-        if (isDataAllocation)
-        {
-            summaryHeaders.Add("Total Qty Allocation");
-        }
+                if (isDataAllocation)
+                {
+                    summaryHeaders.Add("Total Qty Allocation");
+                }
 
-        ExcelHelper.SetHeader(wsSummary, 3, summaryHeaders);
+                summaryHeaders.Add("Total Inventory Qty");
+
+                ExcelHelper.SetHeader(wsSummary, 3, summaryHeaders);
 
         // =========================
         // GROUP SUMMARY DATA
         // =========================
 
         var summaryData = results
-            .GroupBy(x => new
-            {
-                x.ItemCode,
-                x.ItemDesc
-            })
-            .Select(g => new
-            {
-                ItemCode = g.Key.ItemCode,
-                ItemName = g.Key.ItemDesc,
+             .GroupBy(x => new
+             {
+                 x.ItemCode,
+                 x.ItemDesc
+             })
+             .Select(g =>
+             {
+                 var totalQty = isDataAllocation
+                     ? g.Where(x => x.PickingStatus == "0")
+                        .Sum(x => x.CurrentQty)
+                     : g.Sum(x => x.CurrentQty);
 
-                // Total Qty hanya PickingStatus = 0
-                TotalQty = isDataAllocation
-                    ? g.Where(x => x.PickingStatus == "0")
-                       .Sum(x => x.CurrentQty)
-                    : g.Sum(x => x.CurrentQty),
+                 var totalQtyAllocation = isDataAllocation
+                     ? g.Where(x => x.PickingStatus == "1")
+                        .Sum(x => x.CurrentQty)
+                     : 0;
 
-                // Total Qty Allocation hanya PickingStatus = 1
-                TotalQtyAllocation = isDataAllocation
-                    ? g.Where(x =>  x.PickingStatus  == "1")
-                       .Sum(x => x.CurrentQty)
-                    : 0
-            })
-            .OrderBy(x => x.ItemCode)
-            .ToList();
+                 return new
+                 {
+                     ItemCode = g.Key.ItemCode,
+                     ItemName = g.Key.ItemDesc,
+                     TotalQty = totalQty,
+                     TotalQtyAllocation = totalQtyAllocation,
+                     TotalInventoryQty = g.Sum(x => x.Inventory)
+                 };
+             })
+             .OrderBy(x => x.ItemCode)
+             .ToList();
 
         // =========================
         // ISI DATA SUMMARY
@@ -360,6 +363,8 @@ public class PhysicalInventoryController : HahaController
             {
                 ExcelHelper.SetCell(row, colIdx++, item.TotalQtyAllocation);
             }
+
+            ExcelHelper.SetCell(row, colIdx++, item.TotalInventoryQty);
         }
 
         // =========================
@@ -368,13 +373,15 @@ public class PhysicalInventoryController : HahaController
 
         var summaryLastRow = wsSummary.LastRowUsed().RowNumber();
 
-        int totalColumns = isDataAllocation ? 4 : 3;
+        int totalColumns = isDataAllocation ? 5 : 4;
 
         wsSummary.Range(3, 1, summaryLastRow, totalColumns)
             .Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
         wsSummary.Range(3, 1, summaryLastRow, totalColumns)
             .Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+       
 
         // Format kolom
         wsSummary.Columns().AdjustToContents();
